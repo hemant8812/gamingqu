@@ -196,6 +196,15 @@ export default function Home() {
   );
 }
 
+type HotDeal = {
+  slug: string
+  title: string
+  price: string
+  features: string[]
+  image: string
+  logo?: string
+}
+
 const games = [
   { slug: "wow", title: "World of Warcraft", offers: 972, subtitle: "New Raid Deals" },
   { slug: "destiny2", title: "Destiny 2", offers: 1156, subtitle: "Equilibrium Dungeon" },
@@ -211,7 +220,7 @@ const games = [
   { slug: "pubg", title: "PUBG", offers: 132, subtitle: "KD & Wins" },
 ];
 
-const hotDeals = [
+const hotDeals: HotDeal[] = [
   {
     slug: "wow-gold",
     title: "Gold",

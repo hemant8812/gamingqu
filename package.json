@@ -8,6 +8,10 @@
     "start": "next start",
     "lint": "eslint"
   },
+  "overrides": {
+    "cookie": "^0.7.0",
+    "hono": "4.11.4"
+  },
   "prisma": {
     "seed": "tsx prisma/seed.ts"
   },
