@@ -1,22 +1,43 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { signIn } from "next-auth/react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import Link from "next/link";
 import Image from "next/image";
-import { ArrowRight } from "lucide-react";
+import { FcGoogle } from "react-icons/fc";
+import { FiArrowRight } from "react-icons/fi";
+import { SiDiscord } from "react-icons/si";
+
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [remember, setRemember] = useState(false);
+
+  useEffect(() => {
+    const storedEmail = typeof window !== "undefined" ? localStorage.getItem("rememberEmail") : null;
+    if (storedEmail) {
+      setEmail(storedEmail);
+      setRemember(true);
+    }
+  }, []);
 
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     setError(null);
+    if (remember) {
+      try {
+        localStorage.setItem("rememberEmail", email);
+      } catch {}
+    } else {
+      try {
+        localStorage.removeItem("rememberEmail");
+      } catch {}
+    }
     const res = await signIn("credentials", {
       email,
       password,
@@ -53,8 +74,8 @@ export default function LoginPage() {
           </div>
         </div>
         <div className="relative flex flex-col">
-          <div className="flex items-center justify-center py-6 gap-4">
-            <Image src="/next.svg" alt="logo" width={100} height={22} className="invert" />
+          <div className="flex items-center justify-center py-2 gap-2">
+            <Image src="/icons/logo.png" alt="Gamingqu" width={120} height={28} />
             <div className="text-sm">
               <span className="text-zinc-400">First time here?</span>{" "}
               <Link href="/register" className="rounded-md bg-zinc-800 text-white text-xs px-3 py-1">
@@ -92,21 +113,49 @@ export default function LoginPage() {
                 </div>
                 {error && <p className="text-red-500 text-sm">{error}</p>}
                 <div className="flex items-center justify-between">
-                  <Link href="/forgot" className="text-sm text-zinc-400 hover:text-white">
-                    Forgot password
-                  </Link>
+                  <Label htmlFor="remember" className="text-sm text-zinc-400">
+                    <input
+                      id="remember"
+                      name="remember"
+                      type="checkbox"
+                      checked={remember}
+                      onChange={(e) => setRemember(e.target.checked)}
+                      className="h-4 w-4 border border-zinc-800 bg-zinc-900"
+                    />
+                    <span>Remember me</span>
+                  </Label>
                   <button
                     type="submit"
                     disabled={loading}
                     className="inline-flex items-center gap-2 rounded-md bg-blue-600 px-5 py-2.5 text-sm font-semibold text-white hover:bg-blue-500 disabled:opacity-60"
                   >
                     {loading ? "Processing..." : "Log in"}
-                    <ArrowRight className="h-4 w-4" />
+                    <FiArrowRight className="h-4 w-4" />
                   </button>
                 </div>
               </form>
-              <p className="mt-8 text-center text-xs text-zinc-500">
-                By logging in, you agree to our Terms and Privacy Policy.
+              <div className="mt-4 grid grid-cols-2 gap-3">
+                <button
+                  type="button"
+                  onClick={() => signIn("google", { callbackUrl: "/" })}
+                  className="rounded-md bg-white text-black px-4 py-2.5 text-sm font-semibold hover:bg-zinc-200 inline-flex items-center justify-center gap-2"
+                >
+                  <FcGoogle size={18} />
+                  Google
+                </button>
+                <button
+                  type="button"
+                  onClick={() => signIn("discord", { callbackUrl: "/" })}
+                  className="rounded-md bg-[#5865F2] text-white px-4 py-2.5 text-sm font-semibold hover:brightness-110 inline-flex items-center justify-center gap-2"
+                >
+                  <SiDiscord size={18} className="text-white" />
+                  Discord
+                </button>
+              </div>
+              <p className="mt-6 text-center text-xs">
+                <Link href="/forgot" className="text-zinc-400 hover:text-white">
+                  Forgot password
+                </Link>
               </p>
             </div>
           </div>

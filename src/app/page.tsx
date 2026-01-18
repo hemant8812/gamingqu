@@ -1,6 +1,6 @@
 "use client";
 import { Card } from "@/components/ui/card";
-import { Play } from "lucide-react";
+import { FiPlay } from "react-icons/fi";
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 
@@ -90,7 +90,7 @@ export default function Home() {
                       <img src={s.image} alt={s.title} className="absolute inset-0 w-full h-full object-cover" />
                       <div className="hero-stripes" />
                       <div className="absolute right-6 top-1/2 -translate-y-1/2 hero-play">
-                        <Play className="text-white/90 h-6 w-6" />
+                        <FiPlay className="text-white/90 h-6 w-6" />
                       </div>
                     </div>
                   </div>

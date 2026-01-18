@@ -2,9 +2,12 @@
 import { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
+import { signIn } from "next-auth/react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { ArrowRight } from "lucide-react";
+import { FiArrowRight } from "react-icons/fi";
+import { FcGoogle } from "react-icons/fc";
+import { SiDiscord } from "react-icons/si";
 
 export default function RegisterPage() {
   const [username, setUsername] = useState("");
@@ -45,8 +48,8 @@ export default function RegisterPage() {
           </div>
         </div>
         <div className="relative flex flex-col">
-          <div className="flex items-center justify-center py-6 gap-4">
-            <Image src="/next.svg" alt="logo" width={100} height={22} className="invert" />
+          <div className="flex items-center justify-center py-6 gap-2">
+            <Image src="/icons/logo.png" alt="Gamingqu" width={120} height={28} />
             <div className="text-sm">
               <span className="text-zinc-400">Already have an account?</span>{" "}
               <Link href="/login" className="rounded-md bg-zinc-800 text-white text-xs px-3 py-1">
@@ -126,11 +129,28 @@ export default function RegisterPage() {
                     className="inline-flex items-center gap-2 rounded-md bg-blue-600 px-5 py-2.5 text-sm font-semibold text-white hover:bg-blue-500 disabled:opacity-60"
                   >
                     {loading ? "Processing..." : "Sign up"}
-                    <ArrowRight className="h-4 w-4" />
+                    <FiArrowRight className="h-4 w-4" />
                   </button>
                 </div>
               </form>
-              
+              <div className="mt-4 grid grid-cols-2 gap-3">
+                <button
+                  type="button"
+                  onClick={() => signIn("google", { callbackUrl: "/" })}
+                  className="rounded-md bg-white text-black px-4 py-2.5 text-sm font-semibold hover:bg-zinc-200 inline-flex items-center justify-center gap-2"
+                >
+                  <FcGoogle size={18} />
+                  Google
+                </button>
+                <button
+                  type="button"
+                  onClick={() => signIn("discord", { callbackUrl: "/" })}
+                  className="rounded-md bg-[#5865F2] text-white px-4 py-2.5 text-sm font-semibold hover:brightness-110 inline-flex items-center justify-center gap-2"
+                >
+                  <SiDiscord size={18} className="text-white" />
+                  Discord
+                </button>
+              </div>
             </div>
           </div>
         </div>
