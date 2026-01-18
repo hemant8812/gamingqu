@@ -142,6 +142,10 @@ body::-webkit-scrollbar {
   background: transparent;
 }
 
+.placeholder-semibold::placeholder {
+  font-weight: 600;
+}
+
 .hero-slide-left {
   animation: hero-slide-left 6s ease-in-out infinite alternate;
   will-change: transform;
