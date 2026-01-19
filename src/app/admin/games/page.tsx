@@ -5,6 +5,9 @@ import { revalidatePath } from "next/cache";
 import path from "path";
 import { promises as fs } from "fs";
 import Image from "next/image";
+import { RichTextEditor } from "@/components/RichTextEditor";
+import { ImageUploadField } from "@/components/ImageUploadField";
+import { AutoSlugField } from "@/components/AutoSlugField";
 
 function slugify(input: string) {
   return input
@@ -47,11 +50,15 @@ export default async function AdminGamesPage() {
     "use server";
     const name = (formData.get("name") as string | null) ?? "";
     const description = (formData.get("description") as string | null) ?? "";
+    const inputSlug = (formData.get("slug") as string | null) ?? "";
     const isHotOffer = formData.get("isHotOffer") === "on";
     const isActive = formData.get("isActive") === "on";
     const imageFile = formData.get("image") as File | null;
     const iconFile = formData.get("icon") as File | null;
-    const baseSlug = slugify(name || "");
+    let baseSlug = slugify(inputSlug || name || "");
+    if (baseSlug.length > 60) {
+      baseSlug = baseSlug.slice(0, 60).replace(/-+$/, "");
+    }
     let slug = baseSlug || `game-${Date.now()}`;
 
     const existing = await db.game.findUnique({ where: { slug } });
@@ -87,7 +94,7 @@ export default async function AdminGamesPage() {
         </p>
 
         <section className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-6">
-          <form action={createGame} className="rounded-2xl border border-zinc-900 bg-zinc-950 p-6 space-y-4">
+          <form action={createGame} encType="multipart/form-data" className="rounded-2xl border border-zinc-900 bg-zinc-950 p-6 space-y-4">
             <div>
               <label htmlFor="name" className="block text-sm font-semibold">Nama Game</label>
               <input
@@ -98,46 +105,44 @@ export default async function AdminGamesPage() {
                 placeholder="Contoh: World of Warcraft"
                 className="mt-1 w-full rounded-md bg-zinc-900 border border-zinc-800 px-3 py-2 text-sm text-white"
               />
+              <AutoSlugField nameInputId="name" name="slug" label="Slug" />
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <ImageUploadField id="image" name="image" label="Gambar" previewHeight={160} />
+              <ImageUploadField id="icon" name="icon" label="Icon" previewHeight={160} />
             </div>
             <div>
-              <label htmlFor="image" className="block text-sm font-semibold">Gambar</label>
-              <input
-                id="image"
-                name="image"
-                type="file"
-                accept="image/*"
-                className="mt-1 w-full rounded-md bg-zinc-900 border border-zinc-800 px-3 py-2 text-sm text-white"
-              />
+              <label className="block text-sm font-semibold">Deskripsi</label>
+              <div className="mt-1">
+                <RichTextEditor name="description" placeholder="Deskripsi dan format bebas" />
+              </div>
+              <div className="mt-2 text-xs text-zinc-500">
+                Gunakan toolbar di atas untuk Bold, Link, garis baru, dan menyisipkan gambar via URL.
+              </div>
             </div>
-            <div>
-              <label htmlFor="icon" className="block text-sm font-semibold">Icon</label>
-              <input
-                id="icon"
-                name="icon"
-                type="file"
-                accept="image/*"
-                className="mt-1 w-full rounded-md bg-zinc-900 border border-zinc-800 px-3 py-2 text-sm text-white"
-              />
-            </div>
-            <div>
-              <label htmlFor="description" className="block text-sm font-semibold">Deskripsi</label>
-              <textarea
-                id="description"
-                name="description"
-                rows={6}
-                placeholder="Deskripsi dan format bebas"
-                className="mt-1 w-full rounded-md bg-zinc-900 border border-zinc-800 px-3 py-2 text-sm text-white"
-              />
-            </div>
-            <div className="flex items-center gap-6">
-              <label className="inline-flex items-center gap-2 text-sm font-semibold">
-                <input type="checkbox" name="isHotOffer" className="rounded" />
-                Hot Offer
-              </label>
-              <label className="inline-flex items-center gap-2 text-sm font-semibold">
-                <input type="checkbox" name="isActive" defaultChecked className="rounded" />
-                Aktif
-              </label>
+            <div className="flex items-center gap-8">
+              <div className="flex items-center gap-3">
+                <input id="isHotOffer" name="isHotOffer" type="checkbox" className="peer sr-only" />
+                <label
+                  htmlFor="isHotOffer"
+                  className="relative inline-flex h-6 w-11 rounded-full bg-zinc-800 peer-checked:bg-orange-600 transition-colors cursor-pointer"
+                  aria-label="Hot Offer"
+                >
+                  <span className="absolute left-[2px] top-1/2 -translate-y-1/2 size-5 rounded-full bg-white transition-transform peer-checked:translate-x-[calc(100%-2px)]" />
+                </label>
+                <span className="text-sm font-semibold">Hot Offer</span>
+              </div>
+              <div className="flex items-center gap-3">
+                <input id="isActive" name="isActive" type="checkbox" defaultChecked className="peer sr-only" />
+                <label
+                  htmlFor="isActive"
+                  className="relative inline-flex h-6 w-11 rounded-full bg-zinc-800 peer-checked:bg-green-600 transition-colors cursor-pointer"
+                  aria-label="Aktif"
+                >
+                  <span className="absolute left-[2px] top-1/2 -translate-y-1/2 size-5 rounded-full bg-white transition-transform peer-checked:translate-x-[calc(100%-2px)]" />
+                </label>
+                <span className="text-sm font-semibold">Aktif</span>
+              </div>
             </div>
             <div className="flex justify-end">
               <button
