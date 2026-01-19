@@ -2,9 +2,8 @@
 import { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { Button } from "@/components/ui/button";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
-import { FiSearch, FiHeart, FiUser, FiChevronDown, FiChevronUp, FiZap, FiPercent, FiBookOpen, FiThumbsUp, FiShield, FiMail, FiShoppingCart, FiLogOut, FiGrid } from "react-icons/fi";
+import { FiSearch, FiHeart, FiUser, FiChevronDown, FiChevronUp, FiZap, FiPercent, FiBookOpen, FiThumbsUp, FiShield, FiMail, FiShoppingCart, FiLogOut, FiGrid, FiUsers, FiBarChart2, FiPlay } from "react-icons/fi";
 import { useSession, signOut } from "next-auth/react";
 
 function GridRoundedIcon(props: React.SVGProps<SVGSVGElement>) {
@@ -61,34 +60,67 @@ export function Navbar() {
           )}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button className="bg-blue-600 hover:bg-blue-500 rounded-md h-10 px-5 text-sm font-semibold text-white shadow-none ring-0 border-0 focus-visible:ring-0 focus-visible:border-0 focus:outline-none">
-                Choose your game <FiChevronDown className="ml-2 h-4 w-4" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent className="bg-zinc-950 border-zinc-900 text-white">
-              <DropdownMenuItem asChild>
-                <Link href="/games/cod">Call of Duty</Link>
-              </DropdownMenuItem>
-              <DropdownMenuItem asChild>
-                <Link href="/games/valorant">Valorant</Link>
-              </DropdownMenuItem>
-              <DropdownMenuItem asChild>
-                <Link href="/games/genshin">Genshin Impact</Link>
-              </DropdownMenuItem>
-              <DropdownMenuItem asChild>
-                <Link href="/games/tarkov">Escape from Tarkov</Link>
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-          <div className="hidden md:flex items-center gap-2 text-xs text-white">
-            <span className="inline-flex items-center gap-1">
-              <span className="relative inline-flex">
-                <span className="h-2 w-2 rounded-full bg-green-500 animate-pulse" />
-                <span className="absolute inset-0 rounded-full bg-green-500/40 animate-ping" />
+              <span className="inline-flex items-center gap-2 text-white text-sm font-semibold cursor-pointer select-none">
+                {(session?.user?.role === "ADMIN" || session?.user?.role === "SUPERADMIN") && <FiGrid className="h-4 w-4 text-white" />}
+                {(session?.user?.role === "ADMIN" || session?.user?.role === "SUPERADMIN") ? "Main Menu" : "Choose your game"}
+                <FiChevronDown className="ml-2 h-4 w-4" />
               </span>
-              1,254 Online
-            </span>
-          </div>
+            </DropdownMenuTrigger>
+            {(session?.user?.role === "ADMIN" || session?.user?.role === "SUPERADMIN") ? (
+              <DropdownMenuContent side="bottom" align="start" sideOffset={18} className="relative rounded-md bg-blue-600 text-white border-0 p-2 shadow-xl min-w-[14rem]">
+                <div className="absolute -top-2 left-0 w-0 h-0 border-l-6 border-r-6 border-b-6 border-l-transparent border-r-transparent border-b-blue-600" />
+                <DropdownMenuItem asChild className="group rounded-sm px-3 py-2 hover:bg-blue-500/30 focus:bg-blue-500/30 text-white">
+                  <Link href="/admin" className="flex items-center gap-2 font-semibold"><FiGrid className="h-4 w-4 text-white group-hover:text-black" /> Dashboard</Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem asChild className="group rounded-sm px-3 py-2 hover:bg-blue-500/30 focus:bg-blue-500/30 text-white">
+                  <Link href="/admin/users" className="flex items-center gap-2 font-semibold"><FiUsers className="h-4 w-4 text-white group-hover:text-black" /> Users</Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem asChild className="group rounded-sm px-3 py-2 hover:bg-blue-500/30 focus:bg-blue-500/30 text-white">
+                  <Link href="/admin/boosters" className="flex items-center gap-2 font-semibold"><FiZap className="h-4 w-4 text-white group-hover:text-black" /> Boosters</Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem asChild className="group rounded-sm px-3 py-2 hover:bg-blue-500/30 focus:bg-blue-500/30 text-white">
+                  <Link href="/admin/orders" className="flex items-center gap-2 font-semibold"><FiShoppingCart className="h-4 w-4 text-white group-hover:text-black" /> Orders</Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem asChild className="group rounded-sm px-3 py-2 hover:bg-blue-500/30 focus:bg-blue-500/30 text-white">
+                  <Link href="/admin/analytics" className="flex items-center gap-2 font-semibold"><FiBarChart2 className="h-4 w-4 text-white group-hover:text-black" /> Analytics</Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem asChild className="group rounded-sm px-3 py-2 hover:bg-blue-500/30 focus:bg-blue-500/30 text-white">
+                  <Link href="/admin/games" className="flex items-center gap-2 font-semibold"><FiPlay className="h-4 w-4 text-white group-hover:text-black" /> Games</Link>
+                </DropdownMenuItem>
+                {(session?.user?.role === "SUPERADMIN") && (
+                  <DropdownMenuItem asChild className="group rounded-sm px-3 py-2 hover:bg-blue-500/30 focus:bg-blue-500/30 text-white">
+                    <Link href="/admin/permissions" className="flex items-center gap-2 font-semibold"><FiShield className="h-4 w-4 text-white group-hover:text-black" /> Permissions</Link>
+                  </DropdownMenuItem>
+                )}
+              </DropdownMenuContent>
+            ) : (
+              <DropdownMenuContent className="bg-zinc-950 border-zinc-900 text-white">
+                <DropdownMenuItem asChild>
+                  <Link href="/games/cod">Call of Duty</Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem asChild>
+                  <Link href="/games/valorant">Valorant</Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem asChild>
+                  <Link href="/games/genshin">Genshin Impact</Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem asChild>
+                  <Link href="/games/tarkov">Escape from Tarkov</Link>
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            )}
+          </DropdownMenu>
+          {!(session?.user?.role === "ADMIN" || session?.user?.role === "SUPERADMIN") && (
+            <div className="hidden md:flex items-center gap-2 text-xs text-white">
+              <span className="inline-flex items-center gap-1">
+                <span className="relative inline-flex">
+                  <span className="h-2 w-2 rounded-full bg-green-500 animate-pulse" />
+                  <span className="absolute inset-0 rounded-full bg-green-500/40 animate-ping" />
+                </span>
+                1,254 Online
+              </span>
+            </div>
+          )}
         </div>
         <div className="flex items-center gap-4 text-zinc-300">
           <Link href="/search" className={iconBtn}><FiSearch className="h-5 w-5" /></Link>
@@ -109,7 +141,7 @@ export function Navbar() {
             <DropdownMenuContent
               side="bottom"
               align="end"
-              sideOffset={0}
+              sideOffset={8}
               className="relative bg-zinc-900 text-white border-0 p-2 rounded-md shadow-xl w-20"
             >
               <div className="absolute -top-2 right-2 w-0 h-0 border-l-6 border-r-6 border-b-6 border-l-transparent border-r-transparent border-b-zinc-900" />
@@ -149,7 +181,7 @@ export function Navbar() {
               <DropdownMenuContent
                 side="bottom"
                 align="end"
-                sideOffset={0}
+                sideOffset={8}
                 className="relative rounded-md bg-blue-600 text-white border-0 p-2 shadow-xl w-56"
               >
                 <div className="absolute -top-2 right-2 w-0 h-0 border-l-6 border-r-6 border-b-6 border-l-transparent border-r-transparent border-b-blue-600" />
@@ -193,39 +225,39 @@ export function Navbar() {
             <DropdownMenuContent
               side="bottom"
               align="end"
-              sideOffset={0}
+              sideOffset={8}
               className="relative rounded-md bg-blue-600 text-white border-0 p-2 shadow-xl w-56"
             >
               <div className="absolute -top-2 right-2 w-0 h-0 border-l-6 border-r-6 border-b-6 border-l-transparent border-r-transparent border-b-blue-600" />
-              <DropdownMenuItem asChild className="rounded-md px-3 py-2 hover:bg-zinc-500/20 focus:bg-zinc-500/20 text-white hover:text-white focus:text-white">
-                <Link href="/about" className="flex items-center gap-2 font-semibold text-white">
-                  <FiZap className="h-4 w-4 text-white" /> About us
+                <DropdownMenuItem asChild className="group rounded-md px-3 py-2 hover:bg-zinc-500/20 focus:bg-zinc-500/20 text-white">
+                  <Link href="/about" className="flex items-center gap-2 font-semibold text-white group-hover:text-black">
+                    <FiZap className="h-4 w-4 text-white group-hover:text-black" /> About us
                 </Link>
               </DropdownMenuItem>
-              <DropdownMenuItem asChild className="rounded-md px-3 py-2 hover:bg-zinc-500/20 focus:bg-zinc-500/20 text-white hover:text-white focus:text-white">
-                <Link href="/cashback" className="flex items-center gap-2 font-semibold text-white">
-                  <FiPercent className="h-4 w-4 text-white" /> Cashback
+                <DropdownMenuItem asChild className="group rounded-md px-3 py-2 hover:bg-zinc-500/20 focus:bg-zinc-500/20 text-white">
+                  <Link href="/cashback" className="flex items-center gap-2 font-semibold text-white group-hover:text-black">
+                    <FiPercent className="h-4 w-4 text-white group-hover:text-black" /> Cashback
                 </Link>
               </DropdownMenuItem>
-              <DropdownMenuItem asChild className="rounded-md px-3 py-2 hover:bg-zinc-500/20 focus:bg-zinc-500/20 text-white hover:text-white focus:text-white">
-                <Link href="/blog" className="flex items-center gap-2 font-semibold text-white">
-                  <FiBookOpen className="h-4 w-4 text-white" /> Blog
+                <DropdownMenuItem asChild className="group rounded-md px-3 py-2 hover:bg-zinc-500/20 focus:bg-zinc-500/20 text-white">
+                  <Link href="/blog" className="flex items-center gap-2 font-semibold text-white group-hover:text-black">
+                    <FiBookOpen className="h-4 w-4 text-white group-hover:text-black" /> Blog
                 </Link>
               </DropdownMenuItem>
-              <DropdownMenuItem asChild className="rounded-md px-3 py-2 hover:bg-zinc-500/20 focus:bg-zinc-500/20 text-white hover:text-white focus:text-white">
-                <Link href="/work-with-us" className="flex items-center gap-2 font-semibold text-white">
-                  <FiThumbsUp className="h-4 w-4 text-white" /> Work with us
+                <DropdownMenuItem asChild className="group rounded-md px-3 py-2 hover:bg-zinc-500/20 focus:bg-zinc-500/20 text-white">
+                  <Link href="/work-with-us" className="flex items-center gap-2 font-semibold text-white group-hover:text-black">
+                    <FiThumbsUp className="h-4 w-4 text-white group-hover:text-black" /> Work with us
                 </Link>
               </DropdownMenuItem>
               <div className="my-1 h-px w-full bg-white/20" />
-              <DropdownMenuItem asChild className="rounded-md px-3 py-2 hover:bg-zinc-500/20 focus:bg-zinc-500/20 text-white hover:text-white focus:text-white">
-                <Link href="/trust-safety" className="flex items-center gap-2 font-semibold text-white">
-                  <FiShield className="h-4 w-4 text-white" /> Trust & safety
+                <DropdownMenuItem asChild className="group rounded-md px-3 py-2 hover:bg-zinc-500/20 focus:bg-zinc-500/20 text-white">
+                  <Link href="/trust-safety" className="flex items-center gap-2 font-semibold text-white group-hover:text-black">
+                    <FiShield className="h-4 w-4 text-white group-hover:text-black" /> Trust & safety
                 </Link>
               </DropdownMenuItem>
-              <DropdownMenuItem asChild className="rounded-md px-3 py-2 hover:bg-zinc-500/20 focus:bg-zinc-500/20 text-white hover:text-white focus:text-white">
-                <Link href="/contact" className="flex items-center gap-2 font-semibold text-white">
-                  <FiMail className="h-4 w-4 text-white" /> Contact us
+                <DropdownMenuItem asChild className="group rounded-md px-3 py-2 hover:bg-zinc-500/20 focus:bg-zinc-500/20 text-white">
+                  <Link href="/contact" className="flex items-center gap-2 font-semibold text-white group-hover:text-black">
+                    <FiMail className="h-4 w-4 text-white group-hover:text-black" /> Contact us
                 </Link>
               </DropdownMenuItem>
             </DropdownMenuContent>

@@ -12,7 +12,7 @@ export default async function AdminDashboard() {
     <div className="min-h-screen bg-black text-white">
       <div className="mx-auto max-w-7xl px-6 py-8">
         <h1 className="text-3xl font-bold">Admin Dashboard</h1>
-        <p className="mt-2 text-zinc-400">Role: {role}</p>
+        <p className="mt-2 text-sm text-zinc-400">Kelola Users, Boosters, Orders, Analytics; Permissions untuk Super Admin.</p>
         <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-6">
           {enabled.has("users") && (
             <section className="rounded-2xl border border-zinc-900 bg-zinc-950 p-6">

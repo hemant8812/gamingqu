@@ -1,8 +1,13 @@
 import { getServerSession } from "next-auth";
+import { revalidatePath } from "next/cache";
 import { authOptions } from "@/auth";
 
+const baseUrl =
+  process.env.NEXTAUTH_URL ||
+  (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : "http://localhost:3000");
+
 async function getPermissions() {
-  const res = await fetch(`${process.env.NEXTAUTH_URL ?? ""}/api/admin/permissions`, {
+  const res = await fetch(`${baseUrl}/api/admin/permissions`, {
     cache: "no-store",
   });
   if (!res.ok) return [];
@@ -19,11 +24,12 @@ export default async function SuperAdminPermissionsPage() {
 
   async function togglePermission(key: string, enabled: boolean) {
     "use server";
-    await fetch("/api/admin/permissions", {
+    await fetch(`${baseUrl}/api/admin/permissions`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ key, enabled }),
     });
+    revalidatePath("/super-admin/permissions");
   }
 
   const knownPanels = [
@@ -47,9 +53,7 @@ export default async function SuperAdminPermissionsPage() {
           return (
             <form
               key={p.key}
-              action={async () => {
-                await togglePermission(p.key, !enabled);
-              }}
+              action={togglePermission.bind(null, p.key, !enabled)}
               className="flex items-center justify-between rounded-xl border border-zinc-900 bg-zinc-950 p-4"
             >
               <div>
@@ -58,9 +62,11 @@ export default async function SuperAdminPermissionsPage() {
               </div>
               <button
                 type="submit"
-                className={`rounded-full px-4 py-2 text-sm ${enabled ? "bg-purple-600" : "bg-zinc-800"} hover:bg-purple-500`}
+                aria-pressed={enabled}
+                className={`relative inline-flex items-center h-6 w-11 rounded-full transition-colors ${enabled ? "bg-purple-600" : "bg-zinc-800"} focus:outline-none ring-0 border-0`}
               >
-                {enabled ? "Enabled" : "Disabled"}
+                <span className={`absolute left-[2px] top-1/2 -translate-y-1/2 size-4 rounded-full bg-white transition-transform ${enabled ? "translate-x-[calc(100%-4px)]" : "translate-x-0"}`} />
+                <span className="sr-only">{enabled ? "Enabled" : "Disabled"}</span>
               </button>
             </form>
           );
