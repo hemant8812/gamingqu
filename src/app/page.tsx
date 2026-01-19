@@ -1,6 +1,6 @@
 "use client";
 import { Card } from "@/components/ui/card";
-import { FiPlay } from "react-icons/fi";
+import { FiPlay, FiRefreshCw } from "react-icons/fi";
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 
@@ -145,15 +145,18 @@ export default function Home() {
           <Card className="rounded-xl border-zinc-900 bg-gradient-to-r from-blue-600 via-black to-black p-0">
             <div className="px-6 py-4 flex items-center justify-between">
               <h2 className="text-white text-xl font-bold">Hot right now</h2>
-              <button className="rounded-md bg-zinc-800 text-white text-xs px-3 py-1">Shuffle</button>
+              <button className="rounded-md bg-zinc-800 text-white text-xs px-3 py-1 inline-flex items-center justify-center">
+                <FiRefreshCw className="h-4 w-4" />
+                <span className="sr-only">Refresh</span>
+              </button>
             </div>
-            <div className="px-6 pb-6 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-              {hotDeals.slice(0, 4).map((h) => (
+            <div className="px-6 pb-6 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
+              {hotDeals.slice(0, 5).map((h) => (
                 <div
                   key={h.slug}
-                  className="relative rounded-xl overflow-hidden h-[19rem] bg-black border border-zinc-900"
+                  className="relative rounded-xl overflow-hidden h-[16rem] bg-black border border-zinc-900"
                 >
-                  <div className="absolute top-0 left-0 right-0 h-[45%]">
+                  <div className="absolute top-0 left-0 right-0 h-[48%]">
                     <img src={h.image} alt={h.title} className="w-full h-full object-cover" />
                     <div className="absolute inset-0 bg-gradient-to-b from-transparent to-black/50" />
                     <div className="absolute bottom-0 left-0 right-0 h-6 pointer-events-none bg-gradient-to-b from-black/40 via-black/20 to-transparent blur-[2px]" />
@@ -161,22 +164,22 @@ export default function Home() {
                       <img src={h.logo} alt="logo" className="absolute top-3 left-3 w-6 h-6 rounded-md object-cover" />
                     )}
                   </div>
-                  <div className="absolute left-4 right-4 top-[40%]">
-                    <div className="text-white font-bold text-lg md:text-xl leading-tight">{h.title}</div>
+                  <div className="absolute left-2 right-4 top-[40%]">
+                    <div className="text-white font-bold text-sm md:text-base leading-tight">{h.title}</div>
                     <ul className="mt-1 space-y-0.5">
                       {h.features.map((f) => (
                         <li key={f} className="flex items-center gap-2">
                           <span className="h-1.5 w-1.5 rounded-full bg-green-500" />
-                          <span className="text-sm text-white">{f}</span>
+                          <span className="text-xs text-white">{f}</span>
                         </li>
                       ))}
                     </ul>
                   </div>
-                  <div className="absolute bottom-2 left-4 right-4 flex items-center justify-between">
-                    <div className="text-white font-bold">{h.price}</div>
+                  <div className="absolute bottom-3 left-3 right-3 flex items-center justify-between">
+                    <div className="text-white font-bold text-sm">{h.price}</div>
                     <Link
                       href={`/buy/${h.slug}`}
-                      className="rounded-md bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-500"
+                      className="rounded-sm bg-blue-600 px-3 py-2 text-xs font-semibold text-white hover:bg-blue-500"
                     >
                       Buy now
                     </Link>

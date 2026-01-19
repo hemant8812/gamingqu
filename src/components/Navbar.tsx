@@ -4,7 +4,8 @@ import Link from "next/link";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
-import { FiSearch, FiHeart, FiUser, FiChevronDown, FiChevronUp, FiZap, FiPercent, FiBookOpen, FiThumbsUp, FiShield, FiMail } from "react-icons/fi";
+import { FiSearch, FiHeart, FiUser, FiChevronDown, FiChevronUp, FiZap, FiPercent, FiBookOpen, FiThumbsUp, FiShield, FiMail, FiShoppingCart, FiLogOut, FiGrid } from "react-icons/fi";
+import { useSession, signOut } from "next-auth/react";
 
 function GridRoundedIcon(props: React.SVGProps<SVGSVGElement>) {
   return (
@@ -31,6 +32,7 @@ export function Navbar() {
   const [currencyOpen, setCurrencyOpen] = useState(false);
   const [gridOpen, setGridOpen] = useState(false);
   const [showLogo, setShowLogo] = useState(true);
+  const { data: session } = useSession();
   const iconBtn =
     "size-10 rounded-md inline-flex items-center justify-center text-white hover:bg-zinc-900 transition-colors border-0 ring-0 outline-none focus:outline-none focus:ring-0 focus:border-0";
   return (
@@ -106,11 +108,11 @@ export function Navbar() {
             </DropdownMenuTrigger>
             <DropdownMenuContent
               side="bottom"
-              align="center"
-              sideOffset={10}
-              className="relative bg-zinc-900 text-white border-0 p-2 rounded-md shadow-xl"
+              align="end"
+              sideOffset={0}
+              className="relative bg-zinc-900 text-white border-0 p-2 rounded-md shadow-xl w-20"
             >
-              <div className="absolute -top-2 left-1/2 -translate-x-1/2 w-0 h-0 border-l-6 border-r-6 border-b-6 border-l-transparent border-r-transparent border-b-zinc-900" />
+              <div className="absolute -top-2 right-2 w-0 h-0 border-l-6 border-r-6 border-b-6 border-l-transparent border-r-transparent border-b-zinc-900" />
               <DropdownMenuItem className="rounded-md px-3 py-2 hover:bg-zinc-500/20 focus:bg-zinc-500/20 text-white hover:text-white focus:text-white">
                 <button
                   className="w-full flex items-center gap-3 text-left"
@@ -137,7 +139,49 @@ export function Navbar() {
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
-          <Link href="/login" className={iconBtn}><FiUser className="h-5 w-5" /></Link>
+          {session?.user ? (
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <button className={iconBtn}>
+                  <FiUser className="h-5 w-5" />
+                </button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent
+                side="bottom"
+                align="end"
+                sideOffset={0}
+                className="relative rounded-md bg-blue-600 text-white border-0 p-2 shadow-xl w-56"
+              >
+                <div className="absolute -top-2 right-2 w-0 h-0 border-l-6 border-r-6 border-b-6 border-l-transparent border-r-transparent border-b-blue-600" />
+                <div className="px-3 py-2 text-sm font-semibold">
+                  {session.user.email ?? session.user.name ?? "Account"}
+                </div>
+                <div className="my-1 h-px w-full bg-white/20" />
+                {(session.user.role === "ADMIN" || session.user.role === "SUPERADMIN") && (
+                  <DropdownMenuItem asChild className="rounded-md px-3 py-2 hover:bg-zinc-500/20 focus:bg-zinc-500/20 text-white hover:text-white focus:text-white">
+                    <Link href="/admin" className="flex items-center gap-2 font-semibold text-white">
+                      <FiGrid className="h-4 w-4 text-white" /> Dashboard
+                    </Link>
+                  </DropdownMenuItem>
+                )}
+                <DropdownMenuItem asChild className="rounded-md px-3 py-2 hover:bg-zinc-500/20 focus:bg-zinc-500/20 text-white hover:text-white focus:text-white">
+                  <Link href="/orders" className="flex items-center gap-2 font-semibold text-white">
+                    <FiShoppingCart className="h-4 w-4 text-white" /> My orders
+                  </Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem className="rounded-md px-3 py-2 hover:bg-zinc-500/20 focus:bg-zinc-500/20 text-white hover:text-white focus:text-white">
+                  <button
+                    className="w-full flex items-center gap-2 font-semibold text-left"
+                    onClick={() => signOut({ callbackUrl: "/" })}
+                  >
+                    <FiLogOut className="h-4 w-4 text-white" /> Logout
+                  </button>
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          ) : (
+            <Link href="/login" className={iconBtn}><FiUser className="h-5 w-5" /></Link>
+          )}
           <DropdownMenu open={gridOpen} onOpenChange={setGridOpen}>
             <DropdownMenuTrigger asChild>
               <button
@@ -147,10 +191,12 @@ export function Navbar() {
               </button>
             </DropdownMenuTrigger>
             <DropdownMenuContent
-              sideOffset={10}
-              className="relative rounded-md bg-blue-600 text-white border-0 p-2 shadow-xl min-w-[12rem]"
+              side="bottom"
+              align="end"
+              sideOffset={0}
+              className="relative rounded-md bg-blue-600 text-white border-0 p-2 shadow-xl w-56"
             >
-              <div className="absolute -top-2 left-1/2 -translate-x-1/2 w-0 h-0 border-l-6 border-r-6 border-b-6 border-l-transparent border-r-transparent border-b-blue-600" />
+              <div className="absolute -top-2 right-2 w-0 h-0 border-l-6 border-r-6 border-b-6 border-l-transparent border-r-transparent border-b-blue-600" />
               <DropdownMenuItem asChild className="rounded-md px-3 py-2 hover:bg-zinc-500/20 focus:bg-zinc-500/20 text-white hover:text-white focus:text-white">
                 <Link href="/about" className="flex items-center gap-2 font-semibold text-white">
                   <FiZap className="h-4 w-4 text-white" /> About us
