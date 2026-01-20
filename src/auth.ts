@@ -47,7 +47,7 @@ export const authOptions: NextAuthOptions = {
           return null;
         }
         const user = await db.user.findUnique({ where: { email } });
-        if (!user || !user.password) {
+        if (!user || !user.password || user.isSuspended) {
           const prev = rec && now - rec.windowStart <= LOGIN_WINDOW_MS ? rec : { windowStart: now, count: 0 };
           globalThis.__loginAttemptMap__.set(email, { windowStart: prev.windowStart, count: prev.count + 1 });
           return null;

@@ -1,7 +1,8 @@
 "use client";
 import * as Dialog from "@radix-ui/react-dialog";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Pencil, X, XCircle, Save as SaveIcon } from "lucide-react";
+import { toast as sonnerToast } from "sonner";
 
 type Role = "MEMBER" | "BOOSTER" | "ADMIN" | "SUPERADMIN";
 
@@ -11,6 +12,7 @@ type UserData = {
   email?: string | null;
   username?: string | null;
   role: Role;
+  isSuspended?: boolean;
 };
 
 type Props = {
@@ -21,6 +23,9 @@ type Props = {
 export function EditUserModal({ user, action }: Props) {
   const [open, setOpen] = useState(false);
   const [error, setError] = useState<string>("");
+  useEffect(() => {
+    if (open) setError("");
+  }, [open]);
   return (
     <Dialog.Root open={open} onOpenChange={setOpen}>
       <Dialog.Trigger asChild>
@@ -42,20 +47,23 @@ export function EditUserModal({ user, action }: Props) {
               </button>
             </Dialog.Close>
           </div>
-          {error && (
-            <div className="mt-3 rounded-md border border-red-600/30 bg-red-600/15 px-3 py-2 text-sm text-red-400">
-              {error}
-            </div>
-          )}
           <form
             action={async (fd: FormData) => {
-              const res = await action(fd);
-              if (!res?.ok) {
-                setError(res?.message ?? "Gagal menyimpan perubahan");
-                return;
+              try {
+                const res = await action(fd);
+                const isResultObject = !!res && typeof res === "object" && "ok" in (res as any);
+                if (!isResultObject || (res as any).ok) {
+                  setError("");
+                  setOpen(false);
+                  return;
+                }
+                const msg = res?.message ?? "Gagal menyimpan perubahan";
+                setError(msg);
+                sonnerToast.error(msg);
+              } catch {
+                setError("");
+                setOpen(false);
               }
-              setError("");
-              setOpen(false);
             }}
             className="mt-4 space-y-4"
           >
@@ -105,6 +113,18 @@ export function EditUserModal({ user, action }: Props) {
                 <option value="ADMIN">ADMIN</option>
                 <option value="SUPERADMIN">SUPERADMIN</option>
               </select>
+            </div>
+            <div className="flex items-center gap-2">
+              <input
+                id="isSuspended"
+                name="isSuspended"
+                type="checkbox"
+                defaultChecked={Boolean(user.isSuspended)}
+                className="h-4 w-4 rounded border-zinc-700 bg-zinc-900 text-red-500"
+              />
+              <label htmlFor="isSuspended" className="text-sm text-zinc-300">
+                Suspended (tidak bisa login)
+              </label>
             </div>
             <div className="flex justify-end gap-2 pt-2">
               <Dialog.Close asChild>

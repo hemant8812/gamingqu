@@ -49,25 +49,25 @@ async function main() {
   await prisma.user.upsert({
     where: { email: "member@gamingqu.com" },
     update: {},
-    create: { name: "Member Satu", email: "member@gamingqu.com", password: pwd, role: "MEMBER" },
+    create: { username: "member", name: "Member Satu", email: "member@gamingqu.com", password: pwd, role: "MEMBER" },
   });
 
   await prisma.user.upsert({
     where: { email: "booster@gamingqu.com" },
     update: {},
-    create: { name: "Booster Satu", email: "booster@gamingqu.com", password: pwd, role: "BOOSTER" },
+    create: { username: "booster", name: "Booster Satu", email: "booster@gamingqu.com", password: pwd, role: "BOOSTER" },
   });
 
   await prisma.user.upsert({
     where: { email: "admin@gamingqu.com" },
     update: {},
-    create: { name: "Admin Satu", email: "admin@gamingqu.com", password: pwd, role: "ADMIN" },
+    create: { username: "admin", name: "Admin Satu", email: "admin@gamingqu.com", password: pwd, role: "ADMIN" },
   });
 
   await prisma.user.upsert({
     where: { email: "superadmin@gamingqu.com" },
     update: {},
-    create: { name: "Super Admin", email: "superadmin@gamingqu.com", password: pwd, role: "SUPERADMIN" },
+    create: { username: "superadmin", name: "Super Admin", email: "superadmin@gamingqu.com", password: pwd, role: "SUPERADMIN" },
   });
 
   const member = await prisma.user.findUnique({ where: { email: "member@gamingqu.com" } });

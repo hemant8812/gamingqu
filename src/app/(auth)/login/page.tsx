@@ -47,8 +47,21 @@ export default function LoginPage() {
     });
     setLoading(false);
     if (res?.error) {
+      try {
+        const r = await fetch("/api/auth/status", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email }),
+        });
+        if (r.ok) {
+          const data = await r.json();
+          if (data?.exists && data?.isSuspended) {
+            setError("Akun Anda telah disuspend. Silakan hubungi admin untuk informasi lebih lanjut.");
+            return;
+          }
+        }
+      } catch {}
       setError("Incorrect email or password");
-      setToastMessage("Login gagal: Email atau password salah");
       return;
     }
     window.location.href = "/";

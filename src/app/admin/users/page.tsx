@@ -8,7 +8,7 @@ import { AddUserModal } from "@/components/AddUserModal";
 import { EditUserModal } from "@/components/EditUserModal";
 import type { Role } from "@/generated/prisma/enums";
 import { hash } from "bcrypt";
-import { Trash2, Users as UsersIcon, User as UserIcon, Zap as ZapIcon, ChevronLeft, ChevronRight } from "lucide-react";
+import { Trash2, Users as UsersIcon, User as UserIcon, Zap as ZapIcon, UserX as UserXIcon, ChevronLeft, ChevronRight } from "lucide-react";
 import Link from "next/link";
 import { PageToast } from "@/components/PageToast";
 import { UsersSearchInput } from "@/components/UsersSearchInput";
@@ -83,9 +83,11 @@ export default async function AdminUsersPage({ searchParams }: { searchParams: P
     const username = (formData.get("username") as string | null)?.trim() ?? "";
     const roleInput = (formData.get("role") as string | null) ?? "MEMBER";
     const rawPassword = (formData.get("password") as string | null) ?? "";
+    const suspendedRaw = (formData.get("isSuspended") as string | null) ?? null;
     const password = rawPassword.trim();
     const resolvedRole: Role = resolveRole(roleInput);
     const passwordHash = password ? await hash(password, 10) : undefined;
+    const isSuspended = suspendedRaw === "on";
     if (!email) {
       return { ok: false, message: "Email wajib diisi" };
     }
@@ -113,11 +115,16 @@ export default async function AdminUsersPage({ searchParams }: { searchParams: P
           username,
           password: passwordHash,
           role: resolvedRole,
+          isSuspended,
         },
-      });
+      } as any);
       revalidatePath("/admin/users");
       redirect("/admin/users?toast=saved");
-    } catch {
+    } catch (e: any) {
+      const isRedirect = e && typeof e === "object" && "digest" in e && String(e.digest).includes("NEXT_REDIRECT");
+      if (isRedirect) {
+        throw e;
+      }
       return { ok: false, message: "Terjadi kesalahan saat menyimpan" };
     }
   }
@@ -128,7 +135,9 @@ export default async function AdminUsersPage({ searchParams }: { searchParams: P
     const email = (formData.get("email") as string | null)?.trim() ?? null;
     const username = (formData.get("username") as string | null)?.trim() ?? "";
     const roleInput = (formData.get("role") as string | null) ?? "MEMBER";
+    const suspendedRaw = (formData.get("isSuspended") as string | null) ?? null;
     const resolvedRole: Role = resolveRole(roleInput);
+    const isSuspended = suspendedRaw === "on";
     if (!id) return { ok: false, message: "ID tidak ditemukan" };
     if (email) {
       const existingEmail = await db.user.findUnique({ where: { email } });
@@ -144,6 +153,7 @@ export default async function AdminUsersPage({ searchParams }: { searchParams: P
       return { ok: false, message: "Username sudah terpakai" };
     }
     try {
+      const prev = await db.user.findUnique({ where: { id }, select: { isSuspended: true } } as any);
       await db.user.update({
         where: { id },
         data: {
@@ -151,11 +161,19 @@ export default async function AdminUsersPage({ searchParams }: { searchParams: P
           email: email ?? undefined,
           username,
           role: resolvedRole,
+          isSuspended,
         },
-      });
+      } as any);
+      if (prev && !prev.isSuspended && isSuspended) {
+        await db.session.deleteMany({ where: { userId: id } } as any);
+      }
       revalidatePath("/admin/users");
       redirect("/admin/users?toast=updated");
-    } catch {
+    } catch (e: any) {
+      const isRedirect = e && typeof e === "object" && "digest" in e && String(e.digest).includes("NEXT_REDIRECT");
+      if (isRedirect) {
+        throw e;
+      }
       return { ok: false, message: "Gagal menyimpan perubahan" };
     }
   }
@@ -172,7 +190,11 @@ export default async function AdminUsersPage({ searchParams }: { searchParams: P
       await db.user.delete({ where: { id } });
       revalidatePath("/admin/users");
       redirect("/admin/users?toast=deleted");
-    } catch {
+    } catch (e: any) {
+      const isRedirect = e && typeof e === "object" && "digest" in e && String(e.digest).includes("NEXT_REDIRECT");
+      if (isRedirect) {
+        throw e;
+      }
     }
   }
   const where = q
@@ -194,12 +216,13 @@ export default async function AdminUsersPage({ searchParams }: { searchParams: P
     skip: (page - 1) * pageSize,
     take: pageSize,
     where,
-    select: { id: true, username: true, name: true, email: true, role: true, createdAt: true },
+    select: { id: true, username: true, name: true, email: true, role: true, isSuspended: true, createdAt: true },
   });
-  const [totalUser, totalMember, totalBooster] = await Promise.all([
+  const [totalUser, totalMember, totalBooster, totalSuspended] = await Promise.all([
     db.user.count(),
     db.user.count({ where: { role: "MEMBER" } }),
     db.user.count({ where: { role: "BOOSTER" } }),
+    db.user.count({ where: { isSuspended: true } } as any),
   ]);
   const filteredTotal = await db.user.count({ where });
   const totalPages = Math.max(1, Math.ceil(filteredTotal / pageSize));
@@ -230,38 +253,49 @@ export default async function AdminUsersPage({ searchParams }: { searchParams: P
           <h2 className="text-3xl font-bold">Semua Pengguna</h2>
           <p className="text-sm text-zinc-400">Kelola semua pengguna terdaftar</p>
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-3 mb-6">
           <Card className="rounded-2xl border-zinc-900 bg-zinc-950 text-white">
-            <CardContent className="p-6 flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <span className="inline-flex items-center justify-center size-10 rounded-xl bg-gradient-to-br from-blue-600/30 to-cyan-500/30 ring-1 ring-white/10">
-                  <UsersIcon className="h-5 w-5 text-blue-400" />
-                </span>
+            <CardContent className="px-4 py-3 flex items-center justify-between">
+              <div>
                 <div className="text-sm text-zinc-300 font-semibold">Total User</div>
+                <div className="text-2xl font-bold">{totalUser}</div>
               </div>
-              <div className="text-3xl font-bold">{totalUser}</div>
+              <span className="inline-flex items-center justify-center size-8 rounded-sm bg-gradient-to-br from-blue-600/30 to-cyan-500/30 ring-1 ring-white/10">
+                <UsersIcon className="h-4 w-4 text-blue-400" />
+              </span>
             </CardContent>
           </Card>
           <Card className="rounded-2xl border-zinc-900 bg-zinc-950 text-white">
-            <CardContent className="p-6 flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <span className="inline-flex items-center justify-center size-10 rounded-xl bg-gradient-to-br from-green-600/30 to-emerald-500/30 ring-1 ring-white/10">
-                  <UserIcon className="h-5 w-5 text-green-400" />
-                </span>
+            <CardContent className="px-4 py-3 flex items-center justify-between">
+              <div>
                 <div className="text-sm text-zinc-300 font-semibold">Total Member</div>
+                <div className="text-2xl font-bold">{totalMember}</div>
               </div>
-              <div className="text-3xl font-bold">{totalMember}</div>
+              <span className="inline-flex items-center justify-center size-8 rounded-sm bg-gradient-to-br from-green-600/30 to-emerald-500/30 ring-1 ring-white/10">
+                <UserIcon className="h-4 w-4 text-green-400" />
+              </span>
             </CardContent>
           </Card>
           <Card className="rounded-2xl border-zinc-900 bg-zinc-950 text-white">
-            <CardContent className="p-6 flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <span className="inline-flex items-center justify-center size-10 rounded-xl bg-gradient-to-br from-orange-600/30 to-amber-500/30 ring-1 ring-white/10">
-                  <ZapIcon className="h-5 w-5 text-orange-400" />
-                </span>
+            <CardContent className="px-4 py-3 flex items-center justify-between">
+              <div>
                 <div className="text-sm text-zinc-300 font-semibold">Total Booster</div>
+                <div className="text-2xl font-bold">{totalBooster}</div>
               </div>
-              <div className="text-3xl font-bold">{totalBooster}</div>
+              <span className="inline-flex items-center justify-center size-8 rounded-sm bg-gradient-to-br from-orange-600/30 to-amber-500/30 ring-1 ring-white/10">
+                <ZapIcon className="h-4 w-4 text-orange-400" />
+              </span>
+            </CardContent>
+          </Card>
+          <Card className="rounded-2xl border-zinc-900 bg-zinc-950 text-white">
+            <CardContent className="px-4 py-3 flex items-center justify-between">
+              <div>
+                <div className="text-sm text-zinc-300 font-semibold">User Suspend</div>
+                <div className="text-2xl font-bold">{totalSuspended}</div>
+              </div>
+              <span className="inline-flex items-center justify-center size-8 rounded-sm bg-gradient-to-br from-red-600/30 to-pink-500/30 ring-1 ring-white/10">
+                <UserXIcon className="h-4 w-4 text-red-400" />
+              </span>
             </CardContent>
           </Card>
         </div>
@@ -285,6 +319,7 @@ export default async function AdminUsersPage({ searchParams }: { searchParams: P
                       <th className="text-left px-4 py-2">Name</th>
                       <th className="text-left px-4 py-2">Email</th>
                       <th className="text-left px-4 py-2">Role</th>
+                      <th className="text-left px-4 py-2">Status</th>
                       <th className="text-left px-4 py-2">Created</th>
                       <th className="text-left px-4 py-2">Action</th>
                     </tr>
@@ -292,7 +327,7 @@ export default async function AdminUsersPage({ searchParams }: { searchParams: P
                   <tbody>
                     {users.length === 0 ? (
                       <tr>
-                        <td colSpan={6} className="px-4 py-10 text-center text-zinc-400">Belum ada data user</td>
+                        <td colSpan={8} className="px-4 py-10 text-center text-zinc-400">Belum ada data user</td>
                       </tr>
                     ) : (
                       users.map((u) => (
@@ -306,15 +341,17 @@ export default async function AdminUsersPage({ searchParams }: { searchParams: P
                               {getRoleLabel(u.role)}
                             </span>
                           </td>
+                          <td className="px-4 py-2">
+                            <span className={`inline-flex items-center rounded-md px-2 py-0.5 text-xs font-semibold ${u.isSuspended ? "bg-red-600 text-white" : "bg-zinc-700 text-white"}`}>
+                              {u.isSuspended ? "Suspended" : "Active"}
+                            </span>
+                          </td>
                           <td className="px-4 py-2 text-zinc-400">
                             {new Date(u.createdAt).toLocaleString()}
                           </td>
                           <td className="px-4 py-2">
                             <div className="flex items-center gap-2">
-                              <EditUserModal
-                                user={{ id: u.id, name: u.name, email: u.email, username: u.username, role: u.role }}
-                                action={updateUser}
-                              />
+                              <EditUserModal user={{ id: u.id, name: u.name, email: u.email, username: u.username, role: u.role, isSuspended: u.isSuspended }} action={updateUser} />
                               <DeleteAction id={u.id} role={u.role} myId={myId} />
                             </div>
                           </td>
@@ -352,7 +389,7 @@ export default async function AdminUsersPage({ searchParams }: { searchParams: P
                   <div className="text-center text-zinc-400 py-6">Belum ada data user</div>
                 ) : (
                   users.map((u) => (
-                    <div key={u.id} className="rounded-xl border border-zinc-900 bg-black p-4">
+                    <div key={u.id} className="rounded-sm border border-zinc-900 bg-black p-4">
                       <div className="text-xs text-zinc-400">ID: {u.id}</div>
                       <div className="text-xs text-zinc-400">Username: {u.username ?? "-"}</div>
                       <div className="font-semibold">{u.name ?? "-"}</div>
@@ -362,6 +399,11 @@ export default async function AdminUsersPage({ searchParams }: { searchParams: P
                           {getRoleLabel(u.role)}
                         </span>
                         <span className="text-xs text-zinc-400">{new Date(u.createdAt).toLocaleString()}</span>
+                      </div>
+                      <div className="mt-1">
+                        <span className={`inline-flex items-center rounded-md px-2 py-0.5 text-xs font-semibold ${u.isSuspended ? "bg-red-600 text-white" : "bg-zinc-700 text-white"}`}>
+                          {u.isSuspended ? "Suspended" : "Active"}
+                        </span>
                       </div>
                       <div className="mt-2 flex items-center gap-2">
                         <EditUserModal
