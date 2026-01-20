@@ -15,6 +15,9 @@ const csp = [
 
 const nextConfig: NextConfig = {
   reactCompiler: true,
+  images: {
+    qualities: [100, 75],
+  },
   async headers() {
     return [
       {
