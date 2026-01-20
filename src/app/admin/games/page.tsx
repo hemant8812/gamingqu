@@ -9,8 +9,9 @@ import Image from "next/image";
 import { RichTextEditor } from "@/components/RichTextEditor";
 import { ImageUploadField } from "@/components/ImageUploadField";
 import { AutoSlugField } from "@/components/AutoSlugField";
-import { Save as SaveIcon, Search as SearchIcon, X as XIcon } from "lucide-react";
+import { Save as SaveIcon } from "lucide-react";
 import { PageToast } from "@/components/PageToast";
+import { GameSearchInput } from "@/components/GameSearchInput";
 
 function slugify(input: string) {
   return input
@@ -34,10 +35,19 @@ async function saveFile(file: File | null, slug: string, kind: "image" | "icon")
   return `/uploads/games/${filename}`;
 }
 
-async function getGames() {
+async function getGames(q?: string) {
   const list = await db.game.findMany({
     orderBy: { createdAt: "desc" },
-    take: 20,
+    take: 50,
+    where: q
+      ? {
+          OR: [
+            { name: { contains: q } },
+            { slug: { contains: q } },
+            { description: { contains: q } },
+          ],
+        }
+      : undefined,
   });
   return list;
 }
@@ -126,8 +136,9 @@ export default async function AdminGamesPage({ searchParams }: { searchParams?: 
     revalidatePath("/admin/games");
     redirect("/admin/games?toast=updated");
   }
-  const games = await getGames();
   const sp = searchParams ? await searchParams : undefined;
+  const q = (sp as any)?.q ? String((sp as any).q) : "";
+  const games = await getGames(q.trim() || undefined);
   const editId = sp?.edit ?? null;
   const editing = editId ? await db.game.findUnique({ where: { id: editId } }) : null;
   const toastParam = (sp as any)?.toast as string | undefined;
@@ -207,15 +218,7 @@ export default async function AdminGamesPage({ searchParams }: { searchParams?: 
           <div className="rounded-2xl border border-zinc-900 bg-zinc-950 p-6">
             <div className="flex items-center justify-between">
               <h2 className="text-xl font-semibold">Data Game</h2>
-              <div className="relative w-64">
-                <SearchIcon className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-500 h-4 w-4 pointer-events-none" />
-                <input
-                  type="text"
-                  placeholder="Cari game"
-                  className="bg-zinc-900 border border-zinc-800 rounded-md h-9 px-3 pl-9 text-sm text-white w-full"
-                  aria-label="Pencarian game"
-                />
-              </div>
+              <GameSearchInput />
             </div>
             <div className="mt-4 space-y-3">
               {games.length === 0 && (
