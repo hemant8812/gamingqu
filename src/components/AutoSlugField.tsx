@@ -6,6 +6,7 @@ type Props = {
   name?: string;
   label?: string;
   maxLen?: number;
+  initialValue?: string;
 };
 
 function slugify(input: string) {
@@ -23,6 +24,7 @@ export function AutoSlugField({
   name = "slug",
   label = "Slug",
   maxLen = 60,
+  initialValue = "",
 }: Props) {
   const inputRef = useRef<HTMLInputElement | null>(null);
   const [locked, setLocked] = useState(true);
@@ -30,7 +32,7 @@ export function AutoSlugField({
   useEffect(() => {
     let stop = false;
     let attachedEl: HTMLInputElement | null = null;
-    let syncRef: ((this: HTMLInputElement, ev: Event) => any) | null = null;
+    let syncRef: ((this: HTMLInputElement, ev: Event) => void) | null = null;
     const tryAttach = () => {
       if (stop) return;
       const nameEl = document.getElementById(nameInputId) as HTMLInputElement | null;
@@ -42,8 +44,10 @@ export function AutoSlugField({
         const trimmed = s.length > maxLen ? s.slice(0, maxLen).replace(/-+$/, "") : s;
         inputRef.current.value = trimmed;
       };
-      // initial fill
-      sync();
+      // initial fill only if empty to allow defaultValue
+      if (!inputRef.current.value) {
+        sync();
+      }
       // attach listener
       nameEl.addEventListener("input", sync);
       attachedEl = nameEl;
@@ -87,6 +91,7 @@ export function AutoSlugField({
         className="mt-1 w-full rounded-md bg-zinc-900 border border-zinc-800 px-3 py-2 text-sm text-white"
         ref={inputRef}
         onInput={() => setLocked(false)}
+        defaultValue={initialValue}
       />
       <div className="mt-1 text-xs text-zinc-500">Otomatis dari Nama; bisa disesuaikan manual. Panjang maksimum {maxLen} karakter.</div>
     </div>

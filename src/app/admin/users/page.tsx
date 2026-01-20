@@ -1,6 +1,53 @@
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/auth";
-import { Card } from "@/components/ui/card";
+import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import { db } from "@/lib/prisma";
+import { revalidatePath } from "next/cache";
+import { AddUserModal } from "@/components/AddUserModal";
+import { EditUserModal } from "@/components/EditUserModal";
+import type { Role } from "@/generated/prisma/enums";
+import { hash } from "bcrypt";
+import { Trash2 } from "lucide-react";
+
+const ALLOWED_ROLES: Role[] = ["SUPERADMIN", "ADMIN", "BOOSTER", "MEMBER"];
+const ROLE_LABEL: Record<Role, string> = {
+  SUPERADMIN: "Super Admin",
+  ADMIN: "Admin",
+  BOOSTER: "Booster",
+  MEMBER: "Member",
+};
+const ROLE_BADGE_CLASS: Record<Role, string> = {
+  SUPERADMIN: "bg-red-600 text-white",
+  ADMIN: "bg-blue-600 text-white",
+  BOOSTER: "bg-green-600 text-white",
+  MEMBER: "bg-zinc-600 text-white",
+};
+
+function resolveRole(roleInput: string | null): Role {
+  const v = (roleInput ?? "MEMBER") as Role;
+  return ALLOWED_ROLES.includes(v) ? v : "MEMBER";
+}
+
+async function generateNextUserId(prefix: string, minDigits: number) {
+  const last = await db.user.findMany({
+    where: { id: { startsWith: prefix } },
+    select: { id: true },
+    orderBy: { id: "desc" },
+    take: 1,
+  });
+  let nextNum = 1;
+  let width = minDigits;
+  if (last.length > 0) {
+    const curr = last[0].id;
+    const numStr = curr.slice(prefix.length);
+    const n = parseInt(numStr, 10);
+    if (!Number.isNaN(n)) {
+      nextNum = n + 1;
+      width = Math.max(minDigits, numStr.length);
+    }
+  }
+  return `${prefix}${String(nextNum).padStart(width, "0")}`;
+}
 
 export default async function AdminUsersPage() {
   const session = await getServerSession(authOptions);
@@ -8,23 +55,222 @@ export default async function AdminUsersPage() {
   if (role !== "ADMIN" && role !== "SUPERADMIN") {
     return <div className="min-h-screen bg-black text-white p-8">Forbidden</div>;
   }
+  async function createUser(formData: FormData) {
+    "use server";
+    const name = (formData.get("name") as string | null)?.trim() ?? null;
+    const email = (formData.get("email") as string | null)?.trim() ?? null;
+    const username = (formData.get("username") as string | null)?.trim() ?? "";
+    const roleInput = (formData.get("role") as string | null) ?? "MEMBER";
+    const rawPassword = (formData.get("password") as string | null) ?? "";
+    const password = rawPassword.trim();
+    const resolvedRole: Role = resolveRole(roleInput);
+    const passwordHash = password ? await hash(password, 10) : undefined;
+    if (!email) {
+      return { ok: false, message: "Email wajib diisi" };
+    }
+    if (!password || password.length < 8) {
+      return { ok: false, message: "Password minimal 8 karakter" };
+    }
+    if (!username) {
+      return { ok: false, message: "Username wajib diisi" };
+    }
+    const exists = await db.user.findUnique({ where: { email } });
+    if (exists) {
+      return { ok: false, message: "Email sudah terdaftar" };
+    }
+    const existsUsername = await db.user.findUnique({ where: { username } });
+    if (existsUsername) {
+      return { ok: false, message: "Username sudah terpakai" };
+    }
+    try {
+      const customId = await generateNextUserId("GQ", 3);
+      await db.user.create({
+        data: {
+          id: customId,
+          name: name ?? undefined,
+          email,
+          username,
+          password: passwordHash,
+          role: resolvedRole,
+        },
+      });
+      revalidatePath("/admin/users");
+      return { ok: true };
+    } catch {
+      return { ok: false, message: "Terjadi kesalahan saat menyimpan" };
+    }
+  }
+  async function updateUser(formData: FormData) {
+    "use server";
+    const id = (formData.get("id") as string | null) ?? "";
+    const name = (formData.get("name") as string | null)?.trim() ?? null;
+    const email = (formData.get("email") as string | null)?.trim() ?? null;
+    const username = (formData.get("username") as string | null)?.trim() ?? "";
+    const roleInput = (formData.get("role") as string | null) ?? "MEMBER";
+    const resolvedRole: Role = resolveRole(roleInput);
+    if (!id) return { ok: false, message: "ID tidak ditemukan" };
+    if (email) {
+      const existingEmail = await db.user.findUnique({ where: { email } });
+      if (existingEmail && existingEmail.id !== id) {
+        return { ok: false, message: "Email sudah terpakai" };
+      }
+    }
+    if (!username) {
+      return { ok: false, message: "Username wajib diisi" };
+    }
+    const existingUsername = await db.user.findUnique({ where: { username } });
+    if (existingUsername && existingUsername.id !== id) {
+      return { ok: false, message: "Username sudah terpakai" };
+    }
+    try {
+      await db.user.update({
+        where: { id },
+        data: {
+          name: name ?? undefined,
+          email: email ?? undefined,
+          username,
+          role: resolvedRole,
+        },
+      });
+      revalidatePath("/admin/users");
+      return { ok: true };
+    } catch {
+      return { ok: false, message: "Gagal menyimpan perubahan" };
+    }
+  }
+  async function deleteUser(formData: FormData) {
+    "use server";
+    const id = (formData.get("id") as string | null) ?? "";
+    const session = await getServerSession(authOptions);
+    const myId = session?.user?.id ?? "";
+    if (!id) return;
+    if (id === myId) return;
+    const target = await db.user.findUnique({ where: { id } });
+    if (target?.role === "SUPERADMIN") return;
+    try {
+      await db.user.delete({ where: { id } });
+      revalidatePath("/admin/users");
+    } catch {
+    }
+  }
+  const users = await db.user.findMany({
+    orderBy: { createdAt: "desc" },
+    take: 100,
+    select: { id: true, username: true, name: true, email: true, role: true, createdAt: true },
+  });
+  const myId = session?.user?.id ?? null;
+  const getRoleBadgeClass = (role: Role) => ROLE_BADGE_CLASS[role];
+  const getRoleLabel = (role: Role) => ROLE_LABEL[role];
+  function DeleteAction({ id, role, myId }: { id: string; role: Role; myId: string | null }) {
+    return (
+      <form>
+        <input type="hidden" name="id" value={id} />
+        <button
+          aria-label="Delete"
+          className={`inline-flex items-center justify-center rounded-md p-2 text-white ${(id === myId || role === "SUPERADMIN") ? "bg-red-600/50 cursor-not-allowed" : "bg-red-600 hover:bg-red-500"}`}
+          formAction={deleteUser}
+          disabled={id === myId || role === "SUPERADMIN"}
+          title={id === myId ? "Tidak bisa menghapus akun sendiri" : (role === "SUPERADMIN" ? "Tidak bisa menghapus SUPERADMIN" : "Hapus")}
+        >
+          <Trash2 className="h-4 w-4" />
+        </button>
+      </form>
+    );
+  }
   return (
     <div className="min-h-screen bg-black text-white">
       <div className="mx-auto max-w-7xl px-6 py-8">
-        <h1 className="text-3xl font-bold">Manage Users</h1>
-        <div className="mt-4">
-          <div className="flex items-center gap-2">
-            <input
-              type="text"
-              placeholder="Search users"
-              className="bg-zinc-900 border border-zinc-800 rounded-md px-3 py-2 text-sm text-white w-64"
-            />
-            <button className="rounded-md bg-blue-600 text-white px-4 py-2 text-sm">Add User</button>
-          </div>
+        <div className="flex items-center justify-between">
+          <h1 className="text-3xl font-bold">Manage Users</h1>
+          <AddUserModal action={createUser} />
         </div>
         <div className="mt-6">
-          <Card className="rounded-2xl border-zinc-900 p-0 overflow-hidden">
-            <div className="min-h-40 flex items-center justify-center text-zinc-400">Data table coming soon</div>
+          <Card className="rounded-2xl border-zinc-900 overflow-hidden bg-zinc-950 text-white">
+            <CardHeader className="border-b border-zinc-900 flex items-center justify-between">
+              <CardTitle className="text-white text-lg">Users</CardTitle>
+              <input
+                type="text"
+                placeholder="Search users"
+                className="bg-zinc-900 border border-zinc-800 rounded-md px-3 py-2 text-sm text-white w-64"
+              />
+            </CardHeader>
+            <CardContent className="p-0">
+              <div className="hidden md:block overflow-x-auto">
+                <table className="min-w-full text-sm">
+                  <thead>
+                    <tr className="bg-zinc-900 text-white">
+                      <th className="text-left px-4 py-2">ID</th>
+                      <th className="text-left px-4 py-2">Username</th>
+                      <th className="text-left px-4 py-2">Name</th>
+                      <th className="text-left px-4 py-2">Email</th>
+                      <th className="text-left px-4 py-2">Role</th>
+                      <th className="text-left px-4 py-2">Created</th>
+                      <th className="text-left px-4 py-2">Action</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {users.length === 0 ? (
+                      <tr>
+                        <td colSpan={6} className="px-4 py-10 text-center text-zinc-400">Belum ada data user</td>
+                      </tr>
+                    ) : (
+                      users.map((u) => (
+                        <tr key={u.id} className="border-t border-zinc-800 hover:bg-zinc-900/50">
+                          <td className="px-4 py-2 text-zinc-300">{u.id}</td>
+                          <td className="px-4 py-2 text-zinc-300">{u.username ?? "-"}</td>
+                          <td className="px-4 py-2">{u.name ?? "-"}</td>
+                          <td className="px-4 py-2">{u.email ?? "-"}</td>
+                          <td className="px-4 py-2">
+                            <span className={`inline-flex items-center rounded-md px-2 py-0.5 text-xs font-semibold ${getRoleBadgeClass(u.role)}`}>
+                              {getRoleLabel(u.role)}
+                            </span>
+                          </td>
+                          <td className="px-4 py-2 text-zinc-400">
+                            {new Date(u.createdAt).toLocaleString()}
+                          </td>
+                          <td className="px-4 py-2">
+                            <div className="flex items-center gap-2">
+                              <EditUserModal
+                                user={{ id: u.id, name: u.name, email: u.email, username: u.username, role: u.role }}
+                                action={updateUser}
+                              />
+                              <DeleteAction id={u.id} role={u.role} myId={myId} />
+                            </div>
+                          </td>
+                        </tr>
+                      ))
+                    )}
+                  </tbody>
+                </table>
+              </div>
+              <div className="md:hidden space-y-3 p-3">
+                {users.length === 0 ? (
+                  <div className="text-center text-zinc-400 py-6">Belum ada data user</div>
+                ) : (
+                  users.map((u) => (
+                    <div key={u.id} className="rounded-xl border border-zinc-900 bg-black p-4">
+                      <div className="text-xs text-zinc-400">ID: {u.id}</div>
+                      <div className="text-xs text-zinc-400">Username: {u.username ?? "-"}</div>
+                      <div className="font-semibold">{u.name ?? "-"}</div>
+                      <div className="mt-1 text-xs text-zinc-400">{u.email ?? "-"}</div>
+                      <div className="mt-2 flex items-center justify-between">
+                        <span className={`inline-flex items-center rounded-md px-2 py-0.5 text-xs font-semibold ${getRoleBadgeClass(u.role)}`}>
+                          {getRoleLabel(u.role)}
+                        </span>
+                        <span className="text-xs text-zinc-400">{new Date(u.createdAt).toLocaleString()}</span>
+                      </div>
+                      <div className="mt-2 flex items-center gap-2">
+                        <EditUserModal
+                          user={{ id: u.id, name: u.name, email: u.email, username: u.username, role: u.role }}
+                          action={updateUser}
+                        />
+                        <DeleteAction id={u.id} role={u.role} myId={myId} />
+                      </div>
+                    </div>
+                  ))
+                )}
+              </div>
+            </CardContent>
           </Card>
         </div>
       </div>

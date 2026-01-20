@@ -4,7 +4,6 @@ import { db } from "@/lib/prisma";
 
 export default async function AdminDashboard() {
   const session = await getServerSession(authOptions);
-  const role = session?.user?.role;
   const perms = await db.adminPermission.findMany({ orderBy: { key: "asc" } });
   const enabled = new Set(perms.filter((p) => p.enabled).map((p) => p.key));
 

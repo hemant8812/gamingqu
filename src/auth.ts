@@ -4,6 +4,7 @@ import { PrismaAdapter } from "@next-auth/prisma-adapter";
 import { db } from "@/lib/prisma";
 import { compare } from "bcrypt";
 import { z } from "zod";
+import type { Role } from "@/generated/prisma/enums";
 
 export const authOptions: NextAuthOptions = {
   adapter: PrismaAdapter(db),
@@ -26,6 +27,7 @@ export const authOptions: NextAuthOptions = {
         if (!isValid) return null;
         const u: User = {
           id: user.id,
+          username: user.username ?? undefined,
           name: user.name ?? undefined,
           email: user.email ?? undefined,
           image: user.image ?? undefined,
@@ -38,8 +40,10 @@ export const authOptions: NextAuthOptions = {
   callbacks: {
     jwt: async ({ token, user }) => {
       if (user) {
-        token.role = user.role;
-        token.id = user.id;
+        const u = user as User & { username?: string | null; role: Role; id: string };
+        token.role = u.role;
+        token.id = u.id;
+        token.username = u.username ?? null;
       }
       return token;
     },
@@ -47,6 +51,7 @@ export const authOptions: NextAuthOptions = {
       if (session.user) {
         session.user.role = token.role;
         session.user.id = token.id ?? (token.sub as string);
+        session.user.username = token.username ?? null;
       }
       return session;
     },

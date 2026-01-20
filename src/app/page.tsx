@@ -1,4 +1,5 @@
 "use client";
+import Image from "next/image";
 import { Card } from "@/components/ui/card";
 import { FiPlay, FiRefreshCw } from "react-icons/fi";
 import { useEffect, useRef, useState } from "react";
@@ -87,7 +88,7 @@ export default function Home() {
                       </Link>
                     </div>
                     <div className="relative justify-self-end w-full md:w-[420px] aspect-[16/9] rounded-[24px] overflow-hidden ring-1 ring-white/10 shadow-lg mr-8 md:mr-18">
-                      <img src={s.image} alt={s.title} className="absolute inset-0 w-full h-full object-cover" />
+                      <Image src={s.image} alt={s.title} fill className="object-cover" unoptimized sizes="420px" />
                       <div className="hero-stripes" />
                       <div className="absolute right-6 top-1/2 -translate-y-1/2 hero-play">
                         <FiPlay className="text-white/90 h-6 w-6" />
@@ -157,11 +158,11 @@ export default function Home() {
                   className="relative rounded-xl overflow-hidden h-[16rem] bg-black border border-zinc-900"
                 >
                   <div className="absolute top-0 left-0 right-0 h-[48%]">
-                    <img src={h.image} alt={h.title} className="w-full h-full object-cover" />
+                    <Image src={h.image} alt={h.title} fill className="object-cover" unoptimized sizes="200px" />
                     <div className="absolute inset-0 bg-gradient-to-b from-transparent to-black/50" />
                     <div className="absolute bottom-0 left-0 right-0 h-6 pointer-events-none bg-gradient-to-b from-black/40 via-black/20 to-transparent blur-[2px]" />
                     {h.logo && (
-                      <img src={h.logo} alt="logo" className="absolute top-3 left-3 w-6 h-6 rounded-md object-cover" />
+                      <Image src={h.logo} alt="logo" width={24} height={24} className="absolute top-3 left-3 rounded-md object-cover" unoptimized />
                     )}
                   </div>
                   <div className="absolute left-2 right-4 top-[40%]">

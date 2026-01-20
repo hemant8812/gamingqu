@@ -1,0 +1,61 @@
+import { NextResponse } from "next/server";
+import { db } from "@/lib/prisma";
+import { hash } from "bcrypt";
+import { z } from "zod";
+
+async function generateNextUserId(prefix: string, minDigits: number) {
+  const last = await db.user.findMany({
+    where: { id: { startsWith: prefix } },
+    select: { id: true },
+    orderBy: { id: "desc" },
+    take: 1,
+  });
+  let nextNum = 1;
+  let width = minDigits;
+  if (last.length > 0) {
+    const curr = last[0].id;
+    const numStr = curr.slice(prefix.length);
+    const n = parseInt(numStr, 10);
+    if (!Number.isNaN(n)) {
+      nextNum = n + 1;
+      width = Math.max(minDigits, numStr.length);
+    }
+  }
+  return `${prefix}${String(nextNum).padStart(width, "0")}`;
+}
+
+export async function POST(req: Request) {
+  const body = await req.json().catch(() => ({}));
+  const Schema = z.object({
+    email: z.string().email(),
+    password: z.string().min(8),
+    username: z.string().min(1),
+    name: z.string().min(1),
+  });
+  const parsed = Schema.safeParse(body);
+  if (!parsed.success) {
+    return NextResponse.json({ error: "Data tidak valid" }, { status: 400 });
+  }
+  const { email, password, username, name } = parsed.data;
+  const existing = await db.user.findUnique({ where: { email } });
+  if (existing) {
+    return NextResponse.json({ error: "Email sudah terdaftar" }, { status: 409 });
+  }
+  const exUser = await db.user.findUnique({ where: { username } });
+  if (exUser) {
+    return NextResponse.json({ error: "Username sudah terpakai" }, { status: 409 });
+  }
+  const id = await generateNextUserId("GQ", 3);
+  const passwordHash = await hash(password, 10);
+  await db.user.create({
+    data: {
+      id,
+      email,
+      name,
+      password: passwordHash,
+      role: "MEMBER",
+      username,
+    },
+  });
+  return NextResponse.json({ success: true });
+}

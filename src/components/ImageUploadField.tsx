@@ -1,4 +1,5 @@
 "use client";
+import Image from "next/image";
 import { useRef, useState } from "react";
 
 type Props = {
@@ -7,6 +8,7 @@ type Props = {
   label: string;
   accept?: string;
   previewHeight?: number;
+  initialUrl?: string | null;
 };
 
 export function ImageUploadField({
@@ -15,8 +17,9 @@ export function ImageUploadField({
   label,
   accept = "image/*",
   previewHeight = 160,
+  initialUrl = null,
 }: Props) {
-  const [preview, setPreview] = useState<string | null>(null);
+  const [preview, setPreview] = useState<string | null>(initialUrl);
   const inputRef = useRef<HTMLInputElement | null>(null);
 
   return (
@@ -40,7 +43,7 @@ export function ImageUploadField({
         }}
       />
       <div
-        className="mt-2 rounded-xl border border-zinc-800 bg-black overflow-hidden flex items-center justify-center cursor-pointer"
+        className="mt-2 relative rounded-xl border border-zinc-800 bg-black overflow-hidden flex items-center justify-center cursor-pointer"
         style={{ height: previewHeight }}
         role="button"
         tabIndex={0}
@@ -54,7 +57,7 @@ export function ImageUploadField({
         }}
       >
         {preview ? (
-          <img src={preview} alt="preview" className="w-full h-full object-cover" />
+          <Image src={preview} alt="preview" fill className="object-cover" unoptimized />
         ) : (
           <div className="text-xs text-zinc-500">Belum ada gambar dipilih</div>
         )}

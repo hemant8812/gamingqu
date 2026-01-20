@@ -8,6 +8,7 @@ import Image from "next/image";
 import { RichTextEditor } from "@/components/RichTextEditor";
 import { ImageUploadField } from "@/components/ImageUploadField";
 import { AutoSlugField } from "@/components/AutoSlugField";
+import { Save as SaveIcon, Search as SearchIcon } from "lucide-react";
 
 function slugify(input: string) {
   return input
@@ -39,7 +40,7 @@ async function getGames() {
   return list;
 }
 
-export default async function AdminGamesPage() {
+export default async function AdminGamesPage({ searchParams }: { searchParams?: Promise<{ edit?: string }> }) {
   const session = await getServerSession(authOptions);
   const role = session?.user?.role;
   if (role !== "ADMIN" && role !== "SUPERADMIN") {
@@ -83,7 +84,48 @@ export default async function AdminGamesPage() {
     revalidatePath("/admin/games");
   }
 
+  async function updateGame(formData: FormData) {
+    "use server";
+    const id = (formData.get("id") as string | null) ?? "";
+    const name = (formData.get("name") as string | null) ?? "";
+    const description = (formData.get("description") as string | null) ?? "";
+    const inputSlug = (formData.get("slug") as string | null) ?? "";
+    const isHotOffer = formData.get("isHotOffer") === "on";
+    const isActive = formData.get("isActive") === "on";
+    const imageFile = formData.get("image") as File | null;
+    const iconFile = formData.get("icon") as File | null;
+    if (!id) return;
+    const current = await db.game.findUnique({ where: { id } });
+    if (!current) return;
+    let baseSlug = slugify(inputSlug || name || current.name || "");
+    if (baseSlug.length > 60) {
+      baseSlug = baseSlug.slice(0, 60).replace(/-+$/, "");
+    }
+    let slug = baseSlug || current.slug;
+    const existing = await db.game.findUnique({ where: { slug } });
+    if (existing && existing.id !== id) {
+      slug = `${slug}-${Math.random().toString(36).slice(2, 6)}`;
+    }
+    const imageUrl = await saveFile(imageFile, slug, "image");
+    const iconUrl = await saveFile(iconFile, slug, "icon");
+    await db.game.update({
+      where: { id },
+      data: {
+        name,
+        slug,
+        description: description || undefined,
+        imageUrl: imageUrl ?? current.imageUrl,
+        iconUrl: iconUrl ?? current.iconUrl,
+        isHotOffer,
+        isActive,
+      },
+    });
+    revalidatePath("/admin/games");
+  }
   const games = await getGames();
+  const sp = searchParams ? await searchParams : undefined;
+  const editId = sp?.edit ?? null;
+  const editing = editId ? await db.game.findUnique({ where: { id: editId } }) : null;
 
   return (
     <div className="min-h-screen bg-black text-white">
@@ -94,7 +136,7 @@ export default async function AdminGamesPage() {
         </p>
 
         <section className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-6">
-          <form action={createGame} encType="multipart/form-data" className="rounded-2xl border border-zinc-900 bg-zinc-950 p-6 space-y-4">
+          <form action={editing ? updateGame : createGame} encType="multipart/form-data" className="rounded-2xl border border-zinc-900 bg-zinc-950 p-6 space-y-4">
             <div>
               <label htmlFor="name" className="block text-sm font-semibold">Nama Game</label>
               <input
@@ -104,17 +146,19 @@ export default async function AdminGamesPage() {
                 required
                 placeholder="Contoh: World of Warcraft"
                 className="mt-1 w-full rounded-md bg-zinc-900 border border-zinc-800 px-3 py-2 text-sm text-white"
+                defaultValue={editing?.name ?? ""}
               />
-              <AutoSlugField nameInputId="name" name="slug" label="Slug" />
+              <AutoSlugField nameInputId="name" name="slug" label="Slug" initialValue={editing?.slug ?? ""} />
+              {editing && <input type="hidden" name="id" defaultValue={editing.id} />}
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <ImageUploadField id="image" name="image" label="Gambar" previewHeight={160} />
-              <ImageUploadField id="icon" name="icon" label="Icon" previewHeight={160} />
+              <ImageUploadField id="image" name="image" label="Gambar" previewHeight={160} initialUrl={editing?.imageUrl ?? null} />
+              <ImageUploadField id="icon" name="icon" label="Icon" previewHeight={160} initialUrl={editing?.iconUrl ?? null} />
             </div>
             <div>
               <label className="block text-sm font-semibold">Deskripsi</label>
               <div className="mt-1">
-                <RichTextEditor name="description" placeholder="Deskripsi dan format bebas" />
+                <RichTextEditor name="description" placeholder="Deskripsi dan format bebas" initialHtml={editing?.description ?? ""} />
               </div>
               <div className="mt-2 text-xs text-zinc-500">
                 Gunakan toolbar di atas untuk Bold, Link, garis baru, dan menyisipkan gambar via URL.
@@ -122,24 +166,22 @@ export default async function AdminGamesPage() {
             </div>
             <div className="flex items-center gap-8">
               <div className="flex items-center gap-3">
-                <input id="isHotOffer" name="isHotOffer" type="checkbox" className="peer sr-only" />
+                <input id="isHotOffer" name="isHotOffer" type="checkbox" className="peer sr-only" defaultChecked={editing?.isHotOffer ?? false} />
                 <label
                   htmlFor="isHotOffer"
-                  className="relative inline-flex h-6 w-11 rounded-full bg-zinc-800 peer-checked:bg-orange-600 transition-colors cursor-pointer"
+                  className="relative inline-flex h-6 w-11 rounded-full bg-zinc-800 peer-checked:bg-green-600 transition-colors cursor-pointer after:content-[''] after:absolute after:left-[2px] after:top-1/2 after:-translate-y-1/2 after:size-5 after:rounded-full after:bg-white after:transition-transform peer-checked:after:translate-x-5"
                   aria-label="Hot Offer"
                 >
-                  <span className="absolute left-[2px] top-1/2 -translate-y-1/2 size-5 rounded-full bg-white transition-transform peer-checked:translate-x-[calc(100%-2px)]" />
                 </label>
                 <span className="text-sm font-semibold">Hot Offer</span>
               </div>
               <div className="flex items-center gap-3">
-                <input id="isActive" name="isActive" type="checkbox" defaultChecked className="peer sr-only" />
+                <input id="isActive" name="isActive" type="checkbox" className="peer sr-only" defaultChecked={editing?.isActive ?? true} />
                 <label
                   htmlFor="isActive"
-                  className="relative inline-flex h-6 w-11 rounded-full bg-zinc-800 peer-checked:bg-green-600 transition-colors cursor-pointer"
+                  className="relative inline-flex h-6 w-11 rounded-full bg-zinc-800 peer-checked:bg-green-600 transition-colors cursor-pointer after:content-[''] after:absolute after:left-[2px] after:top-1/2 after:-translate-y-1/2 after:size-5 after:rounded-full after:bg-white after:transition-transform peer-checked:after:translate-x-5"
                   aria-label="Aktif"
                 >
-                  <span className="absolute left-[2px] top-1/2 -translate-y-1/2 size-5 rounded-full bg-white transition-transform peer-checked:translate-x-[calc(100%-2px)]" />
                 </label>
                 <span className="text-sm font-semibold">Aktif</span>
               </div>
@@ -147,21 +189,33 @@ export default async function AdminGamesPage() {
             <div className="flex justify-end">
               <button
                 type="submit"
-                className="inline-flex items-center rounded-md bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-500"
+                className="inline-flex items-center gap-2 rounded-md bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-500"
               >
-                Simpan Game
+                <SaveIcon className="h-4 w-4" />
+                <span>{editing ? "Update Data" : "Simpan Game"}</span>
               </button>
             </div>
           </form>
 
           <div className="rounded-2xl border border-zinc-900 bg-zinc-950 p-6">
-            <h2 className="text-xl font-semibold">Terbaru</h2>
+            <div className="flex items-center justify-between">
+              <h2 className="text-xl font-semibold">Data Game</h2>
+              <div className="relative w-64">
+                <SearchIcon className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-500 h-4 w-4 pointer-events-none" />
+                <input
+                  type="text"
+                  placeholder="Cari game"
+                  className="bg-zinc-900 border border-zinc-800 rounded-md h-9 px-3 pl-9 text-sm text-white w-full"
+                  aria-label="Pencarian game"
+                />
+              </div>
+            </div>
             <div className="mt-4 space-y-3">
               {games.length === 0 && (
                 <div className="text-sm text-zinc-400">Belum ada data</div>
               )}
               {games.map((g) => (
-                <div key={g.id} className="flex items-center gap-4 rounded-xl border border-zinc-900 bg-black p-3">
+                <a key={g.id} href={`/admin/games?edit=${g.id}`} className="flex items-center gap-4 rounded-xl border border-zinc-900 bg-black p-3 hover:bg-zinc-900/40">
                   <div className="w-16 h-16 rounded-md bg-zinc-900 overflow-hidden flex items-center justify-center">
                     {g.imageUrl ? (
                       <Image src={g.imageUrl} alt={g.name} width={64} height={64} className="object-cover w-16 h-16" />
@@ -184,7 +238,7 @@ export default async function AdminGamesPage() {
                       <div className="text-[10px] text-zinc-500">No icon</div>
                     )}
                   </div>
-                </div>
+                </a>
               ))}
             </div>
           </div>

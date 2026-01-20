@@ -25,12 +25,11 @@ type Props = {
 export function RichTextEditor({ name, initialHtml = "", placeholder = "Deskripsi dan format bebas" }: Props) {
   const editorRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
-  const [isEmpty, setIsEmpty] = useState(!initialHtml);
+  const [isEmpty, setIsEmpty] = useState(() => initialHtml.replace(/<br\s*\/?>|\s|&nbsp;/g, "").length === 0);
 
   useEffect(() => {
     if (editorRef.current) {
       editorRef.current.innerHTML = initialHtml || "";
-      setIsEmpty(!initialHtml);
     }
     if (inputRef.current) {
       inputRef.current.value = initialHtml || "";

@@ -1,29 +1,21 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { signIn } from "next-auth/react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import Link from "next/link";
 import Image from "next/image";
 import { FcGoogle } from "react-icons/fc";
-import { FiArrowRight } from "react-icons/fi";
+import { FiArrowRight, FiMail, FiLock } from "react-icons/fi";
 import { SiDiscord } from "react-icons/si";
 
 
 export default function LoginPage() {
-  const [email, setEmail] = useState("");
+  const [email, setEmail] = useState<string>(() => (typeof window !== "undefined" ? localStorage.getItem("rememberEmail") ?? "" : ""));
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [remember, setRemember] = useState(false);
-
-  useEffect(() => {
-    const storedEmail = typeof window !== "undefined" ? localStorage.getItem("rememberEmail") : null;
-    if (storedEmail) {
-      setEmail(storedEmail);
-      setRemember(true);
-    }
-  }, []);
+  const [remember, setRemember] = useState<boolean>(() => (typeof window !== "undefined" ? !!localStorage.getItem("rememberEmail") : false));
 
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -52,7 +44,7 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen bg-black text-white pt-20">
+    <div className="min-h-screen bg-black text-white pt-16">
       <div className="mx-auto max-w-7xl px-6 grid grid-cols-1 lg:grid-cols-2 gap-8">
         <div className="hidden lg:block relative">
           <div className="grid grid-cols-3 gap-4">
@@ -67,8 +59,8 @@ export default function LoginPage() {
               "https://picsum.photos/seed/gaming8/400/240",
               "https://picsum.photos/seed/gaming9/400/240",
             ].map((src, i) => (
-              <div key={i} className="rounded-[24px] h-36 overflow-hidden ring-1 ring-white/10">
-                <img src={src} alt="" className="w-full h-full object-cover" />
+              <div key={i} className="relative rounded-[24px] h-36 overflow-hidden ring-1 ring-white/10">
+                <Image src={src} alt="" fill className="object-cover" unoptimized sizes="150px" />
               </div>
             ))}
           </div>
@@ -83,33 +75,37 @@ export default function LoginPage() {
               </Link>
             </div>
           </div>
-          <div className="flex-1 flex items-start lg:items-center justify-center">
+          <div className="flex-1 flex items-start lg:items-start justify-center">
             <div className="w-full max-w-md">
               <h1 className="text-4xl md:text-5xl font-bold text-center mb-8">Welcome back</h1>
               <form onSubmit={onSubmit} className="space-y-4">
                 <div className="space-y-2">
-                  <Label htmlFor="email">Email</Label>
-                  <Input
-                    id="email"
-                    type="email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    placeholder="Email address"
-                    className="bg-zinc-900 border-zinc-800 h-12 rounded-xl placeholder-semibold"
-                    required
-                  />
+                  <div className="relative">
+                    <FiMail className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-500 h-4 w-4 pointer-events-none" />
+                    <Input
+                      id="email"
+                      type="email"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      placeholder="Email address"
+                      className="bg-zinc-900 border-zinc-800 h-12 rounded-xl placeholder-semibold pl-10"
+                      required
+                    />
+                  </div>
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="password">Password</Label>
-                  <Input
-                    id="password"
-                    type="password"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    placeholder="Password"
-                    className="bg-zinc-900 border-zinc-800 h-12 rounded-xl placeholder-semibold"
-                    required
-                  />
+                  <div className="relative">
+                    <FiLock className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-500 h-4 w-4 pointer-events-none" />
+                    <Input
+                      id="password"
+                      type="password"
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      placeholder="Password"
+                      className="bg-zinc-900 border-zinc-800 h-12 rounded-xl placeholder-semibold pl-10"
+                      required
+                    />
+                  </div>
                 </div>
                 {error && <p className="text-red-500 text-sm">{error}</p>}
                 <div className="flex items-center justify-between">

@@ -27,7 +27,6 @@ function GridRoundedIcon(props: React.SVGProps<SVGSVGElement>) {
 
 export function Navbar() {
   const [currency, setCurrency] = useState<"$" | "€">("€");
-  const [region, setRegion] = useState<"US" | "EU">("EU");
   const [currencyOpen, setCurrencyOpen] = useState(false);
   const [gridOpen, setGridOpen] = useState(false);
   const [showLogo, setShowLogo] = useState(true);
@@ -150,7 +149,6 @@ export function Navbar() {
                   className="w-full flex items-center gap-3 text-left"
                   onClick={() => {
                     setCurrency("$");
-                    setRegion("US");
                   }}
                 >
                   <span className="text-white">$</span>
@@ -162,7 +160,6 @@ export function Navbar() {
                   className="w-full flex items-center gap-3 text-left"
                   onClick={() => {
                     setCurrency("€");
-                    setRegion("EU");
                   }}
                 >
                   <span className="text-white">€</span>
