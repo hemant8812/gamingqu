@@ -1,9 +1,6 @@
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/auth";
 import { db } from "@/lib/prisma";
 
 export default async function AdminDashboard() {
-  const session = await getServerSession(authOptions);
   const perms = await db.adminPermission.findMany({ orderBy: { key: "asc" } });
   const enabled = new Set(perms.filter((p) => p.enabled).map((p) => p.key));
 
