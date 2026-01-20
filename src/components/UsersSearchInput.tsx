@@ -1,9 +1,8 @@
 "use client";
 import * as React from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { Search as SearchIcon } from "lucide-react";
 
-export function GameSearchInput() {
+export function UsersSearchInput() {
   const router = useRouter();
   const pathname = usePathname();
   const sp = useSearchParams();
@@ -17,6 +16,7 @@ export function GameSearchInput() {
     const t = setTimeout(() => {
       const v = value.trim();
       const params = new URLSearchParams(typeof window !== "undefined" ? window.location.search : "");
+      params.set("page", "1");
       if (v) {
         params.set("q", v);
       } else {
@@ -32,17 +32,13 @@ export function GameSearchInput() {
     return () => clearTimeout(t);
   }, [value, router, pathname]);
   return (
-    <div className="relative w-64">
-      <SearchIcon className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-500 h-4 w-4 pointer-events-none" />
-      <input
-        type="text"
-        value={value}
-        onChange={(e) => setValue(e.target.value)}
-        placeholder="Cari game"
-        className="bg-zinc-900 border border-zinc-800 rounded-md h-9 px-3 pl-9 text-sm text-white w-full"
-        aria-label="Pencarian game"
-      />
-    </div>
+    <input
+      type="text"
+      value={value}
+      onChange={(e) => setValue(e.target.value)}
+      placeholder="Search users"
+      className="bg-zinc-900 border border-zinc-800 rounded-md px-3 py-2 text-sm text-white w-64"
+      aria-label="Cari berdasarkan ID, username, atau email"
+    />
   );
 }
-

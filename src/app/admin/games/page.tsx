@@ -38,16 +38,27 @@ async function saveFile(file: File | null, slug: string, kind: "image" | "icon")
 async function getGames(q?: string) {
   const list = await db.game.findMany({
     orderBy: { createdAt: "desc" },
-    take: 50,
+    take: 30,
     where: q
       ? {
           OR: [
+            { name: { startsWith: q } },
+            { slug: { startsWith: q } },
             { name: { contains: q } },
             { slug: { contains: q } },
-            { description: { contains: q } },
+            ...(q.length >= 3 ? [{ description: { contains: q } }] : []),
           ],
         }
       : undefined,
+    select: {
+      id: true,
+      name: true,
+      slug: true,
+      imageUrl: true,
+      iconUrl: true,
+      isHotOffer: true,
+      isActive: true,
+    },
   });
   return list;
 }
@@ -137,8 +148,9 @@ export default async function AdminGamesPage({ searchParams }: { searchParams?: 
     redirect("/admin/games?toast=updated");
   }
   const sp = searchParams ? await searchParams : undefined;
-  const q = (sp as any)?.q ? String((sp as any).q) : "";
-  const games = await getGames(q.trim() || undefined);
+  const qRaw = (sp as any)?.q ? String((sp as any).q) : "";
+  const q = qRaw.trim().slice(0, 64);
+  const games = await getGames(q || undefined);
   const editId = sp?.edit ?? null;
   const editing = editId ? await db.game.findUnique({ where: { id: editId } }) : null;
   const toastParam = (sp as any)?.toast as string | undefined;

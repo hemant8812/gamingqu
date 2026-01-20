@@ -11,6 +11,7 @@ import { hash } from "bcrypt";
 import { Trash2, Users as UsersIcon, User as UserIcon, Zap as ZapIcon, ChevronLeft, ChevronRight } from "lucide-react";
 import Link from "next/link";
 import { PageToast } from "@/components/PageToast";
+import { UsersSearchInput } from "@/components/UsersSearchInput";
 
 const ALLOWED_ROLES: Role[] = ["SUPERADMIN", "ADMIN", "BOOSTER", "MEMBER"];
 const ROLE_LABEL: Record<Role, string> = {
@@ -69,7 +70,7 @@ export default async function AdminUsersPage({ searchParams }: { searchParams: P
   );
   const pageSize = 10;
   const rawQ = typeof qParam === "string" ? qParam : Array.isArray(qParam) ? qParam[0] ?? "" : "";
-  const q = rawQ.trim();
+  const q = rawQ.trim().slice(0, 64);
   const session = await getServerSession(authOptions);
   const role = session?.user?.role;
   if (role !== "ADMIN" && role !== "SUPERADMIN") {
@@ -174,19 +175,25 @@ export default async function AdminUsersPage({ searchParams }: { searchParams: P
     } catch {
     }
   }
+  const where = q
+    ? {
+        OR: [
+          { id: { startsWith: q } },
+          { username: { startsWith: q } },
+          ...(q.length >= 2 ? [{ username: { contains: q } }] : []),
+          // Email: gunakan startsWith agar tidak match domain saat q adalah nama brand,
+          // hanya gunakan contains jika q tampak seperti email (mengandung '@' atau '.')
+          ...(q.includes("@") || q.includes(".")
+            ? [{ email: { contains: q } }]
+            : [{ email: { startsWith: q } }]),
+        ],
+      }
+    : undefined;
   const users = await db.user.findMany({
     orderBy: { createdAt: "desc" },
     skip: (page - 1) * pageSize,
     take: pageSize,
-    where: q
-      ? {
-          OR: [
-            { id: { startsWith: q } },
-            { username: { contains: q } },
-            { email: { contains: q } },
-          ],
-        }
-      : undefined,
+    where,
     select: { id: true, username: true, name: true, email: true, role: true, createdAt: true },
   });
   const [totalUser, totalMember, totalBooster] = await Promise.all([
@@ -194,17 +201,7 @@ export default async function AdminUsersPage({ searchParams }: { searchParams: P
     db.user.count({ where: { role: "MEMBER" } }),
     db.user.count({ where: { role: "BOOSTER" } }),
   ]);
-  const filteredTotal = await db.user.count({
-    where: q
-      ? {
-          OR: [
-            { id: { startsWith: q } },
-            { username: { contains: q } },
-            { email: { contains: q } },
-          ],
-        }
-      : undefined,
-  });
+  const filteredTotal = await db.user.count({ where });
   const totalPages = Math.max(1, Math.ceil(filteredTotal / pageSize));
   const myId = session?.user?.id ?? null;
   const getRoleBadgeClass = (role: Role) => ROLE_BADGE_CLASS[role];
@@ -276,21 +273,7 @@ export default async function AdminUsersPage({ searchParams }: { searchParams: P
           <Card className="rounded-2xl border-zinc-900 overflow-hidden bg-zinc-950 text-white">
             <CardHeader className="border-b border-zinc-900 flex items-center justify-between">
               <CardTitle className="text-white text-lg">Users</CardTitle>
-              <form action="/admin/users" method="get" className="relative">
-                <input
-                  type="hidden"
-                  name="page"
-                  value="1"
-                />
-                <input
-                  type="text"
-                  name="q"
-                  defaultValue={q}
-                  placeholder="Search users"
-                  className="bg-zinc-900 border border-zinc-800 rounded-md px-3 py-2 text-sm text-white w-64"
-                  aria-label="Cari berdasarkan ID, username, atau email"
-                />
-              </form>
+              <UsersSearchInput />
             </CardHeader>
             <CardContent className="p-0">
               <div className="hidden md:block overflow-x-auto">
