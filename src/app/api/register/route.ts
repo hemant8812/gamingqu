@@ -24,19 +24,37 @@ async function generateNextUserId(prefix: string, minDigits: number) {
   return `${prefix}${String(nextNum).padStart(width, "0")}`;
 }
 
+function sanitizePlain(input: string): string {
+  return input.replace(/<[^>]*>/g, "").trim();
+}
+
+function normalizeEmail(email: string): string {
+  return sanitizePlain(email).toLowerCase();
+}
+
 export async function POST(req: Request) {
   const body = await req.json().catch(() => ({}));
   const Schema = z.object({
-    email: z.string().email(),
-    password: z.string().min(8),
-    username: z.string().min(1),
-    name: z.string().min(1),
+    email: z.string().email().max(254),
+    password: z.string().min(8).max(128),
+    username: z
+      .string()
+      .min(3)
+      .max(32)
+      .regex(/^[a-zA-Z0-9._-]+$/),
+    name: z
+      .string()
+      .min(2)
+      .max(100),
   });
   const parsed = Schema.safeParse(body);
   if (!parsed.success) {
     return NextResponse.json({ error: "Data tidak valid" }, { status: 400 });
   }
-  const { email, password, username, name } = parsed.data;
+  const email = normalizeEmail(parsed.data.email);
+  const username = sanitizePlain(parsed.data.username);
+  const name = sanitizePlain(parsed.data.name);
+  const password = parsed.data.password.trim();
   const existing = await db.user.findUnique({ where: { email } });
   if (existing) {
     return NextResponse.json({ error: "Email sudah terdaftar" }, { status: 409 });

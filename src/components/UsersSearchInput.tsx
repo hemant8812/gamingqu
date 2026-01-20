@@ -10,7 +10,7 @@ export function UsersSearchInput() {
   const [value, setValue] = React.useState(initial);
   const lastSentRef = React.useRef<string>(initial);
   React.useEffect(() => {
-    if (initial !== value) setValue(initial);
+    setValue(initial);
   }, [initial]);
   React.useEffect(() => {
     const t = setTimeout(() => {

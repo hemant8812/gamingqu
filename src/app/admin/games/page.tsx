@@ -63,7 +63,7 @@ async function getGames(q?: string) {
   return list;
 }
 
-export default async function AdminGamesPage({ searchParams }: { searchParams?: Promise<{ edit?: string }> }) {
+export default async function AdminGamesPage({ searchParams }: { searchParams: Promise<Record<string, string | string[] | undefined>> }) {
   const session = await getServerSession(authOptions);
   const role = session?.user?.role;
   if (role !== "ADMIN" && role !== "SUPERADMIN") {
@@ -147,14 +147,17 @@ export default async function AdminGamesPage({ searchParams }: { searchParams?: 
     revalidatePath("/admin/games");
     redirect("/admin/games?toast=updated");
   }
-  const sp = searchParams ? await searchParams : undefined;
-  const qRaw = (sp as any)?.q ? String((sp as any).q) : "";
+  const sp = await searchParams;
+  const qParam = sp?.q;
+  const qRaw = typeof qParam === "string" ? qParam : Array.isArray(qParam) ? qParam[0] ?? "" : "";
   const q = qRaw.trim().slice(0, 64);
   const games = await getGames(q || undefined);
-  const editId = sp?.edit ?? null;
+  const editParam = sp?.edit;
+  const editId = typeof editParam === "string" ? editParam : Array.isArray(editParam) ? editParam[0] ?? null : null;
   const editing = editId ? await db.game.findUnique({ where: { id: editId } }) : null;
-  const toastParam = (sp as any)?.toast as string | undefined;
-  const toastMessage = toastParam ? (toastParam === "updated" ? "Data berhasil diupdate" : "Data berhasil disimpan") : undefined;
+  const toastParam = sp?.toast;
+  const toast = typeof toastParam === "string" ? toastParam : Array.isArray(toastParam) ? toastParam[0] ?? undefined : undefined;
+  const toastMessage = toast ? (toast === "updated" ? "Data berhasil diupdate" : "Data berhasil disimpan") : undefined;
 
   return (
     <div className="min-h-screen bg-black text-white">

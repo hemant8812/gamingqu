@@ -9,6 +9,7 @@ import { Label } from "@/components/ui/label";
 import { FiArrowRight, FiUser, FiAtSign, FiMail, FiLock } from "react-icons/fi";
 import { FcGoogle } from "react-icons/fc";
 import { SiDiscord } from "react-icons/si";
+import { PageToast } from "@/components/PageToast";
 
 export default function RegisterPage() {
   const { status } = useSession();
@@ -25,16 +26,22 @@ export default function RegisterPage() {
   const [confirm, setConfirm] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [toastMessage, setToastMessage] = useState<string | undefined>(undefined);
+  const [toastType, setToastType] = useState<"success" | "error" | "info">("success");
 
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
     if (!username.trim()) {
       setError("Username wajib diisi");
+      setToastType("error");
+      setToastMessage("Registrasi gagal: Username wajib diisi");
       return;
     }
     if (password !== confirm) {
       setError("Passwords do not match");
+      setToastType("error");
+      setToastMessage("Registrasi gagal: Password tidak sama");
       return;
     }
     setLoading(true);
@@ -47,9 +54,15 @@ export default function RegisterPage() {
       const data = await res.json().catch(() => ({}));
       if (!res.ok) {
         setError(data?.error ?? "Registration failed");
+        setToastType("error");
+        setToastMessage(`Registrasi gagal: ${data?.error ?? "Terjadi kesalahan"}`);
         return;
       }
-      window.location.href = "/login";
+      setToastType("success");
+      setToastMessage("Registrasi berhasil, silakan login");
+      setTimeout(() => {
+        window.location.href = "/login";
+      }, 1200);
     } finally {
       setLoading(false);
     }
@@ -200,6 +213,7 @@ export default function RegisterPage() {
           </div>
         </div>
       </div>
+      <PageToast message={toastMessage} type={toastType} />
     </div>
   );
 }

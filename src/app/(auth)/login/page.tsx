@@ -9,6 +9,7 @@ import Image from "next/image";
 import { FcGoogle } from "react-icons/fc";
 import { FiArrowRight, FiMail, FiLock } from "react-icons/fi";
 import { SiDiscord } from "react-icons/si";
+import { PageToast } from "@/components/PageToast";
 
 
 export default function LoginPage() {
@@ -24,6 +25,7 @@ export default function LoginPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [remember, setRemember] = useState<boolean>(() => (typeof window !== "undefined" ? !!localStorage.getItem("rememberEmail") : false));
+  const [toastMessage, setToastMessage] = useState<string | undefined>(undefined);
 
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -46,6 +48,7 @@ export default function LoginPage() {
     setLoading(false);
     if (res?.error) {
       setError("Incorrect email or password");
+      setToastMessage("Login gagal: Email atau password salah");
       return;
     }
     window.location.href = "/";
@@ -165,6 +168,7 @@ export default function LoginPage() {
           </div>
         </div>
       </div>
+      <PageToast message={toastMessage} type="error" />
     </div>
   );
 }

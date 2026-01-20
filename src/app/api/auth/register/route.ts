@@ -4,10 +4,17 @@ import { NextResponse } from "next/server";
 import { z } from "zod";
 
 const RegisterSchema = z.object({
-  name: z.string().min(2),
-  email: z.string().email(),
-  password: z.string().min(6),
+  name: z.string().min(2).max(100),
+  email: z.string().email().max(254),
+  password: z.string().min(8).max(128),
 });
+
+function sanitizePlain(input: string): string {
+  return input.replace(/<[^>]*>/g, "").trim();
+}
+function normalizeEmail(email: string): string {
+  return sanitizePlain(email).toLowerCase();
+}
 
 export async function POST(req: Request) {
   try {
@@ -16,7 +23,9 @@ export async function POST(req: Request) {
     if (!parsed.success) {
       return NextResponse.json({ error: "Invalid data" }, { status: 400 });
     }
-    const { name, email, password } = parsed.data;
+    const name = sanitizePlain(parsed.data.name);
+    const email = normalizeEmail(parsed.data.email);
+    const password = parsed.data.password.trim();
 
     const existing = await db.user.findUnique({ where: { email } });
     if (existing) {

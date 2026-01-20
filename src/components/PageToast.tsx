@@ -2,13 +2,17 @@
 import * as React from "react";
 import { Toaster, toast as sonnerToast } from "sonner";
 
-export function PageToast({ message }: { message?: string }) {
+type ToastType = "success" | "error" | "info";
+
+export function PageToast({ message, type = "success" }: { message?: string; type?: ToastType }) {
   const lastShownRef = React.useRef<string | undefined>(undefined);
   React.useEffect(() => {
     if (!message) return;
     if (lastShownRef.current === message) return;
     lastShownRef.current = message;
-    sonnerToast.success(message, {
+    const fn =
+      type === "error" ? sonnerToast.error : type === "info" ? sonnerToast : sonnerToast.success;
+    fn(message, {
       duration: 3000,
       position: "top-center",
     });
@@ -19,6 +23,6 @@ export function PageToast({ message }: { message?: string }) {
         history.replaceState(null, "", url.toString());
       }
     } catch {}
-  }, [message]);
+  }, [message, type]);
   return <Toaster position="top-center" richColors theme="dark" />;
 }
