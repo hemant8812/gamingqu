@@ -67,6 +67,7 @@ export function AddUserModal({ action }: Props) {
                   name="username"
                   type="text"
                   required
+                  placeholder="Masukkan username"
                   className="mt-1 w-full rounded-md bg-zinc-900 border border-zinc-800 px-3 py-2 text-sm text-white"
                 />
               </div>

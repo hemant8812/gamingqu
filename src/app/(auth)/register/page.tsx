@@ -1,8 +1,9 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { signIn } from "next-auth/react";
+import { signIn, useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { FiArrowRight, FiUser, FiAtSign, FiMail, FiLock } from "react-icons/fi";
@@ -10,6 +11,13 @@ import { FcGoogle } from "react-icons/fc";
 import { SiDiscord } from "react-icons/si";
 
 export default function RegisterPage() {
+  const { status } = useSession();
+  const router = useRouter();
+  useEffect(() => {
+    if (status === "authenticated") {
+      router.replace("/");
+    }
+  }, [status, router]);
   const [username, setUsername] = useState("");
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");

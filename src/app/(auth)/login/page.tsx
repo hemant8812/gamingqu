@@ -1,6 +1,7 @@
 "use client";
-import { useState } from "react";
-import { signIn } from "next-auth/react";
+import { useEffect, useState } from "react";
+import { signIn, useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import Link from "next/link";
@@ -11,6 +12,13 @@ import { SiDiscord } from "react-icons/si";
 
 
 export default function LoginPage() {
+  const { status } = useSession();
+  const router = useRouter();
+  useEffect(() => {
+    if (status === "authenticated") {
+      router.replace("/");
+    }
+  }, [status, router]);
   const [email, setEmail] = useState<string>(() => (typeof window !== "undefined" ? localStorage.getItem("rememberEmail") ?? "" : ""));
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);

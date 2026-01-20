@@ -3,11 +3,14 @@ import { authOptions } from "@/auth";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { db } from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
+import { redirect } from "next/navigation";
 import { AddUserModal } from "@/components/AddUserModal";
 import { EditUserModal } from "@/components/EditUserModal";
 import type { Role } from "@/generated/prisma/enums";
 import { hash } from "bcrypt";
-import { Trash2 } from "lucide-react";
+import { Trash2, Users as UsersIcon, User as UserIcon, Zap as ZapIcon, ChevronLeft, ChevronRight } from "lucide-react";
+import Link from "next/link";
+import { PageToast } from "@/components/PageToast";
 
 const ALLOWED_ROLES: Role[] = ["SUPERADMIN", "ADMIN", "BOOSTER", "MEMBER"];
 const ROLE_LABEL: Record<Role, string> = {
@@ -49,7 +52,24 @@ async function generateNextUserId(prefix: string, minDigits: number) {
   return `${prefix}${String(nextNum).padStart(width, "0")}`;
 }
 
-export default async function AdminUsersPage() {
+export default async function AdminUsersPage({ searchParams }: { searchParams: Promise<Record<string, string | string[] | undefined>> }) {
+  const sp = await searchParams;
+  const pageParam = sp?.page;
+  const qParam = sp?.q;
+  const toastParam = sp?.toast;
+  const toastMessage = typeof toastParam === "string"
+    ? (toastParam === "updated" ? "Data berhasil diupdate" : toastParam === "deleted" ? "Data berhasil dihapus" : "Data berhasil disimpan")
+    : undefined;
+  const page = Math.max(
+    1,
+    parseInt(
+      typeof pageParam === "string" ? pageParam : Array.isArray(pageParam) ? pageParam[0] ?? "1" : "1",
+      10
+    ) || 1
+  );
+  const pageSize = 10;
+  const rawQ = typeof qParam === "string" ? qParam : Array.isArray(qParam) ? qParam[0] ?? "" : "";
+  const q = rawQ.trim();
   const session = await getServerSession(authOptions);
   const role = session?.user?.role;
   if (role !== "ADMIN" && role !== "SUPERADMIN") {
@@ -95,7 +115,7 @@ export default async function AdminUsersPage() {
         },
       });
       revalidatePath("/admin/users");
-      return { ok: true };
+      redirect("/admin/users?toast=saved");
     } catch {
       return { ok: false, message: "Terjadi kesalahan saat menyimpan" };
     }
@@ -133,7 +153,7 @@ export default async function AdminUsersPage() {
         },
       });
       revalidatePath("/admin/users");
-      return { ok: true };
+      redirect("/admin/users?toast=updated");
     } catch {
       return { ok: false, message: "Gagal menyimpan perubahan" };
     }
@@ -150,14 +170,42 @@ export default async function AdminUsersPage() {
     try {
       await db.user.delete({ where: { id } });
       revalidatePath("/admin/users");
+      redirect("/admin/users?toast=deleted");
     } catch {
     }
   }
   const users = await db.user.findMany({
     orderBy: { createdAt: "desc" },
-    take: 100,
+    skip: (page - 1) * pageSize,
+    take: pageSize,
+    where: q
+      ? {
+          OR: [
+            { id: { startsWith: q } },
+            { username: { contains: q } },
+            { email: { contains: q } },
+          ],
+        }
+      : undefined,
     select: { id: true, username: true, name: true, email: true, role: true, createdAt: true },
   });
+  const [totalUser, totalMember, totalBooster] = await Promise.all([
+    db.user.count(),
+    db.user.count({ where: { role: "MEMBER" } }),
+    db.user.count({ where: { role: "BOOSTER" } }),
+  ]);
+  const filteredTotal = await db.user.count({
+    where: q
+      ? {
+          OR: [
+            { id: { startsWith: q } },
+            { username: { contains: q } },
+            { email: { contains: q } },
+          ],
+        }
+      : undefined,
+  });
+  const totalPages = Math.max(1, Math.ceil(filteredTotal / pageSize));
   const myId = session?.user?.id ?? null;
   const getRoleBadgeClass = (role: Role) => ROLE_BADGE_CLASS[role];
   const getRoleLabel = (role: Role) => ROLE_LABEL[role];
@@ -180,6 +228,46 @@ export default async function AdminUsersPage() {
   return (
     <div className="min-h-screen bg-black text-white">
       <div className="mx-auto max-w-7xl px-6 py-8">
+        <PageToast message={toastMessage} />
+        <div className="mb-5">
+          <h2 className="text-3xl font-bold">Semua Pengguna</h2>
+          <p className="text-sm text-zinc-400">Kelola semua pengguna terdaftar</p>
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+          <Card className="rounded-2xl border-zinc-900 bg-zinc-950 text-white">
+            <CardContent className="p-6 flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <span className="inline-flex items-center justify-center size-10 rounded-xl bg-gradient-to-br from-blue-600/30 to-cyan-500/30 ring-1 ring-white/10">
+                  <UsersIcon className="h-5 w-5 text-blue-400" />
+                </span>
+                <div className="text-sm text-zinc-300 font-semibold">Total User</div>
+              </div>
+              <div className="text-3xl font-bold">{totalUser}</div>
+            </CardContent>
+          </Card>
+          <Card className="rounded-2xl border-zinc-900 bg-zinc-950 text-white">
+            <CardContent className="p-6 flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <span className="inline-flex items-center justify-center size-10 rounded-xl bg-gradient-to-br from-green-600/30 to-emerald-500/30 ring-1 ring-white/10">
+                  <UserIcon className="h-5 w-5 text-green-400" />
+                </span>
+                <div className="text-sm text-zinc-300 font-semibold">Total Member</div>
+              </div>
+              <div className="text-3xl font-bold">{totalMember}</div>
+            </CardContent>
+          </Card>
+          <Card className="rounded-2xl border-zinc-900 bg-zinc-950 text-white">
+            <CardContent className="p-6 flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <span className="inline-flex items-center justify-center size-10 rounded-xl bg-gradient-to-br from-orange-600/30 to-amber-500/30 ring-1 ring-white/10">
+                  <ZapIcon className="h-5 w-5 text-orange-400" />
+                </span>
+                <div className="text-sm text-zinc-300 font-semibold">Total Booster</div>
+              </div>
+              <div className="text-3xl font-bold">{totalBooster}</div>
+            </CardContent>
+          </Card>
+        </div>
         <div className="flex items-center justify-between">
           <h1 className="text-3xl font-bold">Manage Users</h1>
           <AddUserModal action={createUser} />
@@ -188,11 +276,21 @@ export default async function AdminUsersPage() {
           <Card className="rounded-2xl border-zinc-900 overflow-hidden bg-zinc-950 text-white">
             <CardHeader className="border-b border-zinc-900 flex items-center justify-between">
               <CardTitle className="text-white text-lg">Users</CardTitle>
-              <input
-                type="text"
-                placeholder="Search users"
-                className="bg-zinc-900 border border-zinc-800 rounded-md px-3 py-2 text-sm text-white w-64"
-              />
+              <form action="/admin/users" method="get" className="relative">
+                <input
+                  type="hidden"
+                  name="page"
+                  value="1"
+                />
+                <input
+                  type="text"
+                  name="q"
+                  defaultValue={q}
+                  placeholder="Search users"
+                  className="bg-zinc-900 border border-zinc-800 rounded-md px-3 py-2 text-sm text-white w-64"
+                  aria-label="Cari berdasarkan ID, username, atau email"
+                />
+              </form>
             </CardHeader>
             <CardContent className="p-0">
               <div className="hidden md:block overflow-x-auto">
@@ -243,6 +341,29 @@ export default async function AdminUsersPage() {
                   </tbody>
                 </table>
               </div>
+              {totalPages > 1 && (
+                <div className="border-t border-zinc-900 p-3 flex items-center justify-end gap-2">
+                  <Link
+                    href={`/admin/users?page=${Math.max(1, page - 1)}${q ? `&q=${encodeURIComponent(q)}` : ""}`}
+                    prefetch={false}
+                    className={`inline-flex items-center gap-1 rounded-md px-3 py-1 text-sm ${page > 1 ? "bg-zinc-800 text-white hover:bg-zinc-700" : "bg-zinc-800/40 text-zinc-500 cursor-not-allowed"}`}
+                    aria-disabled={page <= 1}
+                  >
+                    <ChevronLeft className="h-4 w-4" />
+                    <span>Prev</span>
+                  </Link>
+                  <span className="text-xs text-zinc-400">Page {page} of {totalPages}</span>
+                  <Link
+                    href={`/admin/users?page=${Math.min(totalPages, page + 1)}${q ? `&q=${encodeURIComponent(q)}` : ""}`}
+                    prefetch={false}
+                    className={`inline-flex items-center gap-1 rounded-md px-3 py-1 text-sm ${page < totalPages ? "bg-zinc-800 text-white hover:bg-zinc-700" : "bg-zinc-800/40 text-zinc-500 cursor-not-allowed"}`}
+                    aria-disabled={page >= totalPages}
+                  >
+                    <span>Next</span>
+                    <ChevronRight className="h-4 w-4" />
+                  </Link>
+                </div>
+              )}
               <div className="md:hidden space-y-3 p-3">
                 {users.length === 0 ? (
                   <div className="text-center text-zinc-400 py-6">Belum ada data user</div>
@@ -268,6 +389,29 @@ export default async function AdminUsersPage() {
                       </div>
                     </div>
                   ))
+                )}
+                {totalPages > 1 && (
+                  <div className="pt-3 flex items-center justify-end gap-2">
+                    <Link
+                      href={`/admin/users?page=${Math.max(1, page - 1)}${q ? `&q=${encodeURIComponent(q)}` : ""}`}
+                      prefetch={false}
+                      className={`inline-flex items-center gap-1 rounded-md px-3 py-1 text-sm ${page > 1 ? "bg-zinc-800 text-white hover:bg-zinc-700" : "bg-zinc-800/40 text-zinc-500 cursor-not-allowed"}`}
+                      aria-disabled={page <= 1}
+                    >
+                      <ChevronLeft className="h-4 w-4" />
+                      <span>Prev</span>
+                    </Link>
+                    <span className="text-xs text-zinc-400">Page {page} of {totalPages}</span>
+                    <Link
+                      href={`/admin/users?page=${Math.min(totalPages, page + 1)}${q ? `&q=${encodeURIComponent(q)}` : ""}`}
+                      prefetch={false}
+                      className={`inline-flex items-center gap-1 rounded-md px-3 py-1 text-sm ${page < totalPages ? "bg-zinc-800 text-white hover:bg-zinc-700" : "bg-zinc-800/40 text-zinc-500 cursor-not-allowed"}`}
+                      aria-disabled={page >= totalPages}
+                    >
+                      <span>Next</span>
+                      <ChevronRight className="h-4 w-4" />
+                    </Link>
+                  </div>
                 )}
               </div>
             </CardContent>

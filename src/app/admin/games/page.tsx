@@ -2,13 +2,15 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/auth";
 import { db } from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
+import { redirect } from "next/navigation";
 import path from "path";
 import { promises as fs } from "fs";
 import Image from "next/image";
 import { RichTextEditor } from "@/components/RichTextEditor";
 import { ImageUploadField } from "@/components/ImageUploadField";
 import { AutoSlugField } from "@/components/AutoSlugField";
-import { Save as SaveIcon, Search as SearchIcon } from "lucide-react";
+import { Save as SaveIcon, Search as SearchIcon, X as XIcon } from "lucide-react";
+import { PageToast } from "@/components/PageToast";
 
 function slugify(input: string) {
   return input
@@ -82,6 +84,7 @@ export default async function AdminGamesPage({ searchParams }: { searchParams?: 
       },
     });
     revalidatePath("/admin/games");
+    redirect("/admin/games?toast=saved");
   }
 
   async function updateGame(formData: FormData) {
@@ -121,22 +124,26 @@ export default async function AdminGamesPage({ searchParams }: { searchParams?: 
       },
     });
     revalidatePath("/admin/games");
+    redirect("/admin/games?toast=updated");
   }
   const games = await getGames();
   const sp = searchParams ? await searchParams : undefined;
   const editId = sp?.edit ?? null;
   const editing = editId ? await db.game.findUnique({ where: { id: editId } }) : null;
+  const toastParam = (sp as any)?.toast as string | undefined;
+  const toastMessage = toastParam ? (toastParam === "updated" ? "Data berhasil diupdate" : "Data berhasil disimpan") : undefined;
 
   return (
     <div className="min-h-screen bg-black text-white">
       <div className="mx-auto max-w-7xl px-6 py-8">
+        <PageToast message={toastMessage} />
         <h1 className="text-3xl font-bold">Manage Games</h1>
         <p className="mt-2 text-sm text-zinc-400">
           Tambah data game: nama, slug otomatis, upload gambar & icon, deskripsi, Hot Offer, status aktif.
         </p>
 
         <section className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-6">
-          <form action={editing ? updateGame : createGame} encType="multipart/form-data" className="rounded-2xl border border-zinc-900 bg-zinc-950 p-6 space-y-4">
+          <form action={editing ? updateGame : createGame} className="rounded-2xl border border-zinc-900 bg-zinc-950 p-6 space-y-4">
             <div>
               <label htmlFor="name" className="block text-sm font-semibold">Nama Game</label>
               <input
