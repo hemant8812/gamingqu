@@ -260,8 +260,8 @@ export default async function AdminUsersPage({ searchParams }: { searchParams: P
                 <div className="text-sm text-zinc-300 font-semibold">Total User</div>
                 <div className="text-2xl font-bold">{totalUser}</div>
               </div>
-              <span className="inline-flex items-center justify-center size-8 rounded-sm bg-gradient-to-br from-blue-600/30 to-cyan-500/30 ring-1 ring-white/10">
-                <UsersIcon className="h-4 w-4 text-blue-400" />
+              <span className="inline-flex items-center justify-center size-12">
+                <UsersIcon className="h-7 w-7 text-blue-400" />
               </span>
             </CardContent>
           </Card>
@@ -271,8 +271,8 @@ export default async function AdminUsersPage({ searchParams }: { searchParams: P
                 <div className="text-sm text-zinc-300 font-semibold">Total Member</div>
                 <div className="text-2xl font-bold">{totalMember}</div>
               </div>
-              <span className="inline-flex items-center justify-center size-8 rounded-sm bg-gradient-to-br from-green-600/30 to-emerald-500/30 ring-1 ring-white/10">
-                <UserIcon className="h-4 w-4 text-green-400" />
+              <span className="inline-flex items-center justify-center size-12">
+                <UserIcon className="h-7 w-7 text-green-400" />
               </span>
             </CardContent>
           </Card>
@@ -282,8 +282,8 @@ export default async function AdminUsersPage({ searchParams }: { searchParams: P
                 <div className="text-sm text-zinc-300 font-semibold">Total Booster</div>
                 <div className="text-2xl font-bold">{totalBooster}</div>
               </div>
-              <span className="inline-flex items-center justify-center size-8 rounded-sm bg-gradient-to-br from-orange-600/30 to-amber-500/30 ring-1 ring-white/10">
-                <ZapIcon className="h-4 w-4 text-orange-400" />
+              <span className="inline-flex items-center justify-center size-12">
+                <ZapIcon className="h-7 w-7 text-orange-400" />
               </span>
             </CardContent>
           </Card>
@@ -293,8 +293,8 @@ export default async function AdminUsersPage({ searchParams }: { searchParams: P
                 <div className="text-sm text-zinc-300 font-semibold">User Suspend</div>
                 <div className="text-2xl font-bold">{totalSuspended}</div>
               </div>
-              <span className="inline-flex items-center justify-center size-8 rounded-sm bg-gradient-to-br from-red-600/30 to-pink-500/30 ring-1 ring-white/10">
-                <UserXIcon className="h-4 w-4 text-red-400" />
+              <span className="inline-flex items-center justify-center size-12">
+                <UserXIcon className="h-7 w-7 text-red-400" />
               </span>
             </CardContent>
           </Card>
