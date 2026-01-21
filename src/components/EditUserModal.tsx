@@ -3,6 +3,7 @@ import * as Dialog from "@radix-ui/react-dialog";
 import { useEffect, useState } from "react";
 import { Pencil, X, XCircle, Save as SaveIcon } from "lucide-react";
 import { toast as sonnerToast } from "sonner";
+import { Switch } from "@/components/ui/switch";
 
 type Role = "MEMBER" | "BOOSTER" | "ADMIN" | "SUPERADMIN";
 
@@ -23,6 +24,7 @@ type Props = {
 export function EditUserModal({ user, action }: Props) {
   const [open, setOpen] = useState(false);
   const [error, setError] = useState<string>("");
+  const [suspended, setSuspended] = useState<boolean>(Boolean(user.isSuspended));
   useEffect(() => {
     if (open) setError("");
   }, [open]);
@@ -50,19 +52,32 @@ export function EditUserModal({ user, action }: Props) {
           <form
             action={async (fd: FormData) => {
               try {
+                if (suspended) {
+                  fd.set("isSuspended", "on");
+                } else {
+                  fd.delete("isSuspended");
+                }
                 const res = await action(fd);
                 const isResultObject = !!res && typeof res === "object" && "ok" in (res as any);
                 if (!isResultObject || (res as any).ok) {
                   setError("");
+                  sonnerToast.success("Data berhasil diupdate");
                   setOpen(false);
                   return;
                 }
                 const msg = res?.message ?? "Gagal menyimpan perubahan";
                 setError(msg);
                 sonnerToast.error(msg);
-              } catch {
-                setError("");
-                setOpen(false);
+              } catch (e: any) {
+                const isRedirect = e && typeof e === "object" && "digest" in e && String(e.digest).includes("NEXT_REDIRECT");
+                if (isRedirect) {
+                  setError("");
+                  sonnerToast.success("Data berhasil diupdate");
+                  setOpen(false);
+                } else {
+                  setError("");
+                  setOpen(false);
+                }
               }
             }}
             className="mt-4 space-y-4"
@@ -114,17 +129,17 @@ export function EditUserModal({ user, action }: Props) {
                 <option value="SUPERADMIN">SUPERADMIN</option>
               </select>
             </div>
-            <div className="flex items-center gap-2">
-              <input
-                id="isSuspended"
-                name="isSuspended"
-                type="checkbox"
-                defaultChecked={Boolean(user.isSuspended)}
-                className="h-4 w-4 rounded border-zinc-700 bg-zinc-900 text-red-500"
-              />
-              <label htmlFor="isSuspended" className="text-sm text-zinc-300">
-                Suspended (tidak bisa login)
+            <div className="flex items-center justify-between">
+              <label htmlFor="isSuspendedToggle" className="text-sm text-zinc-300">
+                Suspended
               </label>
+              <Switch
+                id="isSuspendedToggle"
+                checked={suspended}
+                onCheckedChange={setSuspended}
+                aria-label="Suspended toggle"
+                className="data-[state=checked]:bg-red-600"
+              />
             </div>
             <div className="flex justify-end gap-2 pt-2">
               <Dialog.Close asChild>

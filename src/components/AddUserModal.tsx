@@ -3,6 +3,7 @@ import * as Dialog from "@radix-ui/react-dialog";
 import { useEffect, useState } from "react";
 import { UserPlus, X, XCircle, Save as SaveIcon } from "lucide-react";
 import { toast as sonnerToast } from "sonner";
+import { Switch } from "@/components/ui/switch";
 
 type Props = {
   action: (formData: FormData) => Promise<{ ok: boolean; message?: string }>;
@@ -11,6 +12,7 @@ type Props = {
 export function AddUserModal({ action }: Props) {
   const [open, setOpen] = useState(false);
   const [error, setError] = useState<string>("");
+  const [suspended, setSuspended] = useState(false);
   useEffect(() => {
     if (open) setError("");
   }, [open]);
@@ -42,19 +44,28 @@ export function AddUserModal({ action }: Props) {
                 const isResultObject = !!res && typeof res === "object" && "ok" in (res as any);
                 if (!isResultObject || (res as any).ok) {
                   setError("");
+                  sonnerToast.success("Data berhasil disimpan");
                   setOpen(false);
                   return;
                 }
                 const msg = res?.message ?? "Gagal menyimpan data";
                 setError(msg);
                 sonnerToast.error(msg);
-              } catch {
-                setError("");
-                setOpen(false);
+              } catch (e: any) {
+                const isRedirect = e && typeof e === "object" && "digest" in e && String(e.digest).includes("NEXT_REDIRECT");
+                if (isRedirect) {
+                  setError("");
+                  sonnerToast.success("Data berhasil disimpan");
+                  setOpen(false);
+                } else {
+                  setError("");
+                  setOpen(false);
+                }
               }
             }}
             className="mt-4 space-y-4"
           >
+            {suspended && <input type="hidden" name="isSuspended" value="on" />}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <label htmlFor="name" className="block text-sm font-semibold">Name</label>
@@ -115,16 +126,17 @@ export function AddUserModal({ action }: Props) {
                 <option value="SUPERADMIN">SUPERADMIN</option>
               </select>
             </div>
-            <div className="flex items-center gap-2">
-              <input
-                id="isSuspended"
-                name="isSuspended"
-                type="checkbox"
-                className="h-4 w-4 rounded border-zinc-700 bg-zinc-900 text-red-500"
-              />
-              <label htmlFor="isSuspended" className="text-sm text-zinc-300">
-                Tandai sebagai suspended (tidak bisa login)
+            <div className="flex items-center justify-between">
+              <label htmlFor="isSuspendedToggle" className="text-sm text-zinc-300">
+                Suspended
               </label>
+              <Switch
+                id="isSuspendedToggle"
+                checked={suspended}
+                onCheckedChange={setSuspended}
+                aria-label="Suspended toggle"
+                className="data-[state=checked]:bg-red-600"
+              />
             </div>
             <div className="flex justify-end gap-2 pt-2">
               <Dialog.Close asChild>

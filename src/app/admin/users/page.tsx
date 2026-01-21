@@ -119,7 +119,7 @@ export default async function AdminUsersPage({ searchParams }: { searchParams: P
         },
       } as any);
       revalidatePath("/admin/users");
-      redirect("/admin/users?toast=saved");
+      redirect("/admin/users");
     } catch (e: any) {
       const isRedirect = e && typeof e === "object" && "digest" in e && String(e.digest).includes("NEXT_REDIRECT");
       if (isRedirect) {
@@ -168,7 +168,7 @@ export default async function AdminUsersPage({ searchParams }: { searchParams: P
         await db.session.deleteMany({ where: { userId: id } } as any);
       }
       revalidatePath("/admin/users");
-      redirect("/admin/users?toast=updated");
+      redirect("/admin/users");
     } catch (e: any) {
       const isRedirect = e && typeof e === "object" && "digest" in e && String(e.digest).includes("NEXT_REDIRECT");
       if (isRedirect) {
