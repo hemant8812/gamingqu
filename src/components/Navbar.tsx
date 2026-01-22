@@ -3,7 +3,7 @@ import { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
-import { FiSearch, FiHeart, FiUser, FiChevronDown, FiChevronUp, FiZap, FiPercent, FiBookOpen, FiThumbsUp, FiShield, FiMail, FiShoppingCart, FiLogOut, FiGrid, FiUsers, FiBarChart2, FiPlay } from "react-icons/fi";
+import { FiSearch, FiHeart, FiUser, FiChevronDown, FiChevronUp, FiZap, FiPercent, FiBookOpen, FiThumbsUp, FiShield, FiMail, FiShoppingCart, FiLogOut, FiGrid, FiUsers, FiBarChart2, FiPlay, FiSettings } from "react-icons/fi";
 import { useSession, signOut } from "next-auth/react";
 
 function GridRoundedIcon(props: React.SVGProps<SVGSVGElement>) {
@@ -25,11 +25,16 @@ function GridRoundedIcon(props: React.SVGProps<SVGSVGElement>) {
   );
 }
 
-export function Navbar() {
+type Props = {
+  siteName?: string;
+  logoUrl?: string | null;
+};
+
+export function Navbar({ siteName = "Gamingqu", logoUrl = null }: Props) {
   const [currency, setCurrency] = useState<"$" | "€">("€");
   const [currencyOpen, setCurrencyOpen] = useState(false);
   const [gridOpen, setGridOpen] = useState(false);
-  const [showLogo, setShowLogo] = useState(true);
+  const [showLogo, setShowLogo] = useState<boolean>(!!logoUrl);
   const { data: session } = useSession();
   const iconBtn =
     "size-10 rounded-md inline-flex items-center justify-center text-white hover:bg-zinc-900 transition-colors border-0 ring-0 outline-none focus:outline-none focus:ring-0 focus:border-0";
@@ -37,11 +42,11 @@ export function Navbar() {
     <div className="fixed top-0 left-0 right-0 z-50 bg-black">
       <div className="mx-auto max-w-7xl px-6 h-16 flex items-center justify-between">
         <div className="flex items-center gap-4">
-          {showLogo ? (
+          {showLogo && logoUrl ? (
             <Link href="/" className="inline-flex items-center">
               <Image
-                src="/icons/logo.png"
-                alt="Gamingqu"
+                src={logoUrl}
+                alt={siteName}
                 width={256}
                 height={64}
                 quality={100}
@@ -54,7 +59,7 @@ export function Navbar() {
             </Link>
           ) : (
             <Link href="/" className="font-black tracking-tight text-white text-2xl">
-              GAMINGQU
+              {siteName}
             </Link>
           )}
           <DropdownMenu>
@@ -85,6 +90,9 @@ export function Navbar() {
                 </DropdownMenuItem>
                 <DropdownMenuItem asChild className="group rounded-sm px-3 py-2 hover:bg-blue-500/30 focus:bg-blue-500/30 text-white">
                   <Link href="/admin/games" className="flex items-center gap-2 font-semibold"><FiPlay className="h-4 w-4 text-white group-hover:text-black" /> Games</Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem asChild className="group rounded-sm px-3 py-2 hover:bg-blue-500/30 focus:bg-blue-500/30 text-white">
+                  <Link href="/admin/settings" className="flex items-center gap-2 font-semibold"><FiSettings className="h-4 w-4 text-white group-hover:text-black" /> Settings</Link>
                 </DropdownMenuItem>
                 {(session?.user?.role === "SUPERADMIN") && (
                   <DropdownMenuItem asChild className="group rounded-sm px-3 py-2 hover:bg-blue-500/30 focus:bg-blue-500/30 text-white">

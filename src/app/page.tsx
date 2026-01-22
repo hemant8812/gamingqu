@@ -139,14 +139,14 @@ export default function Home() {
             </div>
           </Card>
           <div className="col-span-1 lg:col-span-3 grid md:grid-cols-4 gap-6">
-            {games.map((g) => (
+            {games.slice(0, 12).map((g) => (
               <Card
                 key={g.slug}
-                className="relative overflow-hidden border-zinc-900 rounded-[24px] bg-black p-0 h-40 md:h-44"
+                className="group relative overflow-hidden border-zinc-900 rounded-[24px] bg-black p-0 h-40 md:h-44 transition-transform duration-200 hover:-translate-y-0.5 hover:border-zinc-700 hover:shadow-lg hover:shadow-blue-900/20"
               >
                 <div className="absolute inset-0">
-                  {g.imageUrl && <Image src={g.imageUrl} alt={g.title} fill className="object-cover" sizes="320px" />}
-                  <div className="absolute inset-0 bg-gradient-to-br from-black/40 via-black/40 to-black/70" />
+                  {g.imageUrl && <Image src={g.imageUrl} alt={g.title} fill className="object-cover transition-transform duration-300 group-hover:scale-105" sizes="320px" />}
+                  <div className="absolute inset-0 bg-gradient-to-br from-black/40 via-black/40 to-black/70 transition-opacity duration-300 group-hover:opacity-80" />
                 </div>
                 <div className="relative z-10 p-5">
                   <div className="flex items-center justify-start">
@@ -162,14 +162,16 @@ export default function Home() {
               </Card>
             ))}
           </div>
-          <div className="col-span-1 lg:col-span-3 flex justify-center">
-            <Link
-              href="/games"
-              className="inline-flex rounded-md bg-blue-600 px-5 py-2 text-sm font-semibold text-white hover:bg-blue-500"
-            >
-              View All {moreCount} games
-            </Link>
-          </div>
+          {(moreCount - Math.min(games.length, 12) > 0) && (
+            <div className="col-span-1 lg:col-span-3 flex justify-center">
+              <Link
+                href="/games"
+                className="inline-flex rounded-md bg-blue-600 px-5 py-2 text-sm font-semibold text-white hover:bg-blue-500"
+              >
+                View All {moreCount - Math.min(games.length, 12)} games
+              </Link>
+            </div>
+          )}
         </section>
         <section className="mt-10">
           <Card className="rounded-xl border-zinc-900 bg-gradient-to-r from-blue-600 via-black to-black p-0">

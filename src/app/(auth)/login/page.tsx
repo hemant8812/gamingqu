@@ -25,7 +25,7 @@ export default function LoginPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [remember, setRemember] = useState<boolean>(() => (typeof window !== "undefined" ? !!localStorage.getItem("rememberEmail") : false));
-  const [toastMessage, setToastMessage] = useState<string | undefined>(undefined);
+  const [toastMessage] = useState<string | undefined>(undefined);
 
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

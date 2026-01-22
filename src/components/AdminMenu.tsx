@@ -14,6 +14,7 @@ export function AdminMenu() {
     { href: "/admin/orders", label: "Orders" },
     { href: "/admin/analytics", label: "Analytics" },
     { href: "/admin/games", label: "Games" },
+    { href: "/admin/settings", label: "Settings" },
   ];
   const permsItem = { href: "/admin/permissions", label: "Permissions" };
   return (

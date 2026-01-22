@@ -1,6 +1,6 @@
 "use client";
 import * as Dialog from "@radix-ui/react-dialog";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Pencil, X, XCircle, Save as SaveIcon } from "lucide-react";
 import { toast as sonnerToast } from "sonner";
 import { Switch } from "@/components/ui/switch";
@@ -23,13 +23,12 @@ type Props = {
 
 export function EditUserModal({ user, action }: Props) {
   const [open, setOpen] = useState(false);
-  const [error, setError] = useState<string>("");
   const [suspended, setSuspended] = useState<boolean>(Boolean(user.isSuspended));
-  useEffect(() => {
-    if (open) setError("");
-  }, [open]);
+  const handleOpenChange = (v: boolean) => {
+    setOpen(v);
+  };
   return (
-    <Dialog.Root open={open} onOpenChange={setOpen}>
+    <Dialog.Root open={open} onOpenChange={handleOpenChange}>
       <Dialog.Trigger asChild>
         <button
           aria-label="Edit"
@@ -58,24 +57,24 @@ export function EditUserModal({ user, action }: Props) {
                   fd.delete("isSuspended");
                 }
                 const res = await action(fd);
-                const isResultObject = !!res && typeof res === "object" && "ok" in (res as any);
-                if (!isResultObject || (res as any).ok) {
-                  setError("");
+                const ok = res?.ok ?? true;
+                if (!ok) {
+                  const msg = res.message ?? "Gagal menyimpan perubahan";
+                  sonnerToast.error(msg);
+                } else {
                   sonnerToast.success("Data berhasil diupdate");
                   setOpen(false);
-                  return;
                 }
-                const msg = res?.message ?? "Gagal menyimpan perubahan";
-                setError(msg);
-                sonnerToast.error(msg);
-              } catch (e: any) {
-                const isRedirect = e && typeof e === "object" && "digest" in e && String(e.digest).includes("NEXT_REDIRECT");
+              } catch (e: unknown) {
+                const isRedirect =
+                  !!e &&
+                  typeof e === "object" &&
+                  "digest" in (e as Record<string, unknown>) &&
+                  String((e as Record<string, unknown>).digest).includes("NEXT_REDIRECT");
                 if (isRedirect) {
-                  setError("");
                   sonnerToast.success("Data berhasil diupdate");
                   setOpen(false);
                 } else {
-                  setError("");
                   setOpen(false);
                 }
               }

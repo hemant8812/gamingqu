@@ -117,11 +117,15 @@ export default async function AdminUsersPage({ searchParams }: { searchParams: P
           role: resolvedRole,
           isSuspended,
         },
-      } as any);
+      });
       revalidatePath("/admin/users");
       redirect("/admin/users");
-    } catch (e: any) {
-      const isRedirect = e && typeof e === "object" && "digest" in e && String(e.digest).includes("NEXT_REDIRECT");
+    } catch (e: unknown) {
+      const isRedirect =
+        !!e &&
+        typeof e === "object" &&
+        "digest" in (e as Record<string, unknown>) &&
+        String((e as Record<string, unknown>).digest).includes("NEXT_REDIRECT");
       if (isRedirect) {
         throw e;
       }
@@ -153,7 +157,10 @@ export default async function AdminUsersPage({ searchParams }: { searchParams: P
       return { ok: false, message: "Username sudah terpakai" };
     }
     try {
-      const prev = await db.user.findUnique({ where: { id }, select: { isSuspended: true } } as any);
+      const prev: { isSuspended: boolean } | null = await db.user.findUnique({
+        where: { id },
+        select: { isSuspended: true },
+      });
       await db.user.update({
         where: { id },
         data: {
@@ -163,14 +170,18 @@ export default async function AdminUsersPage({ searchParams }: { searchParams: P
           role: resolvedRole,
           isSuspended,
         },
-      } as any);
+      });
       if (prev && !prev.isSuspended && isSuspended) {
-        await db.session.deleteMany({ where: { userId: id } } as any);
+        await db.session.deleteMany({ where: { userId: id } });
       }
       revalidatePath("/admin/users");
       redirect("/admin/users");
-    } catch (e: any) {
-      const isRedirect = e && typeof e === "object" && "digest" in e && String(e.digest).includes("NEXT_REDIRECT");
+    } catch (e: unknown) {
+      const isRedirect =
+        !!e &&
+        typeof e === "object" &&
+        "digest" in (e as Record<string, unknown>) &&
+        String((e as Record<string, unknown>).digest).includes("NEXT_REDIRECT");
       if (isRedirect) {
         throw e;
       }
@@ -190,8 +201,12 @@ export default async function AdminUsersPage({ searchParams }: { searchParams: P
       await db.user.delete({ where: { id } });
       revalidatePath("/admin/users");
       redirect("/admin/users?toast=deleted");
-    } catch (e: any) {
-      const isRedirect = e && typeof e === "object" && "digest" in e && String(e.digest).includes("NEXT_REDIRECT");
+    } catch (e: unknown) {
+      const isRedirect =
+        !!e &&
+        typeof e === "object" &&
+        "digest" in (e as Record<string, unknown>) &&
+        String((e as Record<string, unknown>).digest).includes("NEXT_REDIRECT");
       if (isRedirect) {
         throw e;
       }
@@ -222,7 +237,7 @@ export default async function AdminUsersPage({ searchParams }: { searchParams: P
     db.user.count(),
     db.user.count({ where: { role: "MEMBER" } }),
     db.user.count({ where: { role: "BOOSTER" } }),
-    db.user.count({ where: { isSuspended: true } } as any),
+    db.user.count({ where: { isSuspended: true } }),
   ]);
   const filteredTotal = await db.user.count({ where });
   const totalPages = Math.max(1, Math.ceil(filteredTotal / pageSize));
