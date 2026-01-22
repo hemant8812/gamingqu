@@ -101,14 +101,14 @@ export function Navbar({ siteName = "Gamingqu", logoUrl = null, user = null }: P
                 <DropdownMenuItem asChild className="group rounded-sm px-3 py-2 hover:bg-blue-500/30 focus:bg-blue-500/30 text-white">
                   <Link href="/admin/games" className="flex items-center gap-2 font-semibold"><FiPlay className="h-4 w-4 text-white group-hover:text-black" /> Games</Link>
                 </DropdownMenuItem>
-                <DropdownMenuItem asChild className="group rounded-sm px-3 py-2 hover:bg-blue-500/30 focus:bg-blue-500/30 text-white">
-                  <Link href="/admin/settings" className="flex items-center gap-2 font-semibold"><FiSettings className="h-4 w-4 text-white group-hover:text-black" /> Settings</Link>
-                </DropdownMenuItem>
                 {(user?.role === "SUPERADMIN") && (
                   <DropdownMenuItem asChild className="group rounded-sm px-3 py-2 hover:bg-blue-500/30 focus:bg-blue-500/30 text-white">
                     <Link href="/admin/permissions" className="flex items-center gap-2 font-semibold"><FiShield className="h-4 w-4 text-white group-hover:text-black" /> Permissions</Link>
                   </DropdownMenuItem>
                 )}
+                <DropdownMenuItem asChild className="group rounded-sm px-3 py-2 hover:bg-blue-500/30 focus:bg-blue-500/30 text-white">
+                  <Link href="/admin/settings" className="flex items-center gap-2 font-semibold"><FiSettings className="h-4 w-4 text-white group-hover:text-black" /> Settings</Link>
+                </DropdownMenuItem>
               </DropdownMenuContent>
             ) : (
               <DropdownMenuContent className="bg-zinc-950 border-zinc-900 text-white">
