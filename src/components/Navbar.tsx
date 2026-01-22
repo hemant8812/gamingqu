@@ -4,7 +4,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { FiSearch, FiHeart, FiUser, FiChevronDown, FiChevronUp, FiZap, FiPercent, FiBookOpen, FiThumbsUp, FiShield, FiMail, FiShoppingCart, FiLogOut, FiGrid, FiUsers, FiBarChart2, FiPlay, FiSettings } from "react-icons/fi";
-import { useSession, signOut } from "next-auth/react";
+import { signOut } from "next-auth/react";
 import { usePathname } from "next/navigation";
 
 function GridRoundedIcon(props: React.SVGProps<SVGSVGElement>) {
@@ -29,16 +29,22 @@ function GridRoundedIcon(props: React.SVGProps<SVGSVGElement>) {
 type Props = {
   siteName?: string;
   logoUrl?: string | null;
+  user?: {
+    id: string;
+    email?: string | null;
+    name?: string | null;
+    username?: string | null;
+    role?: "MEMBER" | "BOOSTER" | "ADMIN" | "SUPERADMIN";
+  } | null;
 };
 
-export function Navbar({ siteName = "Gamingqu", logoUrl = null }: Props) {
+export function Navbar({ siteName = "Gamingqu", logoUrl = null, user = null }: Props) {
   const [currency, setCurrency] = useState<"$" | "€">("€");
   const [currencyOpen, setCurrencyOpen] = useState(false);
   const [gridOpen, setGridOpen] = useState(false);
   const [showLogo, setShowLogo] = useState<boolean>(!!logoUrl);
-  const { data: session } = useSession();
   const pathname = usePathname();
-  const isAdminRole = session?.user?.role === "ADMIN" || session?.user?.role === "SUPERADMIN";
+  const isAdminRole = user?.role === "ADMIN" || user?.role === "SUPERADMIN";
   const isAdminContext = isAdminRole || (pathname?.startsWith("/admin") || pathname?.startsWith("/super-admin"));
   const iconBtn =
     "size-10 rounded-md inline-flex items-center justify-center text-white hover:bg-zinc-900 transition-colors border-0 ring-0 outline-none focus:outline-none focus:ring-0 focus:border-0";
@@ -98,7 +104,7 @@ export function Navbar({ siteName = "Gamingqu", logoUrl = null }: Props) {
                 <DropdownMenuItem asChild className="group rounded-sm px-3 py-2 hover:bg-blue-500/30 focus:bg-blue-500/30 text-white">
                   <Link href="/admin/settings" className="flex items-center gap-2 font-semibold"><FiSettings className="h-4 w-4 text-white group-hover:text-black" /> Settings</Link>
                 </DropdownMenuItem>
-                {(session?.user?.role === "SUPERADMIN") && (
+                {(user?.role === "SUPERADMIN") && (
                   <DropdownMenuItem asChild className="group rounded-sm px-3 py-2 hover:bg-blue-500/30 focus:bg-blue-500/30 text-white">
                     <Link href="/admin/permissions" className="flex items-center gap-2 font-semibold"><FiShield className="h-4 w-4 text-white group-hover:text-black" /> Permissions</Link>
                   </DropdownMenuItem>
@@ -180,7 +186,7 @@ export function Navbar({ siteName = "Gamingqu", logoUrl = null }: Props) {
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
-          {session?.user ? (
+          {user ? (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <button className={iconBtn}>
@@ -195,10 +201,10 @@ export function Navbar({ siteName = "Gamingqu", logoUrl = null }: Props) {
               >
                 <div className="absolute -top-2 right-2 w-0 h-0 border-l-6 border-r-6 border-b-6 border-l-transparent border-r-transparent border-b-blue-600" />
                 <div className="px-3 py-2 text-sm font-semibold">
-                  {session.user.email ?? session.user.name ?? "Account"}
+                  {user.email ?? user.name ?? "Account"}
                 </div>
                 <div className="my-1 h-px w-full bg-white/20" />
-                {(session.user.role === "ADMIN" || session.user.role === "SUPERADMIN") && (
+                {(user.role === "ADMIN" || user.role === "SUPERADMIN") && (
                   <DropdownMenuItem asChild className="rounded-md px-3 py-2 hover:bg-zinc-500/20 focus:bg-zinc-500/20 text-white hover:text-white focus:text-white">
                     <Link href="/admin" className="flex items-center gap-2 font-semibold text-white">
                       <FiGrid className="h-4 w-4 text-white" /> Dashboard

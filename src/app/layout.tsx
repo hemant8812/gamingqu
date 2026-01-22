@@ -4,6 +4,8 @@ import "./globals.css";
 import { Navbar } from "@/components/Navbar";
 import { Providers } from "./providers";
 import { db } from "@/lib/prisma";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/auth";
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
 
@@ -36,6 +38,7 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const session = await getServerSession(authOptions).catch(() => null);
   const s = await db.websiteSetting.findUnique({ where: { id: "singleton" } }).catch(() => null);
   const siteName = s?.siteName ?? "Gamingqu";
   const faviconUrl = s?.faviconUrl ?? "/icons/logo.png";
@@ -49,7 +52,7 @@ export default async function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <Providers>
-          <Navbar siteName={siteName} logoUrl={logoUrl} />
+          <Navbar siteName={siteName} logoUrl={logoUrl} user={session?.user ?? null} />
           <main className="pt-16">{children}</main>
         </Providers>
       </body>

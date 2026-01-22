@@ -18,7 +18,7 @@ function SuspendedGuard() {
 
 export function Providers({ children }: PropsWithChildren) {
   return (
-    <SessionProvider refetchInterval={15} refetchOnWindowFocus>
+    <SessionProvider refetchInterval={0} refetchOnWindowFocus={false}>
       <SuspendedGuard />
       {children}
     </SessionProvider>
