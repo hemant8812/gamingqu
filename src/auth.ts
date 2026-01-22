@@ -78,15 +78,17 @@ export const authOptions: NextAuthOptions = {
         const u = user as User & { username?: string | null; id: string };
         token.id = u.id;
         token.username = u.username ?? null;
+        (token as Record<string, unknown>).suspended = false;
       } else if (token.id) {
         try {
           const u = await db.user.findUnique({
             where: { id: token.id as string },
-            select: { role: true, username: true },
+            select: { role: true, username: true, isSuspended: true },
           });
           if (u) {
             token.username = u.username ?? null;
             (token as Record<string, unknown>).role = u.role;
+            (token as Record<string, unknown>).suspended = !!u.isSuspended;
           }
         } catch {}
       }
@@ -99,6 +101,10 @@ export const authOptions: NextAuthOptions = {
         const roleVal = (token as Record<string, unknown>).role as "MEMBER" | "BOOSTER" | "ADMIN" | "SUPERADMIN" | undefined;
         if (roleVal) {
           session.user.role = roleVal;
+        }
+        const suspendedVal = (token as Record<string, unknown>).suspended as boolean | undefined;
+        if (typeof suspendedVal === "boolean") {
+          (session.user as Record<string, unknown>).isSuspended = suspendedVal;
         }
       }
       return session;

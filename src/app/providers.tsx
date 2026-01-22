@@ -1,7 +1,26 @@
 "use client";
-import { SessionProvider } from "next-auth/react";
+import { SessionProvider, useSession, signOut } from "next-auth/react";
 import type { PropsWithChildren } from "react";
+import { useEffect, useRef } from "react";
+
+function SuspendedGuard() {
+  const { data: session, status } = useSession();
+  const triggered = useRef(false);
+  useEffect(() => {
+    if (triggered.current) return;
+    if (status === "authenticated" && (session?.user as Record<string, unknown>)?.isSuspended === true) {
+      triggered.current = true;
+      signOut({ callbackUrl: "/" });
+    }
+  }, [status, session]);
+  return null;
+}
 
 export function Providers({ children }: PropsWithChildren) {
-  return <SessionProvider>{children}</SessionProvider>;
+  return (
+    <SessionProvider refetchInterval={15} refetchOnWindowFocus>
+      <SuspendedGuard />
+      {children}
+    </SessionProvider>
+  );
 }

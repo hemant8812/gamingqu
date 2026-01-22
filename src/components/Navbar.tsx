@@ -5,6 +5,7 @@ import Image from "next/image";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { FiSearch, FiHeart, FiUser, FiChevronDown, FiChevronUp, FiZap, FiPercent, FiBookOpen, FiThumbsUp, FiShield, FiMail, FiShoppingCart, FiLogOut, FiGrid, FiUsers, FiBarChart2, FiPlay, FiSettings } from "react-icons/fi";
 import { useSession, signOut } from "next-auth/react";
+import { usePathname } from "next/navigation";
 
 function GridRoundedIcon(props: React.SVGProps<SVGSVGElement>) {
   return (
@@ -36,6 +37,9 @@ export function Navbar({ siteName = "Gamingqu", logoUrl = null }: Props) {
   const [gridOpen, setGridOpen] = useState(false);
   const [showLogo, setShowLogo] = useState<boolean>(!!logoUrl);
   const { data: session } = useSession();
+  const pathname = usePathname();
+  const isAdminRole = session?.user?.role === "ADMIN" || session?.user?.role === "SUPERADMIN";
+  const isAdminContext = isAdminRole || (pathname?.startsWith("/admin") || pathname?.startsWith("/super-admin"));
   const iconBtn =
     "size-10 rounded-md inline-flex items-center justify-center text-white hover:bg-zinc-900 transition-colors border-0 ring-0 outline-none focus:outline-none focus:ring-0 focus:border-0";
   return (
@@ -65,12 +69,12 @@ export function Navbar({ siteName = "Gamingqu", logoUrl = null }: Props) {
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <span className="inline-flex items-center gap-2 text-white text-sm font-semibold cursor-pointer select-none">
-                {(session?.user?.role === "ADMIN" || session?.user?.role === "SUPERADMIN") && <FiGrid className="h-4 w-4 text-white" />}
-                {(session?.user?.role === "ADMIN" || session?.user?.role === "SUPERADMIN") ? "Main Menu" : "Choose your game"}
+                {isAdminContext && <FiGrid className="h-4 w-4 text-white" />}
+                {isAdminContext ? "Main Menu" : "Choose your game"}
                 <FiChevronDown className="ml-2 h-4 w-4" />
               </span>
             </DropdownMenuTrigger>
-            {(session?.user?.role === "ADMIN" || session?.user?.role === "SUPERADMIN") ? (
+            {isAdminContext ? (
               <DropdownMenuContent side="bottom" align="start" sideOffset={18} className="relative rounded-md bg-blue-600 text-white border-0 p-2 shadow-xl min-w-[14rem]">
                 <div className="absolute -top-2 left-0 w-0 h-0 border-l-6 border-r-6 border-b-6 border-l-transparent border-r-transparent border-b-blue-600" />
                 <DropdownMenuItem asChild className="group rounded-sm px-3 py-2 hover:bg-blue-500/30 focus:bg-blue-500/30 text-white">
@@ -117,7 +121,7 @@ export function Navbar({ siteName = "Gamingqu", logoUrl = null }: Props) {
               </DropdownMenuContent>
             )}
           </DropdownMenu>
-          {!(session?.user?.role === "ADMIN" || session?.user?.role === "SUPERADMIN") && (
+          {!isAdminContext && (
             <div className="hidden md:flex items-center gap-2 text-xs text-white">
               <span className="inline-flex items-center gap-1">
                 <span className="relative inline-flex">
