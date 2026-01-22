@@ -7,6 +7,7 @@ import { Providers } from "./providers";
 import { db } from "@/lib/prisma";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/auth";
+import { getWebsiteSettingCore } from "@/lib/settings";
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
 
@@ -21,7 +22,7 @@ const geistMono = Geist_Mono({
 });
 
 export async function generateMetadata(): Promise<Metadata> {
-  const s = await db.websiteSetting.findUnique({ where: { id: "singleton" } }).catch(() => null);
+  const s = await getWebsiteSettingCore();
   const faviconUrl = s?.faviconUrl ?? "/icons/logo.png";
   return {
     title: s?.siteName ?? "Gamingqu",
@@ -40,7 +41,7 @@ export default async function RootLayout({
   children: React.ReactNode;
 }>) {
   const session = await getServerSession(authOptions).catch(() => null);
-  const s = await db.websiteSetting.findUnique({ where: { id: "singleton" } }).catch(() => null);
+  const s = await getWebsiteSettingCore();
   let embeds: { id: string; code: string; placement: "HEAD" | "BODY" | "FOOTER" }[] = [];
   try {
     embeds = await db.embedCode.findMany({

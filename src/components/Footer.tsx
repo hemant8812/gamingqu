@@ -1,175 +1,10 @@
-import { db } from "@/lib/prisma";
 import Image from "next/image";
 import { FaTelegramPlane, FaYoutube, FaDiscord, FaFacebookF } from "react-icons/fa";
-
-type FooterSetting = {
-  disclaimer?: string | null;
-  shortDescription?: string | null;
-  copyright?: string | null;
-  legalAddress?: string | null;
-  regNumber?: string | null;
-  smTelegramUrl?: string | null;
-  smYoutubeUrl?: string | null;
-  smDiscordUrl?: string | null;
-  smFacebookUrl?: string | null;
-  badgeMastercardUrl?: string | null;
-  badgeVisaUrl?: string | null;
-  badgePciUrl?: string | null;
-  navHomeTitle?: string | null;
-  navHomeUrl?: string | null;
-  navAboutTitle?: string | null;
-  navAboutUrl?: string | null;
-  navFaqTitle?: string | null;
-  navFaqUrl?: string | null;
-  navBoosterTitle?: string | null;
-  navBoosterUrl?: string | null;
-  legal1Title?: string | null;
-  legal1Url?: string | null;
-  legal2Title?: string | null;
-  legal2Url?: string | null;
-  legal3Title?: string | null;
-  legal3Url?: string | null;
-  legal4Title?: string | null;
-  legal4Url?: string | null;
-  pmVisaUrl?: string | null;
-  pmMastercardUrl?: string | null;
-  pmGpayUrl?: string | null;
-  pmApplePayUrl?: string | null;
-  pmPaypalUrl?: string | null;
-  pmStripeUrl?: string | null;
-  isActive?: boolean | null;
-};
+import { getFooterSettings, getWebsiteSettingCore } from "@/lib/settings";
 
 export async function Footer() {
-  let s: FooterSetting | null = null;
-  try {
-    s = await db.footerSetting.findUnique({
-      where: { id: "singleton" },
-      select: {
-        disclaimer: true,
-        shortDescription: true,
-        copyright: true,
-        legalAddress: true,
-        regNumber: true,
-        smTelegramUrl: true,
-        smYoutubeUrl: true,
-        smDiscordUrl: true,
-        smFacebookUrl: true,
-        badgeMastercardUrl: true,
-        badgeVisaUrl: true,
-        badgePciUrl: true,
-        navHomeTitle: true,
-        navHomeUrl: true,
-        navAboutTitle: true,
-        navAboutUrl: true,
-        navFaqTitle: true,
-        navFaqUrl: true,
-        navBoosterTitle: true,
-        navBoosterUrl: true,
-        legal1Title: true,
-        legal1Url: true,
-        legal2Title: true,
-        legal2Url: true,
-        legal3Title: true,
-        legal3Url: true,
-        legal4Title: true,
-        legal4Url: true,
-        pmVisaUrl: true,
-        pmMastercardUrl: true,
-        pmGpayUrl: true,
-        pmApplePayUrl: true,
-        pmPaypalUrl: true,
-        pmStripeUrl: true,
-        isActive: true,
-      },
-    });
-    if (!s) {
-      s = await db.footerSetting.findFirst({
-        where: {
-          OR: [
-            { disclaimer: { not: null } },
-            { copyright: { not: null } },
-            { legalAddress: { not: null } },
-            { regNumber: { not: null } },
-            { badgeMastercardUrl: { not: null } },
-            { badgeVisaUrl: { not: null } },
-            { badgePciUrl: { not: null } },
-            { navHomeTitle: { not: null } },
-            { navHomeUrl: { not: null } },
-            { navAboutTitle: { not: null } },
-            { navAboutUrl: { not: null } },
-            { navFaqTitle: { not: null } },
-            { navFaqUrl: { not: null } },
-            { navBoosterTitle: { not: null } },
-            { navBoosterUrl: { not: null } },
-            { legal1Title: { not: null } },
-            { legal1Url: { not: null } },
-            { legal2Title: { not: null } },
-            { legal2Url: { not: null } },
-            { legal3Title: { not: null } },
-            { legal3Url: { not: null } },
-            { legal4Title: { not: null } },
-            { legal4Url: { not: null } },
-            { pmVisaUrl: { not: null } },
-            { pmMastercardUrl: { not: null } },
-            { pmGpayUrl: { not: null } },
-            { pmApplePayUrl: { not: null } },
-            { pmPaypalUrl: { not: null } },
-            { pmStripeUrl: { not: null } },
-            { shortDescription: { not: null } },
-            { smTelegramUrl: { not: null } },
-            { smYoutubeUrl: { not: null } },
-            { smDiscordUrl: { not: null } },
-            { smFacebookUrl: { not: null } },
-          ],
-        },
-        select: {
-          disclaimer: true,
-          shortDescription: true,
-          copyright: true,
-          legalAddress: true,
-          regNumber: true,
-          smTelegramUrl: true,
-          smYoutubeUrl: true,
-          smDiscordUrl: true,
-          smFacebookUrl: true,
-          badgeMastercardUrl: true,
-          badgeVisaUrl: true,
-          badgePciUrl: true,
-          navHomeTitle: true,
-          navHomeUrl: true,
-          navAboutTitle: true,
-          navAboutUrl: true,
-          navFaqTitle: true,
-          navFaqUrl: true,
-          navBoosterTitle: true,
-          navBoosterUrl: true,
-          legal1Title: true,
-          legal1Url: true,
-          legal2Title: true,
-          legal2Url: true,
-          legal3Title: true,
-          legal3Url: true,
-          legal4Title: true,
-          legal4Url: true,
-          pmVisaUrl: true,
-          pmMastercardUrl: true,
-          pmGpayUrl: true,
-          pmApplePayUrl: true,
-          pmPaypalUrl: true,
-          pmStripeUrl: true,
-          isActive: true,
-        },
-        orderBy: { updatedAt: "desc" },
-      });
-    }
-  } catch {
-    s = null;
-  }
-  const ws = await db.websiteSetting.findUnique({
-    where: { id: "singleton" },
-    select: { siteName: true, logoUrl: true },
-  });
+  const s = await getFooterSettings();
+  const ws = await getWebsiteSettingCore();
   const active = s?.isActive ?? true;
   const disclaimer = (s?.disclaimer ?? "").trim();
   const shortDesc = (s?.shortDescription ?? "").trim();
@@ -277,13 +112,13 @@ export async function Footer() {
           </div>
           <div className="">
             <div className="text-white font-semibold text-sm">Payment Methods</div>
-            <div className="mt-3 grid grid-cols-3 gap-3">
-              {pmVisa ? <Image src={pmVisa} alt="Visa" width={64} height={32} className="h-8 w-auto" unoptimized /> : null}
-              {pmMc ? <Image src={pmMc} alt="Mastercard" width={64} height={32} className="h-8 w-auto" unoptimized /> : null}
-              {pmGpay ? <Image src={pmGpay} alt="Google Pay" width={64} height={32} className="h-8 w-auto" unoptimized /> : null}
-              {pmApplePay ? <Image src={pmApplePay} alt="Apple Pay" width={64} height={32} className="h-8 w-auto" unoptimized /> : null}
-              {pmPaypal ? <Image src={pmPaypal} alt="PayPal" width={64} height={32} className="h-8 w-auto" unoptimized /> : null}
-              {pmStripe ? <Image src={pmStripe} alt="Stripe" width={64} height={32} className="h-8 w-auto" unoptimized /> : null}
+            <div className="mt-3 grid grid-cols-3 gap-6 items-center">
+              {pmPaypal ? <Image src={pmPaypal} alt="PayPal" width={120} height={48} className="h-12 w-auto" unoptimized /> : null}
+              {pmMc ? <Image src={pmMc} alt="Mastercard" width={120} height={48} className="h-12 w-auto" unoptimized /> : null}
+              {pmVisa ? <Image src={pmVisa} alt="Visa" width={120} height={48} className="h-12 w-auto" unoptimized /> : null}
+              {pmApplePay ? <Image src={pmApplePay} alt="Apple Pay" width={120} height={48} className="h-12 w-auto" unoptimized /> : null}
+              {pmGpay ? <Image src={pmGpay} alt="Google Pay" width={120} height={48} className="h-12 w-auto" unoptimized /> : null}
+              {pmStripe ? <Image src={pmStripe} alt="Stripe" width={120} height={48} className="h-12 w-auto" unoptimized /> : null}
             </div>
           </div>
         </div>
