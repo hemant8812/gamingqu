@@ -59,21 +59,21 @@ export default async function RootLayout({
       <head>
         <link rel="icon" href={faviconUrl} />
         {headEmbeds.map((e) => (
-          <script key={e.id} dangerouslySetInnerHTML={{ __html: e.code }} />
+          <script key={e.id} dangerouslySetInnerHTML={{ __html: `try{document.head.insertAdjacentHTML("beforeend", ${JSON.stringify(e.code)})}catch{}` }} />
         ))}
       </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         {bodyEmbeds.map((e) => (
-          <script key={e.id} dangerouslySetInnerHTML={{ __html: e.code }} />
+          <script key={e.id} dangerouslySetInnerHTML={{ __html: `try{document.body.insertAdjacentHTML("afterbegin", ${JSON.stringify(e.code)})}catch{}` }} />
         ))}
         <Providers>
           <Navbar siteName={siteName} logoUrl={logoUrl} user={session?.user ?? null} />
           <main className="pt-16">{children}</main>
         </Providers>
         {footerEmbeds.map((e) => (
-          <script key={e.id} dangerouslySetInnerHTML={{ __html: e.code }} />
+          <script key={e.id} dangerouslySetInnerHTML={{ __html: `try{document.body.insertAdjacentHTML("beforeend", ${JSON.stringify(e.code)})}catch{}` }} />
         ))}
       </body>
     </html>
