@@ -159,3 +159,19 @@ model EmbedCode {
   @@index([placement, isActive])
   @@index([createdAt])
 }
+
+model FooterSetting {
+  id                 String   @id @default("singleton")
+  disclaimer         String?  @db.Text
+  copyright          String?
+  legalAddress       String?
+  regNumber          String?
+  badgeMastercardUrl String?
+  badgeVisaUrl       String?
+  badgePciUrl        String?
+  isActive           Boolean  @default(true)
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+
+  @@index([isActive])
+}

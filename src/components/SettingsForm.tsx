@@ -11,6 +11,13 @@ type Initial = {
   faviconUrl?: string | null;
   contactEmail?: string | null;
   contactPhone?: string | null;
+  footerDisclaimer?: string | null;
+  footerCopyright?: string | null;
+  footerLegalAddress?: string | null;
+  footerRegNumber?: string | null;
+  badgeMastercardUrl?: string | null;
+  badgeVisaUrl?: string | null;
+  badgePciUrl?: string | null;
 };
 
 export function SettingsForm({ initial }: { initial: Initial }) {
@@ -24,12 +31,12 @@ export function SettingsForm({ initial }: { initial: Initial }) {
       const fd = new FormData(e.currentTarget);
       const res = await fetch("/api/admin/settings", { method: "POST", body: fd });
       if (!res.ok) {
-        router.push("/admin/settings?toast=error");
+        router.push("/admin/settings?toast=error&tab=general");
         return;
       }
-      router.push("/admin/settings?toast=saved");
+      router.push("/admin/settings?toast=saved&tab=general");
     } catch {
-      router.push("/admin/settings?toast=error");
+      router.push("/admin/settings?toast=error&tab=general");
     } finally {
       setBusy(false);
     }
@@ -102,4 +109,3 @@ export function SettingsForm({ initial }: { initial: Initial }) {
     </form>
   );
 }
-

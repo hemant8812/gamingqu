@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { Navbar } from "@/components/Navbar";
+import { Footer } from "@/components/Footer";
 import { Providers } from "./providers";
 import { db } from "@/lib/prisma";
 import { getServerSession } from "next-auth";
@@ -72,6 +73,7 @@ export default async function RootLayout({
           <Navbar siteName={siteName} logoUrl={logoUrl} user={session?.user ?? null} />
           <main className="pt-16">{children}</main>
         </Providers>
+        <Footer />
         {footerEmbeds.map((e) => (
           <script key={e.id} dangerouslySetInnerHTML={{ __html: `try{document.body.insertAdjacentHTML("beforeend", ${JSON.stringify(e.code)})}catch{}` }} />
         ))}

@@ -222,11 +222,6 @@ export default function Home() {
           </Card>
         </section>
       </main>
-      <footer className="mt-10 border-t border-zinc-900">
-        <div className="mx-auto max-w-7xl px-6 py-8 text-sm text-zinc-500">
-          © {new Date().getFullYear()} Gamingqu. All rights reserved.
-        </div>
-      </footer>
     </div>
   );
 }

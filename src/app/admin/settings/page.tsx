@@ -5,7 +5,8 @@ import { SettingsForm } from "@/components/SettingsForm";
 import { PageToast } from "@/components/PageToast";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { EmbedSettings } from "@/components/EmbedSettings";
-import { Settings as SettingsIcon, Code2 as CodeIcon } from "lucide-react";
+import { Settings as SettingsIcon, Code2 as CodeIcon, Layout as LayoutIcon } from "lucide-react";
+import { FooterSettingsForm } from "@/components/FooterSettingsForm";
 
 export default async function AdminSettingsPage({ searchParams }: { searchParams?: Promise<Record<string, string | string[] | undefined>> }) {
   const session = await getServerSession(authOptions);
@@ -24,6 +25,24 @@ export default async function AdminSettingsPage({ searchParams }: { searchParams
     where: { id: "singleton" },
     select: { siteName: true, tagline: true, logoUrl: true, faviconUrl: true, contactEmail: true, contactPhone: true },
   });
+  const footerClient = (db as unknown as Record<string, unknown>)["footerSetting"] as
+    | { findUnique: (args: unknown) => Promise<any> }
+    | undefined;
+  const footer = footerClient
+    ? await footerClient.findUnique({
+        where: { id: "singleton" },
+        select: {
+          disclaimer: true,
+          copyright: true,
+          legalAddress: true,
+          regNumber: true,
+          badgeMastercardUrl: true,
+          badgeVisaUrl: true,
+          badgePciUrl: true,
+          isActive: true,
+        },
+      }).catch(() => null)
+    : null;
   return (
     <div className="min-h-screen bg-black text-white">
       <div className="mx-auto max-w-7xl px-6 py-8">
@@ -31,11 +50,15 @@ export default async function AdminSettingsPage({ searchParams }: { searchParams
         <h1 className="text-3xl font-bold">Website Settings</h1>
         <p className="mt-2 text-sm text-zinc-400">Pengaturan umum dan embed kode.</p>
         <section className="mt-6">
-          <Tabs defaultValue={tab === "embed" ? "embed" : "general"}>
+          <Tabs defaultValue={tab === "footer" ? "footer" : tab === "embed" ? "embed" : "general"}>
             <TabsList>
               <TabsTrigger value="general">
                 <SettingsIcon />
                 <span>Umum</span>
+              </TabsTrigger>
+              <TabsTrigger value="footer">
+                <LayoutIcon />
+                <span>Footer</span>
               </TabsTrigger>
               <TabsTrigger value="embed">
                 <CodeIcon />
@@ -49,7 +72,18 @@ export default async function AdminSettingsPage({ searchParams }: { searchParams
                 logoUrl: setting?.logoUrl ?? null,
                 faviconUrl: setting?.faviconUrl ?? null,
                 contactEmail: setting?.contactEmail ?? "",
-                contactPhone: setting?.contactPhone ?? "",
+                contactPhone: setting?.contactPhone ?? ""
+              }} />
+            </TabsContent>
+            <TabsContent value="footer" className="mt-4">
+              <FooterSettingsForm initial={{
+                disclaimer: footer?.disclaimer ?? "",
+                copyright: footer?.copyright ?? "",
+                legalAddress: footer?.legalAddress ?? "",
+                regNumber: footer?.regNumber ?? "",
+                badgeMastercardUrl: footer?.badgeMastercardUrl ?? "",
+                badgeVisaUrl: footer?.badgeVisaUrl ?? "",
+                badgePciUrl: footer?.badgePciUrl ?? "",
               }} />
             </TabsContent>
             <TabsContent value="embed" className="mt-4">

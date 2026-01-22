@@ -29,7 +29,17 @@ async function saveBrandFile(file: File | null, kind: "logo" | "favicon"): Promi
 export async function GET() {
   try {
     const s = await db.websiteSetting.findUnique({ where: { id: "singleton" } });
-    return NextResponse.json(s ?? { id: "singleton", siteName: "Gamingqu" });
+    let f: unknown = null;
+    const footerClient = (db as unknown as Record<string, unknown>)["footerSetting"] as
+      | { findUnique: (args: unknown) => Promise<any> }
+      | undefined;
+    if (footerClient?.findUnique) {
+      f = await footerClient.findUnique({ where: { id: "singleton" } });
+    }
+    return NextResponse.json({
+      website: s ?? { id: "singleton", siteName: "Gamingqu" },
+      footer: f ?? { id: "singleton" },
+    });
   } catch {
     return NextResponse.json({ error: "Server error" }, { status: 500 });
   }
@@ -71,6 +81,43 @@ export async function POST(req: Request) {
         faviconUrl: faviconUrl ?? undefined,
       },
     });
+    const disclaimer = ((form.get("footerDisclaimer") as string | null) ?? "").trim();
+    const copyright = ((form.get("footerCopyright") as string | null) ?? "").trim();
+    const legalAddress = ((form.get("footerLegalAddress") as string | null) ?? "").trim();
+    const regNumber = ((form.get("footerRegNumber") as string | null) ?? "").trim();
+    const badgeMastercardUrl = ((form.get("badgeMastercardUrl") as string | null) ?? "").trim();
+    const badgeVisaUrl = ((form.get("badgeVisaUrl") as string | null) ?? "").trim();
+    const badgePciUrl = ((form.get("badgePciUrl") as string | null) ?? "").trim();
+    const footerClient2 = (db as unknown as Record<string, unknown>)["footerSetting"] as
+      | { upsert: (args: unknown) => Promise<any> }
+      | undefined;
+    if (footerClient2?.upsert) {
+      const valOrNull = (v: string) => (v.length > 0 ? v : null);
+      await footerClient2.upsert({
+        where: { id: "singleton" },
+        update: {
+          disclaimer: valOrNull(disclaimer),
+          copyright: valOrNull(copyright),
+          legalAddress: valOrNull(legalAddress),
+          regNumber: valOrNull(regNumber),
+          badgeMastercardUrl: valOrNull(badgeMastercardUrl),
+          badgeVisaUrl: valOrNull(badgeVisaUrl),
+          badgePciUrl: valOrNull(badgePciUrl),
+          isActive: true,
+        },
+        create: {
+          id: "singleton",
+          disclaimer: valOrNull(disclaimer),
+          copyright: valOrNull(copyright),
+          legalAddress: valOrNull(legalAddress),
+          regNumber: valOrNull(regNumber),
+          badgeMastercardUrl: valOrNull(badgeMastercardUrl),
+          badgeVisaUrl: valOrNull(badgeVisaUrl),
+          badgePciUrl: valOrNull(badgePciUrl),
+          isActive: true,
+        },
+      });
+    }
     revalidatePath("/admin/settings");
     revalidatePath("/");
     return NextResponse.json({ ok: true, data: updated, toast: "saved" });
