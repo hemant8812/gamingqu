@@ -4,9 +4,21 @@ import { Card } from "@/components/ui/card";
 import { FiPlay, FiRefreshCw } from "react-icons/fi";
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
+import { Flame } from "lucide-react";
+
+type GameItem = {
+  slug: string;
+  title: string;
+  subtitle?: string;
+  offers?: number;
+  imageUrl?: string | null;
+  iconUrl?: string | null;
+  isHotOffer?: boolean;
+};
 
 export default function Home() {
-  const moreCount = 150;
+  const [moreCount, setMoreCount] = useState(0);
+  const [games, setGames] = useState<GameItem[]>([]);
   const heroSlides = [
     {
       subtitle: "Boost your game — and your wallet",
@@ -39,6 +51,21 @@ export default function Home() {
     measure();
     window.addEventListener("resize", measure);
     return () => window.removeEventListener("resize", measure);
+  }, []);
+  useEffect(() => {
+    const load = async () => {
+      try {
+        const res = await fetch("/api/games", { cache: "no-store" });
+        const data = await res.json();
+        if (Array.isArray(data?.items)) {
+          setGames(data.items);
+        }
+        if (typeof data?.total === "number") {
+          setMoreCount(data.total);
+        }
+      } catch {}
+    };
+    load();
   }, []);
   const goToSlide = (n: number) => {
     setHeroSlide(n);
@@ -115,21 +142,23 @@ export default function Home() {
             {games.map((g) => (
               <Card
                 key={g.slug}
-                className="relative overflow-hidden border-zinc-900 rounded-[24px] bg-gradient-to-br from-zinc-900/60 to-black/60 p-0 h-40 md:h-44"
+                className="relative overflow-hidden border-zinc-900 rounded-[24px] bg-black p-0 h-40 md:h-44"
               >
                 <div className="absolute inset-0">
-                  <div className="absolute inset-0 bg-gradient-to-br from-black/40 via-black/30 to-black/70" />
-                  <div className="absolute right-0 bottom-0 w-40 h-40 bg-gradient-to-tr from-blue-600/50 to-cyan-500/40 blur-2xl" />
+                  {g.imageUrl && <Image src={g.imageUrl} alt={g.title} fill className="object-cover" sizes="320px" />}
+                  <div className="absolute inset-0 bg-gradient-to-br from-black/40 via-black/40 to-black/70" />
                 </div>
                 <div className="relative z-10 p-5">
                   <div className="flex items-center justify-start">
                     <h3 className="text-lg font-semibold text-white">{g.title}</h3>
                   </div>
-                  <div className="mt-2 text-xs text-white">{g.subtitle}</div>
                 </div>
-                <span className="absolute z-10 bottom-4 right-4 rounded-md bg-black text-white font-bold text-xs px-3 py-1">
-                  {g.offers} offers
-                </span>
+                {g.isHotOffer && (
+                  <span className="absolute z-10 bottom-3 left-3 rounded-md bg-red-600 text-white font-bold text-[10px] px-3 py-1 inline-flex items-center gap-1.5">
+                    <Flame className="h-3.5 w-3.5" />
+                    HOT Offers
+                  </span>
+                )}
               </Card>
             ))}
           </div>
@@ -209,20 +238,7 @@ type HotDeal = {
   logo?: string
 }
 
-const games = [
-  { slug: "wow", title: "World of Warcraft", offers: 972, subtitle: "New Raid Deals" },
-  { slug: "destiny2", title: "Destiny 2", offers: 1156, subtitle: "Equilibrium Dungeon" },
-  { slug: "wotlk", title: "WoW TBC Classic Anniversary", offers: 157, subtitle: "Events & Boosts" },
-  { slug: "fc26", title: "FC 26", offers: 19, subtitle: "Cheapest Coins" },
-  { slug: "cod", title: "Call of Duty", offers: 1424, subtitle: "BO7 Camos" },
-  { slug: "arc", title: "ARC Raiders", offers: 58, subtitle: "Buy Blueprints" },
-  { slug: "clash", title: "Clash Royale", offers: 3097, subtitle: "Arena Boosts" },
-  { slug: "pandaria", title: "WoW Mists of Pandaria Classic", offers: 298, subtitle: "Leveling & More" },
-  { slug: "poe2", title: "Path of Exile 2", offers: 333, subtitle: "Orbs For Sale" },
-  { slug: "apex", title: "Apex Legends", offers: 245, subtitle: "Ranked Boosts" },
-  { slug: "fortnite", title: "Fortnite", offers: 187, subtitle: "Skins & Wins" },
-  { slug: "pubg", title: "PUBG", offers: 132, subtitle: "KD & Wins" },
-];
+ 
 
 const hotDeals: HotDeal[] = [
   {

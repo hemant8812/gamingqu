@@ -18,6 +18,9 @@ const nextConfig: NextConfig = {
   images: {
     qualities: [100, 75],
   },
+  serverActions: {
+    bodySizeLimit: "10mb",
+  },
   async headers() {
     return [
       {
