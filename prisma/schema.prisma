@@ -140,3 +140,22 @@ model WebsiteSetting {
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
 }
+
+enum EmbedPlacement {
+  HEAD
+  BODY
+  FOOTER
+}
+
+model EmbedCode {
+  id        String         @id @default(cuid())
+  name      String
+  code      String         @db.Text
+  placement EmbedPlacement
+  isActive  Boolean        @default(true)
+  createdAt DateTime       @default(now())
+  updatedAt DateTime       @updatedAt
+
+  @@index([placement, isActive])
+  @@index([createdAt])
+}
