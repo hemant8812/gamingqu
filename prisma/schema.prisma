@@ -163,9 +163,36 @@ model EmbedCode {
 model FooterSetting {
   id                 String   @id @default("singleton")
   disclaimer         String?  @db.Text
+  shortDescription   String?  @db.Text
   copyright          String?
   legalAddress       String?
   regNumber          String?
+  smTelegramUrl      String?
+  smYoutubeUrl       String?
+  smDiscordUrl       String?
+  smFacebookUrl      String?
+  navHomeTitle       String?
+  navHomeUrl         String?
+  navAboutTitle      String?
+  navAboutUrl        String?
+  navFaqTitle        String?
+  navFaqUrl          String?
+  navBoosterTitle    String?
+  navBoosterUrl      String?
+  legal1Title        String?
+  legal1Url          String?
+  legal2Title        String?
+  legal2Url          String?
+  legal3Title        String?
+  legal3Url          String?
+  legal4Title        String?
+  legal4Url          String?
+  pmVisaUrl          String?
+  pmMastercardUrl    String?
+  pmGpayUrl          String?
+  pmApplePayUrl      String?
+  pmPaypalUrl        String?
+  pmStripeUrl        String?
   badgeMastercardUrl String?
   badgeVisaUrl       String?
   badgePciUrl        String?
