@@ -4,6 +4,7 @@ import { PrismaAdapter } from "@next-auth/prisma-adapter";
 import { db } from "@/lib/prisma";
 import { compare } from "bcrypt";
 import { z } from "zod";
+import { normalizeEmail } from "@/lib/sanitize";
 
 const LOGIN_WINDOW_MS = 15 * 60 * 1000;
 const LOGIN_MAX_ATTEMPTS = 10;
@@ -19,9 +20,6 @@ declare global {
   var __loginAttemptMap__: Map<string, { windowStart: number; count: number }> | undefined;
 }
 
-function normalizeEmail(email: string): string {
-  return email.trim().toLowerCase();
-}
 
 export const authOptions: NextAuthOptions = {
   adapter: PrismaAdapter(db),
@@ -46,7 +44,10 @@ export const authOptions: NextAuthOptions = {
         if (rec && now - rec.windowStart <= LOGIN_WINDOW_MS && rec.count >= LOGIN_MAX_ATTEMPTS) {
           return null;
         }
-        const user = await db.user.findUnique({ where: { email } });
+        const user = await db.user.findUnique({
+          where: { email },
+          select: { id: true, username: true, name: true, email: true, image: true, role: true, password: true, isSuspended: true },
+        });
         if (!user || !user.password || user.isSuspended) {
           const prev = rec && now - rec.windowStart <= LOGIN_WINDOW_MS ? rec : { windowStart: now, count: 0 };
           globalThis.__loginAttemptMap__.set(email, { windowStart: prev.windowStart, count: prev.count + 1 });

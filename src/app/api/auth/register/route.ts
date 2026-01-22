@@ -2,6 +2,7 @@ import { db } from "@/lib/prisma";
 import { hash } from "bcrypt";
 import { NextResponse } from "next/server";
 import { z } from "zod";
+import { sanitizePlain, normalizeEmail } from "@/lib/sanitize";
 
 const RegisterSchema = z.object({
   name: z.string().min(2).max(100),
@@ -9,12 +10,6 @@ const RegisterSchema = z.object({
   password: z.string().min(8).max(128),
 });
 
-function sanitizePlain(input: string): string {
-  return input.replace(/<[^>]*>/g, "").trim();
-}
-function normalizeEmail(email: string): string {
-  return sanitizePlain(email).toLowerCase();
-}
 function baseUsernameFrom(name: string, email: string): string {
   const local = email.split("@")[0] || "user";
   const source = (name || local).toLowerCase();

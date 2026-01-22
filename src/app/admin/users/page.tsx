@@ -12,6 +12,7 @@ import { Trash2, Users as UsersIcon, User as UserIcon, Zap as ZapIcon, UserX as 
 import Link from "next/link";
 import { PageToast } from "@/components/PageToast";
 import { UsersSearchInput } from "@/components/UsersSearchInput";
+import { generateNextUserId } from "@/lib/userId";
 
 const ALLOWED_ROLES: Role[] = ["SUPERADMIN", "ADMIN", "BOOSTER", "MEMBER"];
 const ROLE_LABEL: Record<Role, string> = {
@@ -32,26 +33,6 @@ function resolveRole(roleInput: string | null): Role {
   return ALLOWED_ROLES.includes(v) ? v : "MEMBER";
 }
 
-async function generateNextUserId(prefix: string, minDigits: number) {
-  const last = await db.user.findMany({
-    where: { id: { startsWith: prefix } },
-    select: { id: true },
-    orderBy: { id: "desc" },
-    take: 1,
-  });
-  let nextNum = 1;
-  let width = minDigits;
-  if (last.length > 0) {
-    const curr = last[0].id;
-    const numStr = curr.slice(prefix.length);
-    const n = parseInt(numStr, 10);
-    if (!Number.isNaN(n)) {
-      nextNum = n + 1;
-      width = Math.max(minDigits, numStr.length);
-    }
-  }
-  return `${prefix}${String(nextNum).padStart(width, "0")}`;
-}
 
 export default async function AdminUsersPage({ searchParams }: { searchParams: Promise<Record<string, string | string[] | undefined>> }) {
   const sp = await searchParams;
@@ -195,7 +176,7 @@ export default async function AdminUsersPage({ searchParams }: { searchParams: P
     const myId = session?.user?.id ?? "";
     if (!id) return;
     if (id === myId) return;
-    const target = await db.user.findUnique({ where: { id } });
+    const target = await db.user.findUnique({ where: { id }, select: { role: true } });
     if (target?.role === "SUPERADMIN") return;
     try {
       await db.user.delete({ where: { id } });

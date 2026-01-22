@@ -1,15 +1,9 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { db } from "@/lib/prisma";
+import { normalizeEmail } from "@/lib/sanitize";
 
 const Schema = z.object({ email: z.string().email().max(254) });
-
-function sanitize(input: string): string {
-  return input.replace(/<[^>]*>/g, "").trim();
-}
-function normalizeEmail(email: string): string {
-  return sanitize(email).toLowerCase();
-}
 
 export async function POST(req: Request) {
   try {

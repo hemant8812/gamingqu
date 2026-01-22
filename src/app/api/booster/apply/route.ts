@@ -13,7 +13,7 @@ export async function POST(req: Request) {
   const userId = session.user.id ?? undefined;
   let resolvedUserId = userId;
   if (!resolvedUserId && session.user?.email) {
-    const u = await db.user.findUnique({ where: { email: session.user.email } });
+    const u = await db.user.findUnique({ where: { email: session.user.email }, select: { id: true } });
     if (u) {
       resolvedUserId = u.id;
     }

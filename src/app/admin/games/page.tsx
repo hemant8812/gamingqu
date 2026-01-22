@@ -47,7 +47,12 @@ export default async function AdminGamesPage({ searchParams }: { searchParams: P
   const games = await getGames(q || undefined);
   const editParam = sp?.edit;
   const editId = typeof editParam === "string" ? editParam : Array.isArray(editParam) ? editParam[0] ?? null : null;
-  const editing = editId ? await db.game.findUnique({ where: { id: editId } }) : null;
+  const editing = editId
+    ? await db.game.findUnique({
+        where: { id: editId },
+        select: { id: true, name: true, slug: true, imageUrl: true, iconUrl: true, description: true, isHotOffer: true, isActive: true },
+      })
+    : null;
   const toastParam = sp?.toast;
   const toast = typeof toastParam === "string" ? toastParam : Array.isArray(toastParam) ? toastParam[0] ?? undefined : undefined;
   const toastMessage = toast

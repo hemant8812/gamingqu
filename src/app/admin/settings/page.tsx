@@ -15,7 +15,10 @@ export default async function AdminSettingsPage({ searchParams }: { searchParams
   const toast = typeof toastParam === "string" ? toastParam : Array.isArray(toastParam) ? toastParam[0] ?? undefined : undefined;
   const toastMessage = toast ? (toast === "error" ? "Terjadi kesalahan saat menyimpan pengaturan" : "Pengaturan berhasil disimpan") : undefined;
   const toastType = toast === "error" ? "error" : "success";
-  const setting = await db.websiteSetting.findUnique({ where: { id: "singleton" } });
+  const setting = await db.websiteSetting.findUnique({
+    where: { id: "singleton" },
+    select: { siteName: true, tagline: true, logoUrl: true, faviconUrl: true, contactEmail: true, contactPhone: true },
+  });
   return (
     <div className="min-h-screen bg-black text-white">
       <div className="mx-auto max-w-7xl px-6 py-8">

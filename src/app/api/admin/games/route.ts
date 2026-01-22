@@ -45,7 +45,7 @@ export async function POST(req: Request) {
       baseSlug = baseSlug.slice(0, 60).replace(/-+$/, "");
     }
     let slug = baseSlug || `game-${Date.now()}`;
-    const existing = await db.game.findUnique({ where: { slug } });
+    const existing = await db.game.findUnique({ where: { slug }, select: { id: true } });
     if (existing) {
       slug = `${slug}-${Math.random().toString(36).slice(2, 6)}`;
     }
@@ -88,7 +88,7 @@ export async function PUT(req: Request) {
     if (!id) {
       return NextResponse.json({ error: "Invalid id" }, { status: 400 });
     }
-    const current = await db.game.findUnique({ where: { id } });
+    const current = await db.game.findUnique({ where: { id }, select: { id: true, name: true, slug: true, imageUrl: true, iconUrl: true } });
     if (!current) {
       return NextResponse.json({ error: "Not found" }, { status: 404 });
     }
@@ -97,7 +97,7 @@ export async function PUT(req: Request) {
       baseSlug = baseSlug.slice(0, 60).replace(/-+$/, "");
     }
     let slug = baseSlug || current.slug;
-    const existing = await db.game.findUnique({ where: { slug } });
+    const existing = await db.game.findUnique({ where: { slug }, select: { id: true } });
     if (existing && existing.id !== id) {
       slug = `${slug}-${Math.random().toString(36).slice(2, 6)}`;
     }
@@ -121,4 +121,3 @@ export async function PUT(req: Request) {
     return NextResponse.json({ error: "Server error" }, { status: 500 });
   }
 }
-
