@@ -19,7 +19,7 @@ type GameItem = {
 export default function Home() {
   const [moreCount, setMoreCount] = useState(0);
   const [games, setGames] = useState<GameItem[]>([]);
-  const heroSlides = [
+  const [heroSlides, setHeroSlides] = useState([
     {
       subtitle: "Boost your game — and your wallet",
       title: "What boosts you, makes you",
@@ -41,7 +41,7 @@ export default function Home() {
       cta: "Read more",
       image: "https://picsum.photos/seed/hot/960/540",
     },
-  ];
+  ]);
   const [heroSlide, setHeroSlide] = useState(0);
   const [dir, setDir] = useState<1 | -1>(1);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -55,13 +55,29 @@ export default function Home() {
   useEffect(() => {
     const load = async () => {
       try {
-        const res = await fetch("/api/games", { cache: "no-store" });
-        const data = await res.json();
+        const [gamesRes, bannerRes] = await Promise.all([
+          fetch("/api/games", { cache: "no-store" }),
+          fetch("/api/benner", { cache: "no-store" }),
+        ]);
+        const data = await gamesRes.json();
         if (Array.isArray(data?.items)) {
           setGames(data.items);
         }
         if (typeof data?.total === "number") {
           setMoreCount(data.total);
+        }
+        const bannerData = await bannerRes.json().catch(() => null);
+        if (bannerData?.banners && Array.isArray(bannerData.banners) && bannerData.banners.length > 0) {
+          const slides = bannerData.banners.slice(0, 10).map((b: any, idx: number) => ({
+            subtitle: b.subtitle || "",
+            title: b.title || "",
+            href: b.buttonLink || "/",
+            cta: "Read more",
+            image: (b.buttonImageUrl && typeof b.buttonImageUrl === "string" ? b.buttonImageUrl : `https://picsum.photos/seed/benner-${idx}/960/540`),
+          }));
+          setHeroSlides(slides);
+          setHeroSlide(0);
+          setDir(1);
         }
       } catch {}
     };
@@ -74,16 +90,18 @@ export default function Home() {
     else if (n === last) setDir(-1);
   };
   useEffect(() => {
+    if (heroSlides.length <= 1) return;
     const id = setInterval(() => {
       setHeroSlide((curr) => {
         const last = heroSlides.length - 1;
+        if (last <= 0) return 0;
         if (curr === 0) {
           setDir(1);
           return 1;
         }
         if (curr === last) {
           setDir(-1);
-          return 1;
+          return last - 1;
         }
         return curr + dir;
       });
@@ -108,8 +126,8 @@ export default function Home() {
                     style={{ minWidth: pageWidth || undefined }}
                   >
                     <div className="space-y-3 max-w-xl">
-                      <div className="text-white text-sm">{s.subtitle}</div>
                       <div className="text-3xl md:text-5xl font-black text-white tracking-tight">{s.title}</div>
+                      <div className="text-white text-sm">{s.subtitle}</div>
                       <Link href={s.href} className="inline-flex rounded-md bg-blue-600 px-4 py-2 text-sm hover:bg-blue-500">
                         {s.cta}
                       </Link>
@@ -117,9 +135,6 @@ export default function Home() {
                     <div className="relative justify-self-end w-full md:w-[420px] aspect-[16/9] rounded-[24px] overflow-hidden ring-1 ring-white/10 shadow-lg mr-8 md:mr-18">
                       <Image src={s.image} alt={s.title} fill className="object-cover" unoptimized sizes="420px" />
                       <div className="hero-stripes" />
-                      <div className="absolute right-6 top-1/2 -translate-y-1/2 hero-play">
-                        <FiPlay className="text-white/90 h-6 w-6" />
-                      </div>
                     </div>
                   </div>
                 ))}

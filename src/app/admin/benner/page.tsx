@@ -1,0 +1,30 @@
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/auth";
+import { PageToast } from "@/components/PageToast";
+import { BennerManager } from "@/components/BennerManager";
+import { db } from "@/lib/prisma";
+
+export default async function AdminBennerPage({ searchParams }: { searchParams?: Promise<Record<string, string | string[] | undefined>> }) {
+  const session = await getServerSession(authOptions);
+  const role = session?.user?.role;
+  if (role !== "ADMIN" && role !== "SUPERADMIN") {
+    return <div className="min-h-screen bg-black text-white p-8">Forbidden</div>;
+  }
+  const sp = searchParams ? await searchParams : {};
+  const toastParam = sp?.toast;
+  const toast = typeof toastParam === "string" ? toastParam : Array.isArray(toastParam) ? toastParam[0] ?? undefined : undefined;
+  const toastMessage = toast ? (toast === "error" ? "Gagal menyimpan benner" : "Benner berhasil disimpan") : undefined;
+  const toastType = toast === "error" ? "error" : "success";
+  const items = await db.banner.findMany({
+    select: { id: true, title: true, subtitle: true, buttonLink: true, buttonImageUrl: true, order: true, isActive: true },
+    orderBy: [{ order: "asc" }, { createdAt: "asc" }],
+  });
+  return (
+    <div className="min-h-screen bg-black text-white">
+      <div className="mx-auto max-w-7xl px-6 py-8">
+        <PageToast message={toastMessage} type={toastType} />
+        <BennerManager items={items} canAdd={items.length < 10} />
+      </div>
+    </div>
+  );
+}

@@ -3,7 +3,7 @@ import { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
-import { FiSearch, FiHeart, FiUser, FiChevronDown, FiChevronUp, FiZap, FiPercent, FiBookOpen, FiThumbsUp, FiShield, FiMail, FiShoppingCart, FiLogOut, FiGrid, FiUsers, FiBarChart2, FiPlay, FiSettings } from "react-icons/fi";
+import { FiSearch, FiHeart, FiUser, FiChevronDown, FiChevronUp, FiZap, FiPercent, FiBookOpen, FiThumbsUp, FiShield, FiMail, FiShoppingCart, FiLogOut, FiGrid, FiUsers, FiBarChart2, FiPlay, FiSettings, FiImage } from "react-icons/fi";
 import { signOut } from "next-auth/react";
 import { usePathname } from "next/navigation";
 
@@ -100,6 +100,9 @@ export function Navbar({ siteName = "Gamingqu", logoUrl = null, user = null }: P
                 </DropdownMenuItem>
                 <DropdownMenuItem asChild className="group rounded-sm px-3 py-2 hover:bg-blue-500/30 focus:bg-blue-500/30 text-white">
                   <Link href="/admin/games" className="flex items-center gap-2 font-semibold"><FiPlay className="h-4 w-4 text-white group-hover:text-black" /> Games</Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem asChild className="group rounded-sm px-3 py-2 hover:bg-blue-500/30 focus:bg-blue-500/30 text-white">
+                  <Link href="/admin/benner" className="flex items-center gap-2 font-semibold"><FiImage className="h-4 w-4 text-white group-hover:text-black" /> Benner</Link>
                 </DropdownMenuItem>
                 {(user?.role === "SUPERADMIN") && (
                   <DropdownMenuItem asChild className="group rounded-sm px-3 py-2 hover:bg-blue-500/30 focus:bg-blue-500/30 text-white">

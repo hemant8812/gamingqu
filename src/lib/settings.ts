@@ -73,3 +73,24 @@ export async function getWebsiteSettingCore() {
     return null;
   }
 }
+
+export async function getBanners(limit = 10) {
+  try {
+    const list = await db.banner.findMany({
+      where: { isActive: true },
+      select: {
+        id: true,
+        title: true,
+        subtitle: true,
+        buttonLink: true,
+        buttonImageUrl: true,
+        order: true,
+      },
+      orderBy: [{ order: "asc" }, { createdAt: "asc" }],
+      take: limit,
+    });
+    return list;
+  } catch {
+    return [];
+  }
+}
