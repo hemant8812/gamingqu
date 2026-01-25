@@ -8,8 +8,13 @@ export default async function AdminDashboard() {
   if (role !== "ADMIN" && role !== "SUPERADMIN") {
     return <div className="min-h-screen bg-black text-white p-8">Forbidden</div>;
   }
-  const perms = await db.adminPermission.findMany({ orderBy: { key: "asc" } });
-  const enabled = new Set(perms.filter((p) => p.enabled).map((p) => p.key));
+  let enabled = new Set<string>();
+  try {
+    const perms = await db.adminPermission.findMany({ orderBy: { key: "asc" } });
+    enabled = new Set(perms.filter((p) => p.enabled).map((p) => p.key));
+  } catch {
+    enabled = new Set();
+  }
 
   return (
     <div className="min-h-screen bg-black text-white">

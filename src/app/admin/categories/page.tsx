@@ -8,27 +8,31 @@ import { GameSearchInput } from "@/components/admin/games/GameSearchInput";
 import { CategoryList } from "@/components/admin/categories/CategoryList";
 
 async function getCategories(q?: string) {
-  const list = await db.category.findMany({
-    where: q
-      ? {
-          OR: [
-            { name: { contains: q } },
-            { slug: { startsWith: q } },
-            { slug: { contains: q } },
-          ],
-        }
-      : undefined,
-    orderBy: [{ createdAt: "desc" }],
-    take: 50,
-    select: {
-      id: true,
-      name: true,
-      slug: true,
-      isActive: true,
-      game: { select: { id: true, name: true, iconUrl: true } },
-    },
-  });
-  return list;
+  try {
+    const list = await db.category.findMany({
+      where: q
+        ? {
+            OR: [
+              { name: { contains: q } },
+              { slug: { startsWith: q } },
+              { slug: { contains: q } },
+            ],
+          }
+        : undefined,
+      orderBy: [{ createdAt: "desc" }],
+      take: 50,
+      select: {
+        id: true,
+        name: true,
+        slug: true,
+        isActive: true,
+        game: { select: { id: true, name: true, iconUrl: true } },
+      },
+    });
+    return list;
+  } catch {
+    return [];
+  }
 }
 
 export default async function AdminCategoriesPage({ searchParams }: { searchParams?: Promise<Record<string, string | string[] | undefined>> }) {
@@ -53,10 +57,13 @@ export default async function AdminCategoriesPage({ searchParams }: { searchPara
       : "Kategori berhasil disimpan"
     : undefined;
   const toastType = toast === "error" ? "error" : "success";
-  const games = await db.game.findMany({
-    orderBy: { name: "asc" },
-    select: { id: true, name: true },
-  });
+  const games = await (async () => {
+    try {
+      return await db.game.findMany({ orderBy: { name: "asc" }, select: { id: true, name: true } });
+    } catch {
+      return [];
+    }
+  })();
   const categories = await getCategories(q || undefined);
   return (
     <div className="min-h-screen bg-black text-white">

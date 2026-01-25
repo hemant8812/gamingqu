@@ -6,31 +6,35 @@ import { PageToast } from "@/components/shared/PageToast";
 import { GameList } from "@/components/admin/games/GameList";
 
 async function getGames(q?: string) {
-  const list = await db.game.findMany({
-    orderBy: { createdAt: "desc" },
-    take: 30,
-    where: q
-      ? {
-          OR: [
-            { name: { startsWith: q } },
-            { slug: { startsWith: q } },
-            { name: { contains: q } },
-            { slug: { contains: q } },
-            ...(q.length >= 3 ? [{ description: { contains: q } }] : []),
-          ],
-        }
-      : undefined,
-    select: {
-      id: true,
-      name: true,
-      slug: true,
-      imageUrl: true,
-      iconUrl: true,
-      isHotOffer: true,
-      isActive: true,
-    },
-  });
-  return list;
+  try {
+    const list = await db.game.findMany({
+      orderBy: { createdAt: "desc" },
+      take: 30,
+      where: q
+        ? {
+            OR: [
+              { name: { startsWith: q } },
+              { slug: { startsWith: q } },
+              { name: { contains: q } },
+              { slug: { contains: q } },
+              ...(q.length >= 3 ? [{ description: { contains: q } }] : []),
+            ],
+          }
+        : undefined,
+      select: {
+        id: true,
+        name: true,
+        slug: true,
+        imageUrl: true,
+        iconUrl: true,
+        isHotOffer: true,
+        isActive: true,
+      },
+    });
+    return list;
+  } catch {
+    return [];
+  }
 }
 
 export default async function AdminGamesPage({ searchParams }: { searchParams: Promise<Record<string, string | string[] | undefined>> }) {
@@ -46,12 +50,19 @@ export default async function AdminGamesPage({ searchParams }: { searchParams: P
   const games = await getGames(q || undefined);
   const editParam = sp?.edit;
   const editId = typeof editParam === "string" ? editParam : Array.isArray(editParam) ? editParam[0] ?? null : null;
-  const editing = editId
-    ? await db.game.findUnique({
+  let editing = null as null | {
+    id: string; name: string; slug: string; imageUrl: string | null; iconUrl: string | null; description: string | null; isHotOffer: boolean; isActive: boolean;
+  };
+  if (editId) {
+    try {
+      editing = await db.game.findUnique({
         where: { id: editId },
         select: { id: true, name: true, slug: true, imageUrl: true, iconUrl: true, description: true, isHotOffer: true, isActive: true },
-      })
-    : null;
+      });
+    } catch {
+      editing = null;
+    }
+  }
   const toastParam = sp?.toast;
   const toast = typeof toastParam === "string" ? toastParam : Array.isArray(toastParam) ? toastParam[0] ?? undefined : undefined;
   const toastMessage = toast

@@ -8,31 +8,35 @@ import { ServiceList } from "@/components/admin/services/ServiceList";
 import { GameSearchInput } from "@/components/admin/games/GameSearchInput";
 
 async function getServices(q?: string) {
-  const list = await db.service.findMany({
-    where: q
-      ? {
-          OR: [
-            { name: { contains: q } },
-            { slug: { startsWith: q } },
-            { slug: { contains: q } },
-          ],
-        }
-      : undefined,
-    orderBy: [{ createdAt: "desc" }],
-    take: 50,
-    select: {
-      id: true,
-      name: true,
-      slug: true,
-      price: true,
-      isHotOffer: true,
-      isActive: true,
-      imageUrl: true,
-      game: { select: { id: true, name: true } },
-      category: { select: { id: true, name: true } },
-    },
-  });
-  return list.map((s) => ({ ...s, price: s.price.toString() }));
+  try {
+    const list = await db.service.findMany({
+      where: q
+        ? {
+            OR: [
+              { name: { contains: q } },
+              { slug: { startsWith: q } },
+              { slug: { contains: q } },
+            ],
+          }
+        : undefined,
+      orderBy: [{ createdAt: "desc" }],
+      take: 50,
+      select: {
+        id: true,
+        name: true,
+        slug: true,
+        price: true,
+        isHotOffer: true,
+        isActive: true,
+        imageUrl: true,
+        game: { select: { id: true, name: true } },
+        category: { select: { id: true, name: true } },
+      },
+    });
+    return list.map((s) => ({ ...s, price: s.price.toString() }));
+  } catch {
+    return [];
+  }
 }
 
 export default async function AdminServicesPage({ searchParams }: { searchParams?: Promise<Record<string, string | string[] | undefined>> }) {
@@ -57,17 +61,34 @@ export default async function AdminServicesPage({ searchParams }: { searchParams
   const qParam = sp?.q;
   const qRaw = typeof qParam === "string" ? qParam : Array.isArray(qParam) ? qParam[0] ?? "" : "";
   const q = qRaw.trim().slice(0, 64);
-  const games = await db.game.findMany({ orderBy: { name: "asc" }, select: { id: true, name: true } });
-  const categories = await db.category.findMany({ orderBy: { name: "asc" }, select: { id: true, name: true, gameId: true } });
+  const games = await (async () => {
+    try {
+      return await db.game.findMany({ orderBy: { name: "asc" }, select: { id: true, name: true } });
+    } catch {
+      return [];
+    }
+  })();
+  const categories = await (async () => {
+    try {
+      return await db.category.findMany({ orderBy: { name: "asc" }, select: { id: true, name: true, gameId: true } });
+    } catch {
+      return [];
+    }
+  })();
   const services = await getServices(q || undefined);
   const editParam = sp?.edit;
   const editId = typeof editParam === "string" ? editParam : Array.isArray(editParam) ? editParam[0] ?? null : null;
-  const editing = editId
-    ? await db.service.findUnique({
+  let editing: any = null;
+  if (editId) {
+    try {
+      editing = await db.service.findUnique({
         where: { id: editId },
         select: { id: true, name: true, slug: true, description: true, imageUrl: true, gameId: true, categoryId: true, features: true, price: true, isHotOffer: true },
-      })
-    : null;
+      });
+    } catch {
+      editing = null;
+    }
+  }
   return (
     <div className="min-h-screen bg-black text-white">
       <div className="mx-auto max-w-7xl px-6 py-8">
