@@ -4,6 +4,7 @@ import { db } from "@/lib/prisma";
 import { GameForm } from "@/components/admin/games/GameForm";
 import { PageToast } from "@/components/shared/PageToast";
 import { GameList } from "@/components/admin/games/GameList";
+import { normalizeQuery, parseToast } from "@/lib/page-utils";
 
 async function getGames(q?: string) {
   try {
@@ -44,9 +45,7 @@ export default async function AdminGamesPage({ searchParams }: { searchParams: P
     return <div className="min-h-screen bg-black text-white p-8">Forbidden</div>;
   }
   const sp = await searchParams;
-  const qParam = sp?.q;
-  const qRaw = typeof qParam === "string" ? qParam : Array.isArray(qParam) ? qParam[0] ?? "" : "";
-  const q = qRaw.trim().slice(0, 64);
+  const q = normalizeQuery(sp, "q", 64);
   const games = await getGames(q || undefined);
   const editParam = sp?.edit;
   const editId = typeof editParam === "string" ? editParam : Array.isArray(editParam) ? editParam[0] ?? null : null;
@@ -63,8 +62,7 @@ export default async function AdminGamesPage({ searchParams }: { searchParams: P
       editing = null;
     }
   }
-  const toastParam = sp?.toast;
-  const toast = typeof toastParam === "string" ? toastParam : Array.isArray(toastParam) ? toastParam[0] ?? undefined : undefined;
+  const { value: toast, type: toastType } = parseToast(sp);
   const toastMessage = toast
     ? toast === "updated"
       ? "Data berhasil diupdate"
@@ -72,7 +70,6 @@ export default async function AdminGamesPage({ searchParams }: { searchParams: P
       ? "Terjadi kesalahan saat menyimpan data"
       : "Data berhasil disimpan"
     : undefined;
-  const toastType = toast === "error" ? "error" : "success";
 
   return (
     <div className="min-h-screen bg-black text-white">

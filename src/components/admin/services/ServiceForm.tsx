@@ -25,7 +25,7 @@ type Editing = {
  
 export function ServiceForm({ games, categories, editing }: { games: GameOption[]; categories: CategoryOption[]; editing?: Editing }) {
    const router = useRouter();
-   const [isOpen, setIsOpen] = useState(true);
+   const [isOpen, setIsOpen] = useState(!!editing);
    const [busy, setBusy] = useState(false);
   const [selectedGame, setSelectedGame] = useState<string>(editing?.gameId ?? "");
   const [features, setFeatures] = useState<string[]>(editing?.features ?? []);

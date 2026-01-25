@@ -2,13 +2,21 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/auth";
 import { db } from "@/lib/prisma";
 import { NextResponse } from "next/server";
+import { z } from "zod";
+import { sanitizePlain } from "@/lib/sanitize";
 
 export async function POST(req: Request) {
   const session = await getServerSession(authOptions);
   if (!session?.user) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
-  const { motivation } = await req.json().catch(() => ({ motivation: "" }));
+  const body = await req.json().catch(() => ({}));
+  const Schema = z.object({ motivation: z.string().min(10).max(500) });
+  const parsed = Schema.safeParse(body);
+  if (!parsed.success) {
+    return NextResponse.json({ error: "Motivasi tidak valid" }, { status: 400 });
+  }
+  const motivation = sanitizePlain(parsed.data.motivation);
 
   const userId = session.user.id ?? undefined;
   let resolvedUserId = userId;

@@ -6,7 +6,21 @@ import { PageToast } from "@/components/shared/PageToast";
 import { ServiceForm } from "@/components/admin/services/ServiceForm";
 import { ServiceList } from "@/components/admin/services/ServiceList";
 import { GameSearchInput } from "@/components/admin/games/GameSearchInput";
+import { normalizeQuery, parseToast } from "@/lib/page-utils";
+import { getSimpleGames, getSimpleCategories } from "@/lib/selects";
 
+type EditingDb = {
+  id: string;
+  name: string;
+  slug: string;
+  description: string | null;
+  imageUrl: string | null;
+  gameId: string;
+  categoryId: string | null;
+  features: unknown;
+  price: unknown;
+  isHotOffer: boolean;
+} | null;
 async function getServices(q?: string) {
   try {
     const list = await db.service.findMany({
@@ -46,8 +60,7 @@ export default async function AdminServicesPage({ searchParams }: { searchParams
     return <div className="min-h-screen bg-black text-white p-8">Forbidden</div>;
   }
   const sp = searchParams ? await searchParams : {};
-  const toastParam = sp?.toast;
-  const toast = typeof toastParam === "string" ? toastParam : Array.isArray(toastParam) ? toastParam[0] ?? undefined : undefined;
+  const { value: toast, type: toastType } = parseToast(sp);
   const toastMessage = toast
     ? toast === "updated"
       ? "Layanan berhasil diupdate"
@@ -57,28 +70,13 @@ export default async function AdminServicesPage({ searchParams }: { searchParams
       ? "Gagal menyimpan layanan"
       : "Layanan berhasil disimpan"
     : undefined;
-  const toastType = toast === "error" ? "error" : "success";
-  const qParam = sp?.q;
-  const qRaw = typeof qParam === "string" ? qParam : Array.isArray(qParam) ? qParam[0] ?? "" : "";
-  const q = qRaw.trim().slice(0, 64);
-  const games = await (async () => {
-    try {
-      return await db.game.findMany({ orderBy: { name: "asc" }, select: { id: true, name: true } });
-    } catch {
-      return [];
-    }
-  })();
-  const categories = await (async () => {
-    try {
-      return await db.category.findMany({ orderBy: { name: "asc" }, select: { id: true, name: true, gameId: true } });
-    } catch {
-      return [];
-    }
-  })();
+  const q = normalizeQuery(sp, "q", 64);
+  const games = await getSimpleGames();
+  const categories = await getSimpleCategories();
   const services = await getServices(q || undefined);
   const editParam = sp?.edit;
   const editId = typeof editParam === "string" ? editParam : Array.isArray(editParam) ? editParam[0] ?? null : null;
-  let editing: any = null;
+  let editing: EditingDb = null;
   if (editId) {
     try {
       editing = await db.service.findUnique({
@@ -105,7 +103,7 @@ export default async function AdminServicesPage({ searchParams }: { searchParams
             gameId: editing.gameId,
             categoryId: editing.categoryId ?? null,
             features: Array.isArray(editing.features) ? (editing.features as string[]) : null,
-            price: editing.price.toString(),
+            price: String(editing.price),
             isHotOffer: editing.isHotOffer,
           } : null} />
           <Card className="rounded-2xl border border-zinc-900 bg-zinc-950 p-6">

@@ -12,6 +12,7 @@ import { PageToast } from "@/components/shared/PageToast";
 import { UsersSearchInput } from "@/components/admin/users/UsersSearchInput";
 import { generateNextUserId } from "@/lib/userId";
 import { UserList } from "@/components/admin/users/UserList";
+import { normalizeQuery, parseToast, getParamStr } from "@/lib/page-utils";
 
 const ALLOWED_ROLES: Role[] = ["SUPERADMIN", "ADMIN", "BOOSTER", "MEMBER"];
 
@@ -22,22 +23,19 @@ function resolveRole(roleInput: string | null): Role {
 
 export default async function AdminUsersPage({ searchParams }: { searchParams: Promise<Record<string, string | string[] | undefined>> }) {
   const sp = await searchParams;
-  const pageParam = sp?.page;
-  const qParam = sp?.q;
-  const toastParam = sp?.toast;
-  const toastMessage = typeof toastParam === "string"
-    ? (toastParam === "updated" ? "Data berhasil diupdate" : toastParam === "deleted" ? "Data berhasil dihapus" : "Data berhasil disimpan")
+  const { value: toast, type: toastType } = parseToast(sp);
+  const toastMessage = toast
+    ? toast === "updated"
+      ? "Data berhasil diupdate"
+      : toast === "deleted"
+      ? "Data berhasil dihapus"
+      : "Data berhasil disimpan"
     : undefined;
-  const page = Math.max(
-    1,
-    parseInt(
-      typeof pageParam === "string" ? pageParam : Array.isArray(pageParam) ? pageParam[0] ?? "1" : "1",
-      10
-    ) || 1
-  );
+  const pageStr = getParamStr(sp, "page") ?? "1";
+  const pageNum = parseInt(pageStr, 10);
+  const page = Math.max(1, Number.isFinite(pageNum) ? pageNum : 1);
   const pageSize = 10;
-  const rawQ = typeof qParam === "string" ? qParam : Array.isArray(qParam) ? qParam[0] ?? "" : "";
-  const q = rawQ.trim().slice(0, 64);
+  const q = normalizeQuery(sp, "q", 64);
   const session = await getServerSession(authOptions);
   const role = session?.user?.role;
   if (role !== "ADMIN" && role !== "SUPERADMIN") {
@@ -213,7 +211,7 @@ export default async function AdminUsersPage({ searchParams }: { searchParams: P
   return (
     <div className="min-h-screen bg-black text-white">
       <div className="mx-auto max-w-7xl px-6 py-8">
-        <PageToast message={toastMessage} />
+        <PageToast message={toastMessage} type={toastType} />
         <div className="mb-5">
           <h2 className="text-3xl font-bold">Semua Pengguna</h2>
           <p className="text-sm text-zinc-400">Kelola semua pengguna terdaftar</p>

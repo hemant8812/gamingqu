@@ -6,6 +6,8 @@ import { CategoryForm } from "@/components/admin/categories/CategoryForm";
 import { PageToast } from "@/components/shared/PageToast";
 import { GameSearchInput } from "@/components/admin/games/GameSearchInput";
 import { CategoryList } from "@/components/admin/categories/CategoryList";
+import { normalizeQuery, parseToast } from "@/lib/page-utils";
+import { getSimpleGames } from "@/lib/selects";
 
 async function getCategories(q?: string) {
   try {
@@ -42,11 +44,8 @@ export default async function AdminCategoriesPage({ searchParams }: { searchPara
     return <div className="min-h-screen bg-black text-white p-8">Forbidden</div>;
   }
   const sp = searchParams ? await searchParams : {};
-  const qParam = sp?.q;
-  const qRaw = typeof qParam === "string" ? qParam : Array.isArray(qParam) ? qParam[0] ?? "" : "";
-  const q = qRaw.trim().slice(0, 64);
-  const toastParam = sp?.toast;
-  const toast = typeof toastParam === "string" ? toastParam : Array.isArray(toastParam) ? toastParam[0] ?? undefined : undefined;
+  const q = normalizeQuery(sp, "q", 64);
+  const { value: toast, type: toastType } = parseToast(sp);
   const toastMessage = toast
     ? toast === "updated"
       ? "Kategori berhasil diupdate"
@@ -56,14 +55,7 @@ export default async function AdminCategoriesPage({ searchParams }: { searchPara
       ? "Gagal menyimpan kategori"
       : "Kategori berhasil disimpan"
     : undefined;
-  const toastType = toast === "error" ? "error" : "success";
-  const games = await (async () => {
-    try {
-      return await db.game.findMany({ orderBy: { name: "asc" }, select: { id: true, name: true } });
-    } catch {
-      return [];
-    }
-  })();
+  const games = await getSimpleGames();
   const categories = await getCategories(q || undefined);
   return (
     <div className="min-h-screen bg-black text-white">

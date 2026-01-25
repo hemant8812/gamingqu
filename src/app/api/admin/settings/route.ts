@@ -9,10 +9,14 @@ import { getFooterSettings } from "@/lib/settings";
 
 async function saveBrandFile(file: File | null, kind: "logo" | "favicon"): Promise<string | undefined> {
   if (!file || file.size === 0) return undefined;
+  const t = (file as unknown as { type?: string }).type || "";
+  if (!t.startsWith("image/")) return undefined;
   const uploadDir = path.join(process.cwd(), "public", "uploads", "branding");
   await fs.mkdir(uploadDir, { recursive: true });
-  const name = file.name || `${kind}.bin`;
-  const ext = path.extname(name) || ".bin";
+  const name = file.name || `${kind}.png`;
+  const extRaw = path.extname(name).toLowerCase();
+  const allowed = [".png", ".jpg", ".jpeg", ".webp", ".gif", ".ico"];
+  const ext = allowed.includes(extRaw) ? extRaw : (kind === "favicon" ? ".ico" : ".png");
   const filename = `site-${kind}-${Date.now()}${ext}`;
   const content = Buffer.from(await file.arrayBuffer());
   const savedPath = path.join(uploadDir, filename);
@@ -29,10 +33,14 @@ async function saveBrandFile(file: File | null, kind: "logo" | "favicon"): Promi
 
 async function saveFooterFile(file: File | null, kind: string): Promise<string | undefined> {
   if (!file || file.size === 0) return undefined;
+  const t = (file as unknown as { type?: string }).type || "";
+  if (!t.startsWith("image/")) return undefined;
   const uploadDir = path.join(process.cwd(), "public", "uploads", "footer");
   await fs.mkdir(uploadDir, { recursive: true });
-  const name = file.name || `${kind}.bin`;
-  const ext = path.extname(name) || ".bin";
+  const name = file.name || `${kind}.png`;
+  const extRaw = path.extname(name).toLowerCase();
+  const allowed = [".png", ".jpg", ".jpeg", ".webp", ".gif"];
+  const ext = allowed.includes(extRaw) ? extRaw : ".png";
   const filename = `footer-${kind}-${Date.now()}${ext}`;
   const content = Buffer.from(await file.arrayBuffer());
   const savedPath = path.join(uploadDir, filename);

@@ -12,10 +12,14 @@ function slugify(input: string) {
 
 async function saveFile(file: File | null, slug: string, kind: "image" | "icon"): Promise<string | undefined> {
   if (!file || file.size === 0) return undefined;
+  const t = (file as unknown as { type?: string }).type || "";
+  if (!t.startsWith("image/")) return undefined;
   const uploadDir = path.join(process.cwd(), "public", "uploads", "games");
   await fs.mkdir(uploadDir, { recursive: true });
-  const name = file.name || `${kind}.bin`;
-  const ext = path.extname(name) || ".bin";
+  const name = file.name || `${kind}.png`;
+  const extRaw = path.extname(name).toLowerCase();
+  const allowed = [".png", ".jpg", ".jpeg", ".webp", ".gif"];
+  const ext = allowed.includes(extRaw) ? extRaw : ".png";
   const filename = `${slug}-${kind}-${Date.now()}${ext}`;
   const content = Buffer.from(await file.arrayBuffer());
   await fs.writeFile(path.join(uploadDir, filename), content);

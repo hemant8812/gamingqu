@@ -7,6 +7,7 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { EmbedSettings } from "@/components/admin/settings/EmbedSettings";
 import { Settings as SettingsIcon, Code2 as CodeIcon, Layout as LayoutIcon } from "lucide-react";
 import { FooterSettingsForm } from "@/components/admin/settings/FooterSettingsForm";
+import { parseToast } from "@/lib/page-utils";
 
 export default async function AdminSettingsPage({ searchParams }: { searchParams?: Promise<Record<string, string | string[] | undefined>> }) {
   const session = await getServerSession(authOptions);
@@ -15,10 +16,8 @@ export default async function AdminSettingsPage({ searchParams }: { searchParams
     return <div className="min-h-screen bg-black text-white p-8">Forbidden</div>;
   }
   const sp = searchParams ? await searchParams : {};
-  const toastParam = sp?.toast;
-  const toast = typeof toastParam === "string" ? toastParam : Array.isArray(toastParam) ? toastParam[0] ?? undefined : undefined;
+  const { value: toast, type: toastType } = parseToast(sp);
   const toastMessage = toast ? (toast === "error" ? "Terjadi kesalahan saat menyimpan pengaturan" : "Pengaturan berhasil disimpan") : undefined;
-  const toastType = toast === "error" ? "error" : "success";
   const tabParam = sp?.tab;
   const tab = typeof tabParam === "string" ? tabParam : Array.isArray(tabParam) ? tabParam[0] ?? undefined : undefined;
   const setting = await getWebsiteSettingCore();
