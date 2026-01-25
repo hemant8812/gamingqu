@@ -59,7 +59,7 @@ export function CategorySelect({
       <label htmlFor={name} className="label">
         <span className="label-text font-semibold">{label}</span>
       </label>
-      <div className={`dropdown w-full ${isOpen ? "dropdown-open" : ""}`}>
+      <div className="w-full relative">
         <div
           tabIndex={0}
           role="button"
@@ -67,12 +67,12 @@ export function CategorySelect({
           onClick={() => setIsOpen(!isOpen)}
         >
           <span className="truncate">{selectedName || "Pilih Kategori (opsional)"}</span>
-          <ChevronDown className="h-4 w-4 opacity-50" />
+          <ChevronDown className={`h-4 w-4 opacity-50 transition-transform ${isOpen ? "rotate-180" : ""}`} />
         </div>
         {isOpen && (
-          <div className="dropdown-content z-[999] card card-compact w-full p-2 shadow-xl bg-base-100 border border-base-200 mt-1 max-h-60 overflow-y-auto">
+          <div className="absolute top-full left-0 z-[50] w-full mt-1 card card-compact shadow-xl bg-base-100 border border-base-200 max-h-60 overflow-y-auto">
             <div className="p-2">
-                <div className="relative mb-2 sticky top-0 bg-base-100 z-[1000] pb-2">
+                <div className="relative mb-2 sticky top-0 bg-base-100 z-[10] pb-2">
                     <SearchIcon className="absolute left-3 top-1/2 -translate-y-[calc(50%+4px)] opacity-50 h-4 w-4 pointer-events-none" />
                     <input
                     type="text"
@@ -91,7 +91,7 @@ export function CategorySelect({
                         </a>
                     </li>
                     {filtered.length === 0 && (
-                        <li className="disabled"><a>Tidak ada hasil</a></li>
+                        <li className="disabled text-base-content/50 px-4 py-2 text-sm">Tidak ada hasil</li>
                     )}
                     {filtered.map((c) => (
                         <li key={c.id}>

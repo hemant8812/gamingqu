@@ -1,7 +1,7 @@
 "use client";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useState, useRef, useEffect } from "react";
-import { Save as SaveIcon, XCircle, Plus } from "lucide-react";
+import { Save as SaveIcon, XCircle, Plus, Trash2 } from "lucide-react";
 import { AutoSlugField } from "@/components/shared/AutoSlugField";
 import { ImageUploadField } from "@/components/shared/ImageUploadField";
 import { RichTextEditor } from "@/components/shared/RichTextEditor";
@@ -55,12 +55,16 @@ export function ServiceModal({ games, categories, editing }: { games: GameOption
   }, [isOpen, editing]);
 
   const closeModal = () => {
-    router.push("/admin/services");
+    router.replace("/admin/services");
   };
 
   const addFeature = () => {
     if (!canAddFeature) return;
     setFeatures((f) => [...f, ""]);
+  };
+
+  const removeFeature = (index: number) => {
+    setFeatures((f) => f.filter((_, i) => i !== index));
   };
 
   const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -89,8 +93,8 @@ export function ServiceModal({ games, categories, editing }: { games: GameOption
 
   return (
     <dialog ref={dialogRef} className="modal" onClose={closeModal}>
-      <div className="modal-box w-11/12 max-w-5xl bg-base-100 text-base-content p-0 overflow-visible max-h-none">
-        <div className="flex items-center justify-between p-4 border-b border-base-200 bg-base-200/50">
+      <div className="modal-box w-11/12 max-w-5xl bg-base-100 text-base-content p-0 max-h-[90vh] overflow-y-auto">
+        <div className="flex items-center justify-between p-4 border-b border-base-200 bg-base-200/50 sticky top-0 z-10 backdrop-blur-sm">
             <h3 className="font-bold text-lg">{editing ? "Edit Layanan" : "Tambah Layanan"}</h3>
             <button onClick={closeModal} className="btn btn-sm btn-circle btn-ghost">
                 <XCircle className="h-5 w-5" />
@@ -122,17 +126,19 @@ export function ServiceModal({ games, categories, editing }: { games: GameOption
                 <CategorySelect categories={categories} name="categoryId" label="Nama Kategori (opsional)" gameId={selectedGame} initialValue={editing?.categoryId ?? null} />
             </div>
             
-            <div className="form-control">
-                <label className="label">
-                    <span className="label-text font-semibold">Deskripsi</span>
-                </label>
-                <div className="mt-1">
-                    <RichTextEditor name="description" placeholder="Deskripsi layanan" initialHtml={editing?.description ?? ""} />
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="form-control flex flex-col h-full">
+                    <label className="label">
+                        <span className="label-text font-semibold">Deskripsi</span>
+                    </label>
+                    <div className="mt-1 flex-1">
+                        <RichTextEditor name="description" placeholder="Deskripsi layanan" initialHtml={editing?.description ?? ""} />
+                    </div>
                 </div>
-            </div>
-            
-            <div>
-                <ImageUploadField id="image" name="image" label="Gambar" previewHeight={160} initialUrl={editing?.imageUrl ?? null} />
+                
+                <div className="flex flex-col h-full">
+                    <ImageUploadField id="image" name="image" label="Gambar" previewHeight={200} initialUrl={editing?.imageUrl ?? null} />
+                </div>
             </div>
             
             <div className="form-control">
@@ -141,17 +147,26 @@ export function ServiceModal({ games, categories, editing }: { games: GameOption
                 </label>
                 <div className="mt-2 space-y-2">
                     {features.map((v, i) => (
-                    <input
-                        key={i}
-                        type="text"
-                        value={v}
-                        onChange={(e) => {
-                        const val = e.target.value;
-                        setFeatures((f) => f.map((x, idx) => (idx === i ? val : x)));
-                        }}
-                        placeholder={`Feature ${i + 1}`}
-                        className="input input-bordered w-full"
-                    />
+                    <div key={i} className="flex gap-2 items-center">
+                        <input
+                            type="text"
+                            value={v}
+                            onChange={(e) => {
+                            const val = e.target.value;
+                            setFeatures((f) => f.map((x, idx) => (idx === i ? val : x)));
+                            }}
+                            placeholder={`Feature ${i + 1}`}
+                            className="input input-bordered w-full"
+                        />
+                        <button
+                            type="button"
+                            onClick={() => removeFeature(i)}
+                            className="btn btn-square btn-ghost btn-sm text-error"
+                            title="Hapus feature"
+                        >
+                            <Trash2 className="h-4 w-4" />
+                        </button>
+                    </div>
                     ))}
                     {canAddFeature && (
                     <button

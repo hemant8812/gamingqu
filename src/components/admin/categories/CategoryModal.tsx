@@ -33,7 +33,7 @@ export function CategoryModal({ editing, games }: { editing: Editing; games: Gam
   }, [isOpen, editing]);
 
   const closeModal = () => {
-    router.push("/admin/categories");
+    router.replace("/admin/categories");
   };
 
   const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {

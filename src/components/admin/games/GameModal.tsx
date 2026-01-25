@@ -37,7 +37,7 @@ export function GameModal({ editing }: { editing: Editing }) {
   }, [isOpen, editing]);
 
   const closeModal = () => {
-    router.push("/admin/games");
+    router.replace("/admin/games");
   };
 
   const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -63,8 +63,8 @@ export function GameModal({ editing }: { editing: Editing }) {
 
   return (
     <dialog ref={dialogRef} className="modal" onClose={closeModal}>
-      <div className="modal-box w-11/12 max-w-4xl bg-base-100 text-base-content p-0 overflow-visible max-h-none">
-        <div className="flex items-center justify-between p-4 border-b border-base-200 bg-base-200/50">
+      <div className="modal-box w-11/12 max-w-4xl bg-base-100 text-base-content p-0 max-h-[90vh] overflow-y-auto">
+        <div className="flex items-center justify-between p-4 border-b border-base-200 bg-base-200/50 sticky top-0 z-10 backdrop-blur-sm">
             <h3 className="font-bold text-lg">{editing ? "Edit Game" : "Tambah Game"}</h3>
             <button onClick={closeModal} className="btn btn-sm btn-circle btn-ghost">
                 <XCircle className="h-5 w-5" />

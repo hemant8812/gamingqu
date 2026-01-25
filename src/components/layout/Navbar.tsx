@@ -45,6 +45,13 @@ export function Navbar({ siteName = "Gamingqu", logoUrl = null, user = null }: P
   const isAdminRole = user?.role === "ADMIN" || user?.role === "SUPERADMIN";
   const isAdminContext = isAdminRole || (pathname?.startsWith("/admin") || pathname?.startsWith("/super-admin"));
 
+  const closeDropdown = () => {
+    const elem = document.activeElement;
+    if (elem instanceof HTMLElement) {
+      elem.blur();
+    }
+  };
+
   return (
     <div className="bg-base-100 fixed top-0 left-0 right-0 z-50 shadow-md">
       <div className="max-w-7xl mx-auto px-4 sm:px-6">
@@ -78,26 +85,26 @@ export function Navbar({ siteName = "Gamingqu", logoUrl = null, user = null }: P
               <ul tabIndex={0} className="dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box w-52 mt-4">
                 {isAdminContext ? (
                   <>
-                    <li><Link href="/admin"><FiGrid className="h-4 w-4" /> Dashboard</Link></li>
-                    <li><Link href="/admin/users"><FiUsers className="h-4 w-4" /> Users</Link></li>
-                    <li><Link href="/admin/boosters"><FiZap className="h-4 w-4" /> Boosters</Link></li>
-                    <li><Link href="/admin/orders"><FiShoppingCart className="h-4 w-4" /> Orders</Link></li>
-                    <li><Link href="/admin/analytics"><FiBarChart2 className="h-4 w-4" /> Analytics</Link></li>
-                    <li><Link href="/admin/games"><FiPlay className="h-4 w-4" /> Games</Link></li>
-                    <li><Link href="/admin/categories"><FiTag className="h-4 w-4" /> Categories</Link></li>
-                    <li><Link href="/admin/services"><FiTool className="h-4 w-4" /> Services</Link></li>
-                    <li><Link href="/admin/benner"><FiImage className="h-4 w-4" /> Banner</Link></li>
+                    <li><Link href="/admin" onClick={closeDropdown}><FiGrid className="h-4 w-4" /> Dashboard</Link></li>
+                    <li><Link href="/admin/users" onClick={closeDropdown}><FiUsers className="h-4 w-4" /> Users</Link></li>
+                    <li><Link href="/admin/boosters" onClick={closeDropdown}><FiZap className="h-4 w-4" /> Boosters</Link></li>
+                    <li><Link href="/admin/orders" onClick={closeDropdown}><FiShoppingCart className="h-4 w-4" /> Orders</Link></li>
+                    <li><Link href="/admin/analytics" onClick={closeDropdown}><FiBarChart2 className="h-4 w-4" /> Analytics</Link></li>
+                    <li><Link href="/admin/games" onClick={closeDropdown}><FiPlay className="h-4 w-4" /> Games</Link></li>
+                    <li><Link href="/admin/categories" onClick={closeDropdown}><FiTag className="h-4 w-4" /> Categories</Link></li>
+                    <li><Link href="/admin/services" onClick={closeDropdown}><FiTool className="h-4 w-4" /> Services</Link></li>
+                    <li><Link href="/admin/benner" onClick={closeDropdown}><FiImage className="h-4 w-4" /> Banner</Link></li>
                     {user?.role === "SUPERADMIN" && (
-                      <li><Link href="/admin/permissions"><FiShield className="h-4 w-4" /> Permissions</Link></li>
+                      <li><Link href="/admin/permissions" onClick={closeDropdown}><FiShield className="h-4 w-4" /> Permissions</Link></li>
                     )}
-                    <li><Link href="/admin/settings"><FiSettings className="h-4 w-4" /> Settings</Link></li>
+                    <li><Link href="/admin/settings" onClick={closeDropdown}><FiSettings className="h-4 w-4" /> Settings</Link></li>
                   </>
                 ) : (
                   <>
-                    <li><Link href="/games/cod">Call of Duty</Link></li>
-                    <li><Link href="/games/valorant">Valorant</Link></li>
-                    <li><Link href="/games/genshin">Genshin Impact</Link></li>
-                    <li><Link href="/games/tarkov">Escape from Tarkov</Link></li>
+                    <li><Link href="/games/cod" onClick={closeDropdown}>Call of Duty</Link></li>
+                    <li><Link href="/games/valorant" onClick={closeDropdown}>Valorant</Link></li>
+                    <li><Link href="/games/genshin" onClick={closeDropdown}>Genshin Impact</Link></li>
+                    <li><Link href="/games/tarkov" onClick={closeDropdown}>Escape from Tarkov</Link></li>
                   </>
                 )}
               </ul>

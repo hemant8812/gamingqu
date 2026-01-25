@@ -54,8 +54,8 @@ export function ImageUploadField({
         }}
       />
       <div
-        className="mt-2 relative rounded-xl border border-zinc-800 bg-black overflow-hidden flex items-center justify-center cursor-pointer"
-        style={{ height: previewHeight }}
+        className="mt-2 relative rounded-xl border border-zinc-800 bg-black overflow-hidden flex items-center justify-center cursor-pointer h-full min-h-[200px]"
+        style={previewHeight ? { height: previewHeight } : undefined}
         role="button"
         tabIndex={0}
         aria-label={`Pilih ${label}`}
