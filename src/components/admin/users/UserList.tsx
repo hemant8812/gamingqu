@@ -229,6 +229,7 @@ export function UserList({
                     email: u.email,
                     username: u.username,
                     role: u.role,
+                    isSuspended: u.isSuspended,
                   }}
                   action={updateWrapper}
                 />

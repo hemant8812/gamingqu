@@ -41,7 +41,7 @@ export default function LoginPage() {
       } catch {}
     }
     const res = await signIn("credentials", {
-      email,
+      email: email.trim(),
       password,
       redirect: false,
     });
@@ -114,6 +114,9 @@ export default function LoginPage() {
                       placeholder="Email address"
                       className="bg-zinc-900 border-zinc-800 h-12 rounded-xl placeholder-semibold pl-10"
                       required
+                      autoComplete="email"
+                      autoCapitalize="none"
+                      spellCheck={false}
                     />
                   </div>
                 </div>
@@ -128,6 +131,7 @@ export default function LoginPage() {
                       placeholder="Password"
                       className="bg-zinc-900 border-zinc-800 h-12 rounded-xl placeholder-semibold pl-10"
                       required
+                      autoComplete="current-password"
                     />
                   </div>
                 </div>

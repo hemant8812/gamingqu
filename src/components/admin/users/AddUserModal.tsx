@@ -126,16 +126,18 @@ export function AddUserModal({ action }: Props) {
               </select>
             </div>
             <div className="flex items-center justify-between">
-              <label htmlFor="isSuspendedToggle" className="text-sm text-zinc-300">
-                Suspended
-              </label>
-              <Switch
-                id="isSuspendedToggle"
-                checked={suspended}
-                onCheckedChange={setSuspended}
-                aria-label="Suspended toggle"
-                className="data-[state=checked]:bg-red-600"
-              />
+              <label htmlFor="isSuspendedToggle" className="text-sm font-semibold">Status</label>
+              <div className="flex items-center gap-2">
+                <span className={suspended ? "text-zinc-500 text-xs" : "text-green-500 text-xs font-medium"}>Aktif</span>
+                <Switch
+                  id="isSuspendedToggle"
+                  checked={suspended}
+                  onCheckedChange={setSuspended}
+                  aria-label="Suspended toggle"
+                  className="data-[state=checked]:bg-red-600"
+                />
+                <span className={suspended ? "text-red-500 text-xs font-medium" : "text-zinc-500 text-xs"}>Nonaktif</span>
+              </div>
             </div>
             <div className="flex justify-end gap-2 pt-2">
               <Dialog.Close asChild>

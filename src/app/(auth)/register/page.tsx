@@ -49,7 +49,12 @@ export default function RegisterPage() {
       const res = await fetch("/api/register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password, username, name }),
+        body: JSON.stringify({
+          email: email.trim(),
+          password,
+          username: username.trim(),
+          name: name.trim(),
+        }),
       });
       const data = await res.json().catch(() => ({}));
       if (!res.ok) {
@@ -109,6 +114,7 @@ export default function RegisterPage() {
                         placeholder="Full name"
                         className="bg-zinc-900 border-zinc-800 h-12 rounded-xl placeholder-semibold pl-10"
                         required
+                        autoComplete="name"
                       />
                     </div>
                   </div>
@@ -123,6 +129,9 @@ export default function RegisterPage() {
                         placeholder="Username"
                         className="bg-zinc-900 border-zinc-800 h-12 rounded-xl placeholder-semibold pl-10"
                         required
+                        autoComplete="username"
+                        autoCapitalize="none"
+                        spellCheck={false}
                       />
                     </div>
                   </div>
@@ -138,6 +147,9 @@ export default function RegisterPage() {
                       placeholder="Email address"
                       className="bg-zinc-900 border-zinc-800 h-12 rounded-xl placeholder-semibold pl-10"
                       required
+                        autoComplete="email"
+                        autoCapitalize="none"
+                        spellCheck={false}
                     />
                   </div>
                 </div>
@@ -152,6 +164,7 @@ export default function RegisterPage() {
                       placeholder="Password"
                       className="bg-zinc-900 border-zinc-800 h-12 rounded-xl placeholder-semibold pl-10"
                       required
+                        autoComplete="new-password"
                     />
                   </div>
                 </div>
@@ -166,6 +179,7 @@ export default function RegisterPage() {
                       placeholder="Re-enter password"
                       className="bg-zinc-900 border-zinc-800 h-12 rounded-xl placeholder-semibold pl-10"
                       required
+                        autoComplete="new-password"
                     />
                   </div>
                 </div>
