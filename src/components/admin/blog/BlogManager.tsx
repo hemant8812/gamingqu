@@ -31,6 +31,7 @@ export function BlogManager({ posts, sources }: { posts: Post[]; sources: Scrape
     const searchParams = useSearchParams();
     const [isScraping, setIsScraping] = useState(false);
     const [busy, setBusy] = useState(false);
+    const [isImporting, setIsImporting] = useState(false);
     
     // Modal state
     const [isPostModalOpen, setIsPostModalOpen] = useState(false);
@@ -104,6 +105,21 @@ export function BlogManager({ posts, sources }: { posts: Post[]; sources: Scrape
         }
     };
 
+    const handleImportBlizzard = async () => {
+        if (isImporting) return;
+        setIsImporting(true);
+        try {
+            const res = await fetch("/api/admin/blizzard/import", { method: "POST" });
+            const data = await res.json();
+            if (data.success) {
+                router.refresh();
+            }
+        } catch (e) {
+            console.error(e);
+        } finally {
+            setIsImporting(false);
+        }
+    };
     const handleDeletePost = async (id: string) => {
         if (!confirm("Are you sure you want to delete this post?")) return;
         try {
@@ -189,6 +205,14 @@ export function BlogManager({ posts, sources }: { posts: Post[]; sources: Scrape
                             >
                                 <RefreshCw className={`h-4 w-4 ${isScraping ? "animate-spin" : ""}`} />
                                 {isScraping ? "Scraping..." : "Run Scraper Now"}
+                            </button>
+                            <button 
+                                onClick={handleImportBlizzard}
+                                disabled={isImporting}
+                                className="btn btn-sm btn-secondary gap-2"
+                            >
+                                <Globe className={`h-4 w-4 ${isImporting ? "animate-spin" : ""}`} />
+                                {isImporting ? "Importing..." : "Import Blizzard News"}
                             </button>
                         </div>
                     </h2>

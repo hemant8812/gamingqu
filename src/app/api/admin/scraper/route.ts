@@ -7,6 +7,21 @@ import Parser from "rss-parser";
 
 const parser = new Parser();
 
+function toSlug(s: string) {
+  return s.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
+}
+
+async function imageFromArticle(link: string) {
+    try {
+        const artRes = await fetch(link);
+        const artHtml = await artRes.text();
+        const $$ = cheerio.load(artHtml);
+        return $$('meta[property="og:image"]').attr('content') || $$('meta[name="twitter:image"]').attr('content') || $$('img').first().attr('src') || "";
+    } catch {
+        return "";
+    }
+}
+
 export async function POST(req: Request) {
   const session = await getServerSession(authOptions);
   if (session?.user?.role !== "ADMIN" && session?.user?.role !== "SUPERADMIN") {
@@ -103,19 +118,24 @@ export async function PUT(req: Request) {
                     const feed = await parser.parseURL(source.url);
                     for (const item of feed.items) {
                         if (item.title && item.link) {
-                            // Check if post exists
                             const exists = await db.post.findFirst({
                                 where: { sourceUrl: item.link }
                             });
 
                             if (!exists) {
+                                const slug = toSlug(item.title);
+                                const dup = await db.post.findUnique({ where: { slug } });
+                                if (dup) continue;
+                                const ogImg = (item as any).enclosure?.url || "";
+                                const img = ogImg || await imageFromArticle(item.link);
                                 await db.post.create({
                                     data: {
                                         title: item.title,
-                                        slug: item.title.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "") + "-" + Date.now(),
+                                        slug,
                                         content: item.contentSnippet || item.content || "",
                                         excerpt: item.contentSnippet?.slice(0, 200) || "",
                                         sourceUrl: item.link,
+                                        imageUrl: img || undefined,
                                         isPublished: true, // Auto publish or draft?
                                         authorId: session.user.id
                                     }
@@ -125,44 +145,80 @@ export async function PUT(req: Request) {
                         }
                     }
                 } catch (rssError) {
-                    // Fallback to basic HTML scraping if RSS fails (very basic implementation)
                     const response = await fetch(source.url);
                     const html = await response.text();
                     const $ = cheerio.load(html);
-                    
-                    // This is highly dependent on the target site structure. 
-                    // For now, we'll try to find common article patterns or just skip.
-                    // A proper implementation would need per-site selectors.
-                    // For wowhead, we might look for specific classes.
-                    
-                    // Example generic scraper logic (simplified)
-                    const elements = $('article, .news-post').toArray();
-                    for (const el of elements) {
-                        const $el = $(el as any);
-                        const title = $el.find('h1, h2, .heading').first().text().trim();
-                        const link = $el.find('a').first().attr('href');
-                        const content = $el.find('p').first().text().trim();
-
-                        if (title && link) {
-                            const fullLink = link.startsWith('http') ? link : new URL(link, source.url).toString();
-                            
-                            const exists = await db.post.findFirst({
-                                where: { sourceUrl: fullLink }
-                            });
-
-                            if (!exists) {
+                    const host = new URL(source.url).hostname;
+                    if (host.includes("news.blizzard.com")) {
+                        const links = new Set<string>();
+                        $('a[href]').each((_, el) => {
+                            const href = $(el).attr('href') || "";
+                            const text = $(el).text().trim();
+                            if (!href) return;
+                            if (!text) return;
+                            const isWow = href.includes("/world-of-warcraft") || href.includes("/wow");
+                            const isNews = href.includes("/en-us/news") || href.includes("/en-us/world-of-warcraft");
+                            if (isWow || isNews) {
+                                const fullLink = href.startsWith('http') ? href : new URL(href, source.url).toString();
+                                links.add(fullLink);
+                            }
+                        });
+                        for (const fullLink of links) {
+                            const exists = await db.post.findFirst({ where: { sourceUrl: fullLink } });
+                            if (exists) continue;
+                            try {
+                                const artRes = await fetch(fullLink);
+                                const artHtml = await artRes.text();
+                                const $$ = cheerio.load(artHtml);
+                                const title = $$('h1').first().text().trim() || $$('meta[property="og:title"]').attr('content') || "";
+                                const desc = $$('meta[name="description"]').attr('content') || $$('p').first().text().trim() || "";
+                                if (!title) continue;
+                                const slug = toSlug(title);
+                                const dup = await db.post.findUnique({ where: { slug } });
+                                if (dup) continue;
+                                const ogImg = $$('meta[property="og:image"]').attr('content') || $$('meta[name="twitter:image"]').attr('content') || $$('img').first().attr('src') || "";
                                 await db.post.create({
                                     data: {
-                                        title: title,
-                                        slug: title.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "") + "-" + Date.now(),
-                                        excerpt: content.slice(0, 200),
-                                        content: content,
+                                        title,
+                                        slug,
+                                        excerpt: desc.slice(0, 200),
+                                        content: desc,
                                         sourceUrl: fullLink,
+                                        imageUrl: ogImg || undefined,
                                         isPublished: true,
                                         authorId: session.user.id
                                     }
                                 });
                                 newPostsCount++;
+                            } catch {}
+                        }
+                    } else {
+                        const elements = $('article, .news-post').toArray();
+                        for (const el of elements) {
+                            const $el = $(el as any);
+                            const title = $el.find('h1, h2, .heading').first().text().trim();
+                            const link = $el.find('a').first().attr('href');
+                            const content = $el.find('p').first().text().trim();
+                            if (title && link) {
+                                const fullLink = link.startsWith('http') ? link : new URL(link, source.url).toString();
+                                const exists = await db.post.findFirst({ where: { sourceUrl: fullLink } });
+                                if (!exists) {
+                                    const slug = toSlug(title);
+                                    const dup = await db.post.findUnique({ where: { slug } });
+                                    if (dup) continue;
+                                    await db.post.create({
+                                        data: {
+                                            title,
+                                            slug,
+                                            excerpt: content.slice(0, 200),
+                                            content,
+                                            sourceUrl: fullLink,
+                                            isPublished: true,
+                                            authorId: session.user.id
+                                        }
+                                    });
+                                    newPostsCount++;
+                                }
                             }
                         }
                     }
