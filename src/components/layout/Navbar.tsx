@@ -93,6 +93,7 @@ export function Navbar({ siteName = "Gamingqu", logoUrl = null, user = null }: P
                     <li><Link href="/admin/games" onClick={closeDropdown}><FiPlay className="h-4 w-4" /> Games</Link></li>
                     <li><Link href="/admin/categories" onClick={closeDropdown}><FiTag className="h-4 w-4" /> Categories</Link></li>
                     <li><Link href="/admin/services" onClick={closeDropdown}><FiTool className="h-4 w-4" /> Services</Link></li>
+                    <li><Link href="/admin/blog" onClick={closeDropdown}><FiBookOpen className="h-4 w-4" /> Blog</Link></li>
                     <li><Link href="/admin/benner" onClick={closeDropdown}><FiImage className="h-4 w-4" /> Banner</Link></li>
                     {user?.role === "SUPERADMIN" && (
                       <li><Link href="/admin/permissions" onClick={closeDropdown}><FiShield className="h-4 w-4" /> Permissions</Link></li>

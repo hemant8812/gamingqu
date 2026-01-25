@@ -42,6 +42,7 @@ model User {
   accounts      Account[]
   sessions      Session[]
   boosterApplications BoosterApplication[]
+  posts         Post[]
 
   @@index([createdAt])
   @@index([role])
@@ -254,4 +255,34 @@ model Banner {
   updatedAt      DateTime @updatedAt
 
   @@index([isActive, order])
+}
+
+model Post {
+  id          String   @id @default(cuid())
+  title       String
+  slug        String   @unique
+  excerpt     String?  @db.Text
+  content     String?  @db.LongText
+  imageUrl    String?
+  sourceUrl   String?  @db.Text
+  authorId    String?
+  isPublished Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  author      User?    @relation(fields: [authorId], references: [id], onDelete: SetNull)
+
+  @@index([isPublished, createdAt])
+  @@index([slug])
+}
+
+model ScraperSource {
+  id          String   @id @default(cuid())
+  name        String
+  url         String   @unique
+  scrapeInterval Int   @default(60) // Interval in minutes
+  lastRunAt   DateTime?
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 }

@@ -1,5 +1,7 @@
 @import "tailwindcss";
-@plugin "daisyui";
+@plugin "daisyui" {
+  base: false;
+}
 
 @custom-variant dark (&:is(.dark *));
 

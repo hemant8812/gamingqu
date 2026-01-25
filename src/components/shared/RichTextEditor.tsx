@@ -108,10 +108,10 @@ export function RichTextEditor({ name, initialHtml = "", placeholder = "Deskrips
           <ImageIcon className="h-3.5 w-3.5" />
         </button>
       </div>
-      <div className="relative flex-1">
+      <div className="relative flex-1 min-h-[400px]">
         <div
           ref={editorRef}
-          className="h-full px-3 py-3 text-sm text-white bg-black outline-none rounded-b-xl overflow-y-auto"
+          className="h-full min-h-[400px] px-3 py-3 text-sm text-white bg-black outline-none rounded-b-xl overflow-y-auto"
           contentEditable
           onInput={sync}
           onBlur={sync}

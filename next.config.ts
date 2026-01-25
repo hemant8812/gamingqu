@@ -15,6 +15,9 @@ const csp = [
 
 const nextConfig: NextConfig = {
   reactCompiler: true,
+  experimental: {
+    optimizeCss: false,
+  },
   images: {
     qualities: [100, 75],
   },
