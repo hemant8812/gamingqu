@@ -1,7 +1,8 @@
 "use client";
 import { useState, useRef, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { Save, X, Trash2, Globe, RefreshCw, Plus } from "lucide-react";
+import Link from "next/link";
+import { Save, X, Trash2, Globe, RefreshCw, Plus, ChevronLeft, ChevronRight } from "lucide-react";
 import { RichTextEditor } from "@/components/shared/RichTextEditor";
 import { ImageUploadField } from "@/components/shared/ImageUploadField";
 import { AutoSlugField } from "@/components/shared/AutoSlugField";
@@ -26,7 +27,7 @@ type ScraperSource = {
     lastRunAt?: Date | string | null;
 };
 
-export function BlogManager({ posts, sources }: { posts: Post[]; sources: ScraperSource[] }) {
+export function BlogManager({ posts, sources, page, totalPages }: { posts: Post[]; sources: ScraperSource[]; page: number; totalPages: number }) {
     const router = useRouter();
     const searchParams = useSearchParams();
     const [isScraping, setIsScraping] = useState(false);
@@ -325,6 +326,31 @@ export function BlogManager({ posts, sources }: { posts: Post[]; sources: Scrape
                             </tbody>
                         </table>
                     </div>
+                    {totalPages > 1 && (
+                        <div className="p-4 flex items-center justify-end gap-2 border-t border-base-200">
+                            <Link
+                                href={`/admin/blog?page=${Math.max(1, page - 1)}`}
+                                prefetch={false}
+                                className={`btn btn-sm ${page > 1 ? "btn-outline" : "btn-disabled"}`}
+                                aria-disabled={page <= 1}
+                            >
+                                <ChevronLeft className="h-4 w-4" />
+                                <span>Prev</span>
+                            </Link>
+                            <span className="text-xs opacity-70">
+                                Page {page} of {totalPages}
+                            </span>
+                            <Link
+                                href={`/admin/blog?page=${Math.min(totalPages, page + 1)}`}
+                                prefetch={false}
+                                className={`btn btn-sm ${page < totalPages ? "btn-outline" : "btn-disabled"}`}
+                                aria-disabled={page >= totalPages}
+                            >
+                                <span>Next</span>
+                                <ChevronRight className="h-4 w-4" />
+                            </Link>
+                        </div>
+                    )}
                 </div>
             </div>
 {editingSource ? "Edit Source" : ""}
