@@ -9,9 +9,11 @@ export function UsersSearchInput() {
   const initial = sp.get("q") ?? "";
   const [value, setValue] = React.useState(initial);
   const lastSentRef = React.useRef<string>(initial);
+
   React.useEffect(() => {
     setValue(initial);
   }, [initial]);
+
   React.useEffect(() => {
     const t = setTimeout(() => {
       const v = value.trim();
@@ -31,13 +33,14 @@ export function UsersSearchInput() {
     }, 300);
     return () => clearTimeout(t);
   }, [value, router, pathname]);
+
   return (
     <input
       type="text"
       value={value}
       onChange={(e) => setValue(e.target.value)}
       placeholder="Search users"
-      className="bg-zinc-900 border border-zinc-800 rounded-md px-3 py-2 text-sm text-white w-64"
+      className="input input-bordered input-sm w-full max-w-xs"
       aria-label="Cari berdasarkan ID, username, atau email"
     />
   );

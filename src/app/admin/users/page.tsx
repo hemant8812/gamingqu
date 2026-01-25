@@ -1,6 +1,5 @@
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/auth";
-import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { db } from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
@@ -39,7 +38,7 @@ export default async function AdminUsersPage({ searchParams }: { searchParams: P
   const session = await getServerSession(authOptions);
   const role = session?.user?.role;
   if (role !== "ADMIN" && role !== "SUPERADMIN") {
-    return <div className="min-h-screen bg-black text-white p-8">Forbidden</div>;
+    return <div className="min-h-screen bg-base-200 text-base-content p-8">Forbidden</div>;
   }
   async function createUser(formData: FormData) {
     "use server";
@@ -209,81 +208,81 @@ export default async function AdminUsersPage({ searchParams }: { searchParams: P
   const myId = session?.user?.id ?? null;
 
   return (
-    <div className="min-h-screen bg-black text-white">
+    <div className="min-h-screen bg-base-200 text-base-content">
       <div className="mx-auto max-w-7xl px-6 py-8">
         <PageToast message={toastMessage} type={toastType} />
         <div className="mb-5">
           <h2 className="text-3xl font-bold">Semua Pengguna</h2>
-          <p className="text-sm text-zinc-400">Kelola semua pengguna terdaftar</p>
+          <p className="text-sm opacity-70">Kelola semua pengguna terdaftar</p>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-4 gap-3 mb-6">
-          <Card className="rounded-2xl border-zinc-900 bg-zinc-950 text-white">
-            <CardContent className="px-4 py-3 flex items-center justify-between">
+          <div className="card bg-base-100 shadow-sm border border-base-200">
+            <div className="card-body p-4 flex-row items-center justify-between">
               <div>
-                <div className="text-sm text-zinc-300 font-semibold">Total User</div>
+                <div className="text-sm opacity-70 font-semibold">Total User</div>
                 <div className="text-2xl font-bold">{totalUser}</div>
               </div>
-              <span className="inline-flex items-center justify-center size-12">
-                <UsersIcon className="h-7 w-7 text-blue-400" />
-              </span>
-            </CardContent>
-          </Card>
-          <Card className="rounded-2xl border-zinc-900 bg-zinc-950 text-white">
-            <CardContent className="px-4 py-3 flex items-center justify-between">
+              <div className="p-3 rounded-full bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400">
+                <UsersIcon className="h-6 w-6" />
+              </div>
+            </div>
+          </div>
+          <div className="card bg-base-100 shadow-sm border border-base-200">
+            <div className="card-body p-4 flex-row items-center justify-between">
               <div>
-                <div className="text-sm text-zinc-300 font-semibold">Total Member</div>
+                <div className="text-sm opacity-70 font-semibold">Total Member</div>
                 <div className="text-2xl font-bold">{totalMember}</div>
               </div>
-              <span className="inline-flex items-center justify-center size-12">
-                <UserIcon className="h-7 w-7 text-green-400" />
-              </span>
-            </CardContent>
-          </Card>
-          <Card className="rounded-2xl border-zinc-900 bg-zinc-950 text-white">
-            <CardContent className="px-4 py-3 flex items-center justify-between">
+              <div className="p-3 rounded-full bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400">
+                <UserIcon className="h-6 w-6" />
+              </div>
+            </div>
+          </div>
+          <div className="card bg-base-100 shadow-sm border border-base-200">
+            <div className="card-body p-4 flex-row items-center justify-between">
               <div>
-                <div className="text-sm text-zinc-300 font-semibold">Total Booster</div>
+                <div className="text-sm opacity-70 font-semibold">Total Booster</div>
                 <div className="text-2xl font-bold">{totalBooster}</div>
               </div>
-              <span className="inline-flex items-center justify-center size-12">
-                <ZapIcon className="h-7 w-7 text-orange-400" />
-              </span>
-            </CardContent>
-          </Card>
-          <Card className="rounded-2xl border-zinc-900 bg-zinc-950 text-white">
-            <CardContent className="px-4 py-3 flex items-center justify-between">
+              <div className="p-3 rounded-full bg-orange-100 dark:bg-orange-900/30 text-orange-600 dark:text-orange-400">
+                <ZapIcon className="h-6 w-6" />
+              </div>
+            </div>
+          </div>
+          <div className="card bg-base-100 shadow-sm border border-base-200">
+            <div className="card-body p-4 flex-row items-center justify-between">
               <div>
-                <div className="text-sm text-zinc-300 font-semibold">User Suspend</div>
+                <div className="text-sm opacity-70 font-semibold">User Suspend</div>
                 <div className="text-2xl font-bold">{totalSuspended}</div>
               </div>
-              <span className="inline-flex items-center justify-center size-12">
-                <UserXIcon className="h-7 w-7 text-red-400" />
-              </span>
-            </CardContent>
-          </Card>
+              <div className="p-3 rounded-full bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400">
+                <UserXIcon className="h-6 w-6" />
+              </div>
+            </div>
+          </div>
         </div>
         <div className="flex items-center justify-between">
           <h1 className="text-3xl font-bold">Manage Users</h1>
           <AddUserModal action={createUser} />
         </div>
         <div className="mt-6">
-          <Card className="rounded-2xl border-zinc-900 overflow-hidden bg-zinc-950 text-white">
-            <CardHeader className="border-b border-zinc-900 flex items-center justify-between">
-              <CardTitle className="text-white text-lg">Users</CardTitle>
-              <UsersSearchInput />
-            </CardHeader>
-            <CardContent className="p-0">
-              <UserList
-                users={users}
-                totalPages={totalPages}
-                page={page}
-                q={q}
-                myId={myId}
-                updateUserAction={updateUser}
-                deleteUserAction={deleteUser}
-              />
-            </CardContent>
-          </Card>
+          <div className="card bg-base-100 shadow-xl overflow-hidden border border-base-200">
+            <div className="card-body p-0">
+                <div className="p-4 border-b border-base-200 flex items-center justify-between">
+                    <h3 className="card-title text-lg">Users</h3>
+                    <UsersSearchInput />
+                </div>
+                <UserList
+                    users={users}
+                    totalPages={totalPages}
+                    page={page}
+                    q={q}
+                    myId={myId}
+                    updateUserAction={updateUser}
+                    deleteUserAction={deleteUser}
+                />
+            </div>
+          </div>
         </div>
       </div>
     </div>

@@ -9,7 +9,7 @@ export default async function AdminBennerPage({ searchParams }: { searchParams?:
   const session = await getServerSession(authOptions);
   const role = session?.user?.role;
   if (role !== "ADMIN" && role !== "SUPERADMIN") {
-    return <div className="min-h-screen bg-black text-white p-8">Forbidden</div>;
+    return <div className="min-h-screen bg-base-200 text-base-content p-8">Forbidden</div>;
   }
   const sp = searchParams ? await searchParams : {};
   const { value: toast, type: toastType } = parseToast(sp);
@@ -19,7 +19,7 @@ export default async function AdminBennerPage({ searchParams }: { searchParams?:
     orderBy: [{ order: "asc" }, { createdAt: "asc" }],
   });
   return (
-    <div className="min-h-screen bg-black text-white">
+    <div className="min-h-screen bg-base-200 text-base-content">
       <div className="mx-auto max-w-7xl px-6 py-8">
         <PageToast message={toastMessage} type={toastType} />
         <BennerManager items={items} canAdd={items.length < 10} />

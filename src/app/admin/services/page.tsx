@@ -1,11 +1,8 @@
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/auth";
-import { Card } from "@/components/ui/card";
 import { db } from "@/lib/prisma";
 import { PageToast } from "@/components/shared/PageToast";
-import { ServiceForm } from "@/components/admin/services/ServiceForm";
-import { ServiceList } from "@/components/admin/services/ServiceList";
-import { GameSearchInput } from "@/components/admin/games/GameSearchInput";
+import { ServiceManager } from "@/components/admin/services/ServiceManager";
 import { normalizeQuery, parseToast } from "@/lib/page-utils";
 import { getSimpleGames, getSimpleCategories } from "@/lib/selects";
 
@@ -21,6 +18,7 @@ type EditingDb = {
   price: unknown;
   isHotOffer: boolean;
 } | null;
+
 async function getServices(q?: string) {
   try {
     const list = await db.service.findMany({
@@ -57,7 +55,7 @@ export default async function AdminServicesPage({ searchParams }: { searchParams
   const session = await getServerSession(authOptions);
   const role = session?.user?.role;
   if (role !== "ADMIN" && role !== "SUPERADMIN") {
-    return <div className="min-h-screen bg-black text-white p-8">Forbidden</div>;
+    return <div className="min-h-screen bg-base-200 text-base-content p-8">Forbidden</div>;
   }
   const sp = searchParams ? await searchParams : {};
   const { value: toast, type: toastType } = parseToast(sp);
@@ -88,13 +86,10 @@ export default async function AdminServicesPage({ searchParams }: { searchParams
     }
   }
   return (
-    <div className="min-h-screen bg-black text-white">
+    <div className="min-h-screen bg-base-200 text-base-content">
       <div className="mx-auto max-w-7xl px-6 py-8">
         <PageToast message={toastMessage} type={toastType} />
-        <h1 className="text-3xl font-bold">Manage Layanan</h1>
-        <p className="mt-2 text-sm text-zinc-400">Tambah/kelola layanan: nama, slug, pilih game dan kategori opsional, deskripsi, gambar, features, harga, hot offers.</p>
-        <section className="mt-6 grid grid-cols-1 gap-6">
-          <ServiceForm games={games} categories={categories} editing={editing ? {
+        <ServiceManager services={services} games={games} categories={categories} editing={editing ? {
             id: editing.id,
             name: editing.name,
             slug: editing.slug,
@@ -106,14 +101,6 @@ export default async function AdminServicesPage({ searchParams }: { searchParams
             price: String(editing.price),
             isHotOffer: editing.isHotOffer,
           } : null} />
-          <Card className="rounded-2xl border border-zinc-900 bg-zinc-950 p-6">
-            <div className="flex items-center justify-between">
-              <h2 className="text-xl font-semibold text-white">Data Layanan</h2>
-              <GameSearchInput placeholder="Cari layanan" />
-            </div>
-            <ServiceList services={services} />
-          </Card>
-        </section>
       </div>
     </div>
   );

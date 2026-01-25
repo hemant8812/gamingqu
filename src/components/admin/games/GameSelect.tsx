@@ -1,6 +1,5 @@
 "use client";
 import * as React from "react";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Search as SearchIcon, ChevronDown, Check } from "lucide-react";
 
 type GameOption = { id: string; name: string };
@@ -20,64 +19,85 @@ export function GameSelect({
 }) {
   const [query, setQuery] = React.useState("");
   const [selectedId, setSelectedId] = React.useState<string>("");
+  const [isOpen, setIsOpen] = React.useState(false);
+  const dropdownRef = React.useRef<HTMLDivElement>(null);
+
   React.useEffect(() => {
     if (initialValue) {
       setSelectedId(initialValue);
     }
   }, [initialValue]);
+
+  React.useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setIsOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
   const selectedName = React.useMemo(() => games.find((g) => g.id === selectedId)?.name ?? "", [selectedId, games]);
   const filtered = React.useMemo(() => {
     const q = query.trim().toLowerCase();
     if (!q) return games;
     return games.filter((g) => g.name.toLowerCase().includes(q));
   }, [games, query]);
+
   return (
-    <div>
-      <label htmlFor={name} className="block text-sm font-semibold">{label}</label>
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <button
-            type="button"
-            className="mt-1 w-full rounded-md bg-zinc-900 border border-zinc-800 px-3 py-2 text-sm text-white inline-flex items-center justify-between"
-            aria-haspopup="listbox"
-            aria-expanded="false"
-          >
-            <span className="truncate">{selectedName || "Pilih Game"}</span>
-            <ChevronDown className="h-4 w-4 text-zinc-400" />
-          </button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent className="bg-zinc-950 border-zinc-900 text-white p-2 w-[22rem]">
-          <div className="relative mb-2">
-            <SearchIcon className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-500 h-4 w-4 pointer-events-none" />
-            <input
-              type="text"
-              placeholder="Cari nama game"
-              className="bg-zinc-900 border border-zinc-800 rounded-md h-9 px-3 pl-9 text-sm text-white w-full"
-              value={query}
-              onChange={(e) => setQuery(e.target.value)}
-              aria-label="Pencarian game"
-            />
+    <div className="form-control w-full" ref={dropdownRef}>
+      <label htmlFor={name} className="label">
+        <span className="label-text font-semibold">{label}</span>
+      </label>
+      <div className={`dropdown w-full ${isOpen ? "dropdown-open" : ""}`}>
+        <div
+          tabIndex={0}
+          role="button"
+          className="input input-bordered w-full flex items-center justify-between cursor-pointer"
+          onClick={() => setIsOpen(!isOpen)}
+        >
+          <span className="truncate">{selectedName || "Pilih Game"}</span>
+          <ChevronDown className="h-4 w-4 opacity-50" />
+        </div>
+        {isOpen && (
+          <div className="dropdown-content z-[999] card card-compact w-full p-2 shadow-xl bg-base-100 border border-base-200 mt-1 max-h-60 overflow-y-auto">
+            <div className="p-2">
+                <div className="relative mb-2 sticky top-0 bg-base-100 z-[1000] pb-2">
+                    <SearchIcon className="absolute left-3 top-1/2 -translate-y-[calc(50%+4px)] opacity-50 h-4 w-4 pointer-events-none" />
+                    <input
+                    type="text"
+                    placeholder="Cari nama game"
+                    className="input input-bordered input-sm w-full pl-9"
+                    value={query}
+                    onChange={(e) => setQuery(e.target.value)}
+                    autoFocus
+                    />
+                </div>
+                <ul className="menu menu-sm w-full p-0">
+                    {filtered.length === 0 && (
+                        <li className="disabled"><a>Tidak ada hasil</a></li>
+                    )}
+                    {filtered.map((g) => (
+                        <li key={g.id}>
+                            <a
+                                onClick={() => {
+                                    setSelectedId(g.id);
+                                    onChange?.(g.id);
+                                    setIsOpen(false);
+                                }}
+                                className={`flex justify-between ${selectedId === g.id ? "active" : ""}`}
+                            >
+                                <span className="truncate">{g.name}</span>
+                                {selectedId === g.id && <Check className="h-4 w-4" />}
+                            </a>
+                        </li>
+                    ))}
+                </ul>
+            </div>
           </div>
-          <div className="max-h-64 overflow-auto rounded-md border border-zinc-900">
-            {filtered.length === 0 && (
-              <div className="px-3 py-2 text-sm text-zinc-400">Tidak ada hasil</div>
-            )}
-            {filtered.map((g) => (
-              <DropdownMenuItem
-                key={g.id}
-                onClick={() => {
-                  setSelectedId(g.id);
-                  onChange?.(g.id);
-                }}
-                className="rounded-none px-3 py-2 hover:bg-zinc-800 focus:bg-zinc-800 data-[highlighted]:bg-zinc-800 flex items-center justify-between"
-              >
-                <span className="truncate">{g.name}</span>
-                {selectedId === g.id && <Check className="h-4 w-4 text-green-500" />}
-              </DropdownMenuItem>
-            ))}
-          </div>
-        </DropdownMenuContent>
-      </DropdownMenu>
+        )}
+      </div>
       <input id={name} name={name} type="hidden" value={selectedId} />
     </div>
   );

@@ -4,8 +4,6 @@ import Link from "next/link";
 import Image from "next/image";
 import { signIn, useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { FiArrowRight, FiUser, FiAtSign, FiMail, FiLock } from "react-icons/fi";
 import { FcGoogle } from "react-icons/fc";
 import { SiDiscord } from "react-icons/si";
@@ -74,10 +72,10 @@ export default function RegisterPage() {
   };
 
   return (
-    <div className="min-h-screen bg-black text-white pt-16">
+    <div className="min-h-screen bg-base-200 text-base-content pt-16">
       <div className="mx-auto max-w-7xl px-6 grid grid-cols-1 lg:grid-cols-2 gap-8">
         <div className="hidden lg:block relative">
-          <div className="relative rounded-[24px] overflow-hidden ring-1 ring-white/10 w-full h-[28rem]">
+          <div className="relative rounded-box overflow-hidden shadow-xl w-full h-[28rem]">
             <Image
               src="https://picsum.photos/seed/register-hero/1000/700"
               alt=""
@@ -89,139 +87,142 @@ export default function RegisterPage() {
           </div>
         </div>
         <div className="relative flex flex-col">
-          <div className="flex items-center justify-center py-2 gap-2">
+          <div className="flex items-center justify-center py-2 gap-2 mb-8">
             <Image src="/icons/logo.png" alt="Gamingqu" width={120} height={28} />
             <div className="text-sm">
-              <span className="text-zinc-400">Already have an account?</span>{" "}
-              <Link href="/login" className="rounded-md bg-zinc-800 text-white text-xs px-3 py-1">
+              <span className="opacity-70">Already have an account?</span>{" "}
+              <Link href="/login" className="link link-primary no-underline font-bold hover:underline">
                 Log in
               </Link>
             </div>
           </div>
           <div className="flex-1 flex items-start lg:items-start justify-center">
-            <div className="w-full max-w-md">
-              <h1 className="text-3xl md:text-4xl font-bold text-center mb-8">Create your account</h1>
-              <form onSubmit={onSubmit} className="space-y-4">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div className="space-y-2">
+            <div className="card w-full max-w-md bg-base-100 shadow-xl">
+              <div className="card-body">
+                <h1 className="text-3xl md:text-4xl font-bold text-center mb-8">Create your account</h1>
+                <form onSubmit={onSubmit} className="space-y-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="form-control">
+                      <div className="relative">
+                        <FiUser className="absolute left-3 top-1/2 -translate-y-1/2 text-base-content/50 h-4 w-4 pointer-events-none" />
+                        <input
+                          id="name"
+                          type="text"
+                          value={name}
+                          onChange={(e) => setName(e.target.value)}
+                          placeholder="Full name"
+                          className="input input-bordered w-full pl-10"
+                          required
+                          autoComplete="name"
+                        />
+                      </div>
+                    </div>
+                    <div className="form-control">
+                      <div className="relative">
+                        <FiAtSign className="absolute left-3 top-1/2 -translate-y-1/2 text-base-content/50 h-4 w-4 pointer-events-none" />
+                        <input
+                          id="username"
+                          type="text"
+                          value={username}
+                          onChange={(e) => setUsername(e.target.value)}
+                          placeholder="Username"
+                          className="input input-bordered w-full pl-10"
+                          required
+                          autoComplete="username"
+                          autoCapitalize="none"
+                          spellCheck={false}
+                        />
+                      </div>
+                    </div>
+                  </div>
+                  <div className="form-control">
                     <div className="relative">
-                      <FiUser className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-500 h-4 w-4 pointer-events-none" />
-                      <Input
-                        id="name"
-                        type="text"
-                        value={name}
-                        onChange={(e) => setName(e.target.value)}
-                        placeholder="Full name"
-                        className="bg-zinc-900 border-zinc-800 h-12 rounded-xl placeholder-semibold pl-10"
+                      <FiMail className="absolute left-3 top-1/2 -translate-y-1/2 text-base-content/50 h-4 w-4 pointer-events-none" />
+                      <input
+                        id="email"
+                        type="email"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        placeholder="Email address"
+                        className="input input-bordered w-full pl-10"
                         required
-                        autoComplete="name"
+                          autoComplete="email"
+                          autoCapitalize="none"
+                          spellCheck={false}
                       />
                     </div>
                   </div>
-                  <div className="space-y-2">
+                  <div className="form-control">
                     <div className="relative">
-                      <FiAtSign className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-500 h-4 w-4 pointer-events-none" />
-                      <Input
-                        id="username"
-                        type="text"
-                        value={username}
-                        onChange={(e) => setUsername(e.target.value)}
-                        placeholder="Username"
-                        className="bg-zinc-900 border-zinc-800 h-12 rounded-xl placeholder-semibold pl-10"
+                      <FiLock className="absolute left-3 top-1/2 -translate-y-1/2 text-base-content/50 h-4 w-4 pointer-events-none" />
+                      <input
+                        id="password"
+                        type="password"
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                        placeholder="Password"
+                        className="input input-bordered w-full pl-10"
                         required
-                        autoComplete="username"
-                        autoCapitalize="none"
-                        spellCheck={false}
+                          autoComplete="new-password"
                       />
                     </div>
                   </div>
-                </div>
-                <div className="space-y-2">
-                  <div className="relative">
-                    <FiMail className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-500 h-4 w-4 pointer-events-none" />
-                    <Input
-                      id="email"
-                      type="email"
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                      placeholder="Email address"
-                      className="bg-zinc-900 border-zinc-800 h-12 rounded-xl placeholder-semibold pl-10"
-                      required
-                        autoComplete="email"
-                        autoCapitalize="none"
-                        spellCheck={false}
-                    />
+                  <div className="form-control">
+                    <div className="relative">
+                      <FiLock className="absolute left-3 top-1/2 -translate-y-1/2 text-base-content/50 h-4 w-4 pointer-events-none" />
+                      <input
+                        id="confirm"
+                        type="password"
+                        value={confirm}
+                        onChange={(e) => setConfirm(e.target.value)}
+                        placeholder="Re-enter password"
+                        className="input input-bordered w-full pl-10"
+                        required
+                          autoComplete="new-password"
+                      />
+                    </div>
                   </div>
-                </div>
-                <div className="space-y-2">
-                  <div className="relative">
-                    <FiLock className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-500 h-4 w-4 pointer-events-none" />
-                    <Input
-                      id="password"
-                      type="password"
-                      value={password}
-                      onChange={(e) => setPassword(e.target.value)}
-                      placeholder="Password"
-                      className="bg-zinc-900 border-zinc-800 h-12 rounded-xl placeholder-semibold pl-10"
-                      required
-                        autoComplete="new-password"
-                    />
+                  {error && <div className="alert alert-error text-sm py-2">{error}</div>}
+                  <div className="flex items-center justify-between">
+                    <label className="label cursor-pointer justify-start gap-2">
+                      <input
+                        id="consent"
+                        name="consent"
+                        type="checkbox"
+                        required
+                        className="checkbox checkbox-xs checkbox-primary"
+                      />
+                      <span className="label-text text-xs">I agree to Privacy & Terms</span>
+                    </label>
+                    <button
+                      type="submit"
+                      disabled={loading}
+                      className="btn btn-primary"
+                    >
+                      {loading ? <span className="loading loading-spinner loading-sm"></span> : "Sign up"}
+                      {!loading && <FiArrowRight className="h-4 w-4 ml-2" />}
+                    </button>
                   </div>
-                </div>
-                <div className="space-y-2">
-                  <div className="relative">
-                    <FiLock className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-500 h-4 w-4 pointer-events-none" />
-                    <Input
-                      id="confirm"
-                      type="password"
-                      value={confirm}
-                      onChange={(e) => setConfirm(e.target.value)}
-                      placeholder="Re-enter password"
-                      className="bg-zinc-900 border-zinc-800 h-12 rounded-xl placeholder-semibold pl-10"
-                      required
-                        autoComplete="new-password"
-                    />
-                  </div>
-                </div>
-                {error && <p className="text-red-500 text-sm">{error}</p>}
-                <div className="flex items-center justify-between">
-                  <Label htmlFor="consent" className="text-xs text-zinc-400">
-                    <input
-                      id="consent"
-                      name="consent"
-                      type="checkbox"
-                      required
-                      className="h-4 w-4 border border-zinc-800 bg-zinc-900"
-                    />
-                    <span>I agree to Privacy & Terms</span>
-                  </Label>
+                </form>
+                <div className="divider">OR</div>
+                <div className="grid grid-cols-2 gap-3">
                   <button
-                    type="submit"
-                    disabled={loading}
-                    className="inline-flex items-center gap-2 rounded-md bg-blue-600 px-5 py-2.5 text-sm font-semibold text-white hover:bg-blue-500 disabled:opacity-60"
+                    type="button"
+                    onClick={() => signIn("google", { callbackUrl: "/" })}
+                    className="btn btn-outline hover:bg-base-200 hover:text-base-content border-base-300"
                   >
-                    {loading ? "Processing..." : "Sign up"}
-                    <FiArrowRight className="h-4 w-4" />
+                    <FcGoogle size={18} className="mr-2" />
+                    Google
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => signIn("discord", { callbackUrl: "/" })}
+                    className="btn bg-[#5865F2] hover:bg-[#4752c4] text-white border-none"
+                  >
+                    <SiDiscord size={18} className="mr-2" />
+                    Discord
                   </button>
                 </div>
-              </form>
-              <div className="mt-4 grid grid-cols-2 gap-3">
-                <button
-                  type="button"
-                  onClick={() => signIn("google", { callbackUrl: "/" })}
-                  className="rounded-md bg-white text-black px-4 py-2.5 text-sm font-semibold hover:bg-zinc-200 inline-flex items-center justify-center gap-2"
-                >
-                  <FcGoogle size={18} />
-                  Google
-                </button>
-                <button
-                  type="button"
-                  onClick={() => signIn("discord", { callbackUrl: "/" })}
-                  className="rounded-md bg-[#5865F2] text-white px-4 py-2.5 text-sm font-semibold hover:brightness-110 inline-flex items-center justify-center gap-2"
-                >
-                  <SiDiscord size={18} className="text-white" />
-                  Discord
-                </button>
               </div>
             </div>
           </div>

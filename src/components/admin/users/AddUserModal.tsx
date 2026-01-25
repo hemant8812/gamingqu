@@ -1,41 +1,36 @@
 "use client";
-import * as Dialog from "@radix-ui/react-dialog";
-import { useState } from "react";
-import { UserPlus, X, XCircle, Save as SaveIcon } from "lucide-react";
+import { useRef } from "react";
+import { UserPlus, XCircle, Save as SaveIcon } from "lucide-react";
 import { toast as sonnerToast } from "sonner";
-import { Switch } from "@/components/ui/switch";
 
 type Props = {
   action: (formData: FormData) => Promise<{ ok: boolean; message?: string }>;
 };
 
 export function AddUserModal({ action }: Props) {
-  const [open, setOpen] = useState(false);
-  const [suspended, setSuspended] = useState(false);
-  const handleOpenChange = (v: boolean) => {
-    setOpen(v);
+  const dialogRef = useRef<HTMLDialogElement>(null);
+
+  const openModal = () => {
+    dialogRef.current?.showModal();
   };
+
+  const closeModal = () => {
+    dialogRef.current?.close();
+  };
+
   return (
-    <Dialog.Root open={open} onOpenChange={handleOpenChange}>
-      <Dialog.Trigger asChild>
-        <button
-          className="inline-flex items-center gap-2 rounded-md bg-blue-600 px-3 py-2 hover:bg-blue-500 text-white"
-        >
-          <UserPlus className="h-5 w-5" />
-          <span className="text-sm font-semibold">Add User</span>
-        </button>
-      </Dialog.Trigger>
-      <Dialog.Portal>
-        <Dialog.Overlay className="fixed inset-0 bg-black/70" />
-        <Dialog.Content className="fixed left-1/2 top-1/2 w-[95vw] max-w-md -translate-x-1/2 -translate-y-1/2 rounded-2xl border border-zinc-900 bg-zinc-950 p-6 shadow-xl focus:outline-none text-white">
-          <div className="flex items-center justify-between">
-            <Dialog.Title className="text-lg font-semibold">Tambah User</Dialog.Title>
-            <Dialog.Close asChild>
-              <button aria-label="Close" className="rounded-md p-2 hover:bg-zinc-800">
-                <X className="h-4 w-4" />
-              </button>
-            </Dialog.Close>
-          </div>
+    <>
+      <button
+        className="btn btn-primary btn-sm gap-2"
+        onClick={openModal}
+      >
+        <UserPlus className="h-4 w-4" />
+        Add User
+      </button>
+
+      <dialog ref={dialogRef} className="modal">
+        <div className="modal-box w-11/12 max-w-2xl bg-base-100 text-base-content">
+          <h3 className="font-bold text-lg mb-4">Tambah User</h3>
           <form
             action={async (fd: FormData) => {
               try {
@@ -46,7 +41,7 @@ export function AddUserModal({ action }: Props) {
                   sonnerToast.error(msg);
                 } else {
                   sonnerToast.success("Data berhasil disimpan");
-                  setOpen(false);
+                  closeModal();
                 }
               } catch (e: unknown) {
                 const isRedirect =
@@ -56,68 +51,75 @@ export function AddUserModal({ action }: Props) {
                   String((e as Record<string, unknown>).digest).includes("NEXT_REDIRECT");
                 if (isRedirect) {
                   sonnerToast.success("Data berhasil disimpan");
-                  setOpen(false);
+                  closeModal();
                 } else {
-                  setOpen(false);
+                  closeModal();
                 }
               }
             }}
-            className="mt-4 space-y-4"
+            className="space-y-4"
           >
-            {suspended && <input type="hidden" name="isSuspended" value="on" />}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <label htmlFor="name" className="block text-sm font-semibold">Name</label>
+              <div className="form-control w-full">
+                <label className="label">
+                  <span className="label-text font-semibold">Name</span>
+                </label>
                 <input
-                  id="name"
                   name="name"
                   type="text"
                   required
                   placeholder="Nama lengkap"
-                  className="mt-1 w-full rounded-md bg-zinc-900 border border-zinc-800 px-3 py-2 text-sm text-white"
+                  className="input input-bordered w-full"
                 />
               </div>
-              <div>
-                <label htmlFor="username" className="block text-sm font-semibold">Username</label>
+              <div className="form-control w-full">
+                <label className="label">
+                  <span className="label-text font-semibold">Username</span>
+                </label>
                 <input
-                  id="username"
                   name="username"
                   type="text"
                   required
                   placeholder="Masukkan username"
-                  className="mt-1 w-full rounded-md bg-zinc-900 border border-zinc-800 px-3 py-2 text-sm text-white"
+                  className="input input-bordered w-full"
                 />
               </div>
             </div>
-            <div>
-              <label htmlFor="email" className="block text-sm font-semibold">Email</label>
+            
+            <div className="form-control w-full">
+              <label className="label">
+                <span className="label-text font-semibold">Email</span>
+              </label>
               <input
-                id="email"
                 name="email"
                 type="email"
                 required
                 placeholder="user@example.com"
-                className="mt-1 w-full rounded-md bg-zinc-900 border border-zinc-800 px-3 py-2 text-sm text-white"
+                className="input input-bordered w-full"
               />
             </div>
-            <div>
-              <label htmlFor="password" className="block text-sm font-semibold">Password</label>
+
+            <div className="form-control w-full">
+              <label className="label">
+                <span className="label-text font-semibold">Password</span>
+              </label>
               <input
-                id="password"
                 name="password"
                 type="password"
                 required
                 placeholder="Minimal 8 karakter"
-                className="mt-1 w-full rounded-md bg-zinc-900 border border-zinc-800 px-3 py-2 text-sm text-white"
+                className="input input-bordered w-full"
               />
             </div>
-            <div>
-              <label htmlFor="role" className="block text-sm font-semibold">Role</label>
+
+            <div className="form-control w-full">
+              <label className="label">
+                <span className="label-text font-semibold">Role</span>
+              </label>
               <select
-                id="role"
                 name="role"
                 defaultValue="MEMBER"
-                className="mt-1 w-full rounded-md bg-zinc-900 border border-zinc-800 px-3 py-2 text-sm text-white"
+                className="select select-bordered w-full"
               >
                 <option value="MEMBER">MEMBER</option>
                 <option value="BOOSTER">BOOSTER</option>
@@ -125,35 +127,34 @@ export function AddUserModal({ action }: Props) {
                 <option value="SUPERADMIN">SUPERADMIN</option>
               </select>
             </div>
-            <div className="flex items-center justify-between">
-              <label htmlFor="isSuspendedToggle" className="text-sm font-semibold">Status</label>
-              <div className="flex items-center gap-2">
-                <span className={suspended ? "text-zinc-500 text-xs" : "text-green-500 text-xs font-medium"}>Aktif</span>
-                <Switch
-                  id="isSuspendedToggle"
-                  checked={suspended}
-                  onCheckedChange={setSuspended}
-                  aria-label="Suspended toggle"
-                  className="data-[state=checked]:bg-red-600"
+
+            <div className="form-control">
+              <label className="label cursor-pointer justify-start gap-4">
+                <span className="label-text font-semibold">Suspend Account?</span>
+                <input 
+                    type="checkbox" 
+                    name="isSuspended" 
+                    className="toggle toggle-error" 
                 />
-                <span className={suspended ? "text-red-500 text-xs font-medium" : "text-zinc-500 text-xs"}>Nonaktif</span>
-              </div>
+              </label>
             </div>
-            <div className="flex justify-end gap-2 pt-2">
-              <Dialog.Close asChild>
-                <button type="button" className="inline-flex items-center gap-2 rounded-md border border-zinc-800 bg-zinc-900 px-3 py-2 text-sm text-white hover:bg-zinc-800">
-                  <XCircle className="h-4 w-4" />
-                  <span>Batal</span>
-                </button>
-              </Dialog.Close>
-              <button type="submit" className="inline-flex items-center gap-2 rounded-md bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-500">
+
+            <div className="modal-action">
+              <button type="button" className="btn btn-ghost gap-2" onClick={closeModal}>
+                <XCircle className="h-4 w-4" />
+                Batal
+              </button>
+              <button type="submit" className="btn btn-primary gap-2">
                 <SaveIcon className="h-4 w-4" />
-                <span>Simpan</span>
+                Simpan
               </button>
             </div>
           </form>
-        </Dialog.Content>
-      </Dialog.Portal>
-    </Dialog.Root>
+        </div>
+        <form method="dialog" className="modal-backdrop">
+            <button>close</button>
+        </form>
+      </dialog>
+    </>
   );
 }

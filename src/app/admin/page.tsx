@@ -6,7 +6,7 @@ export default async function AdminDashboard() {
   const session = await getServerSession(authOptions);
   const role = session?.user?.role;
   if (role !== "ADMIN" && role !== "SUPERADMIN") {
-    return <div className="min-h-screen bg-black text-white p-8">Forbidden</div>;
+    return <div className="min-h-screen bg-base-200 text-base-content p-8">Forbidden</div>;
   }
   let enabled = new Set<string>();
   try {
@@ -17,37 +17,45 @@ export default async function AdminDashboard() {
   }
 
   return (
-    <div className="min-h-screen bg-black text-white">
+    <div className="min-h-screen bg-base-200 text-base-content">
       <div className="mx-auto max-w-7xl px-6 py-8">
         <h1 className="text-3xl font-bold">Admin Dashboard</h1>
-        <p className="mt-2 text-sm text-zinc-400">Kelola Users, Boosters, Orders, Analytics; Permissions untuk Super Admin.</p>
+        <p className="mt-2 text-sm opacity-70">Kelola Users, Boosters, Orders, Analytics; Permissions untuk Super Admin.</p>
         <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-6">
           {enabled.has("users") && (
-            <section className="rounded-2xl border border-zinc-900 bg-zinc-950 p-6">
-              <h2 className="text-xl font-semibold">Manajemen Users</h2>
-              <p className="text-zinc-400 text-sm mt-2">Panel untuk melihat dan mengelola users.</p>
+            <section className="card bg-base-100 shadow-xl border border-base-200">
+              <div className="card-body">
+                <h2 className="card-title">Manajemen Users</h2>
+                <p className="text-sm opacity-70">Panel untuk melihat dan mengelola users.</p>
+              </div>
             </section>
           )}
           {enabled.has("boosters") && (
-            <section className="rounded-2xl border border-zinc-900 bg-zinc-950 p-6">
-              <h2 className="text-xl font-semibold">Manajemen Boosters</h2>
-              <p className="text-zinc-400 text-sm mt-2">Panel untuk daftar booster dan pengajuan.</p>
+            <section className="card bg-base-100 shadow-xl border border-base-200">
+              <div className="card-body">
+                <h2 className="card-title">Manajemen Boosters</h2>
+                <p className="text-sm opacity-70">Panel untuk daftar booster dan pengajuan.</p>
+              </div>
             </section>
           )}
           {enabled.has("orders") && (
-            <section className="rounded-2xl border border-zinc-900 bg-zinc-950 p-6">
-              <h2 className="text-xl font-semibold">Orders</h2>
-              <p className="text-zinc-400 text-sm mt-2">Panel pesanan dari member.</p>
+            <section className="card bg-base-100 shadow-xl border border-base-200">
+              <div className="card-body">
+                <h2 className="card-title">Orders</h2>
+                <p className="text-sm opacity-70">Panel pesanan dari member.</p>
+              </div>
             </section>
           )}
           {enabled.has("analytics") && (
-            <section className="rounded-2xl border border-zinc-900 bg-zinc-950 p-6">
-              <h2 className="text-xl font-semibold">Analytics</h2>
-              <p className="text-zinc-400 text-sm mt-2">Statistik penjualan dan performa.</p>
+            <section className="card bg-base-100 shadow-xl border border-base-200">
+              <div className="card-body">
+                <h2 className="card-title">Analytics</h2>
+                <p className="text-sm opacity-70">Statistik penjualan dan performa.</p>
+              </div>
             </section>
           )}
         </div>
-        <p className="mt-8 text-sm text-zinc-500">
+        <p className="mt-8 text-sm opacity-50">
           Akses panel admin diatur oleh Super Admin melalui izin.
         </p>
       </div>

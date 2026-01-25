@@ -32,17 +32,16 @@ export function GameSearchInput({ placeholder = "Cari game" }: { placeholder?: s
     return () => clearTimeout(t);
   }, [value, router, pathname]);
   return (
-    <div className="relative w-64">
-      <SearchIcon className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-500 h-4 w-4 pointer-events-none" />
+    <div className="relative w-full max-w-xs">
+      <SearchIcon className="absolute left-3 top-1/2 -translate-y-1/2 opacity-50 h-4 w-4 pointer-events-none" />
       <input
         type="text"
         value={value}
         onChange={(e) => setValue(e.target.value)}
         placeholder={placeholder}
-        className="bg-zinc-900 border border-zinc-800 rounded-md h-9 px-3 pl-9 text-sm text-white w-full"
+        className="input input-bordered input-sm w-full pl-9"
         aria-label="Pencarian game"
       />
     </div>
   );
 }
-

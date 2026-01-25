@@ -43,67 +43,80 @@ export function GameForm({ editing }: { editing: Editing }) {
     }
   };
   return (
-    <form onSubmit={onSubmit} method="post" encType="multipart/form-data" className="rounded-2xl border border-zinc-900 bg-zinc-950 p-6 space-y-4">
-      <div>
-        <label htmlFor="name" className="block text-sm font-semibold">Nama Game</label>
-        <input
-          id="name"
-          name="name"
-          type="text"
-          required
-          placeholder="Contoh: World of Warcraft"
-          className="mt-1 w-full rounded-md bg-zinc-900 border border-zinc-800 px-3 py-2 text-sm text-white"
-          defaultValue={editing?.name ?? ""}
-        />
-        <AutoSlugField nameInputId="name" name="slug" label="Slug" initialValue={editing?.slug ?? ""} />
-        {editing && <input type="hidden" name="id" defaultValue={editing.id} />}
-      </div>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <ImageUploadField id="image" name="image" label="Gambar" previewHeight={160} initialUrl={editing?.imageUrl ?? null} />
-        <ImageUploadField id="icon" name="icon" label="Icon" previewHeight={160} initialUrl={editing?.iconUrl ?? null} />
-      </div>
-      <div>
-        <label className="block text-sm font-semibold">Deskripsi</label>
-        <div className="mt-1">
-          <RichTextEditor name="description" placeholder="Deskripsi dan format bebas" initialHtml={editing?.description ?? ""} />
+    <form onSubmit={onSubmit} method="post" encType="multipart/form-data" className="card bg-base-100 shadow-xl border border-base-200">
+      <div className="card-body p-6 space-y-4">
+        <h3 className="card-title text-lg">{editing ? "Edit Game" : "Tambah Game"}</h3>
+        <div className="form-control">
+            <label htmlFor="name" className="label">
+                <span className="label-text font-semibold">Nama Game</span>
+            </label>
+            <input
+            id="name"
+            name="name"
+            type="text"
+            required
+            placeholder="Contoh: World of Warcraft"
+            className="input input-bordered w-full"
+            defaultValue={editing?.name ?? ""}
+            />
+            <AutoSlugField nameInputId="name" name="slug" label="Slug" initialValue={editing?.slug ?? ""} />
+            {editing && <input type="hidden" name="id" defaultValue={editing.id} />}
         </div>
-        <div className="mt-2 text-xs text-zinc-500">
-          Gunakan toolbar di atas untuk Bold, Link, garis baru, dan menyisipkan gambar via URL.
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <ImageUploadField id="image" name="image" label="Gambar" previewHeight={160} initialUrl={editing?.imageUrl ?? null} />
+            <ImageUploadField id="icon" name="icon" label="Icon" previewHeight={160} initialUrl={editing?.iconUrl ?? null} />
         </div>
-      </div>
-      <div className="flex items-center gap-8">
-        <div className="flex items-center gap-3">
-          <input id="isHotOffer" name="isHotOffer" type="checkbox" className="peer sr-only" defaultChecked={editing?.isHotOffer ?? false} />
-          <label
-            htmlFor="isHotOffer"
-            className="relative inline-flex h-6 w-11 rounded-full bg-zinc-800 peer-checked:bg-green-600 transition-colors cursor-pointer after:content-[''] after:absolute after:left-[2px] after:top-1/2 after:-translate-y-1/2 after:size-5 after:rounded-full after:bg-white after:transition-transform peer-checked:after:translate-x-5"
-            aria-label="Hot Offer"
-          >
-          </label>
-          <span className="text-sm font-semibold">Hot Offer</span>
+        <div className="form-control">
+            <label className="label">
+                <span className="label-text font-semibold">Deskripsi</span>
+            </label>
+            <div className="mt-1">
+            <RichTextEditor name="description" placeholder="Deskripsi dan format bebas" initialHtml={editing?.description ?? ""} />
+            </div>
+            <div className="label">
+                <span className="label-text-alt opacity-70">
+                    Gunakan toolbar di atas untuk Bold, Link, garis baru, dan menyisipkan gambar via URL.
+                </span>
+            </div>
         </div>
-        <div className="flex items-center gap-3">
-          <input id="isActive" name="isActive" type="checkbox" className="peer sr-only" defaultChecked={editing?.isActive ?? true} />
-          <label
-            htmlFor="isActive"
-            className="relative inline-flex h-6 w-11 rounded-full bg-zinc-800 peer-checked:bg-green-600 transition-colors cursor-pointer after:content-[''] after:absolute after:left-[2px] after:top-1/2 after:-translate-y-1/2 after:size-5 after:rounded-full after:bg-white after:transition-transform peer-checked:after:translate-x-5"
-            aria-label="Aktif"
-          >
-          </label>
-          <span className="text-sm font-semibold">Aktif</span>
+        <div className="flex items-center gap-8">
+            <div className="form-control">
+                <label className="label cursor-pointer gap-2">
+                    <span className="label-text font-semibold">Hot Offer</span>
+                    <input 
+                        id="isHotOffer" 
+                        name="isHotOffer" 
+                        type="checkbox" 
+                        className="toggle toggle-error" 
+                        defaultChecked={editing?.isHotOffer ?? false} 
+                    />
+                </label>
+            </div>
+            <div className="form-control">
+                <label className="label cursor-pointer gap-2">
+                    <span className="label-text font-semibold">Aktif</span>
+                    <input 
+                        id="isActive" 
+                        name="isActive" 
+                        type="checkbox" 
+                        className="toggle toggle-success" 
+                        defaultChecked={editing?.isActive ?? true} 
+                    />
+                </label>
+            </div>
         </div>
-      </div>
-      <div className="flex justify-end">
-        <button
-          type="submit"
-          className="inline-flex items-center gap-2 rounded-md bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-500 disabled:opacity-60"
-          disabled={busy}
-        >
-          <SaveIcon className="h-4 w-4" />
-          <span>{editing ? "Update Data" : "Simpan Game"}</span>
-        </button>
+        <div className="flex justify-end">
+            <button
+            type="submit"
+            className="btn btn-primary gap-2"
+            disabled={busy}
+            >
+            {busy && <span className="loading loading-spinner loading-sm"></span>}
+            <SaveIcon className="h-4 w-4" />
+            <span>{editing ? "Update Data" : "Simpan Game"}</span>
+            </button>
+        </div>
       </div>
     </form>
   );
 }
-

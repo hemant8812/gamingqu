@@ -1,6 +1,5 @@
 "use client";
 import Image from "next/image";
-import { Card } from "@/components/ui/card";
 import { FiRefreshCw } from "react-icons/fi";
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
@@ -161,11 +160,11 @@ export function HomeContent() {
   }, [dir, heroSlides.length]);
 
   return (
-    <div className="min-h-screen bg-black text-white">
+    <div className="min-h-screen bg-base-200 text-base-content">
       <main className="mx-auto max-w-7xl px-6 py-10">
         <section className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          <Card className="col-span-1 lg:col-span-3 relative overflow-hidden rounded-[28px] border-zinc-900 p-0">
-            <div className="absolute inset-0 bg-gradient-to-r from-blue-700 via-blue-600 to-transparent" />
+          <div className="card col-span-1 lg:col-span-3 bg-base-100 shadow-xl overflow-hidden rounded-box">
+            <div className="absolute inset-0 bg-gradient-to-r from-primary to-transparent opacity-80 z-0" />
             <div ref={containerRef} className="relative z-10 overflow-hidden p-8 md:p-10">
               <div
                 className="flex flex-nowrap transition-transform duration-700 ease-in-out gap-0"
@@ -179,12 +178,12 @@ export function HomeContent() {
                   >
                     <div className="space-y-3 max-w-xl">
                       <div className="text-3xl md:text-5xl font-black text-white tracking-tight">{s.title}</div>
-                      <div className="text-white text-sm">{s.subtitle}</div>
-                      <Link href={s.href} className="inline-flex rounded-md bg-blue-600 px-4 py-2 text-sm hover:bg-blue-500">
+                      <div className="text-white text-sm opacity-90">{s.subtitle}</div>
+                      <Link href={s.href} className="btn btn-primary border-none text-white hover:scale-105 transition-transform">
                         {s.cta}
                       </Link>
                     </div>
-                    <div className="relative justify-self-end w-full md:w-[420px] aspect-[16/9] rounded-[24px] overflow-hidden ring-1 ring-white/10 shadow-lg mr-8 md:mr-18">
+                    <div className="relative justify-self-end w-full md:w-[420px] aspect-[16/9] rounded-box overflow-hidden shadow-2xl mr-8 md:mr-18">
                       <Image src={s.image} alt={s.title} fill className="object-cover" unoptimized sizes="420px" />
                       <div className="hero-stripes" />
                     </div>
@@ -204,89 +203,94 @@ export function HomeContent() {
                 ))}
               </div>
             </div>
-          </Card>
+          </div>
+          
           <div className="col-span-1 lg:col-span-3 grid md:grid-cols-4 gap-6">
             {games.slice(0, 12).map((g) => (
-              <Card
+              <div
                 key={g.slug}
-                className="group relative overflow-hidden border-zinc-900 rounded-[24px] bg-black p-0 h-40 md:h-44 transition-transform duration-200 hover:-translate-y-0.5 hover:border-zinc-700 hover:shadow-lg hover:shadow-blue-900/20"
+                className="card bg-base-100 shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-1 overflow-hidden h-40 md:h-44 image-full"
               >
-                <div className="absolute inset-0">
-                  {g.imageUrl && <Image src={g.imageUrl} alt={g.title} fill className="object-cover transition-transform duration-300 group-hover:scale-105" sizes="320px" />}
-                  <div className="absolute inset-0 bg-gradient-to-br from-black/40 via-black/40 to-black/70 transition-opacity duration-300 group-hover:opacity-80" />
-                </div>
-                <div className="relative z-10 p-5">
-                  <div className="flex items-center justify-start">
-                    <h3 className="text-lg font-semibold text-white">{g.title}</h3>
-                  </div>
+                <figure>
+                    {g.imageUrl ? (
+                        <Image src={g.imageUrl} alt={g.title} fill className="object-cover transition-transform duration-500 hover:scale-110" sizes="320px" />
+                    ) : (
+                        <div className="w-full h-full bg-neutral" />
+                    )}
+                </figure>
+                <div className="card-body p-5 justify-end">
+                    <h3 className="card-title text-white text-lg drop-shadow-md">{g.title}</h3>
                 </div>
                 {g.isHotOffer && (
-                  <span className="absolute z-10 bottom-3 left-3 rounded-md bg-red-600 text-white font-bold text-[10px] px-3 py-1 inline-flex items-center gap-1.5">
-                    <Flame className="h-3.5 w-3.5" />
-                    HOT Offers
-                  </span>
+                  <div className="absolute top-3 right-3 badge badge-error gap-1 font-bold animate-pulse">
+                    <Flame className="h-3 w-3" />
+                    HOT
+                  </div>
                 )}
-              </Card>
+              </div>
             ))}
           </div>
+          
           {(moreCount - Math.min(games.length, 12) > 0) && (
             <div className="col-span-1 lg:col-span-3 flex justify-center">
               <Link
                 href="/games"
-                className="inline-flex rounded-md bg-blue-600 px-5 py-2 text-sm font-semibold text-white hover:bg-blue-500"
+                className="btn btn-wide btn-primary"
               >
                 View All {moreCount - Math.min(games.length, 12)} games
               </Link>
             </div>
           )}
         </section>
+        
         <section className="mt-10">
-          <Card className="rounded-xl border-zinc-900 bg-gradient-to-r from-blue-600 via-black to-black p-0">
-            <div className="px-6 py-4 flex items-center justify-between">
-              <h2 className="text-white text-xl font-bold">Hot right now</h2>
-              <button className="rounded-md bg-zinc-800 text-white text-xs px-3 py-1 inline-flex items-center justify-center">
-                <FiRefreshCw className="h-4 w-4" />
-                <span className="sr-only">Refresh</span>
-              </button>
-            </div>
-            <div className="px-6 pb-6 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
-              {hotDeals.slice(0, 5).map((h) => (
-                <div
-                  key={h.slug}
-                  className="relative rounded-xl overflow-hidden h-[16rem] bg-black border border-zinc-900"
-                >
-                  <div className="absolute top-0 left-0 right-0 h-[48%]">
-                    <Image src={h.image} alt={h.title} fill className="object-cover" unoptimized sizes="200px" />
-                    <div className="absolute inset-0 bg-gradient-to-b from-transparent to-black/50" />
-                    <div className="absolute bottom-0 left-0 right-0 h-6 pointer-events-none bg-gradient-to-b from-black/40 via-black/20 to-transparent blur-[2px]" />
-                    {h.logo && (
-                      <Image src={h.logo} alt="logo" width={24} height={24} className="absolute top-3 left-3 rounded-md object-cover" unoptimized />
-                    )}
-                  </div>
-                  <div className="absolute left-2 right-4 top-[40%]">
-                    <div className="text-white font-bold text-sm md:text-base leading-tight">{h.title}</div>
-                    <ul className="mt-1 space-y-0.5">
-                      {h.features.map((f) => (
-                        <li key={f} className="flex items-center gap-2">
-                          <span className="h-1.5 w-1.5 rounded-full bg-green-500" />
-                          <span className="text-xs text-white">{f}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                  <div className="absolute bottom-3 left-3 right-3 flex items-center justify-between">
-                    <div className="text-white font-bold text-sm">{h.price}</div>
-                    <Link
-                      href={`/buy/${h.slug}`}
-                      className="rounded-sm bg-blue-600 px-3 py-2 text-xs font-semibold text-white hover:bg-blue-500"
-                    >
-                      Buy now
-                    </Link>
-                  </div>
+          <div className="card bg-neutral text-neutral-content shadow-xl overflow-hidden">
+            <div className="card-body p-0">
+                <div className="p-6 flex items-center justify-between bg-neutral-focus">
+                    <h2 className="text-xl font-bold">Hot right now</h2>
+                    <button className="btn btn-sm btn-ghost btn-circle">
+                        <FiRefreshCw className="h-4 w-4" />
+                    </button>
                 </div>
-              ))}
+                <div className="p-6 pt-0 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+                {hotDeals.slice(0, 5).map((h) => (
+                    <div
+                    key={h.slug}
+                    className="card bg-base-100 text-base-content shadow-md hover:shadow-xl transition-all h-[18rem] border border-base-200"
+                    >
+                    <figure className="relative h-1/2">
+                        <Image src={h.image} alt={h.title} fill className="object-cover" unoptimized sizes="200px" />
+                        {h.logo && (
+                            <div className="absolute top-2 left-2 w-8 h-8 rounded-full overflow-hidden border-2 border-white shadow-sm">
+                                <Image src={h.logo} alt="logo" fill className="object-cover" unoptimized />
+                            </div>
+                        )}
+                    </figure>
+                    <div className="card-body p-4 text-left">
+                        <h3 className="font-bold text-sm line-clamp-2 min-h-[2.5em]">{h.title}</h3>
+                        <ul className="text-xs space-y-1 opacity-70 mt-1 flex-grow">
+                        {h.features.map((f) => (
+                            <li key={f} className="flex items-center gap-1">
+                            <span className="badge badge-xs badge-success badge-outline"></span>
+                            <span className="truncate">{f}</span>
+                            </li>
+                        ))}
+                        </ul>
+                        <div className="flex items-center justify-between mt-2">
+                            <span className="font-bold text-primary">{h.price}</span>
+                            <Link
+                            href={`/buy/${h.slug}`}
+                            className="btn btn-xs btn-primary"
+                            >
+                            Buy
+                            </Link>
+                        </div>
+                    </div>
+                    </div>
+                ))}
+                </div>
             </div>
-          </Card>
+          </div>
         </section>
       </main>
     </div>
