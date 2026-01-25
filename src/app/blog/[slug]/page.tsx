@@ -2,11 +2,47 @@ import { db } from "@/lib/prisma";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import type { Metadata } from "next";
+import { getBaseUrl } from "@/lib/site";
 
 type Props = { params: Promise<{ slug?: string | string[] }> };
 
 export const dynamic = "force-dynamic";
 
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const p = await params;
+  const slugParam = Array.isArray(p?.slug) ? p!.slug[0] : p?.slug;
+  if (!slugParam) return {};
+  const base = getBaseUrl();
+  try {
+    const post = await db.post.findUnique({
+      where: { slug: slugParam },
+      select: { title: true, excerpt: true, imageUrl: true, updatedAt: true },
+    });
+    if (!post) return {};
+    return {
+      title: post.title,
+      description: post.excerpt ?? post.title,
+      alternates: { canonical: `${base}/blog/${slugParam}` },
+      openGraph: {
+        title: post.title,
+        description: post.excerpt ?? post.title,
+        url: `${base}/blog/${slugParam}`,
+        type: "article",
+        images: post.imageUrl ? [{ url: post.imageUrl }] : undefined,
+      },
+      twitter: {
+        card: "summary_large_image",
+        title: post.title,
+        description: post.excerpt ?? post.title,
+        images: post.imageUrl ? [post.imageUrl] : undefined,
+      },
+      robots: { index: true, follow: true },
+    };
+  } catch {
+    return {};
+  }
+}
 export default async function BlogDetailPage({ params }: Props) {
   const p = await params;
   const slugParam = Array.isArray(p?.slug) ? p!.slug[0] : p?.slug;
@@ -27,6 +63,23 @@ export default async function BlogDetailPage({ params }: Props) {
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 pt-16 pb-14">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "Article",
+            headline: post.title,
+            datePublished: new Date(post.createdAt).toISOString(),
+            dateModified: new Date(post.createdAt).toISOString(),
+            image: post.imageUrl ? [post.imageUrl] : undefined,
+            mainEntityOfPage: `${getBaseUrl()}/blog/${post.slug}`,
+            author: { "@type": "Organization", name: "Gamingqu" },
+            publisher: { "@type": "Organization", name: "Gamingqu" },
+            description: post.excerpt ?? post.title,
+          }),
+        }}
+      />
       <div className="relative w-full h-72 overflow-hidden rounded-2xl mb-8">
         {post.imageUrl ? (
           <Image src={post.imageUrl} alt={post.title} fill className="object-cover" unoptimized />

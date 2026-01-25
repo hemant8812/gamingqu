@@ -1,9 +1,31 @@
 import { db } from "@/lib/prisma";
 import Image from "next/image";
 import Link from "next/link";
+import type { Metadata } from "next";
+import { getBaseUrl } from "@/lib/site";
 
 export const dynamic = "force-dynamic";
 
+export async function generateMetadata(): Promise<Metadata> {
+  const base = getBaseUrl();
+  return {
+    title: "Blog",
+    description: "Latest articles from our team and official sources.",
+    alternates: { canonical: `${base}/blog` },
+    openGraph: {
+      title: "Blog",
+      description: "Latest articles from our team and official sources.",
+      url: `${base}/blog`,
+      type: "website",
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: "Blog",
+      description: "Latest articles from our team and official sources.",
+    },
+    robots: { index: true, follow: true },
+  };
+}
 export default async function BlogPage() {
   const posts = await db.post.findMany({
     where: { isPublished: true },

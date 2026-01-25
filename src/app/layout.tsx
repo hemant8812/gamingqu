@@ -8,6 +8,7 @@ import { db } from "@/lib/prisma";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/auth";
 import { getWebsiteSettingCore } from "@/lib/settings";
+import { getBaseUrl } from "@/lib/site";
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
 
@@ -24,9 +25,31 @@ const geistMono = Geist_Mono({
 export async function generateMetadata(): Promise<Metadata> {
   const s = await getWebsiteSettingCore();
   const faviconUrl = s?.faviconUrl ?? "/icons/logo.png";
+  const baseUrl = getBaseUrl();
   return {
     title: s?.siteName ?? "Gamingqu",
     description: s?.tagline ?? "Layanan Boosting Game Profesional",
+    metadataBase: new URL(baseUrl),
+    alternates: { canonical: "/" },
+    robots: {
+      index: true,
+      follow: true,
+      googleBot: { index: true, follow: true },
+    },
+    openGraph: {
+      title: s?.siteName ?? "Gamingqu",
+      description: s?.tagline ?? "Layanan Boosting Game Profesional",
+      url: baseUrl,
+      siteName: s?.siteName ?? "Gamingqu",
+      type: "website",
+      images: [{ url: s?.logoUrl ?? faviconUrl }],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: s?.siteName ?? "Gamingqu",
+      description: s?.tagline ?? "Layanan Boosting Game Profesional",
+      images: [s?.logoUrl ?? faviconUrl],
+    },
     icons: {
       icon: faviconUrl,
       shortcut: faviconUrl,
