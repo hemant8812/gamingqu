@@ -69,7 +69,7 @@ export default function LoginPage() {
       <div className="w-full max-w-6xl grid grid-cols-1 lg:grid-cols-2 bg-[#1E293B] rounded-3xl shadow-2xl overflow-hidden border border-white/5">
         {/* Left Side - Image/Branding */}
         <div className="hidden lg:flex flex-col relative bg-gradient-to-br from-primary/20 to-secondary/20 p-12 justify-between">
-          <div className="absolute inset-0 bg-[url('https://picsum.photos/seed/gaming-bg/1000/1000')] bg-cover bg-center opacity-40 mix-blend-overlay"></div>
+          <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1542751371-adc38448a05e?q=80&w=2070&auto=format&fit=crop')] bg-cover bg-center opacity-40 mix-blend-overlay"></div>
           <div className="absolute inset-0 bg-gradient-to-t from-[#1E293B] via-transparent to-transparent"></div>
           
           <div className="relative z-10">
@@ -165,7 +165,7 @@ export default function LoginPage() {
               <button
                 type="submit"
                 disabled={loading}
-                className="btn btn-primary w-full h-12 text-lg font-bold rounded-xl shadow-lg shadow-primary/20 hover:shadow-primary/30 transition-all hover:scale-[1.01]"
+                className="btn bg-blue-600 hover:bg-blue-700 text-white border-none w-full h-12 text-lg font-bold rounded-xl shadow-lg shadow-blue-600/20 hover:shadow-blue-600/30 transition-all hover:scale-[1.01]"
               >
                 {loading ? <span className="loading loading-spinner loading-md"></span> : "Sign In"}
                 {!loading && <FiArrowRight className="h-5 w-5 ml-2" />}

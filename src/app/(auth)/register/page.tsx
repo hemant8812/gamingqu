@@ -76,8 +76,8 @@ export default function RegisterPage() {
       <div className="w-full max-w-6xl grid grid-cols-1 lg:grid-cols-2 bg-[#1E293B] rounded-3xl shadow-2xl overflow-hidden border border-white/5">
         
         {/* Left Side - Image/Branding */}
-        <div className="hidden lg:flex flex-col relative bg-gradient-to-br from-secondary/20 to-primary/20 p-12 justify-between order-2">
-          <div className="absolute inset-0 bg-[url('https://picsum.photos/seed/gaming-register/1000/1000')] bg-cover bg-center opacity-40 mix-blend-overlay"></div>
+        <div className="hidden lg:flex flex-col relative bg-gradient-to-br from-secondary/20 to-primary/20 p-12 justify-between">
+          <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1542751371-adc38448a05e?q=80&w=2070&auto=format&fit=crop')] bg-cover bg-center opacity-40 mix-blend-overlay"></div>
           <div className="absolute inset-0 bg-gradient-to-t from-[#1E293B] via-transparent to-transparent"></div>
           
           <div className="relative z-10 flex justify-end">
@@ -98,8 +98,8 @@ export default function RegisterPage() {
           </div>
         </div>
 
-        {/* Right Side - Register Form (Actually Left in Grid, but logically Right side of interaction) */}
-        <div className="p-8 lg:p-12 flex flex-col justify-center bg-[#1E293B] order-1">
+        {/* Right Side - Register Form */}
+        <div className="p-8 lg:p-12 flex flex-col justify-center bg-[#1E293B]">
           <div className="max-w-md w-full mx-auto space-y-6">
             <div className="text-center lg:text-left">
               <h1 className="text-3xl font-bold text-white mb-2">Create Account</h1>
@@ -111,8 +111,8 @@ export default function RegisterPage() {
                 <div className="form-control">
                   <label className="label text-sm font-medium text-gray-300">Full Name</label>
                   <div className="relative group">
-                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                      <FiUser className="h-5 w-5 text-gray-500 group-focus-within:text-primary transition-colors" />
+                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none z-10">
+                      <FiUser className="h-5 w-5 text-gray-400 group-focus-within:text-primary transition-colors" />
                     </div>
                     <input
                       id="name"
@@ -129,8 +129,8 @@ export default function RegisterPage() {
                 <div className="form-control">
                   <label className="label text-sm font-medium text-gray-300">Username</label>
                   <div className="relative group">
-                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                      <FiAtSign className="h-5 w-5 text-gray-500 group-focus-within:text-primary transition-colors" />
+                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none z-10">
+                      <FiAtSign className="h-5 w-5 text-gray-400 group-focus-within:text-primary transition-colors" />
                     </div>
                     <input
                       id="username"
@@ -226,7 +226,7 @@ export default function RegisterPage() {
               <button
                 type="submit"
                 disabled={loading}
-                className="btn btn-primary w-full h-12 text-lg font-bold rounded-xl shadow-lg shadow-primary/20 hover:shadow-primary/30 transition-all hover:scale-[1.01]"
+                className="btn bg-blue-600 hover:bg-blue-700 text-white border-none w-full h-12 text-lg font-bold rounded-xl shadow-lg shadow-blue-600/20 hover:shadow-blue-600/30 transition-all hover:scale-[1.01]"
               >
                 {loading ? <span className="loading loading-spinner loading-md"></span> : "Create Account"}
                 {!loading && <FiArrowRight className="h-5 w-5 ml-2" />}
