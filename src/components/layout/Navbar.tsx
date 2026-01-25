@@ -5,6 +5,7 @@ import Image from "next/image";
 import { FiSearch, FiHeart, FiUser, FiChevronDown, FiZap, FiPercent, FiBookOpen, FiThumbsUp, FiShield, FiMail, FiShoppingCart, FiLogOut, FiGrid, FiUsers, FiBarChart2, FiPlay, FiSettings, FiImage, FiTag, FiTool } from "react-icons/fi";
 import { signOut } from "next-auth/react";
 import { usePathname } from "next/navigation";
+import { Gamepad2 } from "lucide-react";
 
 function GridRoundedIcon(props: React.SVGProps<SVGSVGElement>) {
   return (
@@ -51,7 +52,7 @@ export function Navbar({ siteName = "Gamingqu", logoUrl = null, user = null }: P
           {/* Left Side: Logo & Menu */}
           <div className="flex items-center gap-4">
             {showLogo && logoUrl ? (
-              <Link href="/" className="btn btn-ghost text-xl p-0 hover:bg-transparent">
+              <Link href="/" className="text-xl p-0 inline-flex items-center">
                 <Image
                   src={logoUrl}
                   alt={siteName}
@@ -63,15 +64,15 @@ export function Navbar({ siteName = "Gamingqu", logoUrl = null, user = null }: P
                 />
               </Link>
             ) : (
-              <Link href="/" className="btn btn-ghost text-xl p-0">
+              <Link href="/" className="text-xl p-0 font-bold inline-flex items-center">
                 {siteName}
               </Link>
             )}
 
             <div className="dropdown">
               <div tabIndex={0} role="button" className="btn btn-ghost btn-sm gap-2">
-                {isAdminContext ? <FiGrid className="h-4 w-4" /> : <GridRoundedIcon className="h-4 w-4" />}
-                <span className="font-bold">{isAdminContext ? "Main Menu" : "Main Menu"}</span>
+                {isAdminContext ? <FiGrid className="h-4 w-4" /> : <Gamepad2 className="h-4 w-4" />}
+                <span className="font-bold">{isAdminContext ? "Main Menu" : "Select Game"}</span>
                 <FiChevronDown className="h-4 w-4" />
               </div>
               <ul tabIndex={0} className="dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box w-52 mt-4">

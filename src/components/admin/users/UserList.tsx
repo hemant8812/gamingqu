@@ -124,7 +124,7 @@ export function UserList({
                       {u.isSuspended ? "Suspended" : "Active"}
                     </span>
                   </td>
-                  <td className="text-xs opacity-70">
+                  <td className="text-xs opacity-70" suppressHydrationWarning>
                     {new Date(u.createdAt).toLocaleString()}
                   </td>
                   <td>
@@ -200,7 +200,7 @@ export function UserList({
                 <span className={getRoleBadgeClass(u.role)}>
                   {getRoleLabel(u.role)}
                 </span>
-                <span className="text-xs opacity-50">
+                <span className="text-xs opacity-50" suppressHydrationWarning>
                   {new Date(u.createdAt).toLocaleString()}
                 </span>
               </div>
