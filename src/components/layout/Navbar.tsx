@@ -136,7 +136,7 @@ export function Navbar({ siteName = "Gamingqu", logoUrl = null, user = null }: P
             {user ? (
               <div className="dropdown dropdown-end">
                 <div tabIndex={0} role="button" className="btn btn-ghost btn-circle avatar">
-                  <div className="w-10 rounded-full flex items-center justify-center bg-base-300">
+                  <div className="w-10 rounded-full flex items-center justify-center bg-transparent hover:bg-base-300 transition-colors">
                     <FiUser className="h-5 w-5" />
                   </div>
                 </div>

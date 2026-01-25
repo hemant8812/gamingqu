@@ -28,37 +28,37 @@ const hotDeals: HotDeal[] = [
   {
     slug: "wow-gold",
     title: "Gold",
-    price: "$3.2",
-    features: ["Any amount of Gold", "Fast delivery", "Cheapest Gold"],
-    image: "https://picsum.photos/seed/wow-gold/80/80",
+    price: "633€",
+    features: ["Complete Safety", "Quick Delivery", "Fair Price"],
+    image: "https://picsum.photos/seed/wow-gold/150/150",
   },
   {
-    slug: "mythic-dungeons",
-    title: "Mythic +2-20 Dungeons Boost",
-    price: "$46",
-    features: ["684-701 ilvl Gear", "694-707 Weekly Chest", "FREE Timer & Traders"],
-    image: "https://picsum.photos/seed/mythic-dungeons/80/80",
+    slug: "powerleveling",
+    title: "Powerleveling",
+    price: "1392€",
+    features: ["60-70 Pre-order", "Quick Start", "Any Level Range"],
+    image: "https://picsum.photos/seed/powerleveling/150/150",
   },
   {
-    slug: "manaforge-omega",
-    title: "Manaforge Omega Mythic Boost",
-    price: "$40",
-    features: ["Fair price", "Quick start"],
-    image: "https://picsum.photos/seed/manaforge-omega/80/80",
+    slug: "tbc-gearing",
+    title: "TBC Pre-Patch Gearing",
+    price: "1014€",
+    features: ["Full Pre-Patch Gear", "Fast Honor Farming", "Safe Delivery"],
+    image: "https://picsum.photos/seed/tbc-gearing/150/150",
   },
   {
-    slug: "flawless-trials",
-    title: "Flawless Trials of Osiris",
-    price: "$72",
-    features: ["Trials Weapons", "Win Streak Options", "Up to 100 Extra Wins"],
-    image: "https://picsum.photos/seed/flawless-trials/80/80",
+    slug: "hourly-driving",
+    title: "Hourly Driving",
+    price: "728€",
+    features: ["Choose Any Activity", "No Need To Grind", "Best Price"],
+    image: "https://picsum.photos/seed/hourly-driving/150/150",
   },
   {
-    slug: "equilibrium-dungeon",
-    title: "Equilibrium Dungeon",
-    price: "$113",
-    features: ["Tier 5 Weapons", "Unique Dungeon Gear", "Fast & Safe Carries"],
-    image: "https://picsum.photos/seed/equilibrium-dungeon/80/80",
+    slug: "dungeon-leveling",
+    title: "Dungeon Leveling",
+    price: "2591€",
+    features: ["Fast Leveling", "Multiple Dungeons", "Best Price"],
+    image: "https://picsum.photos/seed/dungeon-leveling/150/150",
   },
 ];
 
@@ -252,37 +252,40 @@ export function HomeContent() {
                         <FiRefreshCw className="h-4 w-4" />
                     </button>
                 </div>
-                <div className="p-6 pt-0 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+                <div className="p-6 pt-0 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6">
                 {hotDeals.slice(0, 5).map((h) => (
                     <div
                     key={h.slug}
-                    className="card bg-base-100 text-base-content shadow-md hover:shadow-xl transition-all h-[18rem] border border-base-200"
+                    className="card bg-[#151921] shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 h-[17rem] border border-white/5 flex flex-col overflow-hidden group rounded-xl"
                     >
-                    <figure className="relative h-1/2">
-                        <Image src={h.image} alt={h.title} fill className="object-cover" unoptimized sizes="200px" />
-                        {h.logo && (
-                            <div className="absolute top-2 left-2 w-8 h-8 rounded-full overflow-hidden border-2 border-white shadow-sm">
-                                <Image src={h.logo} alt="logo" fill className="object-cover" unoptimized />
-                            </div>
-                        )}
+                    <figure className="relative h-28 shrink-0 overflow-hidden bg-black/40">
+                        <Image src={h.image} alt={h.title} fill className="object-contain p-2 transition-transform duration-700 group-hover:scale-110" unoptimized sizes="300px" />
                     </figure>
-                    <div className="card-body p-4 text-left">
-                        <h3 className="font-bold text-sm line-clamp-2 min-h-[2.5em]">{h.title}</h3>
-                        <ul className="text-xs space-y-1 opacity-70 mt-1 flex-grow">
-                        {h.features.map((f) => (
-                            <li key={f} className="flex items-center gap-1">
-                            <span className="badge badge-xs badge-success badge-outline"></span>
-                            <span className="truncate">{f}</span>
+                    <div className="card-body p-4 pt-2 text-left flex flex-col gap-1 h-full relative">
+                        <h3 className="font-bold text-white text-base leading-snug truncate group-hover:text-primary transition-colors">{h.title}</h3>
+                        
+                        <ul className="text-[10px] space-y-1.5 text-gray-400 mt-1 mb-1 flex-grow">
+                        {h.features.slice(0, 3).map((f) => (
+                            <li key={f} className="flex items-center gap-1.5">
+                            <div className="w-3 h-3 rounded-full bg-success/10 flex items-center justify-center shrink-0">
+                                <div className="w-1 h-1 rounded-full bg-success"></div>
+                            </div>
+                            <span className="truncate font-medium">{f}</span>
                             </li>
                         ))}
                         </ul>
-                        <div className="flex items-center justify-between mt-2">
-                            <span className="font-bold text-primary">{h.price}</span>
+                        
+                        <div className="flex items-center justify-between mt-auto pt-2 border-t border-white/5">
+                            <span className="font-bold text-lg text-white tracking-tight flex items-start">
+                                {h.price.replace("€", "").slice(0, -1)}
+                                <span className="text-[10px] font-bold mt-0.5 ml-0.5 opacity-90">{h.price.replace("€", "").slice(-1)}</span>
+                                <span className="text-sm ml-0.5">€</span>
+                            </span>
                             <Link
                             href={`/buy/${h.slug}`}
-                            className="btn btn-xs btn-primary"
+                            className="btn btn-xs bg-[#6366f1] hover:bg-[#4f46e5] text-white border-none px-4 h-8 min-h-[2rem] rounded-md font-bold shadow-lg shadow-indigo-500/20 normal-case"
                             >
-                            Buy
+                            Buy now
                             </Link>
                         </div>
                     </div>
