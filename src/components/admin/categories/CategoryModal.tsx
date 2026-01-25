@@ -19,20 +19,33 @@ export function CategoryModal({ editing, games }: { editing: Editing; games: Gam
   const dialogRef = useRef<HTMLDialogElement>(null);
   const [busy, setBusy] = useState(false);
   
+  const [visible, setVisible] = useState(false);
   const isCreate = searchParams.has("create");
-  const isOpen = !!editing || isCreate;
 
   useEffect(() => {
-    if (isOpen) {
-      if (!dialogRef.current?.open) {
-        dialogRef.current?.showModal();
+    if (editing || isCreate) {
+      setVisible(true);
+      if (window.location.search.includes("create") || window.location.search.includes("edit")) {
+        const url = new URL(window.location.href);
+        url.searchParams.delete("create");
+        url.searchParams.delete("edit");
+        window.history.replaceState(null, "", url.toString());
       }
-    } else {
-      dialogRef.current?.close();
     }
-  }, [isOpen, editing]);
+  }, [editing, isCreate]);
+
+  useEffect(() => {
+    const dialog = dialogRef.current;
+    if (!dialog) return;
+    if (visible) {
+      if (!dialog.open) dialog.showModal();
+    } else {
+      if (dialog.open) dialog.close();
+    }
+  }, [visible]);
 
   const closeModal = () => {
+    setVisible(false);
     router.replace("/admin/categories");
   };
 

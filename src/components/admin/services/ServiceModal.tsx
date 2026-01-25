@@ -29,32 +29,60 @@ export function ServiceModal({ games, categories, editing }: { games: GameOption
   const dialogRef = useRef<HTMLDialogElement>(null);
   const [busy, setBusy] = useState(false);
   
-  const isCreate = searchParams.has("create");
-  const isOpen = !!editing || isCreate;
-
+  const [visible, setVisible] = useState(false);
   const [selectedGame, setSelectedGame] = useState<string>(editing?.gameId ?? "");
   const [features, setFeatures] = useState<string[]>(editing?.features ?? []);
   const canAddFeature = features.length < 3;
-
+  const isCreate = searchParams.has("create");
+  
+  // Handle visibility and URL cleanup
   useEffect(() => {
-    if (isOpen) {
-      if (!dialogRef.current?.open) {
-        dialogRef.current?.showModal();
+    if (editing || isCreate) {
+      setVisible(true);
+      // Remove query params from URL without reloading if they exist
+      if (window.location.search.includes("create") || window.location.search.includes("edit")) {
+        const url = new URL(window.location.href);
+        url.searchParams.delete("create");
+        url.searchParams.delete("edit");
+        window.history.replaceState(null, "", url.toString());
       }
-      // Reset state when opening for a new item or different item
-      if (editing) {
-        setSelectedGame(editing.gameId);
-        setFeatures(editing.features ?? []);
-      } else {
-        setSelectedGame("");
-        setFeatures([]);
+    }
+  }, [editing, isCreate]);
+
+  // Handle dialog open/close based on visibility
+  useEffect(() => {
+    const dialog = dialogRef.current;
+    if (!dialog) return;
+
+    if (visible) {
+      if (!dialog.open) {
+        dialog.showModal();
+        
+        // Reset state when opening
+        if (editing) {
+          setSelectedGame(editing.gameId);
+          setFeatures(editing.features ?? []);
+        } else {
+          // If we are opening in "create mode" (editing is null)
+          // We should reset fields. 
+          // Note: If we just finished editing and closed, editing becomes null, 
+          // and if we re-open for create, this block runs.
+          if (!editing) {
+             setSelectedGame("");
+             setFeatures([]);
+          }
+        }
       }
     } else {
-      dialogRef.current?.close();
+        if (dialog.open) {
+            dialog.close();
+        }
     }
-  }, [isOpen, editing]);
+  }, [visible, editing]);
 
   const closeModal = () => {
+    setVisible(false);
+    // Sync with router to ensure clean state on navigation
     router.replace("/admin/services");
   };
 
