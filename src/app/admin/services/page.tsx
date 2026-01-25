@@ -2,10 +2,10 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/auth";
 import { Card } from "@/components/ui/card";
 import { db } from "@/lib/prisma";
-import { PageToast } from "@/components/PageToast";
-import { ServiceForm } from "@/components/ServiceForm";
-import { ServiceList } from "@/components/ServiceList";
-import { GameSearchInput } from "@/components/GameSearchInput";
+import { PageToast } from "@/components/shared/PageToast";
+import { ServiceForm } from "@/components/admin/services/ServiceForm";
+import { ServiceList } from "@/components/admin/services/ServiceList";
+import { GameSearchInput } from "@/components/admin/games/GameSearchInput";
 
 async function getServices(q?: string) {
   const list = await db.service.findMany({

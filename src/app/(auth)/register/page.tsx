@@ -9,7 +9,7 @@ import { Label } from "@/components/ui/label";
 import { FiArrowRight, FiUser, FiAtSign, FiMail, FiLock } from "react-icons/fi";
 import { FcGoogle } from "react-icons/fc";
 import { SiDiscord } from "react-icons/si";
-import { PageToast } from "@/components/PageToast";
+import { PageToast } from "@/components/shared/PageToast";
 
 export default function RegisterPage() {
   const { status } = useSession();

@@ -9,7 +9,7 @@ import Image from "next/image";
 import { FcGoogle } from "react-icons/fc";
 import { FiArrowRight, FiMail, FiLock } from "react-icons/fi";
 import { SiDiscord } from "react-icons/si";
-import { PageToast } from "@/components/PageToast";
+import { PageToast } from "@/components/shared/PageToast";
 
 
 export default function LoginPage() {

@@ -1,9 +1,9 @@
 "use client";
 import Image from "next/image";
 import { useMemo, useState } from "react";
-import { RichTextEditor } from "@/components/RichTextEditor";
-import { ImageUploadField } from "@/components/ImageUploadField";
-import { AutoSlugField } from "@/components/AutoSlugField";
+import { RichTextEditor } from "@/components/shared/RichTextEditor";
+import { ImageUploadField } from "@/components/shared/ImageUploadField";
+import { AutoSlugField } from "@/components/shared/AutoSlugField";
 import { Save as SaveIcon, Search as SearchIcon } from "lucide-react";
 
 type GameItem = {

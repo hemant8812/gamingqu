@@ -2,10 +2,10 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/auth";
 import { Card } from "@/components/ui/card";
 import { db } from "@/lib/prisma";
-import { CategoryForm } from "@/components/CategoryForm";
-import { PageToast } from "@/components/PageToast";
-import { GameSearchInput } from "@/components/GameSearchInput";
-import { CategoryList } from "@/components/CategoryList";
+import { CategoryForm } from "@/components/admin/categories/CategoryForm";
+import { PageToast } from "@/components/shared/PageToast";
+import { GameSearchInput } from "@/components/admin/games/GameSearchInput";
+import { CategoryList } from "@/components/admin/categories/CategoryList";
 
 async function getCategories(q?: string) {
   const list = await db.category.findMany({
@@ -71,7 +71,7 @@ export default async function AdminCategoriesPage({ searchParams }: { searchPara
               <h2 className="text-xl font-semibold text-white">Data Kategori</h2>
               <GameSearchInput placeholder="Cari kategori" />
             </div>
-            <CategoryList categories={categories} games={games} />
+            <CategoryList categories={categories} />
           </Card>
         </section>
       </div>

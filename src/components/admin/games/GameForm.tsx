@@ -2,9 +2,9 @@
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { Save as SaveIcon } from "lucide-react";
-import { AutoSlugField } from "./AutoSlugField";
-import { ImageUploadField } from "./ImageUploadField";
-import { RichTextEditor } from "./RichTextEditor";
+import { AutoSlugField } from "@/components/shared/AutoSlugField";
+import { ImageUploadField } from "@/components/shared/ImageUploadField";
+import { RichTextEditor } from "@/components/shared/RichTextEditor";
 
 type Editing = {
   id: string;

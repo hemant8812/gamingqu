@@ -1,7 +1,7 @@
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/auth";
-import { PageToast } from "@/components/PageToast";
-import { BennerManager } from "@/components/BennerManager";
+import { PageToast } from "@/components/shared/PageToast";
+import { BennerManager } from "@/components/admin/banner/BennerManager";
 import { db } from "@/lib/prisma";
 
 export default async function AdminBennerPage({ searchParams }: { searchParams?: Promise<Record<string, string | string[] | undefined>> }) {

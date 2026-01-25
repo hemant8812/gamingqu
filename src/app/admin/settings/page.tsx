@@ -1,12 +1,12 @@
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/auth";
 import { getFooterSettings, getWebsiteSettingCore } from "@/lib/settings";
-import { SettingsForm } from "@/components/SettingsForm";
-import { PageToast } from "@/components/PageToast";
+import { SettingsForm } from "@/components/admin/settings/SettingsForm";
+import { PageToast } from "@/components/shared/PageToast";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
-import { EmbedSettings } from "@/components/EmbedSettings";
+import { EmbedSettings } from "@/components/admin/settings/EmbedSettings";
 import { Settings as SettingsIcon, Code2 as CodeIcon, Layout as LayoutIcon } from "lucide-react";
-import { FooterSettingsForm } from "@/components/FooterSettingsForm";
+import { FooterSettingsForm } from "@/components/admin/settings/FooterSettingsForm";
 
 export default async function AdminSettingsPage({ searchParams }: { searchParams?: Promise<Record<string, string | string[] | undefined>> }) {
   const session = await getServerSession(authOptions);

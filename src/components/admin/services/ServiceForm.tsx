@@ -2,11 +2,11 @@
 import { useRouter } from "next/navigation";
 import { useState } from "react";
  import { Save as SaveIcon, Plus, ChevronDown, ChevronUp } from "lucide-react";
- import { AutoSlugField } from "@/components/AutoSlugField";
- import { ImageUploadField } from "@/components/ImageUploadField";
- import { RichTextEditor } from "@/components/RichTextEditor";
- import { GameSelect } from "@/components/GameSelect";
- import { CategorySelect } from "@/components/CategorySelect";
+ import { AutoSlugField } from "@/components/shared/AutoSlugField";
+import { ImageUploadField } from "@/components/shared/ImageUploadField";
+import { RichTextEditor } from "@/components/shared/RichTextEditor";
+import { GameSelect } from "@/components/admin/games/GameSelect";
+import { CategorySelect } from "@/components/admin/categories/CategorySelect";
  
 type GameOption = { id: string; name: string };
 type CategoryOption = { id: string; name: string; gameId: string };

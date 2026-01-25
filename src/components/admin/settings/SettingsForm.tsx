@@ -2,7 +2,7 @@
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { Save as SaveIcon } from "lucide-react";
-import { ImageUploadField } from "./ImageUploadField";
+import { ImageUploadField } from "@/components/shared/ImageUploadField";
 
 type Initial = {
   siteName?: string | null;

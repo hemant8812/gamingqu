@@ -1,6 +1,6 @@
 "use client";
 import { useState } from "react";
-import { AutoSlugField } from "@/components/AutoSlugField";
+import { AutoSlugField } from "@/components/shared/AutoSlugField";
 import { Save as SaveIcon } from "lucide-react";
 
 type GameOption = { id: string; name: string };
