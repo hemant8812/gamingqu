@@ -5,6 +5,7 @@ import { db } from "@/lib/prisma";
 import * as cheerio from "cheerio";
 import fs from "node:fs";
 import path from "node:path";
+import { toSlug, stripHtml } from "@/lib/text";
 
 async function fetchHtml(url: string) {
   const res = await fetch(url, {
@@ -35,10 +36,6 @@ function collectLinks($: cheerio.CheerioAPI, base: string) {
     } catch {}
   });
   return Array.from(links);
-}
-
-function toSlug(s: string) {
-  return s.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
 }
 
 async function downloadImageToPublic(imageUrl: string, base: string, nameHint: string) {
@@ -113,8 +110,8 @@ export async function POST() {
             data: {
               title,
               slug,
-              excerpt: excerpt.slice(0, 200),
-              content: excerpt,
+              excerpt: stripHtml(excerpt).slice(0, 200),
+              content: stripHtml(excerpt),
               sourceUrl: link,
               imageUrl: imageUrl || undefined,
               isPublished: true,

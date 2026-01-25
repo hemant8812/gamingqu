@@ -4,7 +4,7 @@ import { authOptions } from "@/auth";
 import { NextResponse } from "next/server";
 import { sanitizeHtml, sanitizePlain } from "@/lib/sanitize";
 
-export async function GET(req: Request) {
+export async function GET() {
   const session = await getServerSession(authOptions);
   if (session?.user?.role !== "ADMIN" && session?.user?.role !== "SUPERADMIN") {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -15,7 +15,7 @@ export async function GET(req: Request) {
       orderBy: { createdAt: "desc" },
     });
     return NextResponse.json(posts);
-  } catch (error) {
+  } catch {
     return NextResponse.json({ error: "Failed to fetch posts" }, { status: 500 });
   }
 }
@@ -116,7 +116,7 @@ export async function DELETE(req: Request) {
         });
 
         return NextResponse.json({ success: true });
-    } catch (error) {
+    } catch {
         return NextResponse.json({ error: "Failed to delete post" }, { status: 500 });
     }
 }

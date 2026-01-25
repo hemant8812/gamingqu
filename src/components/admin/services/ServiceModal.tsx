@@ -29,17 +29,15 @@ export function ServiceModal({ games, categories, editing }: { games: GameOption
   const dialogRef = useRef<HTMLDialogElement>(null);
   const [busy, setBusy] = useState(false);
   
-  const [visible, setVisible] = useState(false);
+  const isCreate = searchParams.has("create");
+  const [visible, setVisible] = useState(!!editing || isCreate);
   const [selectedGame, setSelectedGame] = useState<string>(editing?.gameId ?? "");
   const [features, setFeatures] = useState<string[]>(editing?.features ?? []);
   const canAddFeature = features.length < 3;
-  const isCreate = searchParams.has("create");
   
   // Handle visibility and URL cleanup
   useEffect(() => {
     if (editing || isCreate) {
-      setVisible(true);
-      // Remove query params from URL without reloading if they exist
       if (window.location.search.includes("create") || window.location.search.includes("edit")) {
         const url = new URL(window.location.href);
         url.searchParams.delete("create");
@@ -57,21 +55,6 @@ export function ServiceModal({ games, categories, editing }: { games: GameOption
     if (visible) {
       if (!dialog.open) {
         dialog.showModal();
-        
-        // Reset state when opening
-        if (editing) {
-          setSelectedGame(editing.gameId);
-          setFeatures(editing.features ?? []);
-        } else {
-          // If we are opening in "create mode" (editing is null)
-          // We should reset fields. 
-          // Note: If we just finished editing and closed, editing becomes null, 
-          // and if we re-open for create, this block runs.
-          if (!editing) {
-             setSelectedGame("");
-             setFeatures([]);
-          }
-        }
       }
     } else {
         if (dialog.open) {
@@ -82,6 +65,8 @@ export function ServiceModal({ games, categories, editing }: { games: GameOption
 
   const closeModal = () => {
     setVisible(false);
+    setSelectedGame("");
+    setFeatures([]);
     // Sync with router to ensure clean state on navigation
     router.replace("/admin/services");
   };

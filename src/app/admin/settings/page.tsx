@@ -1,11 +1,7 @@
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/auth";
 import { getFooterSettings, getWebsiteSettingCore } from "@/lib/settings";
-import { SettingsForm } from "@/components/admin/settings/SettingsForm";
 import { PageToast } from "@/components/shared/PageToast";
-import { EmbedSettings } from "@/components/admin/settings/EmbedSettings";
-import { Settings as SettingsIcon, Code2 as CodeIcon, Layout as LayoutIcon } from "lucide-react";
-import { FooterSettingsForm } from "@/components/admin/settings/FooterSettingsForm";
 import { parseToast } from "@/lib/page-utils";
 import { AdminSettingsTabs } from "@/components/admin/settings/AdminSettingsTabs";
 

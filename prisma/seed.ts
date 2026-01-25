@@ -172,7 +172,7 @@ async function main() {
       }
     }
     console.log(`Seeded Blizzard posts: ${created}`);
-  } catch (e) {
+  } catch {
     console.log("Blizzard seed failed");
   }
 }

@@ -4,12 +4,9 @@ import { authOptions } from "@/auth";
 import { NextResponse } from "next/server";
 import * as cheerio from "cheerio";
 import Parser from "rss-parser";
+import { toSlug, stripHtml } from "@/lib/text";
 
 const parser = new Parser();
-
-function toSlug(s: string) {
-  return s.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
-}
 
 async function imageFromArticle(link: string) {
     try {
@@ -51,12 +48,12 @@ export async function POST(req: Request) {
     });
 
     return NextResponse.json(source);
-  } catch (error) {
+  } catch {
     return NextResponse.json({ error: "Failed to add source" }, { status: 500 });
   }
 }
 
-export async function GET(req: Request) {
+export async function GET() {
     const session = await getServerSession(authOptions);
     if (session?.user?.role !== "ADMIN" && session?.user?.role !== "SUPERADMIN") {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -65,7 +62,7 @@ export async function GET(req: Request) {
     try {
         const sources = await db.scraperSource.findMany();
         return NextResponse.json(sources);
-    } catch (error) {
+    } catch {
         return NextResponse.json({ error: "Failed to fetch sources" }, { status: 500 });
     }
 }
@@ -126,14 +123,15 @@ export async function PUT(req: Request) {
                                 const slug = toSlug(item.title);
                                 const dup = await db.post.findUnique({ where: { slug } });
                                 if (dup) continue;
-                                const ogImg = (item as any).enclosure?.url || "";
+                                const enclosure = (item as Record<string, unknown>)["enclosure"] as Record<string, unknown> | undefined;
+                                const ogImg = enclosure && typeof enclosure["url"] === "string" ? (enclosure["url"] as string) : "";
                                 const img = ogImg || await imageFromArticle(item.link);
                                 await db.post.create({
                                     data: {
                                         title: item.title,
                                         slug,
-                                        content: item.contentSnippet || item.content || "",
-                                        excerpt: item.contentSnippet?.slice(0, 200) || "",
+                                        content: stripHtml(item.contentSnippet || item.content || ""),
+                                        excerpt: stripHtml(item.contentSnippet)?.slice(0, 200) || "",
                                         sourceUrl: item.link,
                                         imageUrl: img || undefined,
                                         isPublished: true, // Auto publish or draft?
@@ -144,7 +142,7 @@ export async function PUT(req: Request) {
                             }
                         }
                     }
-                } catch (rssError) {
+                } catch {
                     const response = await fetch(source.url);
                     const html = await response.text();
                     const $ = cheerio.load(html);
@@ -181,8 +179,8 @@ export async function PUT(req: Request) {
                                     data: {
                                         title,
                                         slug,
-                                        excerpt: desc.slice(0, 200),
-                                        content: desc,
+                                        excerpt: stripHtml(desc).slice(0, 200),
+                                        content: stripHtml(desc),
                                         sourceUrl: fullLink,
                                         imageUrl: ogImg || undefined,
                                         isPublished: true,
@@ -193,9 +191,9 @@ export async function PUT(req: Request) {
                             } catch {}
                         }
                     } else {
-                        const elements = $('article, .news-post').toArray();
+                        const elements = $('article, .news-post').toArray() as cheerio.Element[];
                         for (const el of elements) {
-                            const $el = $(el as any);
+                            const $el = $(el);
                             const title = $el.find('h1, h2, .heading').first().text().trim();
                             const link = $el.find('a').first().attr('href');
                             const content = $el.find('p').first().text().trim();
@@ -210,8 +208,8 @@ export async function PUT(req: Request) {
                                         data: {
                                             title,
                                             slug,
-                                            excerpt: content.slice(0, 200),
-                                            content,
+                                            excerpt: stripHtml(content).slice(0, 200),
+                                            content: stripHtml(content),
                                             sourceUrl: fullLink,
                                             isPublished: true,
                                             authorId: session.user.id

@@ -23,12 +23,11 @@ export function GameModal({ editing }: { editing: Editing }) {
   const dialogRef = useRef<HTMLDialogElement>(null);
   const [busy, setBusy] = useState(false);
   
-  const [visible, setVisible] = useState(false);
   const isCreate = searchParams.has("create");
+  const [visible, setVisible] = useState(() => !!editing || isCreate);
   
   useEffect(() => {
     if (editing || isCreate) {
-      setVisible(true);
       if (window.location.search.includes("create") || window.location.search.includes("edit")) {
         const url = new URL(window.location.href);
         url.searchParams.delete("create");

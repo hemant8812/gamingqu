@@ -1,5 +1,4 @@
 "use client";
-import { useRouter } from "next/navigation";
 import { useState, useRef, useEffect } from "react";
 import { Save as SaveIcon, XCircle } from "lucide-react";
 import Image from "next/image";
@@ -18,16 +17,18 @@ export function BennerModal({ editing, isOpen, onClose }: { editing: Item | null
   const dialogRef = useRef<HTMLDialogElement>(null);
   const [busy, setBusy] = useState(false);
   const [preview, setPreview] = useState<string | null>(null);
+  const handleClose = () => {
+    setPreview(null);
+    onClose();
+  };
 
   useEffect(() => {
     if (isOpen) {
       if (!dialogRef.current?.open) {
         dialogRef.current?.showModal();
       }
-      setPreview(editing?.buttonImageUrl ?? null);
     } else {
       dialogRef.current?.close();
-      setPreview(null);
     }
   }, [isOpen, editing]);
 
@@ -63,7 +64,7 @@ export function BennerModal({ editing, isOpen, onClose }: { editing: Item | null
   };
 
   return (
-    <dialog ref={dialogRef} className="modal" onClose={onClose}>
+    <dialog ref={dialogRef} className="modal" onClose={handleClose}>
       <div className="modal-box w-11/12 max-w-lg bg-base-100 text-base-content p-0 overflow-visible max-h-none">
         <div className="flex items-center justify-between p-4 border-b border-base-200 bg-base-200/50">
             <h3 className="font-bold text-lg">{editing ? "Edit Benner" : "Tambah Benner"}</h3>
@@ -116,8 +117,8 @@ export function BennerModal({ editing, isOpen, onClose }: { editing: Item | null
                     className="relative w-full h-40 overflow-hidden rounded-box border border-base-300 cursor-pointer bg-base-200 hover:bg-base-300 transition-colors"
                     onClick={() => document.getElementById('modal-file-input')?.click()}
                 >
-                    {preview ? (
-                        <Image src={preview} alt="Preview" fill className="object-cover" unoptimized />
+                    {preview || editing?.buttonImageUrl ? (
+                        <Image src={preview ?? editing?.buttonImageUrl ?? ""} alt="Preview" fill className="object-cover" unoptimized />
                     ) : (
                         <div className="absolute inset-0 flex flex-col items-center justify-center text-sm opacity-50 gap-2">
                             <span>Klik untuk pilih gambar</span>

@@ -5,10 +5,57 @@ import { SettingsForm } from "@/components/admin/settings/SettingsForm";
 import { FooterSettingsForm } from "@/components/admin/settings/FooterSettingsForm";
 import { EmbedSettings } from "@/components/admin/settings/EmbedSettings";
 
+type SettingCore = {
+    siteName?: string | null;
+    tagline?: string | null;
+    logoUrl?: string | null;
+    faviconUrl?: string | null;
+    contactEmail?: string | null;
+    contactPhone?: string | null;
+} | null;
+
+type FooterInitial = {
+    logoUrl?: string | null;
+    disclaimer?: string | null;
+    shortDescription?: string | null;
+    copyright?: string | null;
+    legalAddress?: string | null;
+    regNumber?: string | null;
+    badgeMastercardUrl?: string | null;
+    badgeVisaUrl?: string | null;
+    badgePciUrl?: string | null;
+    smTelegramUrl?: string | null;
+    smYoutubeUrl?: string | null;
+    smDiscordUrl?: string | null;
+    smFacebookUrl?: string | null;
+    navHomeTitle?: string | null;
+    navHomeUrl?: string | null;
+    navAboutTitle?: string | null;
+    navAboutUrl?: string | null;
+    navFaqTitle?: string | null;
+    navFaqUrl?: string | null;
+    navBoosterTitle?: string | null;
+    navBoosterUrl?: string | null;
+    legal1Title?: string | null;
+    legal1Url?: string | null;
+    legal2Title?: string | null;
+    legal2Url?: string | null;
+    legal3Title?: string | null;
+    legal3Url?: string | null;
+    legal4Title?: string | null;
+    legal4Url?: string | null;
+    pmVisaUrl?: string | null;
+    pmMastercardUrl?: string | null;
+    pmGpayUrl?: string | null;
+    pmApplePayUrl?: string | null;
+    pmPaypalUrl?: string | null;
+    pmStripeUrl?: string | null;
+} | null;
+
 type Props = {
     initialTab?: string;
-    setting: any;
-    footer: any;
+    setting: SettingCore;
+    footer: FooterInitial;
 };
 
 export function AdminSettingsTabs({ initialTab, setting, footer }: Props) {

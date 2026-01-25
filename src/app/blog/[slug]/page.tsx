@@ -59,7 +59,7 @@ export default async function BlogDetailPage({ params }: Props) {
     select: { id: true, title: true, slug: true, excerpt: true, imageUrl: true, createdAt: true, sourceUrl: true },
     take: 20,
   });
-  const related = others.sort(() => Math.random() - 0.5).slice(0, 4);
+  const related = others.slice(0, 4);
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 pt-16 pb-14">
