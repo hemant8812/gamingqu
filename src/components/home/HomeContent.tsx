@@ -164,7 +164,7 @@ export function HomeContent() {
       <main className="mx-auto max-w-7xl px-6 py-10">
         <section className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           <div className="card col-span-1 lg:col-span-3 bg-base-100 shadow-xl overflow-hidden rounded-box">
-            <div className="absolute inset-0 bg-gradient-to-r from-[#4F46E5] to-transparent opacity-80 z-0" />
+            <div className="absolute inset-0 bg-gradient-to-r from-[#2563EB] to-transparent opacity-80 z-0" />
             <div ref={containerRef} className="relative z-10 overflow-hidden p-8 md:p-10">
               <div
                 className="flex flex-nowrap transition-transform duration-700 ease-in-out gap-0"
@@ -179,7 +179,7 @@ export function HomeContent() {
                     <div className="space-y-3 max-w-xl">
                       <div className="text-3xl md:text-5xl font-black text-white tracking-tight">{s.title}</div>
                       <div className="text-white text-sm opacity-90">{s.subtitle}</div>
-                      <Link href={s.href} className="btn bg-[#4F46E5] hover:bg-[#4338ca] border-none text-white hover:scale-105 transition-transform">
+                      <Link href={s.href} className="btn !bg-[#2563EB] !hover:bg-[#1D4ED8] border-none text-white hover:scale-105 transition-transform">
                         {s.cta}
                       </Link>
                     </div>
@@ -235,7 +235,7 @@ export function HomeContent() {
             <div className="col-span-1 lg:col-span-3 flex justify-center">
               <Link
                 href="/games"
-                className="btn btn-wide bg-[#4F46E5] hover:bg-[#4338ca] text-white border-none"
+                className="btn btn-wide !bg-[#2563EB] !hover:bg-[#1D4ED8] text-white border-none"
               >
                 View All {moreCount - Math.min(games.length, 12)} games
               </Link>
@@ -262,7 +262,7 @@ export function HomeContent() {
                         <Image src={h.image} alt={h.title} fill className="object-cover transition-transform duration-700 group-hover:scale-110" unoptimized sizes="300px" />
                     </figure>
                     <div className="card-body p-4 pt-2 text-left flex flex-col gap-1 h-full relative">
-                        <h3 className="font-bold text-white text-base leading-snug truncate group-hover:text-[#4F46E5] transition-colors">{h.title}</h3>
+                        <h3 className="font-bold text-white text-base leading-snug truncate group-hover:text-[#2563EB] transition-colors">{h.title}</h3>
                         
                         <ul className="text-[10px] space-y-1.5 text-gray-400 mt-1 mb-1 flex-grow">
                         {h.features.slice(0, 3).map((f) => (
@@ -283,7 +283,7 @@ export function HomeContent() {
                             </span>
                             <Link
                             href={`/buy/${h.slug}`}
-                            className="btn btn-xs bg-[#4F46E5] hover:bg-[#4338ca] text-white border-none px-4 h-8 min-h-[2rem] rounded-md font-bold shadow-lg shadow-indigo-500/20 normal-case"
+                            className="btn btn-xs !bg-[#2563EB] !hover:bg-[#1D4ED8] text-white border-none px-4 h-8 min-h-[2rem] rounded-md font-bold shadow-lg shadow-blue-500/20 normal-case"
                             >
                             Buy now
                             </Link>
