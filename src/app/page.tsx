@@ -1,7 +1,7 @@
 "use client";
 import Image from "next/image";
 import { Card } from "@/components/ui/card";
-import { FiPlay, FiRefreshCw } from "react-icons/fi";
+import { FiRefreshCw } from "react-icons/fi";
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { Flame } from "lucide-react";
@@ -68,7 +68,7 @@ export default function Home() {
         }
         const bannerData = await bannerRes.json().catch(() => null);
         if (bannerData?.banners && Array.isArray(bannerData.banners) && bannerData.banners.length > 0) {
-          const slides = bannerData.banners.slice(0, 10).map((b: any, idx: number) => ({
+          const slides = bannerData.banners.slice(0, 10).map((b: { subtitle?: string; title?: string; buttonLink?: string; buttonImageUrl?: string }, idx: number) => ({
             subtitle: b.subtitle || "",
             title: b.title || "",
             href: b.buttonLink || "/",
@@ -256,35 +256,35 @@ const hotDeals: HotDeal[] = [
   {
     slug: "wow-gold",
     title: "Gold",
-    price: "3.2€",
+    price: "$3.2",
     features: ["Any amount of Gold", "Fast delivery", "Cheapest Gold"],
     image: "https://picsum.photos/seed/wow-gold/80/80",
   },
   {
     slug: "mythic-dungeons",
     title: "Mythic +2-20 Dungeons Boost",
-    price: "46€",
+    price: "$46",
     features: ["684-701 ilvl Gear", "694-707 Weekly Chest", "FREE Timer & Traders"],
     image: "https://picsum.photos/seed/mythic-dungeons/80/80",
   },
   {
     slug: "manaforge-omega",
     title: "Manaforge Omega Mythic Boost",
-    price: "40€",
+    price: "$40",
     features: ["Fair price", "Quick start"],
     image: "https://picsum.photos/seed/manaforge-omega/80/80",
   },
   {
     slug: "flawless-trials",
     title: "Flawless Trials of Osiris",
-    price: "72€",
+    price: "$72",
     features: ["Trials Weapons", "Win Streak Options", "Up to 100 Extra Wins"],
     image: "https://picsum.photos/seed/flawless-trials/80/80",
   },
   {
     slug: "equilibrium-dungeon",
     title: "Equilibrium Dungeon",
-    price: "113€",
+    price: "$113",
     features: ["Tier 5 Weapons", "Unique Dungeon Gear", "Fast & Safe Carries"],
     image: "https://picsum.photos/seed/equilibrium-dungeon/80/80",
   },

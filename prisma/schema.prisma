@@ -125,10 +125,49 @@ model Game {
   isActive    Boolean  @default(true)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+  categories  Category[]
+  services    Service[]
 
   @@index([isActive, createdAt])
 }
 
+model Category {
+  id        String   @id @default(cuid())
+  name      String
+  slug      String   @unique
+  gameId    String
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  game Game @relation(fields: [gameId], references: [id], onDelete: Cascade)
+  services Service[]
+
+  @@index([gameId, isActive])
+  @@unique([name, gameId])
+}
+
+model Service {
+  id          String   @id @default(cuid())
+  name        String
+  slug        String   @unique
+  gameId      String
+  categoryId  String?
+  description String?  @db.Text
+  imageUrl    String?
+  features    Json?
+  price       Decimal  @db.Decimal(10, 2)
+  isHotOffer  Boolean  @default(false)
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  game     Game     @relation(fields: [gameId], references: [id], onDelete: Cascade)
+  category Category? @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+
+  @@index([gameId, categoryId])
+  @@index([isActive, createdAt])
+}
 model WebsiteSetting {
   id           String   @id @default("singleton")
   siteName     String   @default("Gamingqu")

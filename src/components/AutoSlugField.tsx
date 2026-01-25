@@ -25,7 +25,8 @@ export function AutoSlugField({
   label = "Slug",
   maxLen = 60,
   initialValue = "",
-}: Props) {
+  className,
+}: Props & { className?: string }) {
   const inputRef = useRef<HTMLInputElement | null>(null);
   const [locked, setLocked] = useState(true);
 
@@ -81,7 +82,7 @@ export function AutoSlugField({
   }, [nameInputId, locked, maxLen]);
 
   return (
-    <div className="mt-3">
+    <div className={className ?? "mt-3"}>
       <label htmlFor={name} className="block text-sm font-semibold">{label}</label>
       <input
         id={name}

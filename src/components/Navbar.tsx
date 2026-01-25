@@ -3,7 +3,7 @@ import { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
-import { FiSearch, FiHeart, FiUser, FiChevronDown, FiChevronUp, FiZap, FiPercent, FiBookOpen, FiThumbsUp, FiShield, FiMail, FiShoppingCart, FiLogOut, FiGrid, FiUsers, FiBarChart2, FiPlay, FiSettings, FiImage } from "react-icons/fi";
+import { FiSearch, FiHeart, FiUser, FiChevronDown, FiChevronUp, FiZap, FiPercent, FiBookOpen, FiThumbsUp, FiShield, FiMail, FiShoppingCart, FiLogOut, FiGrid, FiUsers, FiBarChart2, FiPlay, FiSettings, FiImage, FiTag, FiTool } from "react-icons/fi";
 import { signOut } from "next-auth/react";
 import { usePathname } from "next/navigation";
 
@@ -39,7 +39,7 @@ type Props = {
 };
 
 export function Navbar({ siteName = "Gamingqu", logoUrl = null, user = null }: Props) {
-  const [currency, setCurrency] = useState<"$" | "€">("€");
+  const [currency, setCurrency] = useState<"$" | "€">("$");
   const [currencyOpen, setCurrencyOpen] = useState(false);
   const [gridOpen, setGridOpen] = useState(false);
   const [showLogo, setShowLogo] = useState<boolean>(!!logoUrl);
@@ -73,7 +73,7 @@ export function Navbar({ siteName = "Gamingqu", logoUrl = null, user = null }: P
             </Link>
           )}
           <DropdownMenu>
-            <DropdownMenuTrigger asChild>
+            <DropdownMenuTrigger asChild id="navbar-game-trigger">
               <span className="inline-flex items-center gap-2 text-white text-sm font-semibold cursor-pointer select-none">
                 {isAdminContext && <FiGrid className="h-4 w-4 text-white" />}
                 {isAdminContext ? "Main Menu" : "Choose your game"}
@@ -100,6 +100,12 @@ export function Navbar({ siteName = "Gamingqu", logoUrl = null, user = null }: P
                 </DropdownMenuItem>
                 <DropdownMenuItem asChild className="group rounded-sm px-3 py-2 hover:bg-blue-500/30 focus:bg-blue-500/30 text-white">
                   <Link href="/admin/games" className="flex items-center gap-2 font-semibold"><FiPlay className="h-4 w-4 text-white group-hover:text-black" /> Games</Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem asChild className="group rounded-sm px-3 py-2 hover:bg-blue-500/30 focus:bg-blue-500/30 text-white">
+                  <Link href="/admin/categories" className="flex items-center gap-2 font-semibold"><FiTag className="h-4 w-4 text-white group-hover:text-black" /> Kategori</Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem asChild className="group rounded-sm px-3 py-2 hover:bg-blue-500/30 focus:bg-blue-500/30 text-white">
+                  <Link href="/admin/services" className="flex items-center gap-2 font-semibold"><FiTool className="h-4 w-4 text-white group-hover:text-black" /> Layanan</Link>
                 </DropdownMenuItem>
                 <DropdownMenuItem asChild className="group rounded-sm px-3 py-2 hover:bg-blue-500/30 focus:bg-blue-500/30 text-white">
                   <Link href="/admin/benner" className="flex items-center gap-2 font-semibold"><FiImage className="h-4 w-4 text-white group-hover:text-black" /> Benner</Link>
@@ -146,7 +152,7 @@ export function Navbar({ siteName = "Gamingqu", logoUrl = null, user = null }: P
           <Link href="/search" className={iconBtn}><FiSearch className="h-5 w-5" /></Link>
           <Link href="/wishlist" className={iconBtn}><FiHeart className="h-5 w-5" /></Link>
           <DropdownMenu open={currencyOpen} onOpenChange={setCurrencyOpen}>
-            <DropdownMenuTrigger asChild>
+            <DropdownMenuTrigger asChild id="navbar-currency-trigger">
               <button
                 className={`${iconBtn} size-10 w-20 data-[state=open]:bg-zinc-900`}
               >
@@ -191,7 +197,7 @@ export function Navbar({ siteName = "Gamingqu", logoUrl = null, user = null }: P
           </DropdownMenu>
           {user ? (
             <DropdownMenu>
-              <DropdownMenuTrigger asChild>
+              <DropdownMenuTrigger asChild id="navbar-user-trigger">
                 <button className={iconBtn}>
                   <FiUser className="h-5 w-5" />
                 </button>
@@ -233,7 +239,7 @@ export function Navbar({ siteName = "Gamingqu", logoUrl = null, user = null }: P
             <Link href="/login" className={iconBtn}><FiUser className="h-5 w-5" /></Link>
           )}
           <DropdownMenu open={gridOpen} onOpenChange={setGridOpen}>
-            <DropdownMenuTrigger asChild>
+            <DropdownMenuTrigger asChild id="navbar-grid-trigger">
               <button
                 className={`${iconBtn} data-[state=open]:bg-zinc-900`}
               >
