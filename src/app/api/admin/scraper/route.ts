@@ -191,7 +191,7 @@ export async function PUT(req: Request) {
                             } catch {}
                         }
                     } else {
-                        const elements = $('article, .news-post').toArray() as cheerio.Element[];
+                        const elements = $('article, .news-post').toArray() as any[];
                         for (const el of elements) {
                             const $el = $(el);
                             const title = $el.find('h1, h2, .heading').first().text().trim();
