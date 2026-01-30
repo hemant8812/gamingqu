@@ -1,4 +1,5 @@
 @import "tailwindcss";
+
 @plugin "daisyui" {
   base: false;
 }
@@ -10,9 +11,34 @@
   --font-mono: var(--font-geist-mono);
 }
 
+/* ============================================
+   GAMING DESIGN SYSTEM - Color Tokens
+   ============================================ */
 :root {
   --background: oklch(1 0 0);
   --foreground: oklch(0.13 0.028 261.692);
+
+  /* Gaming Color Palette */
+  --gaming-dark: #0A0E17;
+  --gaming-darker: #050810;
+  --gaming-card: #0F172A;
+  --gaming-card-hover: #1E293B;
+  --gaming-border: rgba(255, 255, 255, 0.08);
+
+  /* Accent Colors - Solid Blue */
+  --primary-color: #3B82F6;
+  --primary-hover: #2563EB;
+  --primary-light: rgba(59, 130, 246, 0.2);
+
+  /* Legacy Gradient (kept for compatibility) */
+  --gradient-primary: linear-gradient(135deg, #3B82F6 0%, #2563EB 100%);
+  --gradient-accent: linear-gradient(135deg, #3B82F6 0%, #06B6D4 100%);
+  --gradient-subtle: linear-gradient(135deg, rgba(59, 130, 246, 0.1) 0%, rgba(6, 182, 212, 0.1) 100%);
+
+  /* Glow Colors */
+  --glow-blue: rgba(59, 130, 246, 0.5);
+  --glow-cyan: rgba(6, 182, 212, 0.5);
+  --glow-pink: rgba(244, 114, 182, 0.5);
 }
 
 .dark {
@@ -24,7 +50,262 @@ body {
   @apply bg-base-100 text-base-content;
 }
 
-/* Custom animations */
+/* ============================================
+   GLASSMORPHISM UTILITIES
+   ============================================ */
+.glass {
+  background: rgba(15, 23, 42, 0.7);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.glass-light {
+  background: rgba(30, 41, 59, 0.6);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.glass-card {
+  background: linear-gradient(135deg, rgba(15, 23, 42, 0.9) 0%, rgba(30, 41, 59, 0.7) 100%);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+}
+
+/* ============================================
+   NEON GLOW EFFECTS
+   ============================================ */
+.glow-primary {
+  box-shadow: 0 0 20px var(--glow-blue), 0 0 40px rgba(139, 92, 246, 0.2);
+}
+
+.glow-accent {
+  box-shadow: 0 0 20px var(--glow-cyan), 0 0 40px rgba(6, 182, 212, 0.2);
+}
+
+.glow-border {
+  position: relative;
+}
+
+.glow-border::before {
+  content: '';
+  position: absolute;
+  inset: -2px;
+  border-radius: inherit;
+  background: var(--gradient-primary);
+  opacity: 0;
+  z-index: -1;
+  transition: opacity 0.3s ease;
+  filter: blur(8px);
+}
+
+.glow-border:hover::before {
+  opacity: 0.6;
+}
+
+/* ============================================
+   GRADIENT UTILITIES
+   ============================================ */
+.gradient-text {
+  color: #3B82F6;
+  font-weight: 700;
+}
+
+.gradient-bg {
+  background: var(--gradient-primary);
+}
+
+.gradient-border {
+  border: 2px solid transparent;
+  background: linear-gradient(var(--gaming-card), var(--gaming-card)) padding-box,
+    var(--gradient-primary) border-box;
+}
+
+/* ============================================
+   GAMING BUTTON STYLES
+   ============================================ */
+.btn-gaming {
+  background: #3B82F6;
+  border: none;
+  color: white;
+  font-weight: 700;
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3);
+}
+
+.btn-gaming:hover {
+  background: #2563EB;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(59, 130, 246, 0.4);
+}
+
+/* Removed shimmer effect from buttons for cleaner look */
+
+/* ============================================
+   CARD HOVER EFFECTS
+   ============================================ */
+.card-gaming {
+  background: var(--gaming-card);
+  border: 1px solid var(--gaming-border);
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+}
+
+.card-gaming::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: var(--gradient-subtle);
+  opacity: 0;
+  transition: opacity 0.4s ease;
+}
+
+.card-gaming:hover {
+  transform: translateY(-8px);
+  border-color: rgba(59, 130, 246, 0.3);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4), 0 0 30px rgba(59, 130, 246, 0.1);
+}
+
+.card-gaming:hover::before {
+  opacity: 1;
+}
+
+/* ============================================
+   ANIMATED BACKGROUNDS
+   ============================================ */
+.mesh-gradient {
+  background:
+    radial-gradient(ellipse at 20% 20%, rgba(59, 130, 246, 0.12) 0%, transparent 50%),
+    radial-gradient(ellipse at 80% 80%, rgba(6, 182, 212, 0.12) 0%, transparent 50%),
+    var(--gaming-dark);
+}
+
+.animated-mesh {
+  background-size: 400% 400%;
+  animation: mesh-move 15s ease infinite;
+}
+
+@keyframes mesh-move {
+
+  0%,
+  100% {
+    background-position: 0% 50%;
+  }
+
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
+/* ============================================
+   FLOATING & PULSE ANIMATIONS
+   ============================================ */
+.float {
+  animation: float 6s ease-in-out infinite;
+}
+
+@keyframes float {
+
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+.pulse-glow {
+  animation: pulse-glow 2s ease-in-out infinite;
+}
+
+@keyframes pulse-glow {
+
+  0%,
+  100% {
+    box-shadow: 0 0 20px var(--glow-blue);
+  }
+
+  50% {
+    box-shadow: 0 0 40px var(--glow-blue), 0 0 60px var(--glow-cyan);
+  }
+}
+
+/* ============================================
+   SHIMMER EFFECT
+   ============================================ */
+.shimmer {
+  position: relative;
+  overflow: hidden;
+}
+
+.shimmer::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -150%;
+  width: 50%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+  animation: shimmer 3s infinite;
+}
+
+@keyframes shimmer {
+  0% {
+    left: -150%;
+  }
+
+  100% {
+    left: 150%;
+  }
+}
+
+/* ============================================
+   HOT BADGE ANIMATION
+   ============================================ */
+.badge-hot {
+  background: linear-gradient(135deg, #EF4444 0%, #F97316 100%);
+  animation: badge-pulse 1.5s ease-in-out infinite;
+  box-shadow: 0 0 15px rgba(239, 68, 68, 0.5);
+}
+
+@keyframes badge-pulse {
+
+  0%,
+  100% {
+    transform: scale(1);
+  }
+
+  50% {
+    transform: scale(1.05);
+  }
+}
+
+/* ============================================
+   INPUT FOCUS STYLES
+   ============================================ */
+.input-gaming {
+  background: var(--gaming-darker);
+  border: 1px solid var(--gaming-border);
+  transition: all 0.3s ease;
+}
+
+.input-gaming:focus {
+  border-color: #3B82F6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2), 0 0 20px rgba(59, 130, 246, 0.1);
+  outline: none;
+}
+
+/* ============================================
+   ORIGINAL HERO ANIMATIONS (preserved)
+   ============================================ */
 .hero-slide-left {
   animation: hero-slide-left 6s ease-in-out infinite alternate;
   will-change: transform;
@@ -34,6 +315,7 @@ body {
   0% {
     transform: translateX(0);
   }
+
   100% {
     transform: translateX(-24px);
   }
@@ -47,17 +329,37 @@ body {
 }
 
 @keyframes hero-carousel-left {
-  0%, 12% { transform: translateX(0%); }
-  18%, 30% { transform: translateX(-100%); }
-  36%, 48% { transform: translateX(-200%); }
-  54%, 66% { transform: translateX(-100%); }
-  72%, 100% { transform: translateX(0%); }
+
+  0%,
+  12% {
+    transform: translateX(0%);
+  }
+
+  18%,
+  30% {
+    transform: translateX(-100%);
+  }
+
+  36%,
+  48% {
+    transform: translateX(-200%);
+  }
+
+  54%,
+  66% {
+    transform: translateX(-100%);
+  }
+
+  72%,
+  100% {
+    transform: translateX(0%);
+  }
 }
 
 .hero-stripes {
   position: absolute;
   inset: 0;
-  background-image: repeating-linear-gradient(135deg, rgba(255,255,255,0.08) 0px, rgba(255,255,255,0.08) 2px, transparent 2px, transparent 16px);
+  background-image: repeating-linear-gradient(135deg, rgba(255, 255, 255, 0.08) 0px, rgba(255, 255, 255, 0.08) 2px, transparent 2px, transparent 16px);
   mix-blend-mode: overlay;
   pointer-events: none;
 }
@@ -65,16 +367,16 @@ body {
 .hero-bolt {
   width: 80%;
   height: 80%;
-  background: linear-gradient(135deg, rgb(37 99 235), rgb(59 130 246), rgb(56 189 248));
+  background: #3B82F6;
   clip-path: polygon(10% 0%, 90% 0%, 70% 25%, 95% 25%, 60% 95%, 40% 95%, 55% 60%, 25% 60%, 35% 35%, 5% 35%);
-  filter: drop-shadow(0 10px 20px rgba(0,0,0,0.35));
+  filter: drop-shadow(0 10px 20px rgba(0, 0, 0, 0.35));
 }
 
 .hero-play {
   width: 64px;
   height: 64px;
   border-radius: 9999px;
-  border: 2px solid rgba(255,255,255,0.5);
+  border: 2px solid rgba(255, 255, 255, 0.5);
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -94,12 +396,12 @@ body {
   width: 8px;
   height: 8px;
   border-radius: 9999px;
-  background: rgba(255,255,255,0.45);
+  background: rgba(255, 255, 255, 0.45);
   transition: transform 200ms ease, background 200ms ease;
 }
 
 .hero-dot-active {
-  background: rgba(255,255,255,0.95);
+  background: rgba(255, 255, 255, 0.95);
   transform: scale(1.3);
 }
 
@@ -107,4 +409,62 @@ body {
   display: flex;
   width: 300%;
   gap: 0;
+}
+
+/* ============================================
+   PARTICLE BACKGROUND (CSS only)
+   ============================================ */
+.particles {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.particles::before,
+.particles::after {
+  content: '';
+  position: absolute;
+  width: 4px;
+  height: 4px;
+  background: rgba(59, 130, 246, 0.6);
+  border-radius: 50%;
+  animation: particle-float 8s ease-in-out infinite;
+}
+
+.particles::before {
+  top: 20%;
+  left: 10%;
+  animation-delay: 0s;
+}
+
+.particles::after {
+  top: 60%;
+  right: 15%;
+  animation-delay: -4s;
+  background: rgba(6, 182, 212, 0.6);
+}
+
+@keyframes particle-float {
+
+  0%,
+  100% {
+    transform: translateY(0) translateX(0);
+    opacity: 0.6;
+  }
+
+  25% {
+    transform: translateY(-20px) translateX(10px);
+    opacity: 1;
+  }
+
+  50% {
+    transform: translateY(-10px) translateX(-10px);
+    opacity: 0.8;
+  }
+
+  75% {
+    transform: translateY(-30px) translateX(5px);
+    opacity: 1;
+  }
 }
