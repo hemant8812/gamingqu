@@ -27,8 +27,8 @@ export default async function AdminUsersPage({ searchParams }: { searchParams: P
     ? toast === "updated"
       ? "Data berhasil diupdate"
       : toast === "deleted"
-      ? "Data berhasil dihapus"
-      : "Data berhasil disimpan"
+        ? "Data berhasil dihapus"
+        : "Data berhasil disimpan"
     : undefined;
   const pageStr = getParamStr(sp, "page") ?? "1";
   const pageNum = parseInt(pageStr, 10);
@@ -178,17 +178,17 @@ export default async function AdminUsersPage({ searchParams }: { searchParams: P
   }
   const where = q
     ? {
-        OR: [
-          { id: { startsWith: q } },
-          { username: { startsWith: q } },
-          ...(q.length >= 2 ? [{ username: { contains: q } }] : []),
-          // Email: gunakan startsWith agar tidak match domain saat q adalah nama brand,
-          // hanya gunakan contains jika q tampak seperti email (mengandung '@' atau '.')
-          ...(q.includes("@") || q.includes(".")
-            ? [{ email: { contains: q } }]
-            : [{ email: { startsWith: q } }]),
-        ],
-      }
+      OR: [
+        { id: { startsWith: q } },
+        { username: { startsWith: q } },
+        ...(q.length >= 2 ? [{ username: { contains: q } }] : []),
+        // Email: gunakan startsWith agar tidak match domain saat q adalah nama brand,
+        // hanya gunakan contains jika q tampak seperti email (mengandung '@' atau '.')
+        ...(q.includes("@") || q.includes(".")
+          ? [{ email: { contains: q } }]
+          : [{ email: { startsWith: q } }]),
+      ],
+    }
     : undefined;
   const users = await db.user.findMany({
     orderBy: { createdAt: "desc" },
@@ -208,81 +208,91 @@ export default async function AdminUsersPage({ searchParams }: { searchParams: P
   const myId = session?.user?.id ?? null;
 
   return (
-    <div className="min-h-screen bg-base-200 text-base-content">
-      <div className="mx-auto max-w-7xl px-6 py-8">
+    <div className="min-h-screen bg-[#0A0E17] text-white">
+      {/* Background effects */}
+      <div className="fixed inset-0 pointer-events-none">
+        <div className="absolute top-0 left-1/4 w-96 h-96 bg-blue-600/10 rounded-full blur-3xl" />
+        <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-cyan-500/10 rounded-full blur-3xl" />
+      </div>
+
+      <div className="relative z-10 mx-auto max-w-7xl px-6 py-8">
         <PageToast message={toastMessage} type={toastType} />
-        <div className="mb-5">
-          <h2 className="text-3xl font-bold">Semua Pengguna</h2>
-          <p className="text-sm opacity-70">Kelola semua pengguna terdaftar</p>
+
+        {/* Header */}
+        <div className="mb-6">
+          <h2 className="text-3xl font-bold text-white">All Users</h2>
+          <p className="text-gray-400">Manage all registered users</p>
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-3 mb-6">
-          <div className="card bg-base-100 shadow-sm border border-base-200">
-            <div className="card-body p-4 flex-row items-center justify-between">
+
+        {/* Stats Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
+          <div className="bg-[#0F172A] border border-white/10 rounded-2xl p-5">
+            <div className="flex items-center justify-between">
               <div>
-                <div className="text-sm opacity-70 font-semibold">Total User</div>
-                <div className="text-2xl font-bold">{totalUser}</div>
+                <p className="text-sm text-gray-400 mb-1">Total Users</p>
+                <p className="text-3xl font-bold text-white">{totalUser}</p>
               </div>
-              <div className="p-3 rounded-full bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400">
+              <div className="w-12 h-12 rounded-xl bg-blue-500/20 flex items-center justify-center text-blue-400">
                 <UsersIcon className="h-6 w-6" />
               </div>
             </div>
           </div>
-          <div className="card bg-base-100 shadow-sm border border-base-200">
-            <div className="card-body p-4 flex-row items-center justify-between">
+          <div className="bg-[#0F172A] border border-white/10 rounded-2xl p-5">
+            <div className="flex items-center justify-between">
               <div>
-                <div className="text-sm opacity-70 font-semibold">Total Member</div>
-                <div className="text-2xl font-bold">{totalMember}</div>
+                <p className="text-sm text-gray-400 mb-1">Members</p>
+                <p className="text-3xl font-bold text-white">{totalMember}</p>
               </div>
-              <div className="p-3 rounded-full bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400">
+              <div className="w-12 h-12 rounded-xl bg-emerald-500/20 flex items-center justify-center text-emerald-400">
                 <UserIcon className="h-6 w-6" />
               </div>
             </div>
           </div>
-          <div className="card bg-base-100 shadow-sm border border-base-200">
-            <div className="card-body p-4 flex-row items-center justify-between">
+          <div className="bg-[#0F172A] border border-white/10 rounded-2xl p-5">
+            <div className="flex items-center justify-between">
               <div>
-                <div className="text-sm opacity-70 font-semibold">Total Booster</div>
-                <div className="text-2xl font-bold">{totalBooster}</div>
+                <p className="text-sm text-gray-400 mb-1">Boosters</p>
+                <p className="text-3xl font-bold text-white">{totalBooster}</p>
               </div>
-              <div className="p-3 rounded-full bg-orange-100 dark:bg-orange-900/30 text-orange-600 dark:text-orange-400">
+              <div className="w-12 h-12 rounded-xl bg-orange-500/20 flex items-center justify-center text-orange-400">
                 <ZapIcon className="h-6 w-6" />
               </div>
             </div>
           </div>
-          <div className="card bg-base-100 shadow-sm border border-base-200">
-            <div className="card-body p-4 flex-row items-center justify-between">
+          <div className="bg-[#0F172A] border border-white/10 rounded-2xl p-5">
+            <div className="flex items-center justify-between">
               <div>
-                <div className="text-sm opacity-70 font-semibold">User Suspend</div>
-                <div className="text-2xl font-bold">{totalSuspended}</div>
+                <p className="text-sm text-gray-400 mb-1">Suspended</p>
+                <p className="text-3xl font-bold text-white">{totalSuspended}</p>
               </div>
-              <div className="p-3 rounded-full bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400">
+              <div className="w-12 h-12 rounded-xl bg-red-500/20 flex items-center justify-center text-red-400">
                 <UserXIcon className="h-6 w-6" />
               </div>
             </div>
           </div>
         </div>
-        <div className="flex items-center justify-between">
-          <h1 className="text-3xl font-bold">Manage Users</h1>
+
+        {/* Action Bar */}
+        <div className="flex items-center justify-between mb-6">
+          <h1 className="text-2xl font-bold text-white">Manage Users</h1>
           <AddUserModal action={createUser} />
         </div>
-        <div className="mt-6">
-          <div className="card bg-base-100 shadow-xl overflow-hidden border border-base-200">
-            <div className="card-body p-0">
-                <div className="p-4 border-b border-base-200 flex items-center justify-between">
-                    <h3 className="card-title text-lg">Users</h3>
-                    <UsersSearchInput />
-                </div>
-                <UserList
-                    users={users}
-                    totalPages={totalPages}
-                    page={page}
-                    q={q}
-                    myId={myId}
-                    updateUserAction={updateUser}
-                    deleteUserAction={deleteUser}
-                />
-            </div>
+
+        {/* Users Table Card */}
+        <div className="bg-[#0F172A] border border-white/10 rounded-2xl overflow-hidden">
+          <div className="p-4 border-b border-white/10 flex items-center justify-between">
+            <h3 className="text-lg font-bold text-white">Users</h3>
+            <UsersSearchInput />
           </div>
+          <UserList
+            users={users}
+            totalPages={totalPages}
+            page={page}
+            q={q}
+            myId={myId}
+            updateUserAction={updateUser}
+            deleteUserAction={deleteUser}
+          />
         </div>
       </div>
     </div>

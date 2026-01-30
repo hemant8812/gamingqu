@@ -63,34 +63,40 @@ export function AdminSettingsTabs({ initialTab, setting, footer }: Props) {
 
     return (
         <div>
-            <div role="tablist" className="tabs tabs-lifted">
-                <a 
-                    role="tab" 
-                    className={`tab ${activeTab === "general" ? "tab-active" : ""}`}
+            <div className="flex gap-2 mb-6">
+                <button
+                    className={`h-10 px-4 font-medium text-sm rounded-xl flex items-center gap-2 transition-colors ${activeTab === "general"
+                            ? "bg-blue-600 text-white"
+                            : "bg-white/5 text-gray-400 hover:bg-white/10 hover:text-white"
+                        }`}
                     onClick={() => setActiveTab("general")}
                 >
-                    <SettingsIcon className="w-4 h-4 mr-2" />
+                    <SettingsIcon className="w-4 h-4" />
                     General
-                </a>
-                <a 
-                    role="tab" 
-                    className={`tab ${activeTab === "footer" ? "tab-active" : ""}`}
+                </button>
+                <button
+                    className={`h-10 px-4 font-medium text-sm rounded-xl flex items-center gap-2 transition-colors ${activeTab === "footer"
+                            ? "bg-blue-600 text-white"
+                            : "bg-white/5 text-gray-400 hover:bg-white/10 hover:text-white"
+                        }`}
                     onClick={() => setActiveTab("footer")}
                 >
-                    <LayoutIcon className="w-4 h-4 mr-2" />
+                    <LayoutIcon className="w-4 h-4" />
                     Footer
-                </a>
-                <a 
-                    role="tab" 
-                    className={`tab ${activeTab === "embed" ? "tab-active" : ""}`}
+                </button>
+                <button
+                    className={`h-10 px-4 font-medium text-sm rounded-xl flex items-center gap-2 transition-colors ${activeTab === "embed"
+                            ? "bg-blue-600 text-white"
+                            : "bg-white/5 text-gray-400 hover:bg-white/10 hover:text-white"
+                        }`}
                     onClick={() => setActiveTab("embed")}
                 >
-                    <CodeIcon className="w-4 h-4 mr-2" />
+                    <CodeIcon className="w-4 h-4" />
                     Embed
-                </a>
+                </button>
             </div>
-            
-            <div className="mt-6">
+
+            <div>
                 {activeTab === "general" && (
                     <SettingsForm initial={{
                         siteName: setting?.siteName ?? "Gamingqu",

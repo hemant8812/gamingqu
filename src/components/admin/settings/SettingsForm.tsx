@@ -41,53 +41,56 @@ export function SettingsForm({ initial }: { initial: Initial }) {
       setBusy(false);
     }
   };
+
+  const inputClassName = "w-full h-11 px-4 bg-slate-800/50 border border-slate-600 rounded-xl text-white placeholder-gray-400 hover:border-blue-500/50 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/30 focus:outline-none transition-all";
+
   return (
-    <form onSubmit={onSubmit} method="post" encType="multipart/form-data" className="rounded-2xl border border-zinc-900 bg-zinc-950 p-6 space-y-4">
+    <form onSubmit={onSubmit} method="post" encType="multipart/form-data" className="bg-[#0F172A] border border-white/10 rounded-2xl p-6 space-y-6">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div>
-          <label htmlFor="siteName" className="block text-sm font-semibold">Nama Website</label>
+          <label htmlFor="siteName" className="block text-sm font-medium text-gray-300 mb-2">Website Name</label>
           <input
             id="siteName"
             name="siteName"
             type="text"
             required
-            placeholder="Contoh: Gamingqu"
-            className="mt-1 w-full rounded-md bg-zinc-900 border border-zinc-800 px-3 py-2 text-sm text-white"
+            placeholder="e.g. Gamingqu"
+            className={inputClassName}
             defaultValue={initial.siteName ?? ""}
           />
         </div>
         <div>
-          <label htmlFor="tagline" className="block text-sm font-semibold">Tagline</label>
+          <label htmlFor="tagline" className="block text-sm font-medium text-gray-300 mb-2">Tagline</label>
           <input
             id="tagline"
             name="tagline"
             type="text"
-            placeholder="Contoh: Boost your game"
-            className="mt-1 w-full rounded-md bg-zinc-900 border border-zinc-800 px-3 py-2 text-sm text-white"
+            placeholder="e.g. Boost your game"
+            className={inputClassName}
             defaultValue={initial.tagline ?? ""}
           />
         </div>
       </div>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div>
-          <label htmlFor="contactEmail" className="block text-sm font-semibold">Email Kontak</label>
+          <label htmlFor="contactEmail" className="block text-sm font-medium text-gray-300 mb-2">Contact Email</label>
           <input
             id="contactEmail"
             name="contactEmail"
             type="email"
-            placeholder="Contoh: contact@gamingqu.com"
-            className="mt-1 w-full rounded-md bg-zinc-900 border border-zinc-800 px-3 py-2 text-sm text-white"
+            placeholder="e.g. contact@gamingqu.com"
+            className={inputClassName}
             defaultValue={initial.contactEmail ?? ""}
           />
         </div>
         <div>
-          <label htmlFor="contactPhone" className="block text-sm font-semibold">No. Telepon</label>
+          <label htmlFor="contactPhone" className="block text-sm font-medium text-gray-300 mb-2">Phone Number</label>
           <input
             id="contactPhone"
             name="contactPhone"
             type="text"
-            placeholder="Contoh: +62-812-xxx-xxx"
-            className="mt-1 w-full rounded-md bg-zinc-900 border border-zinc-800 px-3 py-2 text-sm text-white"
+            placeholder="e.g. +62-812-xxx-xxx"
+            className={inputClassName}
             defaultValue={initial.contactPhone ?? ""}
           />
         </div>
@@ -96,14 +99,15 @@ export function SettingsForm({ initial }: { initial: Initial }) {
         <ImageUploadField id="logo" name="logo" label="Logo" previewHeight={120} initialUrl={initial.logoUrl ?? null} />
         <ImageUploadField id="favicon" name="favicon" label="Favicon" previewHeight={120} initialUrl={initial.faviconUrl ?? null} />
       </div>
-      <div className="flex justify-end">
+      <div className="flex justify-end mt-6">
         <button
           type="submit"
-          className="inline-flex items-center gap-2 rounded-md bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-500 disabled:opacity-60"
+          className="h-11 px-5 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-xl flex items-center gap-2 transition-colors disabled:opacity-50"
           disabled={busy}
         >
+          {busy && <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>}
           <SaveIcon className="h-4 w-4" />
-          <span>Simpan</span>
+          <span>Save</span>
         </button>
       </div>
     </form>

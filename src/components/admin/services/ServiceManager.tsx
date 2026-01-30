@@ -36,26 +36,26 @@ export function ServiceManager({ services, games, categories, editing }: { servi
   return (
     <>
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6">
-         <div>
-             <h1 className="text-3xl font-bold">Manage Layanan</h1>
-             <p className="mt-2 text-sm opacity-70">
-                Tambah/kelola layanan: nama, slug, pilih game dan kategori opsional, deskripsi, gambar, features, harga, hot offers.
-            </p>
-         </div>
-         <Link href="/admin/services?create=true" className="btn btn-primary gap-2">
-            <Plus className="h-4 w-4" />
-            Tambah Layanan
-         </Link>
+        <div>
+          <h1 className="text-3xl font-bold text-white">Manage Services</h1>
+          <p className="mt-2 text-gray-400">
+            Add/manage services: name, slug, game, category, description, image, features, price, hot offers.
+          </p>
+        </div>
+        <Link href="/admin/services?create=true" className="h-10 px-4 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-xl flex items-center gap-2 transition-colors">
+          <Plus className="h-4 w-4" />
+          Add Service
+        </Link>
       </div>
-      
-      <div className="card bg-base-100 shadow-xl border border-base-200 p-6">
+
+      <div className="bg-[#0F172A] border border-white/10 rounded-2xl p-5">
         <div className="flex items-center justify-between mb-4">
-            <h2 className="text-xl font-semibold">Data Layanan</h2>
-            <GameSearchInput placeholder="Cari layanan" />
+          <h2 className="text-lg font-bold text-white">Service Data</h2>
+          <GameSearchInput placeholder="Search services..." />
         </div>
         <ServiceList services={services} />
       </div>
-      
+
       <ServiceModal editing={editing} games={games} categories={categories} />
     </>
   );

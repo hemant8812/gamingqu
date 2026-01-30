@@ -15,11 +15,11 @@ function PlacementBadge({ p }: { p: Item["placement"] }) {
   const label = p === "HEAD" ? "Head" : p === "BODY" ? "Body" : "Footer";
   const cls =
     p === "HEAD"
-      ? "bg-purple-600 text-white"
+      ? "bg-purple-500/20 text-purple-400"
       : p === "BODY"
-      ? "bg-blue-600 text-white"
-      : "bg-zinc-700 text-white";
-  return <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs ${cls}`}>{label}</span>;
+        ? "bg-blue-500/20 text-blue-400"
+        : "bg-gray-500/20 text-gray-400";
+  return <span className={`inline-flex items-center px-2 py-0.5 rounded-md text-xs font-medium ${cls}`}>{label}</span>;
 }
 
 export function EmbedSettings() {
@@ -49,10 +49,10 @@ export function EmbedSettings() {
           setItems(data);
           setError(null);
         } else {
-          setError("Gagal memuat data");
+          setError("Failed to load data");
         }
       })
-      .catch(() => setError("Gagal memuat data"))
+      .catch(() => setError("Failed to load data"))
       .finally(() => setLoading(false));
     return () => {
       cancelled = true;
@@ -78,14 +78,14 @@ export function EmbedSettings() {
         body: JSON.stringify({ name, placement, isActive, code }),
       });
       if (!res.ok) {
-        setError("Gagal menyimpan");
+        setError("Failed to save");
         return;
       }
       const created = await res.json();
       setItems((prev) => [created, ...prev]);
       resetForm();
     } catch {
-      setError("Gagal menyimpan");
+      setError("Failed to save");
     } finally {
       setLoading(false);
     }
@@ -117,14 +117,14 @@ export function EmbedSettings() {
         body: JSON.stringify({ id: editingId, name: editName, placement: editPlacement, isActive: editActive, code: editCode }),
       });
       if (!res.ok) {
-        setError("Gagal memperbarui");
+        setError("Failed to update");
         return;
       }
       const updated = await res.json();
       setItems((prev) => prev.map((x) => (x.id === updated.id ? updated : x)));
       setEditingId(null);
     } catch {
-      setError("Gagal memperbarui");
+      setError("Failed to update");
     } finally {
       setLoading(false);
     }
@@ -140,38 +140,42 @@ export function EmbedSettings() {
         body: JSON.stringify({ id }),
       });
       if (!res.ok) {
-        setError("Gagal menghapus");
+        setError("Failed to delete");
         return;
       }
       setItems((prev) => prev.filter((x) => x.id !== id));
     } catch {
-      setError("Gagal menghapus");
+      setError("Failed to delete");
     } finally {
       setLoading(false);
     }
   };
 
+  const inputClassName = "w-full h-11 px-4 bg-slate-800/50 border border-slate-600 rounded-xl text-white text-sm placeholder-gray-400 hover:border-blue-500/50 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/30 focus:outline-none transition-all";
+  const selectClassName = "w-full h-11 px-4 bg-slate-800/50 border border-slate-600 rounded-xl text-white text-sm hover:border-blue-500/50 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/30 focus:outline-none transition-all cursor-pointer";
+  const textareaClassName = "w-full px-4 py-3 bg-slate-800/50 border border-slate-600 rounded-xl text-white text-sm placeholder-gray-400 hover:border-blue-500/50 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/30 focus:outline-none transition-all resize-none";
+
   return (
     <div className="space-y-6">
-      <form onSubmit={submitCreate} className="rounded-2xl border border-zinc-900 bg-zinc-950 p-6 space-y-4">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <form onSubmit={submitCreate} className="bg-[#0F172A] border border-white/10 rounded-2xl p-6 space-y-5">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
-            <label htmlFor="embedName" className="block text-sm font-semibold">Nama</label>
+            <label htmlFor="embedName" className="block text-sm font-medium text-gray-300 mb-2">Name</label>
             <input
               id="embedName"
               type="text"
-              className="mt-1 w-full rounded-md bg-zinc-900 border border-zinc-800 px-3 py-2 text-sm text-white"
-              placeholder="Contoh: Google Analytics"
+              className={inputClassName}
+              placeholder="e.g. Google Analytics"
               value={name}
               onChange={(e) => setName(e.target.value)}
               required
             />
           </div>
           <div>
-            <label htmlFor="embedPlacement" className="block text-sm font-semibold">Penempatan</label>
+            <label htmlFor="embedPlacement" className="block text-sm font-medium text-gray-300 mb-2">Placement</label>
             <select
               id="embedPlacement"
-              className="mt-1 w-full rounded-md bg-zinc-900 border border-zinc-800 px-3 py-2 text-sm text-white"
+              className={selectClassName}
               value={placement}
               onChange={(e) => setPlacement(e.target.value as Item["placement"])}
             >
@@ -181,21 +185,19 @@ export function EmbedSettings() {
             </select>
           </div>
         </div>
-        <div className="flex items-center gap-3">
-          <input id="embedActive" type="checkbox" className="peer sr-only" checked={isActive} onChange={(e) => setIsActive(e.target.checked)} />
-          <label htmlFor="embedActive" className="inline-flex items-center gap-2 text-sm text-zinc-300">
-            <span className="relative inline-flex h-4 w-7 items-center rounded-full bg-zinc-800 transition-colors peer-checked:bg-green-600">
-              <span className="absolute left-0.5 top-0.5 h-3 w-3 rounded-full bg-white transition-transform peer-checked:translate-x-3"></span>
-            </span>
-            Aktif
+        <div className="flex items-center justify-between p-4 bg-slate-800/30 border border-slate-700/50 rounded-xl">
+          <span className="text-sm font-medium text-gray-300">Active Status</span>
+          <label className="relative inline-flex items-center cursor-pointer">
+            <input type="checkbox" className="sr-only peer" checked={isActive} onChange={(e) => setIsActive(e.target.checked)} />
+            <div className="w-11 h-6 bg-gray-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-emerald-500"></div>
           </label>
         </div>
         <div>
-          <label htmlFor="embedCode" className="block text-sm font-semibold">Kode</label>
+          <label htmlFor="embedCode" className="block text-sm font-medium text-gray-300 mb-2">Code</label>
           <textarea
             id="embedCode"
-            className="mt-1 w-full rounded-md bg-zinc-900 border border-zinc-800 px-3 py-2 text-sm text-white min-h-40"
-            placeholder="Tempel kode embed di sini"
+            className={`${textareaClassName} min-h-40`}
+            placeholder="Paste embed code here"
             value={code}
             onChange={(e) => setCode(e.target.value)}
             required
@@ -204,69 +206,69 @@ export function EmbedSettings() {
         <div className="flex justify-end">
           <button
             type="submit"
-            className="inline-flex items-center gap-2 rounded-md bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-500 disabled:opacity-60"
+            className="h-11 px-5 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-xl flex items-center gap-2 transition-colors disabled:opacity-50"
             disabled={loading}
           >
-            <span>Simpan Embed</span>
+            Save Embed
           </button>
         </div>
       </form>
 
-      {error && <div className="text-sm text-red-500">{error}</div>}
+      {error && <div className="text-sm text-red-400">{error}</div>}
 
-      <div className="rounded-2xl border border-zinc-900 bg-zinc-950 p-6">
-        <div className="flex items-center justify-between">
-          <h2 className="text-xl font-semibold">Daftar Embed</h2>
-          <div className="text-xs text-zinc-400">{items.length} item</div>
+      <div className="bg-[#0F172A] border border-white/10 rounded-2xl p-6">
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-lg font-bold text-white">Embed List</h2>
+          <div className="text-xs text-gray-500">{items.length} items</div>
         </div>
-        <div className="mt-4 space-y-3">
+        <div className="space-y-3">
           {items.length === 0 && (
-            <div className="text-sm text-zinc-400">Belum ada data</div>
+            <div className="text-sm text-gray-500 text-center py-8">No data yet</div>
           )}
           {items.map((it) => (
-            <div key={it.id} className="rounded-xl border border-zinc-900 bg-black p-3">
+            <div key={it.id} className="bg-slate-800/30 border border-slate-700/50 rounded-xl p-4">
               <div className="flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                  <div className={`inline-flex items-center px-2 py-0.5 rounded text-xs ${it.isActive ? "bg-green-600 text-white" : "bg-zinc-700 text-white"}`}>{it.isActive ? "Aktif" : "Nonaktif"}</div>
+                <div className="flex items-center gap-2">
+                  <span className={`inline-flex items-center px-2 py-0.5 rounded-md text-xs font-medium ${it.isActive ? "bg-emerald-500/20 text-emerald-400" : "bg-gray-500/20 text-gray-400"}`}>{it.isActive ? "Active" : "Inactive"}</span>
                   <PlacementBadge p={it.placement} />
                 </div>
                 <div className="flex items-center gap-2">
                   <button
                     type="button"
-                    className="rounded-md border border-zinc-800 bg-zinc-900 px-3 py-2 text-xs text-white hover:bg-zinc-800"
+                    className="text-xs text-gray-400 hover:text-white transition-colors"
                     onClick={() => openEdit(it.id)}
                   >
                     Edit
                   </button>
                   <button
                     type="button"
-                    className="rounded-md bg-red-600 px-3 py-2 text-xs font-semibold text-white hover:bg-red-500"
+                    className="text-xs text-red-400 hover:text-red-300 transition-colors"
                     onClick={() => removeItem(it.id)}
                   >
-                    Hapus
+                    Delete
                   </button>
                 </div>
               </div>
-              <div className="mt-2 font-semibold">{it.name}</div>
+              <div className="mt-2 font-semibold text-white">{it.name}</div>
               {editingId === it.id ? (
-                <form onSubmit={submitUpdate} className="mt-3 space-y-3">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <form onSubmit={submitUpdate} className="mt-4 space-y-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
-                      <label htmlFor={`editName-${it.id}`} className="block text-sm font-semibold">Nama</label>
+                      <label htmlFor={`editName-${it.id}`} className="block text-sm font-medium text-gray-300 mb-2">Name</label>
                       <input
                         id={`editName-${it.id}`}
                         type="text"
-                        className="mt-1 w-full rounded-md bg-zinc-900 border border-zinc-800 px-3 py-2 text-sm text-white"
+                        className={inputClassName}
                         value={editName}
                         onChange={(e) => setEditName(e.target.value)}
                         required
                       />
                     </div>
                     <div>
-                      <label htmlFor={`editPlacement-${it.id}`} className="block text-sm font-semibold">Penempatan</label>
+                      <label htmlFor={`editPlacement-${it.id}`} className="block text-sm font-medium text-gray-300 mb-2">Placement</label>
                       <select
                         id={`editPlacement-${it.id}`}
-                        className="mt-1 w-full rounded-md bg-zinc-900 border border-zinc-800 px-3 py-2 text-sm text-white"
+                        className={selectClassName}
                         value={editPlacement}
                         onChange={(e) => setEditPlacement(e.target.value as Item["placement"])}
                       >
@@ -276,44 +278,42 @@ export function EmbedSettings() {
                       </select>
                     </div>
                   </div>
-                  <div className="flex items-center gap-3">
-                    <input id={`editActive-${it.id}`} type="checkbox" className="peer sr-only" checked={editActive} onChange={(e) => setEditActive(e.target.checked)} />
-                    <label htmlFor={`editActive-${it.id}`} className="inline-flex items-center gap-2 text-sm text-zinc-300">
-                      <span className="relative inline-flex h-4 w-7 items-center rounded-full bg-zinc-800 transition-colors peer-checked:bg-green-600">
-                        <span className="absolute left-0.5 top-0.5 h-3 w-3 rounded-full bg-white transition-transform peer-checked:translate-x-3"></span>
-                      </span>
-                      Aktif
+                  <div className="flex items-center justify-between p-4 bg-slate-900/50 border border-slate-700/50 rounded-xl">
+                    <span className="text-sm font-medium text-gray-300">Active Status</span>
+                    <label className="relative inline-flex items-center cursor-pointer">
+                      <input type="checkbox" className="sr-only peer" checked={editActive} onChange={(e) => setEditActive(e.target.checked)} />
+                      <div className="w-11 h-6 bg-gray-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-emerald-500"></div>
                     </label>
                   </div>
                   <div>
-                    <label htmlFor={`editCode-${it.id}`} className="block text-sm font-semibold">Kode</label>
+                    <label htmlFor={`editCode-${it.id}`} className="block text-sm font-medium text-gray-300 mb-2">Code</label>
                     <textarea
                       id={`editCode-${it.id}`}
-                      className="mt-1 w-full rounded-md bg-zinc-900 border border-zinc-800 px-3 py-2 text-sm text-white min-h-40"
+                      className={`${textareaClassName} min-h-40`}
                       value={editCode}
                       onChange={(e) => setEditCode(e.target.value)}
                       required
                     />
                   </div>
-                  <div className="flex items-center justify-end gap-2">
+                  <div className="flex items-center justify-end gap-3">
                     <button
                       type="button"
-                      className="rounded-md border border-zinc-800 bg-zinc-900 px-3 py-2 text-sm text-white hover:bg-zinc-800"
+                      className="h-10 px-4 bg-white/5 hover:bg-white/10 text-gray-300 font-medium rounded-xl transition-colors"
                       onClick={cancelEdit}
                     >
-                      Batal
+                      Cancel
                     </button>
                     <button
                       type="submit"
-                      className="rounded-md bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-500 disabled:opacity-60"
+                      className="h-10 px-4 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-xl transition-colors disabled:opacity-50"
                       disabled={loading}
                     >
-                      Simpan Perubahan
+                      Save Changes
                     </button>
                   </div>
                 </form>
               ) : (
-                <div className="mt-2 text-xs text-zinc-500 break-words line-clamp-2">{it.code}</div>
+                <div className="mt-2 text-xs text-gray-500 break-words line-clamp-2">{it.code}</div>
               )}
             </div>
           ))}

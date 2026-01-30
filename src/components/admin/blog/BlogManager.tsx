@@ -33,8 +33,7 @@ export function BlogManager({ posts, sources, page, totalPages }: { posts: Post[
     const [isScraping, setIsScraping] = useState(false);
     const [busy, setBusy] = useState(false);
     const [isImporting, setIsImporting] = useState(false);
-    
-    // Modal state
+
     const [isPostModalOpen, setIsPostModalOpen] = useState(false);
     const [editingPost, setEditingPost] = useState<Post | null>(null);
     const postDialogRef = useRef<HTMLDialogElement>(null);
@@ -43,7 +42,6 @@ export function BlogManager({ posts, sources, page, totalPages }: { posts: Post[
     const sourceDialogRef = useRef<HTMLDialogElement>(null);
     const [editingSource, setEditingSource] = useState<ScraperSource | null>(null);
 
-    // Check URL params for edit/create
     useEffect(() => {
         const editId = searchParams.get("edit");
         const create = searchParams.get("create");
@@ -65,12 +63,11 @@ export function BlogManager({ posts, sources, page, totalPages }: { posts: Post[
             postDialogRef.current?.showModal();
         } else {
             postDialogRef.current?.close();
-            // Clean URL
             if (searchParams.has("edit") || searchParams.has("create")) {
-                 const url = new URL(window.location.href);
-                 url.searchParams.delete("edit");
-                 url.searchParams.delete("create");
-                 window.history.replaceState(null, "", url.toString());
+                const url = new URL(window.location.href);
+                url.searchParams.delete("edit");
+                url.searchParams.delete("create");
+                window.history.replaceState(null, "", url.toString());
             }
         }
     }, [isPostModalOpen, searchParams]);
@@ -97,7 +94,6 @@ export function BlogManager({ posts, sources, page, totalPages }: { posts: Post[
             const data = await res.json();
             if (data.success) {
                 router.refresh();
-                // Show toast?
             }
         } catch (e) {
             console.error(e);
@@ -147,7 +143,7 @@ export function BlogManager({ posts, sources, page, totalPages }: { posts: Post[
         const fd = new FormData(e.currentTarget);
         const url = fd.get("url") as string;
         const interval = parseInt(fd.get("interval") as string) || 60;
-        
+
         try {
             await fetch("/api/admin/scraper", {
                 method: "POST",
@@ -168,7 +164,6 @@ export function BlogManager({ posts, sources, page, totalPages }: { posts: Post[
         e.preventDefault();
         setBusy(true);
         const fd = new FormData(e.currentTarget);
-        // Handle boolean checkbox
         if (!fd.has("isPublished")) fd.set("isPublished", "false");
         else fd.set("isPublished", "true");
 
@@ -187,78 +182,74 @@ export function BlogManager({ posts, sources, page, totalPages }: { posts: Post[
     return (
         <div className="space-y-8">
             {/* Scraper Control Panel */}
-            <div className="card bg-base-100 shadow border border-base-200">
-                <div className="card-body">
-                    <h2 className="card-title flex justify-between">
-                        <span>Auto-Scraper Sources</span>
-                        <div className="flex gap-2">
-                             <button 
+            <div className="bg-[#0F172A] border border-white/10 rounded-2xl overflow-hidden">
+                <div className="p-5">
+                    <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-4">
+                        <h2 className="text-lg font-bold text-white">Auto-Scraper Sources</h2>
+                        <div className="flex flex-wrap gap-2">
+                            <button
                                 onClick={() => setIsSourceModalOpen(true)}
-                                className="btn btn-sm btn-outline gap-2"
+                                className="h-9 px-3 bg-white/5 hover:bg-white/10 text-gray-300 text-sm font-medium rounded-lg flex items-center gap-2 transition-colors disabled:opacity-50"
                                 disabled={sources.length >= 5}
                             >
                                 <Plus className="h-4 w-4" /> Add Source ({sources.length}/5)
                             </button>
-                            <button 
+                            <button
                                 onClick={handleScrape}
                                 disabled={isScraping || sources.length === 0}
-                                className="btn btn-sm btn-primary gap-2"
+                                className="h-9 px-3 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg flex items-center gap-2 transition-colors disabled:opacity-50"
                             >
                                 <RefreshCw className={`h-4 w-4 ${isScraping ? "animate-spin" : ""}`} />
-                                {isScraping ? "Scraping..." : "Run Scraper Now"}
+                                {isScraping ? "Scraping..." : "Run Scraper"}
                             </button>
-                            <button 
+                            <button
                                 onClick={handleImportBlizzard}
                                 disabled={isImporting}
-                                className="btn btn-sm btn-secondary gap-2"
+                                className="h-9 px-3 bg-purple-600 hover:bg-purple-700 text-white text-sm font-medium rounded-lg flex items-center gap-2 transition-colors disabled:opacity-50"
                             >
                                 <Globe className={`h-4 w-4 ${isImporting ? "animate-spin" : ""}`} />
-                                {isImporting ? "Importing..." : "Import Blizzard News"}
+                                {isImporting ? "Importing..." : "Import Blizzard"}
                             </button>
                         </div>
-                    </h2>
+                    </div>
                     <div className="overflow-x-auto">
-                        <table className="table">
+                        <table className="w-full">
                             <thead>
-                                <tr>
-                                    <th>Source Name / URL</th>
-                                    <th>Interval</th>
-                                    <th>Status</th>
-                                    <th>Last Run</th>
-                                    <th>Actions</th>
+                                <tr className="border-b border-white/10">
+                                    <th className="text-left py-3 px-2 text-xs font-semibold text-gray-400 uppercase">Source</th>
+                                    <th className="text-left py-3 px-2 text-xs font-semibold text-gray-400 uppercase">Interval</th>
+                                    <th className="text-left py-3 px-2 text-xs font-semibold text-gray-400 uppercase">Status</th>
+                                    <th className="text-left py-3 px-2 text-xs font-semibold text-gray-400 uppercase">Last Run</th>
+                                    <th className="text-right py-3 px-2 text-xs font-semibold text-gray-400 uppercase">Actions</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 {sources.length === 0 && (
                                     <tr>
-                                        <td colSpan={5} className="text-center opacity-50">No sources configured. Add a URL like https://www.wowhead.com/news/rss</td>
+                                        <td colSpan={5} className="text-center py-8 text-gray-500">No sources configured</td>
                                     </tr>
                                 )}
                                 {sources.map(s => (
-                                    <tr key={s.id}>
-                                        <td>
-                                            <div className="font-bold">{s.name}</div>
-                                            <div className="text-xs opacity-50 truncate max-w-xs">{s.url}</div>
+                                    <tr key={s.id} className="border-b border-white/5 hover:bg-white/5">
+                                        <td className="py-3 px-2">
+                                            <div className="font-semibold text-white">{s.name}</div>
+                                            <div className="text-xs text-gray-500 truncate max-w-xs">{s.url}</div>
                                         </td>
-                                        <td>
-                                            <div className="text-sm">{s.scrapeInterval} min</div>
-                                        </td>
-                                        <td>
-                                            <span className={`badge ${s.isActive ? "badge-success" : "badge-ghost"}`}>
+                                        <td className="py-3 px-2 text-sm text-gray-300">{s.scrapeInterval} min</td>
+                                        <td className="py-3 px-2">
+                                            <span className={`inline-flex px-2 py-0.5 text-xs font-medium rounded-md ${s.isActive ? "bg-emerald-500/20 text-emerald-400" : "bg-gray-500/20 text-gray-400"}`}>
                                                 {s.isActive ? "Active" : "Inactive"}
                                             </span>
                                         </td>
-                                        <td>
-                                            <div className="text-xs opacity-70">
-                                                {s.lastRunAt ? new Date(s.lastRunAt).toLocaleString() : "Never"}
-                                            </div>
+                                        <td className="py-3 px-2 text-xs text-gray-500">
+                                            {s.lastRunAt ? new Date(s.lastRunAt).toLocaleString() : "Never"}
                                         </td>
-                                        <td>
-                                            <div className="flex gap-2">
-                                                <button onClick={() => openEditSource(s)} className="btn btn-ghost btn-xs">
+                                        <td className="py-3 px-2">
+                                            <div className="flex gap-2 justify-end">
+                                                <button onClick={() => openEditSource(s)} className="text-xs text-gray-400 hover:text-white transition-colors">
                                                     Edit
                                                 </button>
-                                                <button onClick={() => handleDeleteSource(s.id)} className="btn btn-ghost btn-xs text-error">
+                                                <button onClick={() => handleDeleteSource(s.id)} className="text-xs text-red-400 hover:text-red-300 transition-colors">
                                                     <Trash2 className="h-4 w-4" />
                                                 </button>
                                             </div>
@@ -272,101 +263,99 @@ export function BlogManager({ posts, sources, page, totalPages }: { posts: Post[
             </div>
 
             {/* Blog Posts Management */}
-            <div className="card bg-base-100 shadow border border-base-200">
-                <div className="card-body">
-                    <div className="flex justify-between items-center mb-4">
-                        <h2 className="card-title">Blog Posts</h2>
-                        <button onClick={() => { setEditingPost(null); setIsPostModalOpen(true); }} className="btn btn-primary gap-2">
-                            <Plus className="h-4 w-4" /> Create Manual Post
-                        </button>
-                    </div>
-
-                    <div className="overflow-x-auto">
-                        <table className="table">
-                            <thead>
-                                <tr>
-                                    <th>Title</th>
-                                    <th>Source</th>
-                                    <th>Status</th>
-                                    <th>Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {posts.map(post => (
-                                    <tr key={post.id}>
-                                        <td>
-                                            <div className="font-bold">{post.title}</div>
-                                            <div className="text-xs opacity-50">/{post.slug}</div>
-                                        </td>
-                                        <td>
-                                            {post.sourceUrl ? (
-                                                <a href={post.sourceUrl} target="_blank" className="flex items-center gap-1 text-xs text-blue-500 hover:underline">
-                                                    <Globe className="h-3 w-3" /> Auto-Scraped
-                                                </a>
-                                            ) : (
-                                                <span className="text-xs opacity-50">Manual</span>
-                                            )}
-                                        </td>
-                                        <td>
-                                            <span className={`badge ${post.isPublished ? "badge-success" : "badge-warning"}`}>
-                                                {post.isPublished ? "Published" : "Draft"}
-                                            </span>
-                                        </td>
-                                        <td className="flex gap-2">
-                                            <button onClick={() => { setEditingPost(post); setIsPostModalOpen(true); }} className="btn btn-ghost btn-xs">Edit</button>
-                                            <button onClick={() => handleDeletePost(post.id)} className="btn btn-ghost btn-xs text-error"><Trash2 className="h-4 w-4" /></button>
-                                        </td>
-                                    </tr>
-                                ))}
-                                {posts.length === 0 && (
-                                    <tr>
-                                        <td colSpan={4} className="text-center py-8 opacity-50">No posts found.</td>
-                                    </tr>
-                                )}
-                            </tbody>
-                        </table>
-                    </div>
-                    {totalPages > 1 && (
-                        <div className="p-4 flex items-center justify-end gap-2 border-t border-base-200">
-                            <Link
-                                href={`/admin/blog?page=${Math.max(1, page - 1)}`}
-                                prefetch={false}
-                                className={`btn btn-sm ${page > 1 ? "btn-outline" : "btn-disabled"}`}
-                                aria-disabled={page <= 1}
-                            >
-                                <ChevronLeft className="h-4 w-4" />
-                                <span>Prev</span>
-                            </Link>
-                            <span className="text-xs opacity-70">
-                                Page {page} of {totalPages}
-                            </span>
-                            <Link
-                                href={`/admin/blog?page=${Math.min(totalPages, page + 1)}`}
-                                prefetch={false}
-                                className={`btn btn-sm ${page < totalPages ? "btn-outline" : "btn-disabled"}`}
-                                aria-disabled={page >= totalPages}
-                            >
-                                <span>Next</span>
-                                <ChevronRight className="h-4 w-4" />
-                            </Link>
-                        </div>
-                    )}
+            <div className="bg-[#0F172A] border border-white/10 rounded-2xl overflow-hidden">
+                <div className="p-5 border-b border-white/10 flex items-center justify-between">
+                    <h2 className="text-lg font-bold text-white">Blog Posts</h2>
+                    <button onClick={() => { setEditingPost(null); setIsPostModalOpen(true); }} className="h-10 px-4 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-xl flex items-center gap-2 transition-colors">
+                        <Plus className="h-4 w-4" /> Create Post
+                    </button>
                 </div>
+
+                <div className="overflow-x-auto">
+                    <table className="w-full">
+                        <thead>
+                            <tr className="border-b border-white/10">
+                                <th className="text-left py-3 px-4 text-xs font-semibold text-gray-400 uppercase">Title</th>
+                                <th className="text-left py-3 px-4 text-xs font-semibold text-gray-400 uppercase">Source</th>
+                                <th className="text-left py-3 px-4 text-xs font-semibold text-gray-400 uppercase">Status</th>
+                                <th className="text-right py-3 px-4 text-xs font-semibold text-gray-400 uppercase">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {posts.map(post => (
+                                <tr key={post.id} className="border-b border-white/5 hover:bg-white/5">
+                                    <td className="py-3 px-4">
+                                        <div className="font-semibold text-white">{post.title}</div>
+                                        <div className="text-xs text-gray-500">/{post.slug}</div>
+                                    </td>
+                                    <td className="py-3 px-4">
+                                        {post.sourceUrl ? (
+                                            <a href={post.sourceUrl} target="_blank" className="flex items-center gap-1 text-xs text-blue-400 hover:underline">
+                                                <Globe className="h-3 w-3" /> Auto-Scraped
+                                            </a>
+                                        ) : (
+                                            <span className="text-xs text-gray-500">Manual</span>
+                                        )}
+                                    </td>
+                                    <td className="py-3 px-4">
+                                        <span className={`inline-flex px-2 py-0.5 text-xs font-medium rounded-md ${post.isPublished ? "bg-emerald-500/20 text-emerald-400" : "bg-yellow-500/20 text-yellow-400"}`}>
+                                            {post.isPublished ? "Published" : "Draft"}
+                                        </span>
+                                    </td>
+                                    <td className="py-3 px-4">
+                                        <div className="flex gap-2 justify-end">
+                                            <button onClick={() => { setEditingPost(post); setIsPostModalOpen(true); }} className="text-xs text-gray-400 hover:text-white transition-colors">Edit</button>
+                                            <button onClick={() => handleDeletePost(post.id)} className="text-xs text-red-400 hover:text-red-300 transition-colors"><Trash2 className="h-4 w-4" /></button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            ))}
+                            {posts.length === 0 && (
+                                <tr>
+                                    <td colSpan={4} className="text-center py-12 text-gray-500">No posts found.</td>
+                                </tr>
+                            )}
+                        </tbody>
+                    </table>
+                </div>
+                {totalPages > 1 && (
+                    <div className="p-4 flex items-center justify-end gap-2 border-t border-white/10">
+                        <Link
+                            href={`/admin/blog?page=${Math.max(1, page - 1)}`}
+                            prefetch={false}
+                            className={`h-9 px-3 text-sm font-medium rounded-lg flex items-center gap-1 transition-colors ${page > 1 ? "bg-white/5 hover:bg-white/10 text-gray-300" : "bg-white/5 text-gray-600 cursor-not-allowed"}`}
+                            aria-disabled={page <= 1}
+                        >
+                            <ChevronLeft className="h-4 w-4" />
+                            <span>Prev</span>
+                        </Link>
+                        <span className="text-xs text-gray-500">
+                            Page {page} of {totalPages}
+                        </span>
+                        <Link
+                            href={`/admin/blog?page=${Math.min(totalPages, page + 1)}`}
+                            prefetch={false}
+                            className={`h-9 px-3 text-sm font-medium rounded-lg flex items-center gap-1 transition-colors ${page < totalPages ? "bg-white/5 hover:bg-white/10 text-gray-300" : "bg-white/5 text-gray-600 cursor-not-allowed"}`}
+                            aria-disabled={page >= totalPages}
+                        >
+                            <span>Next</span>
+                            <ChevronRight className="h-4 w-4" />
+                        </Link>
+                    </div>
+                )}
             </div>
-{editingSource ? "Edit Source" : ""}
+            {editingSource ? "Edit Source" : ""}
 
             {/* Source Modal */}
             <dialog ref={sourceDialogRef} className="modal">
-                <div className="modal-box">
+                <div className="modal-box bg-[#0F172A] border-0 text-white rounded-2xl">
                     <h3 className="font-bold text-lg">Add Scraper Source</h3>
-                    <p className="py-2 text-sm opacity-70">Enter a valid RSS feed URL or website URL (e.g., https://www.wowhead.com/news/rss)</p>
+                    <p className="py-2 text-sm text-gray-400">Enter a valid RSS feed URL or website URL</p>
                     <form onSubmit={handleAddSource} className="mt-4 space-y-4">
-                        <input name="url" type="url" placeholder="https://..." required className="input input-bordered w-full" defaultValue={editingSource?.url ?? ""} />
-                        <div className="form-control">
-                            <label className="label">
-                                <span className="label-text">Scrape Interval</span>
-                            </label>
-                            <select name="interval" className="select select-bordered w-full" defaultValue={editingSource ? String(editingSource.scrapeInterval) : "60"}>
+                        <input name="url" type="url" placeholder="https://..." required className="w-full h-11 px-4 bg-[#0A0E17] border-0 rounded-xl text-white placeholder-gray-500 focus:ring-2 focus:ring-blue-500 focus:outline-none" defaultValue={editingSource?.url ?? ""} />
+                        <div>
+                            <label className="block text-sm font-medium text-gray-300 mb-2">Scrape Interval</label>
+                            <select name="interval" className="w-full h-11 px-4 bg-[#0A0E17] border-0 rounded-xl text-white focus:ring-2 focus:ring-blue-500 focus:outline-none appearance-none cursor-pointer" defaultValue={editingSource ? String(editingSource.scrapeInterval) : "60"}>
                                 <option value="30">Every 30 minutes</option>
                                 <option value="60">Every 1 hour</option>
                                 <option value="180">Every 3 hours</option>
@@ -376,145 +365,132 @@ export function BlogManager({ posts, sources, page, totalPages }: { posts: Post[
                             </select>
                         </div>
 
-                        <div className="modal-action">
-                             <button type="button" onClick={() => setIsSourceModalOpen(false)} className="btn btn-ghost">Cancel</button>
-                             <button type="submit" className="btn btn-primary" disabled={busy}>Add Source</button>
+                        <div className="flex justify-end gap-3 pt-4 border-t border-white/10">
+                            <button type="button" onClick={() => setIsSourceModalOpen(false)} className="h-10 px-4 bg-white/5 hover:bg-white/10 text-gray-300 font-medium rounded-xl transition-colors">Cancel</button>
+                            <button type="submit" className="h-10 px-4 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-xl transition-colors disabled:opacity-50" disabled={busy}>Add Source</button>
                         </div>
                     </form>
                 </div>
-                <form method="dialog" className="modal-backdrop">
+                <form method="dialog" className="modal-backdrop bg-black/60">
                     <button onClick={() => setIsSourceModalOpen(false)}>close</button>
                 </form>
             </dialog>
 
             {/* Post Modal */}
             <dialog ref={postDialogRef} className="modal">
-                <div className="modal-box w-11/12 max-w-5xl h-[90vh] overflow-hidden flex flex-col p-0 bg-base-100 rounded-2xl shadow-2xl">
+                <div className="modal-box w-11/12 max-w-5xl h-[90vh] overflow-hidden flex flex-col p-0 bg-[#0F172A] rounded-2xl border-0">
                     {/* Header */}
-                    <div className="flex justify-between items-center px-6 py-4 border-b border-base-200 bg-base-100 sticky top-0 z-20">
+                    <div className="flex justify-between items-center px-6 py-4 border-b border-white/10 sticky top-0 z-20 bg-[#0F172A]">
                         <div>
-                            <h3 className="font-bold text-2xl text-base-content">{editingPost ? "Edit Post" : "New Post"}</h3>
-                            <p className="text-sm text-base-content/60 mt-1">
-                                {editingPost ? "Make changes to your existing post." : "Create a new blog post to engage your audience."}
+                            <h3 className="font-bold text-2xl text-white">{editingPost ? "Edit Post" : "New Post"}</h3>
+                            <p className="text-sm text-gray-400 mt-1">
+                                {editingPost ? "Make changes to your existing post." : "Create a new blog post."}
                             </p>
                         </div>
-                        <button 
-                            onClick={() => setIsPostModalOpen(false)} 
-                            className="btn btn-sm btn-circle btn-ghost hover:bg-base-200 transition-colors"
+                        <button
+                            onClick={() => setIsPostModalOpen(false)}
+                            className="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-white/10 transition-colors"
                         >
-                            <X className="h-5 w-5" />
+                            <X className="h-5 w-5 text-gray-400" />
                         </button>
                     </div>
-                    
-                    {/* Content - Scrollable Area */}
+
+                    {/* Content */}
                     <div className="flex-1 overflow-y-auto p-6">
                         <form id="post-form" onSubmit={handleSavePost} className="space-y-6">
                             {editingPost && <input type="hidden" name="id" value={editingPost.id} />}
-                            
+
                             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                                {/* Left Column: Main Content */}
+                                {/* Left Column */}
                                 <div className="lg:col-span-2 space-y-6">
-                                    <div className="form-control">
-                                        <label className="label">
-                                            <span className="label-text font-semibold text-base">Title</span>
-                                        </label>
-                                        <input 
-                                            name="title" 
-                                            type="text" 
-                                            defaultValue={editingPost?.title} 
-                                            required 
-                                            className="input input-bordered w-full focus:outline-none focus:ring-2 focus:ring-primary/50 text-lg placeholder:text-base-content/30" 
-                                            placeholder="Enter an engaging title..." 
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-300 mb-2">Title</label>
+                                        <input
+                                            name="title"
+                                            type="text"
+                                            defaultValue={editingPost?.title}
+                                            required
+                                            className="w-full h-12 px-4 bg-[#0A0E17] border-0 rounded-xl text-white text-lg placeholder-gray-500 focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                                            placeholder="Enter an engaging title..."
                                         />
                                     </div>
 
                                     <AutoSlugField name="slug" nameInputId="title" label="Slug" initialValue={editingPost?.slug ?? ""} />
 
-                                    <div className="form-control">
-                                        <label className="label">
-                                            <span className="label-text font-semibold text-base">Content</span>
-                                        </label>
-                                        <div className="border border-base-300 rounded-lg overflow-hidden min-h-[400px]">
-                                            <RichTextEditor 
-                                                name="content" 
-                                                initialHtml={editingPost?.content ?? ""} 
-                                                placeholder="Write your amazing content here..." 
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-300 mb-2">Content</label>
+                                        <div className="rounded-xl overflow-hidden border border-white/10 min-h-[400px]">
+                                            <RichTextEditor
+                                                name="content"
+                                                initialHtml={editingPost?.content ?? ""}
+                                                placeholder="Write your content here..."
                                             />
                                         </div>
                                     </div>
                                 </div>
 
-                                {/* Right Column: Sidebar Settings */}
+                                {/* Right Column */}
                                 <div className="space-y-6">
-                                    <div className="card bg-base-200/50 border border-base-200">
-                                        <div className="card-body p-4 space-y-4">
-                                            <h4 className="font-bold text-sm uppercase tracking-wider text-base-content/70">Publishing</h4>
-                                            
-                                            <div className="form-control">
-                                                <label className="label cursor-pointer justify-between p-0">
-                                                    <span className="label-text font-medium">Published</span>
-                                                    <input 
-                                                        type="checkbox" 
-                                                        name="isPublished" 
-                                                        className="toggle toggle-success toggle-sm" 
-                                                        defaultChecked={editingPost?.isPublished ?? true} 
-                                                    />
-                                                </label>
-                                                <span className="text-xs text-base-content/50 mt-2 block">
-                                                    Toggle to make this post visible to the public immediately.
-                                                </span>
-                                            </div>
-                                        </div>
-                                    </div>
+                                    <div className="bg-[#0A0E17] rounded-xl p-4 space-y-4">
+                                        <h4 className="font-semibold text-sm uppercase tracking-wider text-gray-400">Publishing</h4>
 
-                                    <div className="card bg-base-200/50 border border-base-200">
-                                        <div className="card-body p-4 space-y-4">
-                                            <h4 className="font-bold text-sm uppercase tracking-wider text-base-content/70">Featured Image</h4>
-                                            <div className="form-control w-full">
-                                                <ImageUploadField id="post-image" name="imageUrl" label="" initialUrl={editingPost?.imageUrl} />
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <div className="card bg-base-200/50 border border-base-200">
-                                        <div className="card-body p-4 space-y-4">
-                                            <h4 className="font-bold text-sm uppercase tracking-wider text-base-content/70">Excerpt</h4>
-                                            <div className="form-control">
-                                                <textarea 
-                                                    name="excerpt" 
-                                                    className="textarea textarea-bordered h-32 resize-none focus:outline-none focus:ring-2 focus:ring-primary/50 text-sm leading-relaxed" 
-                                                    defaultValue={editingPost?.excerpt ?? ""} 
-                                                    placeholder="Write a short summary (1-2 sentences) to appear in post previews..." 
+                                        <div className="flex items-center justify-between">
+                                            <span className="text-sm font-medium text-gray-300">Published</span>
+                                            <label className="relative inline-flex items-center cursor-pointer">
+                                                <input
+                                                    type="checkbox"
+                                                    name="isPublished"
+                                                    className="sr-only peer"
+                                                    defaultChecked={editingPost?.isPublished ?? true}
                                                 />
-                                            </div>
+                                                <div className="w-11 h-6 bg-gray-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-emerald-500"></div>
+                                            </label>
                                         </div>
+                                        <span className="text-xs text-gray-500 block">
+                                            Toggle to make this post visible immediately.
+                                        </span>
+                                    </div>
+
+                                    <div className="bg-[#0A0E17] rounded-xl p-4 space-y-4">
+                                        <h4 className="font-semibold text-sm uppercase tracking-wider text-gray-400">Featured Image</h4>
+                                        <ImageUploadField id="post-image" name="imageUrl" label="" initialUrl={editingPost?.imageUrl} />
+                                    </div>
+
+                                    <div className="bg-[#0A0E17] rounded-xl p-4 space-y-4">
+                                        <h4 className="font-semibold text-sm uppercase tracking-wider text-gray-400">Excerpt</h4>
+                                        <textarea
+                                            name="excerpt"
+                                            className="w-full px-4 py-3 bg-[#0F172A] border-0 rounded-xl text-sm text-white placeholder-gray-500 focus:ring-2 focus:ring-blue-500 focus:outline-none resize-none h-32"
+                                            defaultValue={editingPost?.excerpt ?? ""}
+                                            placeholder="Write a short summary..."
+                                        />
                                     </div>
                                 </div>
                             </div>
                         </form>
                     </div>
 
-                    {/* Footer - Actions */}
-                    <div className="p-4 border-t border-base-200 bg-base-100 flex justify-end gap-3 sticky bottom-0 z-20">
-                         <button 
-                            type="button" 
-                            onClick={() => setIsPostModalOpen(false)} 
-                            className="btn btn-ghost hover:bg-base-200"
+                    {/* Footer */}
+                    <div className="p-4 border-t border-white/10 flex justify-end gap-3 bg-[#0F172A]">
+                        <button
+                            type="button"
+                            onClick={() => setIsPostModalOpen(false)}
+                            className="h-11 px-5 bg-white/5 hover:bg-white/10 text-gray-300 font-medium rounded-xl transition-colors"
                         >
                             Cancel
                         </button>
-                         <button 
-                            type="submit" 
+                        <button
+                            type="submit"
                             form="post-form"
-                            className="btn btn-primary min-w-[120px] shadow-lg shadow-primary/20" 
+                            className="h-11 px-5 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-xl flex items-center gap-2 transition-colors disabled:opacity-50"
                             disabled={busy}
                         >
-                            {busy ? <span className="loading loading-spinner loading-sm"></span> : <Save className="h-4 w-4" />}
+                            {busy ? <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></span> : <Save className="h-4 w-4" />}
                             {busy ? "Saving..." : "Save Post"}
-                         </button>
+                        </button>
                     </div>
                 </div>
-                <form method="dialog" className="modal-backdrop">
+                <form method="dialog" className="modal-backdrop bg-black/60">
                     <button onClick={() => setIsPostModalOpen(false)}>close</button>
                 </form>
             </dialog>

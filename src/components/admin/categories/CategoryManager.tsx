@@ -26,26 +26,26 @@ export function CategoryManager({ categories, games, editing }: { categories: Ca
   return (
     <>
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6">
-         <div>
-             <h1 className="text-3xl font-bold">Manage Kategori</h1>
-             <p className="mt-2 text-sm opacity-70">
-                Form kategori: nama, slug otomatis, pilih game.
-            </p>
-         </div>
-         <Link href="/admin/categories?create=true" className="btn btn-primary gap-2">
-            <Plus className="h-4 w-4" />
-            Tambah Kategori
-         </Link>
+        <div>
+          <h1 className="text-3xl font-bold text-white">Manage Categories</h1>
+          <p className="mt-2 text-gray-400">
+            Category form: name, auto slug, select game.
+          </p>
+        </div>
+        <Link href="/admin/categories?create=true" className="h-10 px-4 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-xl flex items-center gap-2 transition-colors">
+          <Plus className="h-4 w-4" />
+          Add Category
+        </Link>
       </div>
-      
-      <div className="card bg-base-100 shadow-xl border border-base-200 p-6">
+
+      <div className="bg-[#0F172A] border border-white/10 rounded-2xl p-5">
         <div className="flex items-center justify-between mb-4">
-            <h2 className="text-xl font-semibold">Data Kategori</h2>
-            <GameSearchInput placeholder="Cari kategori" />
+          <h2 className="text-lg font-bold text-white">Category Data</h2>
+          <GameSearchInput placeholder="Search categories..." />
         </div>
         <CategoryList categories={categories} />
       </div>
-      
+
       <CategoryModal editing={editing} games={games} />
     </>
   );

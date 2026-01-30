@@ -1,7 +1,7 @@
 "use client";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useState, useRef, useEffect } from "react";
-import { Save as SaveIcon, XCircle, Plus, Trash2 } from "lucide-react";
+import { Save as SaveIcon, X, Plus, Trash2 } from "lucide-react";
 import { AutoSlugField } from "@/components/shared/AutoSlugField";
 import { ImageUploadField } from "@/components/shared/ImageUploadField";
 import { RichTextEditor } from "@/components/shared/RichTextEditor";
@@ -28,14 +28,13 @@ export function ServiceModal({ games, categories, editing }: { games: GameOption
   const searchParams = useSearchParams();
   const dialogRef = useRef<HTMLDialogElement>(null);
   const [busy, setBusy] = useState(false);
-  
+
   const isCreate = searchParams.has("create");
   const [visible, setVisible] = useState(!!editing || isCreate);
   const [selectedGame, setSelectedGame] = useState<string>(editing?.gameId ?? "");
   const [features, setFeatures] = useState<string[]>(editing?.features ?? []);
   const canAddFeature = features.length < 3;
-  
-  // Handle visibility and URL cleanup
+
   useEffect(() => {
     if (editing || isCreate) {
       if (window.location.search.includes("create") || window.location.search.includes("edit")) {
@@ -47,19 +46,13 @@ export function ServiceModal({ games, categories, editing }: { games: GameOption
     }
   }, [editing, isCreate]);
 
-  // Handle dialog open/close based on visibility
   useEffect(() => {
     const dialog = dialogRef.current;
     if (!dialog) return;
-
     if (visible) {
-      if (!dialog.open) {
-        dialog.showModal();
-      }
+      if (!dialog.open) dialog.showModal();
     } else {
-        if (dialog.open) {
-            dialog.close();
-        }
+      if (dialog.open) dialog.close();
     }
   }, [visible, editing]);
 
@@ -67,7 +60,6 @@ export function ServiceModal({ games, categories, editing }: { games: GameOption
     setVisible(false);
     setSelectedGame("");
     setFeatures([]);
-    // Sync with router to ensure clean state on navigation
     router.replace("/admin/services");
   };
 
@@ -92,12 +84,12 @@ export function ServiceModal({ games, categories, editing }: { games: GameOption
       const res = await fetch("/api/admin/services", { method, body: fd });
       const ok = res.ok;
       const toast = editing ? "updated" : "saved";
-      
+
       if (!ok) {
         setBusy(false);
         return;
       }
-      
+
       router.replace(`/admin/services?toast=${ok ? toast : "error"}`);
     } catch {
       setBusy(false);
@@ -106,142 +98,134 @@ export function ServiceModal({ games, categories, editing }: { games: GameOption
 
   return (
     <dialog ref={dialogRef} className="modal" onClose={closeModal}>
-      <div className="modal-box w-11/12 max-w-5xl bg-base-100 text-base-content p-0 max-h-[90vh] overflow-y-auto">
-        <div className="flex items-center justify-between p-4 border-b border-base-200 bg-base-200/50 sticky top-0 z-10 backdrop-blur-sm">
-            <h3 className="font-bold text-lg">{editing ? "Edit Layanan" : "Tambah Layanan"}</h3>
-            <button onClick={closeModal} className="btn btn-sm btn-circle btn-ghost">
-                <XCircle className="h-5 w-5" />
-            </button>
+      <div className="modal-box w-11/12 max-w-5xl bg-[#0F172A] border-0 text-white p-0 max-h-[90vh] overflow-y-auto rounded-2xl">
+        <div className="flex items-center justify-between p-5 border-b border-white/10 sticky top-0 z-10 bg-[#0F172A]/95 backdrop-blur-sm">
+          <h3 className="text-xl font-bold">{editing ? "Edit Service" : "Add Service"}</h3>
+          <button onClick={closeModal} className="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-white/10 transition-colors">
+            <X className="h-5 w-5 text-gray-400" />
+          </button>
         </div>
-        
-        <form onSubmit={onSubmit} method="post" encType="multipart/form-data" className="p-6 space-y-4">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="form-control">
-                    <label htmlFor="name" className="label">
-                        <span className="label-text font-semibold">Nama Layanan</span>
-                    </label>
-                    <input
-                    id="name"
-                    name="name"
-                    type="text"
-                    required
-                    placeholder="Contoh: Rank Boost PvP"
-                    className="input input-bordered w-full"
-                    defaultValue={editing?.name ?? ""}
-                    />
-                </div>
-                <AutoSlugField nameInputId="name" name="slug" label="Slug" initialValue={editing?.slug ?? ""} className="mt-0" />
-            </div>
-            {editing && <input type="hidden" name="id" defaultValue={editing.id} />}
-            
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <GameSelect games={games} name="gameId" label="Nama Game" onChange={setSelectedGame} initialValue={editing?.gameId} />
-                <CategorySelect categories={categories} name="categoryId" label="Nama Kategori (opsional)" gameId={selectedGame} initialValue={editing?.categoryId ?? null} />
-            </div>
-            
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="form-control flex flex-col h-full">
-                    <label className="label">
-                        <span className="label-text font-semibold">Deskripsi</span>
-                    </label>
-                    <div className="mt-1 flex-1">
-                        <RichTextEditor name="description" placeholder="Deskripsi layanan" initialHtml={editing?.description ?? ""} />
-                    </div>
-                </div>
-                
-                <div className="flex flex-col h-full">
-                    <ImageUploadField id="image" name="image" label="Gambar" previewHeight={200} initialUrl={editing?.imageUrl ?? null} />
-                </div>
-            </div>
-            
-            <div className="form-control">
-                <label className="label">
-                    <span className="label-text font-semibold">Features</span>
-                </label>
-                <div className="mt-2 space-y-2">
-                    {features.map((v, i) => (
-                    <div key={i} className="flex gap-2 items-center">
-                        <input
-                            type="text"
-                            value={v}
-                            onChange={(e) => {
-                            const val = e.target.value;
-                            setFeatures((f) => f.map((x, idx) => (idx === i ? val : x)));
-                            }}
-                            placeholder={`Feature ${i + 1}`}
-                            className="input input-bordered w-full"
-                        />
-                        <button
-                            type="button"
-                            onClick={() => removeFeature(i)}
-                            className="btn btn-square btn-ghost btn-sm text-error"
-                            title="Hapus feature"
-                        >
-                            <Trash2 className="h-4 w-4" />
-                        </button>
-                    </div>
-                    ))}
-                    {canAddFeature && (
-                    <button
-                        type="button"
-                        onClick={addFeature}
-                        className="btn btn-sm btn-ghost gap-2"
-                    >
-                        <Plus className="h-4 w-4" />
-                        <span>Tambah Feature</span>
-                    </button>
-                    )}
-                </div>
-            </div>
-            
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 bg-base-200/50 p-4 rounded-box">
-                <div className="form-control">
-                    <label htmlFor="price" className="label">
-                        <span className="label-text font-semibold">Price</span>
-                    </label>
-                    <input
-                    id="price"
-                    name="price"
-                    type="number"
-                    step="0.01"
-                    min="0"
-                    placeholder="0.00"
-                    className="input input-bordered w-full"
-                    required
-                    defaultValue={editing?.price ?? ""}
-                    />
-                </div>
-                <div className="form-control">
-                    <label className="label cursor-pointer justify-start gap-4 mt-8">
-                        <span className="label-text font-semibold">Hot offers</span>
-                        <input 
-                            id="isHotOffer" 
-                            name="isHotOffer" 
-                            type="checkbox" 
-                            className="toggle toggle-error" 
-                            defaultChecked={editing?.isHotOffer ?? false} 
-                        />
-                    </label>
-                </div>
-            </div>
 
-            <div className="modal-action border-t border-base-200 pt-4 mt-6">
-                <button type="button" onClick={closeModal} className="btn btn-ghost gap-2">
-                    Batal
-                </button>
-                <button
-                    type="submit"
-                    className="btn btn-primary gap-2"
-                    disabled={busy}
-                >
-                    {busy && <span className="loading loading-spinner loading-sm"></span>}
-                    <SaveIcon className="h-4 w-4" />
-                    <span>{editing ? "Update Data" : "Simpan Layanan"}</span>
-                </button>
+        <form onSubmit={onSubmit} method="post" encType="multipart/form-data" className="p-6 space-y-5">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label htmlFor="name" className="block text-sm font-medium text-gray-300 mb-2">Service Name</label>
+              <input
+                id="name"
+                name="name"
+                type="text"
+                required
+                placeholder="e.g. Rank Boost PvP"
+                className="w-full h-11 px-4 bg-[#0A0E17] border-0 rounded-xl text-white placeholder-gray-500 focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                defaultValue={editing?.name ?? ""}
+              />
             </div>
+            <AutoSlugField nameInputId="name" name="slug" label="Slug" initialValue={editing?.slug ?? ""} className="mt-0" />
+          </div>
+          {editing && <input type="hidden" name="id" defaultValue={editing.id} />}
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <GameSelect games={games} name="gameId" label="Game" onChange={setSelectedGame} initialValue={editing?.gameId} />
+            <CategorySelect categories={categories} name="categoryId" label="Category (optional)" gameId={selectedGame} initialValue={editing?.categoryId ?? null} />
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="flex flex-col h-full">
+              <label className="block text-sm font-medium text-gray-300 mb-2">Description</label>
+              <div className="flex-1">
+                <RichTextEditor name="description" placeholder="Service description" initialHtml={editing?.description ?? ""} />
+              </div>
+            </div>
+            <div className="flex flex-col h-full">
+              <ImageUploadField id="image" name="image" label="Image" previewHeight={200} initialUrl={editing?.imageUrl ?? null} />
+            </div>
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-300 mb-2">Features</label>
+            <div className="space-y-2">
+              {features.map((v, i) => (
+                <div key={i} className="flex gap-2 items-center">
+                  <input
+                    type="text"
+                    value={v}
+                    onChange={(e) => {
+                      const val = e.target.value;
+                      setFeatures((f) => f.map((x, idx) => (idx === i ? val : x)));
+                    }}
+                    placeholder={`Feature ${i + 1}`}
+                    className="flex-1 h-11 px-4 bg-[#0A0E17] border-0 rounded-xl text-white placeholder-gray-500 focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => removeFeature(i)}
+                    className="w-10 h-10 flex items-center justify-center rounded-lg bg-red-500/10 text-red-400 hover:bg-red-500/20 transition-colors"
+                    title="Remove feature"
+                  >
+                    <Trash2 className="h-4 w-4" />
+                  </button>
+                </div>
+              ))}
+              {canAddFeature && (
+                <button
+                  type="button"
+                  onClick={addFeature}
+                  className="h-10 px-4 bg-white/5 hover:bg-white/10 text-gray-300 text-sm font-medium rounded-xl flex items-center gap-2 transition-colors"
+                >
+                  <Plus className="h-4 w-4" />
+                  <span>Add Feature</span>
+                </button>
+              )}
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-4 bg-[#0A0E17] rounded-xl">
+            <div>
+              <label htmlFor="price" className="block text-sm font-medium text-gray-300 mb-2">Price</label>
+              <input
+                id="price"
+                name="price"
+                type="number"
+                step="0.01"
+                min="0"
+                placeholder="0.00"
+                className="w-full h-11 px-4 bg-[#0F172A] border-0 rounded-xl text-white placeholder-gray-500 focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                required
+                defaultValue={editing?.price ?? ""}
+              />
+            </div>
+            <div className="flex items-center justify-between p-4 bg-[#0F172A] rounded-xl self-end">
+              <span className="text-sm font-medium text-gray-300">Hot Offer</span>
+              <label className="relative inline-flex items-center cursor-pointer">
+                <input
+                  id="isHotOffer"
+                  name="isHotOffer"
+                  type="checkbox"
+                  className="sr-only peer"
+                  defaultChecked={editing?.isHotOffer ?? false}
+                />
+                <div className="w-11 h-6 bg-gray-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-red-500"></div>
+              </label>
+            </div>
+          </div>
+
+          <div className="flex justify-end gap-3 pt-4 border-t border-white/10">
+            <button type="button" onClick={closeModal} className="h-11 px-5 bg-white/5 hover:bg-white/10 text-gray-300 font-medium rounded-xl transition-colors">
+              Cancel
+            </button>
+            <button
+              type="submit"
+              className="h-11 px-5 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-xl flex items-center gap-2 transition-colors disabled:opacity-50"
+              disabled={busy}
+            >
+              {busy && <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>}
+              <SaveIcon className="h-4 w-4" />
+              <span>{editing ? "Update" : "Save"}</span>
+            </button>
+          </div>
         </form>
       </div>
-      <form method="dialog" className="modal-backdrop">
+      <form method="dialog" className="modal-backdrop bg-black/60">
         <button>close</button>
       </form>
     </dialog>

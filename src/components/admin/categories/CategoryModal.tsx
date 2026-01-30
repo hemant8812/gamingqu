@@ -1,7 +1,7 @@
 "use client";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useState, useRef, useEffect } from "react";
-import { Save as SaveIcon, XCircle } from "lucide-react";
+import { Save as SaveIcon, X } from "lucide-react";
 import { AutoSlugField } from "@/components/shared/AutoSlugField";
 
 type GameOption = { id: string; name: string };
@@ -18,7 +18,7 @@ export function CategoryModal({ editing, games }: { editing: Editing; games: Gam
   const searchParams = useSearchParams();
   const dialogRef = useRef<HTMLDialogElement>(null);
   const [busy, setBusy] = useState(false);
-  
+
   const isCreate = searchParams.has("create");
   const [visible, setVisible] = useState(() => !!editing || isCreate);
 
@@ -71,80 +71,77 @@ export function CategoryModal({ editing, games }: { editing: Editing; games: Gam
 
   return (
     <dialog ref={dialogRef} className="modal" onClose={closeModal}>
-      <div className="modal-box w-11/12 max-w-lg bg-base-100 text-base-content p-0 overflow-visible max-h-none">
-        <div className="flex items-center justify-between p-4 border-b border-base-200 bg-base-200/50">
-            <h3 className="font-bold text-lg">{editing ? "Edit Kategori" : "Tambah Kategori"}</h3>
-            <button onClick={closeModal} className="btn btn-sm btn-circle btn-ghost">
-                <XCircle className="h-5 w-5" />
-            </button>
+      <div className="modal-box w-11/12 max-w-lg bg-[#0F172A] border-0 text-white p-0 overflow-visible max-h-none rounded-2xl">
+        <div className="flex items-center justify-between p-5 border-b border-white/10">
+          <h3 className="text-xl font-bold">{editing ? "Edit Category" : "Add Category"}</h3>
+          <button onClick={closeModal} className="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-white/10 transition-colors">
+            <X className="h-5 w-5 text-gray-400" />
+          </button>
         </div>
-        
-        <form onSubmit={onSubmit} method="post" className="p-6 space-y-4">
-            <div className="form-control">
-                <label htmlFor="name" className="label">
-                    <span className="label-text font-semibold">Nama Kategori</span>
-                </label>
-                <input
-                id="name"
-                name="name"
-                type="text"
-                required
-                placeholder="Contoh: Rank Boost"
-                className="input input-bordered w-full"
-                defaultValue={editing?.name ?? ""}
-                />
-                <AutoSlugField nameInputId="name" name="slug" label="Slug" initialValue={editing?.slug ?? ""} />
-                {editing && <input type="hidden" name="id" defaultValue={editing.id} />}
-            </div>
-            
-            <div className="form-control">
-                <label htmlFor="gameId" className="label">
-                    <span className="label-text font-semibold">Nama Game</span>
-                </label>
-                <select
-                id="gameId"
-                name="gameId"
-                required
-                className="select select-bordered w-full"
-                defaultValue={editing?.gameId ?? ""}
-                >
-                <option value="" disabled>Pilih Game</option>
-                {games.map((g) => (
-                    <option key={g.id} value={g.id}>{g.name}</option>
-                ))}
-                </select>
-            </div>
 
-            <div className="form-control">
-                <label className="label cursor-pointer justify-start gap-4 mt-2">
-                    <span className="label-text font-semibold">Aktif</span>
-                    <input 
-                        id="isActive" 
-                        name="isActive" 
-                        type="checkbox" 
-                        className="toggle toggle-success" 
-                        defaultChecked={editing?.isActive ?? true} 
-                    />
-                </label>
-            </div>
+        <form onSubmit={onSubmit} method="post" className="p-6 space-y-5">
+          <div>
+            <label htmlFor="name" className="block text-sm font-medium text-gray-300 mb-2">Category Name</label>
+            <input
+              id="name"
+              name="name"
+              type="text"
+              required
+              placeholder="e.g. Rank Boost"
+              className="w-full h-11 px-4 bg-[#0A0E17] border-0 rounded-xl text-white placeholder-gray-500 focus:ring-2 focus:ring-blue-500 focus:outline-none"
+              defaultValue={editing?.name ?? ""}
+            />
+            <AutoSlugField nameInputId="name" name="slug" label="Slug" initialValue={editing?.slug ?? ""} />
+            {editing && <input type="hidden" name="id" defaultValue={editing.id} />}
+          </div>
 
-            <div className="modal-action border-t border-base-200 pt-4 mt-6">
-                <button type="button" onClick={closeModal} className="btn btn-ghost gap-2">
-                    Batal
-                </button>
-                <button
-                    type="submit"
-                    className="btn btn-primary gap-2"
-                    disabled={busy}
-                >
-                    {busy && <span className="loading loading-spinner loading-sm"></span>}
-                    <SaveIcon className="h-4 w-4" />
-                    <span>{editing ? "Update Data" : "Simpan Kategori"}</span>
-                </button>
-            </div>
+          <div>
+            <label htmlFor="gameId" className="block text-sm font-medium text-gray-300 mb-2">Game</label>
+            <select
+              id="gameId"
+              name="gameId"
+              required
+              className="w-full h-11 px-4 bg-[#0A0E17] border-0 rounded-xl text-white focus:ring-2 focus:ring-blue-500 focus:outline-none appearance-none cursor-pointer"
+              defaultValue={editing?.gameId ?? ""}
+            >
+              <option value="" disabled>Select Game</option>
+              {games.map((g) => (
+                <option key={g.id} value={g.id}>{g.name}</option>
+              ))}
+            </select>
+          </div>
+
+          <div className="flex items-center justify-between p-4 bg-[#0A0E17] rounded-xl">
+            <span className="text-sm font-medium text-gray-300">Active Status</span>
+            <label className="relative inline-flex items-center cursor-pointer">
+              <input
+                id="isActive"
+                name="isActive"
+                type="checkbox"
+                className="sr-only peer"
+                defaultChecked={editing?.isActive ?? true}
+              />
+              <div className="w-11 h-6 bg-gray-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-emerald-500"></div>
+            </label>
+          </div>
+
+          <div className="flex justify-end gap-3 pt-4 border-t border-white/10">
+            <button type="button" onClick={closeModal} className="h-11 px-5 bg-white/5 hover:bg-white/10 text-gray-300 font-medium rounded-xl transition-colors">
+              Cancel
+            </button>
+            <button
+              type="submit"
+              className="h-11 px-5 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-xl flex items-center gap-2 transition-colors disabled:opacity-50"
+              disabled={busy}
+            >
+              {busy && <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>}
+              <SaveIcon className="h-4 w-4" />
+              <span>{editing ? "Update" : "Save"}</span>
+            </button>
+          </div>
         </form>
       </div>
-      <form method="dialog" className="modal-backdrop">
+      <form method="dialog" className="modal-backdrop bg-black/60">
         <button>close</button>
       </form>
     </dialog>

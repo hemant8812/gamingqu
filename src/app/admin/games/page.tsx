@@ -12,14 +12,14 @@ async function getGames(q?: string) {
       take: 30,
       where: q
         ? {
-            OR: [
-              { name: { startsWith: q } },
-              { slug: { startsWith: q } },
-              { name: { contains: q } },
-              { slug: { contains: q } },
-              ...(q.length >= 3 ? [{ description: { contains: q } }] : []),
-            ],
-          }
+          OR: [
+            { name: { startsWith: q } },
+            { slug: { startsWith: q } },
+            { name: { contains: q } },
+            { slug: { contains: q } },
+            ...(q.length >= 3 ? [{ description: { contains: q } }] : []),
+          ],
+        }
         : undefined,
       select: {
         id: true,
@@ -41,7 +41,14 @@ export default async function AdminGamesPage({ searchParams }: { searchParams: P
   const session = await getServerSession(authOptions);
   const role = session?.user?.role;
   if (role !== "ADMIN" && role !== "SUPERADMIN") {
-    return <div className="min-h-screen bg-base-200 text-base-content p-8">Forbidden</div>;
+    return (
+      <div className="min-h-screen bg-[#0A0E17] flex items-center justify-center">
+        <div className="text-center">
+          <h1 className="text-3xl font-bold text-white mb-2">Access Denied</h1>
+          <p className="text-gray-400">You don&apos;t have permission to access this page.</p>
+        </div>
+      </div>
+    );
   }
   const sp = await searchParams;
   const q = normalizeQuery(sp, "q", 64);
@@ -66,13 +73,19 @@ export default async function AdminGamesPage({ searchParams }: { searchParams: P
     ? toast === "updated"
       ? "Data berhasil diupdate"
       : toast === "error"
-      ? "Terjadi kesalahan saat menyimpan data"
-      : "Data berhasil disimpan"
+        ? "Terjadi kesalahan saat menyimpan data"
+        : "Data berhasil disimpan"
     : undefined;
 
   return (
-    <div className="min-h-screen bg-base-200 text-base-content">
-      <div className="mx-auto max-w-7xl px-6 py-8">
+    <div className="min-h-screen bg-[#0A0E17] text-white">
+      {/* Background effects */}
+      <div className="fixed inset-0 pointer-events-none">
+        <div className="absolute top-0 left-1/4 w-96 h-96 bg-blue-600/10 rounded-full blur-3xl" />
+        <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-cyan-500/10 rounded-full blur-3xl" />
+      </div>
+
+      <div className="relative z-10 mx-auto max-w-7xl px-6 py-8">
         <PageToast message={toastMessage} type={toastType} />
         <GameManager games={games} editing={editing} />
       </div>

@@ -44,7 +44,7 @@ export async function Footer() {
     if (!active) return null;
 
     return (
-        <footer className="bg-[#0A0E17] text-gray-300 mt-12 relative overflow-hidden border-t border-white/5">
+        <footer className="bg-[#0A0E17] text-gray-300 relative overflow-hidden">
             {/* Gradient line at top */}
             <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-blue-500 to-transparent" />
 

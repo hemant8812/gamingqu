@@ -1,6 +1,6 @@
 "use client";
 import { useState, useRef, useEffect } from "react";
-import { Save as SaveIcon, XCircle } from "lucide-react";
+import { Save as SaveIcon, X } from "lucide-react";
 import Image from "next/image";
 
 type Item = {
@@ -44,14 +44,14 @@ export function BennerModal({ editing, isOpen, onClose }: { editing: Item | null
         setBusy(false);
         return;
       }
-      
+
       if (editing) {
         fd.set("mode", "UPDATE");
         fd.set("id", editing.id);
       } else {
         fd.set("mode", "CREATE");
       }
-      
+
       const res = await fetch("/api/admin/benner", { method: "POST", body: fd });
       if (res.ok) {
         window.location.assign(`/admin/benner?toast=${res.ok ? "success" : "error"}`);
@@ -65,112 +65,105 @@ export function BennerModal({ editing, isOpen, onClose }: { editing: Item | null
 
   return (
     <dialog ref={dialogRef} className="modal" onClose={handleClose}>
-      <div className="modal-box w-11/12 max-w-lg bg-base-100 text-base-content p-0 overflow-visible max-h-none">
-        <div className="flex items-center justify-between p-4 border-b border-base-200 bg-base-200/50">
-            <h3 className="font-bold text-lg">{editing ? "Edit Benner" : "Tambah Benner"}</h3>
-            <button onClick={onClose} className="btn btn-sm btn-circle btn-ghost">
-                <XCircle className="h-5 w-5" />
-            </button>
+      <div className="modal-box w-11/12 max-w-lg bg-[#0F172A] border-0 text-white p-0 overflow-visible max-h-none rounded-2xl">
+        <div className="flex items-center justify-between p-5 border-b border-white/10">
+          <h3 className="text-xl font-bold">{editing ? "Edit Banner" : "Add Banner"}</h3>
+          <button onClick={onClose} className="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-white/10 transition-colors">
+            <X className="h-5 w-5 text-gray-400" />
+          </button>
         </div>
-        
-        <form onSubmit={onSubmit} method="post" encType="multipart/form-data" className="p-6 space-y-4">
-            <div className="form-control">
-                <label className="label">
-                    <span className="label-text font-semibold">Judul</span>
-                </label>
-                <input 
-                    name="title" 
-                    defaultValue={editing?.title ?? ""} 
-                    placeholder="Masukkan judul" 
-                    className="input input-bordered w-full" 
-                />
-            </div>
-            <div className="form-control">
-                <label className="label">
-                    <span className="label-text font-semibold">Sub Judul</span>
-                </label>
-                <textarea 
-                    name="subtitle" 
-                    defaultValue={editing?.subtitle ?? ""} 
-                    rows={3} 
-                    placeholder="Tulis sub judul" 
-                    className="textarea textarea-bordered w-full" 
-                />
-            </div>
-            <div className="form-control">
-                <label className="label">
-                    <span className="label-text font-semibold">Button Link</span>
-                </label>
-                <input 
-                    name="buttonLink" 
-                    defaultValue={editing?.buttonLink ?? ""} 
-                    placeholder="https://..." 
-                    className="input input-bordered w-full" 
-                />
-            </div>
-            
-            <div className="form-control">
-                <label className="label">
-                    <span className="label-text font-semibold">Gambar Button</span>
-                </label>
-                <div
-                    className="relative w-full h-40 overflow-hidden rounded-box border border-base-300 cursor-pointer bg-base-200 hover:bg-base-300 transition-colors"
-                    onClick={() => document.getElementById('modal-file-input')?.click()}
-                >
-                    {preview || editing?.buttonImageUrl ? (
-                        <Image src={preview ?? editing?.buttonImageUrl ?? ""} alt="Preview" fill className="object-cover" unoptimized />
-                    ) : (
-                        <div className="absolute inset-0 flex flex-col items-center justify-center text-sm opacity-50 gap-2">
-                            <span>Klik untuk pilih gambar</span>
-                        </div>
-                    )}
-                    <input 
-                        id="modal-file-input"
-                        type="file" 
-                        name="buttonImage" 
-                        accept="image/*" 
-                        className="hidden" 
-                        onChange={(e) => {
-                            const f = e.currentTarget.files?.[0];
-                            if (f) {
-                                const url = URL.createObjectURL(f);
-                                setPreview(url);
-                            }
-                        }} 
-                    />
+
+        <form onSubmit={onSubmit} method="post" encType="multipart/form-data" className="p-6 space-y-5">
+          <div>
+            <label className="block text-sm font-medium text-gray-300 mb-2">Title</label>
+            <input
+              name="title"
+              defaultValue={editing?.title ?? ""}
+              placeholder="Enter title"
+              className="w-full h-11 px-4 bg-[#0A0E17] border-0 rounded-xl text-white placeholder-gray-500 focus:ring-2 focus:ring-blue-500 focus:outline-none"
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-300 mb-2">Subtitle</label>
+            <textarea
+              name="subtitle"
+              defaultValue={editing?.subtitle ?? ""}
+              rows={3}
+              placeholder="Write subtitle"
+              className="w-full px-4 py-3 bg-[#0A0E17] border-0 rounded-xl text-white placeholder-gray-500 focus:ring-2 focus:ring-blue-500 focus:outline-none resize-none"
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-300 mb-2">Button Link</label>
+            <input
+              name="buttonLink"
+              defaultValue={editing?.buttonLink ?? ""}
+              placeholder="https://..."
+              className="w-full h-11 px-4 bg-[#0A0E17] border-0 rounded-xl text-white placeholder-gray-500 focus:ring-2 focus:ring-blue-500 focus:outline-none"
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-300 mb-2">Button Image</label>
+            <div
+              className="relative w-full h-40 overflow-hidden rounded-xl cursor-pointer bg-[#0A0E17] hover:bg-white/5 transition-colors"
+              onClick={() => document.getElementById('modal-file-input')?.click()}
+            >
+              {preview || editing?.buttonImageUrl ? (
+                <Image src={preview ?? editing?.buttonImageUrl ?? ""} alt="Preview" fill className="object-cover" unoptimized />
+              ) : (
+                <div className="absolute inset-0 flex flex-col items-center justify-center text-sm text-gray-500 gap-2">
+                  <span>Click to select image</span>
                 </div>
+              )}
+              <input
+                id="modal-file-input"
+                type="file"
+                name="buttonImage"
+                accept="image/*"
+                className="hidden"
+                onChange={(e) => {
+                  const f = e.currentTarget.files?.[0];
+                  if (f) {
+                    const url = URL.createObjectURL(f);
+                    setPreview(url);
+                  }
+                }}
+              />
             </div>
+          </div>
 
-            <div className="form-control">
-                <label className="label cursor-pointer justify-start gap-4 mt-2">
-                    <span className="label-text font-semibold">Active</span>
-                    <input 
-                        type="checkbox" 
-                        name="isActive"
-                        className="toggle toggle-success" 
-                        defaultChecked={editing?.isActive ?? true}
-                        value="true"
-                    />
-                </label>
-            </div>
+          <div className="flex items-center justify-between p-4 bg-[#0A0E17] rounded-xl">
+            <span className="text-sm font-medium text-gray-300">Active Status</span>
+            <label className="relative inline-flex items-center cursor-pointer">
+              <input
+                type="checkbox"
+                name="isActive"
+                className="sr-only peer"
+                defaultChecked={editing?.isActive ?? true}
+                value="true"
+              />
+              <div className="w-11 h-6 bg-gray-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-emerald-500"></div>
+            </label>
+          </div>
 
-            <div className="modal-action border-t border-base-200 pt-4 mt-6">
-                <button type="button" onClick={onClose} className="btn btn-ghost gap-2">
-                    Batal
-                </button>
-                <button
-                    type="submit"
-                    className="btn btn-primary gap-2"
-                    disabled={busy}
-                >
-                    {busy && <span className="loading loading-spinner loading-sm"></span>}
-                    <SaveIcon className="h-4 w-4" />
-                    <span>{editing ? "Update Benner" : "Simpan Benner"}</span>
-                </button>
-            </div>
+          <div className="flex justify-end gap-3 pt-4 border-t border-white/10">
+            <button type="button" onClick={onClose} className="h-11 px-5 bg-white/5 hover:bg-white/10 text-gray-300 font-medium rounded-xl transition-colors">
+              Cancel
+            </button>
+            <button
+              type="submit"
+              className="h-11 px-5 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-xl flex items-center gap-2 transition-colors disabled:opacity-50"
+              disabled={busy}
+            >
+              {busy && <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>}
+              <SaveIcon className="h-4 w-4" />
+              <span>{editing ? "Update" : "Save"}</span>
+            </button>
+          </div>
         </form>
       </div>
-      <form method="dialog" className="modal-backdrop">
+      <form method="dialog" className="modal-backdrop bg-black/60">
         <button>close</button>
       </form>
     </dialog>

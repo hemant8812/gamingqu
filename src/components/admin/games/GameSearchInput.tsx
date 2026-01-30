@@ -3,7 +3,7 @@ import * as React from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { Search as SearchIcon } from "lucide-react";
 
-export function GameSearchInput({ placeholder = "Cari game" }: { placeholder?: string }) {
+export function GameSearchInput({ placeholder = "Search games..." }: { placeholder?: string }) {
   const router = useRouter();
   const pathname = usePathname();
   const sp = useSearchParams();
@@ -32,15 +32,15 @@ export function GameSearchInput({ placeholder = "Cari game" }: { placeholder?: s
     return () => clearTimeout(t);
   }, [value, router, pathname]);
   return (
-    <div className="relative w-full max-w-xs">
-      <SearchIcon className="absolute left-3 top-1/2 -translate-y-1/2 opacity-50 h-4 w-4 pointer-events-none" />
+    <div className="relative">
+      <SearchIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400 pointer-events-none" />
       <input
         type="text"
         value={value}
         onChange={(e) => setValue(e.target.value)}
         placeholder={placeholder}
-        className="input input-bordered input-sm w-full pl-9"
-        aria-label="Pencarian game"
+        className="pl-10 pr-4 h-10 w-64 bg-[#0A0E17] border-0 rounded-xl text-white placeholder-gray-500 focus:ring-2 focus:ring-blue-500 focus:outline-none transition-all"
+        aria-label="Search games"
       />
     </div>
   );

@@ -9,7 +9,14 @@ export default async function AdminBennerPage({ searchParams }: { searchParams?:
   const session = await getServerSession(authOptions);
   const role = session?.user?.role;
   if (role !== "ADMIN" && role !== "SUPERADMIN") {
-    return <div className="min-h-screen bg-base-200 text-base-content p-8">Forbidden</div>;
+    return (
+      <div className="min-h-screen bg-[#0A0E17] flex items-center justify-center">
+        <div className="text-center">
+          <h1 className="text-3xl font-bold text-white mb-2">Access Denied</h1>
+          <p className="text-gray-400">You don&apos;t have permission to access this page.</p>
+        </div>
+      </div>
+    );
   }
   const sp = searchParams ? await searchParams : {};
   const { value: toast, type: toastType } = parseToast(sp);
@@ -19,8 +26,14 @@ export default async function AdminBennerPage({ searchParams }: { searchParams?:
     orderBy: [{ order: "asc" }, { createdAt: "asc" }],
   });
   return (
-    <div className="min-h-screen bg-base-200 text-base-content">
-      <div className="mx-auto max-w-7xl px-6 py-8">
+    <div className="min-h-screen bg-[#0A0E17] text-white">
+      {/* Background effects */}
+      <div className="fixed inset-0 pointer-events-none">
+        <div className="absolute top-0 left-1/4 w-96 h-96 bg-blue-600/10 rounded-full blur-3xl" />
+        <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-cyan-500/10 rounded-full blur-3xl" />
+      </div>
+
+      <div className="relative z-10 mx-auto max-w-7xl px-6 py-8">
         <PageToast message={toastMessage} type={toastType} />
         <BennerManager items={items} canAdd={items.length < 10} />
       </div>
