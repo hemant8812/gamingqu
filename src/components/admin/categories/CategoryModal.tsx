@@ -3,6 +3,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { useState, useRef, useEffect } from "react";
 import { Save as SaveIcon, X } from "lucide-react";
 import { AutoSlugField } from "@/components/shared/AutoSlugField";
+import { GameSelect } from "@/components/admin/games/GameSelect";
 
 type GameOption = { id: string; name: string };
 type Editing = {
@@ -20,10 +21,11 @@ export function CategoryModal({ editing, games }: { editing: Editing; games: Gam
   const [busy, setBusy] = useState(false);
 
   const isCreate = searchParams.has("create");
-  const [visible, setVisible] = useState(() => !!editing || isCreate);
+  const shouldOpen = !!editing || isCreate;
 
   useEffect(() => {
-    if (editing || isCreate) {
+    const dialog = dialogRef.current;
+    if (dialog?.open && (editing || isCreate)) {
       if (window.location.search.includes("create") || window.location.search.includes("edit")) {
         const url = new URL(window.location.href);
         url.searchParams.delete("create");
@@ -36,15 +38,14 @@ export function CategoryModal({ editing, games }: { editing: Editing; games: Gam
   useEffect(() => {
     const dialog = dialogRef.current;
     if (!dialog) return;
-    if (visible) {
+    if (shouldOpen) {
       if (!dialog.open) dialog.showModal();
-    } else {
-      if (dialog.open) dialog.close();
+    } else if (dialog.open) {
+      dialog.close();
     }
-  }, [visible]);
+  }, [shouldOpen]);
 
   const closeModal = () => {
-    setVisible(false);
     router.replace("/admin/categories");
   };
 
@@ -95,21 +96,7 @@ export function CategoryModal({ editing, games }: { editing: Editing; games: Gam
             {editing && <input type="hidden" name="id" defaultValue={editing.id} />}
           </div>
 
-          <div>
-            <label htmlFor="gameId" className="block text-sm font-medium text-gray-300 mb-2">Game</label>
-            <select
-              id="gameId"
-              name="gameId"
-              required
-              className="w-full h-11 px-4 bg-[#0A0E17] border-0 rounded-xl text-white focus:ring-2 focus:ring-blue-500 focus:outline-none appearance-none cursor-pointer"
-              defaultValue={editing?.gameId ?? ""}
-            >
-              <option value="" disabled>Select Game</option>
-              {games.map((g) => (
-                <option key={g.id} value={g.id}>{g.name}</option>
-              ))}
-            </select>
-          </div>
+          <GameSelect games={games} name="gameId" label="Nama Game" initialValue={editing?.gameId} />
 
           <div className="flex items-center justify-between p-4 bg-[#0A0E17] rounded-xl">
             <span className="text-sm font-medium text-gray-300">Active Status</span>

@@ -30,13 +30,14 @@ export function ServiceModal({ games, categories, editing }: { games: GameOption
   const [busy, setBusy] = useState(false);
 
   const isCreate = searchParams.has("create");
-  const [visible, setVisible] = useState(!!editing || isCreate);
+  const shouldOpen = !!editing || isCreate;
   const [selectedGame, setSelectedGame] = useState<string>(editing?.gameId ?? "");
   const [features, setFeatures] = useState<string[]>(editing?.features ?? []);
   const canAddFeature = features.length < 3;
 
   useEffect(() => {
-    if (editing || isCreate) {
+    const dialog = dialogRef.current;
+    if (dialog?.open && (editing || isCreate)) {
       if (window.location.search.includes("create") || window.location.search.includes("edit")) {
         const url = new URL(window.location.href);
         url.searchParams.delete("create");
@@ -49,15 +50,14 @@ export function ServiceModal({ games, categories, editing }: { games: GameOption
   useEffect(() => {
     const dialog = dialogRef.current;
     if (!dialog) return;
-    if (visible) {
+    if (shouldOpen) {
       if (!dialog.open) dialog.showModal();
-    } else {
-      if (dialog.open) dialog.close();
+    } else if (dialog.open) {
+      dialog.close();
     }
-  }, [visible, editing]);
+  }, [shouldOpen]);
 
   const closeModal = () => {
-    setVisible(false);
     setSelectedGame("");
     setFeatures([]);
     router.replace("/admin/services");

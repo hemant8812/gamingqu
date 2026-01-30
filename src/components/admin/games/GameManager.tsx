@@ -35,9 +35,9 @@ export function GameManager({ games, editing }: { games: Game[], editing: Editin
                 Tambah data game: nama, slug otomatis, upload gambar & icon, deskripsi, Hot Offer, status aktif.
             </p>
          </div>
-         <Link href="/admin/games?create=true" className="btn btn-primary gap-2">
+         <Link href="/admin/games?create=true" className="h-10 px-4 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-xl flex items-center gap-2 transition-colors">
             <Plus className="h-4 w-4" />
-            Tambah Game
+            Add Game
          </Link>
       </div>
       

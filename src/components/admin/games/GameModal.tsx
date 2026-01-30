@@ -24,10 +24,11 @@ export function GameModal({ editing }: { editing: Editing }) {
   const [busy, setBusy] = useState(false);
 
   const isCreate = searchParams.has("create");
-  const [visible, setVisible] = useState(() => !!editing || isCreate);
+  const shouldOpen = !!editing || isCreate;
 
   useEffect(() => {
-    if (editing || isCreate) {
+    const dialog = dialogRef.current;
+    if (dialog?.open && (editing || isCreate)) {
       if (window.location.search.includes("create") || window.location.search.includes("edit")) {
         const url = new URL(window.location.href);
         url.searchParams.delete("create");
@@ -40,15 +41,14 @@ export function GameModal({ editing }: { editing: Editing }) {
   useEffect(() => {
     const dialog = dialogRef.current;
     if (!dialog) return;
-    if (visible) {
+    if (shouldOpen) {
       if (!dialog.open) dialog.showModal();
-    } else {
-      if (dialog.open) dialog.close();
+    } else if (dialog.open) {
+      dialog.close();
     }
-  }, [visible]);
+  }, [shouldOpen]);
 
   const closeModal = () => {
-    setVisible(false);
     router.replace("/admin/games");
   };
 
