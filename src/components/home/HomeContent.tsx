@@ -354,7 +354,7 @@ export function HomeContent() {
                           ,{h.price.replace("€", "").slice(-1)}
                         </span>
                       </span>
-                      <span className="text-sm ml-1 text-gray-400">€</span>
+                      <span className="text-md ml-1 text-gray-400">€</span>
                     </span>
                     <Link
                       href={`/buy/${h.slug}`}
