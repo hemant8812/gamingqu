@@ -347,12 +347,14 @@ export function HomeContent() {
 
                   {/* Price & CTA */}
                   <div className="flex items-center justify-between pt-2 border-t border-white/10">
-                    <span className="font-bold text-lg text-white flex items-start">
+                    <span className="font-bold text-lg text-white flex items-center">
                       <span className="gradient-text">
                         {h.price.replace("€", "").slice(0, -1)}
-                        <span className="text-xs font-bold ml-0.5">{h.price.replace("€", "").slice(-1)}</span>
+                        <span className="text-xs font-bold ml-0.5">
+                          ,{h.price.replace("€", "").slice(-1)}
+                        </span>
                       </span>
-                      <span className="text-sm ml-0.5 text-gray-400">€</span>
+                      <span className="text-sm ml-1 text-gray-400">€</span>
                     </span>
                     <Link
                       href={`/buy/${h.slug}`}
