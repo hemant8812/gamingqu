@@ -7,7 +7,7 @@ import { useRouter } from "next/navigation";
 import { FiArrowRight, FiUser, FiAtSign, FiMail, FiLock, FiAward } from "react-icons/fi";
 import { FcGoogle } from "react-icons/fc";
 import { SiDiscord } from "react-icons/si";
-import { Sparkles, Users, Star } from "lucide-react";
+import { Users, Star } from "lucide-react";
 import { PageToast } from "@/components/shared/PageToast";
 
 export default function RegisterPage() {

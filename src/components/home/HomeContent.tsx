@@ -3,7 +3,7 @@ import Image from "next/image";
 import { FiRefreshCw, FiArrowRight, FiZap } from "react-icons/fi";
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
-import { Flame, Sparkles, Trophy } from "lucide-react";
+import { Flame, Trophy } from "lucide-react";
 
 type GameItem = {
   slug: string;
