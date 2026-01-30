@@ -258,11 +258,6 @@ export function HomeContent() {
               {/* Gradient overlay */}
               <div className="absolute inset-0 bg-gradient-to-t from-[#0A0E17] via-[#0A0E17]/40 to-transparent z-[1]" />
 
-              {/* Glow effect on hover */}
-              <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 z-[2] pointer-events-none">
-                <div className="absolute inset-x-0 bottom-0 h-1 bg-gradient-to-r from-blue-500 via-indigo-500 to-cyan-500" />
-              </div>
-
               {/* Content */}
               <div className="absolute inset-0 p-5 flex flex-col justify-end z-[3]">
                 <h3 className="font-bold text-white text-lg drop-shadow-lg group-hover:text-blue-300 transition-colors">
