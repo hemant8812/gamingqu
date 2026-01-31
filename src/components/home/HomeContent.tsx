@@ -4,6 +4,7 @@ import { FiRefreshCw, FiArrowRight, FiZap } from "react-icons/fi";
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { Flame, Trophy } from "lucide-react";
+import { formatPrice } from "@/lib/formatPrice";
 
 type GameItem = {
   slug: string;
@@ -192,10 +193,10 @@ export function HomeContent() {
                       </p>
                       <Link
                         href={s.href}
-                        className="btn btn-gaming h-14 px-8 text-lg rounded-2xl inline-flex items-center gap-3 group"
+                        className="btn btn-gaming h-10 px-5 text-sm rounded-xl inline-flex items-center gap-2 group"
                       >
                         {s.cta}
-                        <FiArrowRight className="h-5 w-5 transition-transform group-hover:translate-x-1" />
+                        <FiArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
                       </Link>
                     </div>
                     <div className="relative justify-self-end w-full md:w-[420px] aspect-[16/9] rounded-2xl overflow-hidden shadow-2xl mr-8 md:mr-18 glow-border">
@@ -344,12 +345,19 @@ export function HomeContent() {
                   {/* Price & CTA */}
                   <div className="flex items-center justify-between pt-2 border-t border-white/10">
                     <span className="font-bold text-lg text-white flex items-center">
-                      <span className="gradient-text">
-                        {h.price.replace("€", "").slice(0, -1)}
-                        <span className="text-xs font-bold ml-0.5">
-                          ,{h.price.replace("€", "").slice(-1)}
-                        </span>
-                      </span>
+                      {(() => {
+                        const { whole, decimal, showDecimal } = formatPrice(h.price.replace("€", ""));
+                        return (
+                          <span className="gradient-text">
+                            {whole}
+                            {showDecimal && (
+                              <span className="text-xs font-bold ml-0.5">
+                                ,{decimal}
+                              </span>
+                            )}
+                          </span>
+                        );
+                      })()}
                       <span className="text-md ml-1 text-gray-400">€</span>
                     </span>
                     <Link

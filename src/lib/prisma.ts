@@ -21,7 +21,7 @@ export const db =
         user: decodeURIComponent(u.username),
         password: decodeURIComponent(u.password),
         database,
-        connectionLimit: 5,
+        connectionLimit: 10,
       });
     })(),
   });

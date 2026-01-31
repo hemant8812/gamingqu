@@ -4,7 +4,8 @@ import { useEffect, useState } from "react";
 import { notFound, useParams } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
-import { Flame, ArrowLeft, Zap, Tag, Sparkles, ShoppingBag } from "lucide-react";
+import { Zap, Tag, ShoppingBag } from "lucide-react";
+import { formatPrice } from "@/lib/formatPrice";
 
 type ServiceItem = {
     id: string;
@@ -36,10 +37,7 @@ type GameData = {
 };
 
 function ServiceCard({ s }: { s: ServiceItem }) {
-    const priceNum = parseFloat(s.price);
-    const priceFormatted = priceNum.toFixed(2); // "60.00" or "60.12"
-    const [priceWhole, priceDecimal] = priceFormatted.split("."); // ["60", "00"] or ["60", "12"]
-    const showDecimal = priceDecimal !== "00"; // Only show decimal if not .00
+    const { whole, decimal, showDecimal } = formatPrice(s.price);
 
     return (
         <div className="card-gaming rounded-2xl overflow-hidden group flex flex-col border border-white/10 hover:border-blue-500/50 transition-all duration-300 hover:shadow-[0_0_30px_-5px_rgba(139,92,246,0.3)]">
@@ -81,10 +79,10 @@ function ServiceCard({ s }: { s: ServiceItem }) {
                 <div className="flex items-center justify-between pt-2 border-t border-white/10">
                     <span className="font-bold text-lg text-white flex items-center">
                         <span className="gradient-text">
-                            {priceWhole}
+                            {whole}
                             {showDecimal && (
                                 <span className="text-xs font-bold ml-0.5">
-                                    ,{priceDecimal}
+                                    ,{decimal}
                                 </span>
                             )}
                         </span>

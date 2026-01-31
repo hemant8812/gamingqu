@@ -26,6 +26,7 @@ export async function GET(
                         services: {
                             where: { isActive: true },
                             orderBy: { createdAt: "desc" },
+                            take: 20, // Limit per category
                             select: {
                                 id: true,
                                 name: true,
@@ -42,6 +43,7 @@ export async function GET(
                 services: {
                     where: { isActive: true, categoryId: null },
                     orderBy: { createdAt: "desc" },
+                    take: 20, // Limit uncategorized services
                     select: {
                         id: true,
                         name: true,

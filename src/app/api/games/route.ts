@@ -12,6 +12,7 @@ export async function GET() {
       db.game.findMany({
         where: { isActive: true },
         orderBy: { createdAt: "desc" },
+        take: 12, // Limit untuk performa - hanya ambil 12 games untuk homepage
         select: {
           id: true,
           name: true,
