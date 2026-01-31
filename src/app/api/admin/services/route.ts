@@ -35,7 +35,16 @@ export async function GET() {
         }
         const services = await db.service.findMany({
             orderBy: { createdAt: "desc" },
-            include: {
+            take: 100, // Limit untuk performa admin list
+            select: {
+                id: true,
+                name: true,
+                slug: true,
+                price: true,
+                isHotOffer: true,
+                isActive: true,
+                imageUrl: true,
+                createdAt: true,
                 game: { select: { id: true, name: true } },
                 category: { select: { id: true, name: true } },
             },

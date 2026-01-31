@@ -16,56 +16,21 @@ type GameItem = {
   isHotOffer?: boolean;
 };
 
-type HotDeal = {
+type HotService = {
+  id: string;
+  name: string;
   slug: string;
-  title: string;
-  price: string;
-  features: string[];
-  image: string;
-  logo?: string;
+  price: number;
+  imageUrl?: string | null;
+  features: string[] | null;
+  isHotOffer: boolean;
 };
-
-const hotDeals: HotDeal[] = [
-  {
-    slug: "wow-gold",
-    title: "Gold",
-    price: "633€",
-    features: ["Complete Safety", "Quick Delivery", "Fair Price"],
-    image: "https://picsum.photos/seed/wow-gold/150/150",
-  },
-  {
-    slug: "powerleveling",
-    title: "Powerleveling",
-    price: "1392€",
-    features: ["60-70 Pre-order", "Quick Start", "Any Level Range"],
-    image: "https://picsum.photos/seed/powerleveling/150/150",
-  },
-  {
-    slug: "tbc-gearing",
-    title: "TBC Pre-Patch Gearing",
-    price: "1014€",
-    features: ["Full Pre-Patch Gear", "Fast Honor Farming", "Safe Delivery"],
-    image: "https://picsum.photos/seed/tbc-gearing/150/150",
-  },
-  {
-    slug: "hourly-driving",
-    title: "Hourly Driving",
-    price: "728€",
-    features: ["Choose Any Activity", "No Need To Grind", "Best Price"],
-    image: "https://picsum.photos/seed/hourly-driving/150/150",
-  },
-  {
-    slug: "dungeon-leveling",
-    title: "Dungeon Leveling",
-    price: "2591€",
-    features: ["Fast Leveling", "Multiple Dungeons", "Best Price"],
-    image: "https://picsum.photos/seed/dungeon-leveling/150/150",
-  },
-];
 
 export function HomeContent() {
   const [moreCount, setMoreCount] = useState(0);
   const [games, setGames] = useState<GameItem[]>([]);
+  const [hotServices, setHotServices] = useState<HotService[]>([]);
+  const [hotLoading, setHotLoading] = useState(false);
   const [heroSlides, setHeroSlides] = useState([
     {
       subtitle: "Boost your game — and your wallet",
@@ -104,9 +69,10 @@ export function HomeContent() {
   useEffect(() => {
     const load = async () => {
       try {
-        const [gamesRes, bannerRes] = await Promise.all([
+        const [gamesRes, bannerRes, hotRes] = await Promise.all([
           fetch("/api/games", { cache: "no-store" }),
           fetch("/api/benner", { cache: "no-store" }),
+          fetch("/api/services/hot", { cache: "no-store" }),
         ]);
         const data = await gamesRes.json();
         if (Array.isArray(data?.items)) {
@@ -128,10 +94,26 @@ export function HomeContent() {
           setHeroSlide(0);
           setDir(1);
         }
+        const hotData = await hotRes.json().catch(() => null);
+        if (hotData?.services && Array.isArray(hotData.services)) {
+          setHotServices(hotData.services);
+        }
       } catch { }
     };
     load();
   }, []);
+
+  const refreshHotServices = async () => {
+    setHotLoading(true);
+    try {
+      const res = await fetch("/api/services/hot", { cache: "no-store" });
+      const data = await res.json();
+      if (data?.services && Array.isArray(data.services)) {
+        setHotServices(data.services);
+      }
+    } catch { }
+    setHotLoading(false);
+  };
 
   const goToSlide = (n: number) => {
     setHeroSlide(n);
@@ -299,54 +281,61 @@ export function HomeContent() {
               </div>
               <div className="flex-1 h-px bg-gradient-to-r from-orange-500/30 to-transparent ml-4" />
             </div>
-            <button className="btn btn-ghost btn-circle glass-light hover:glow-primary transition-all">
-              <FiRefreshCw className="h-5 w-5" />
+            <button
+              onClick={refreshHotServices}
+              disabled={hotLoading}
+              className="btn btn-ghost btn-circle glass-light hover:glow-primary transition-all"
+            >
+              <FiRefreshCw className={`h-5 w-5 ${hotLoading ? "animate-spin" : ""}`} />
             </button>
           </div>
 
-          {/* Hot Deals Cards */}
+          {/* Hot Services Cards */}
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-5">
-            {hotDeals.slice(0, 5).map((h) => (
+            {hotServices.map((h) => (
               <div
-                key={h.slug}
+                key={h.id}
                 className="card-gaming rounded-2xl overflow-hidden group flex flex-col border border-white/10 hover:border-blue-500/50 transition-all duration-300 hover:shadow-[0_0_30px_-5px_rgba(139,92,246,0.3)]"
               >
                 {/* Image */}
                 <figure className="relative h-32 shrink-0 overflow-hidden">
-                  <Image
-                    src={h.image}
-                    alt={h.title}
-                    fill
-                    className="object-cover transition-transform duration-700 group-hover:scale-110"
-                    unoptimized
-                    sizes="300px"
-                  />
+                  {h.imageUrl ? (
+                    <Image
+                      src={h.imageUrl}
+                      alt={h.name}
+                      fill
+                      className="object-cover transition-transform duration-700 group-hover:scale-110"
+                      sizes="300px"
+                    />
+                  ) : (
+                    <div className="absolute inset-0 bg-gradient-to-br from-slate-800 to-slate-900" />
+                  )}
                   <div className="absolute inset-0 bg-gradient-to-t from-[#0F172A] to-transparent" />
                 </figure>
 
                 {/* Content */}
                 <div className="p-3 flex flex-col flex-grow relative z-10">
                   <h3 className="font-bold text-white text-sm leading-snug truncate group-hover:text-blue-300 transition-colors">
-                    {h.title}
+                    {h.name}
                   </h3>
 
                   {/* Features */}
                   <ul className="text-[10px] space-y-1 text-gray-400 mt-2 mb-2 flex-grow">
-                    {h.features.slice(0, 3).map((f) => (
-                      <li key={f} className="flex items-center gap-2">
+                    {h.features && Array.isArray(h.features) ? h.features.slice(0, 3).map((f: string, idx: number) => (
+                      <li key={idx} className="flex items-center gap-2">
                         <div className="w-3.5 h-3.5 rounded-full bg-gradient-to-br from-emerald-500/20 to-cyan-500/20 flex items-center justify-center shrink-0 border border-emerald-500/30">
                           <div className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
                         </div>
                         <span className="truncate font-medium">{f}</span>
                       </li>
-                    ))}
+                    )) : null}
                   </ul>
 
                   {/* Price & CTA */}
                   <div className="flex items-center justify-between pt-2 border-t border-white/10">
                     <span className="font-bold text-lg text-white flex items-center">
                       {(() => {
-                        const { whole, decimal, showDecimal } = formatPrice(h.price.replace("€", ""));
+                        const { whole, decimal, showDecimal } = formatPrice(h.price);
                         return (
                           <span className="gradient-text">
                             {whole}
