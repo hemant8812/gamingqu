@@ -36,7 +36,7 @@ export function CategorySelect({
 
   React.useEffect(() => {
     if (initialValue !== undefined) {
-        setSelectedId(initialValue ?? "");
+      setSelectedId(initialValue ?? "");
     }
   }, [initialValue]);
 
@@ -55,56 +55,56 @@ export function CategorySelect({
   };
 
   return (
-    <div className="form-control w-full" ref={dropdownRef}>
-      <label htmlFor={name} className="label">
-        <span className="label-text font-semibold">{label}</span>
+    <div className="w-full" ref={dropdownRef}>
+      <label htmlFor={name} className="block text-sm font-medium text-gray-300 mb-2">
+        {label}
       </label>
       <div className="w-full relative">
         <div
           tabIndex={0}
           role="button"
-          className="input input-bordered w-full flex items-center justify-between cursor-pointer"
+          className="w-full h-11 px-4 bg-[#0A0E17] rounded-xl text-white flex items-center justify-between cursor-pointer focus:ring-2 focus:ring-blue-500 focus:outline-none transition-all hover:bg-[#0A0E17]/80"
           onClick={() => setIsOpen(!isOpen)}
         >
-          <span className="truncate">{selectedName || "Pilih Kategori (opsional)"}</span>
-          <ChevronDown className={`h-4 w-4 opacity-50 transition-transform ${isOpen ? "rotate-180" : ""}`} />
+          <span className="truncate">{selectedName || "Select Category (optional)"}</span>
+          <ChevronDown className={`h-4 w-4 text-gray-400 transition-transform ${isOpen ? "rotate-180" : ""}`} />
         </div>
         {isOpen && (
-          <div className="absolute top-full left-0 z-[50] w-full mt-1 card card-compact shadow-xl bg-base-100 border border-base-200 max-h-60 overflow-y-auto">
-            <div className="p-2">
-                <div className="relative mb-2 sticky top-0 bg-base-100 z-[10] pb-2">
-                    <SearchIcon className="absolute left-3 top-1/2 -translate-y-[calc(50%+4px)] opacity-50 h-4 w-4 pointer-events-none" />
-                    <input
-                    type="text"
-                    placeholder="Cari kategori"
-                    className="input input-bordered input-sm w-full pl-9"
-                    value={query}
-                    onChange={(e) => setQuery(e.target.value)}
-                    autoFocus
-                    />
+          <div className="absolute top-full left-0 z-[50] w-full mt-2 bg-[#0A0E17] border border-white/10 rounded-xl shadow-xl max-h-60 overflow-y-auto">
+            <div className="p-3">
+              <div className="relative mb-2 sticky top-0 bg-[#0A0E17] z-[10] pb-2">
+                <SearchIcon className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 h-4 w-4 pointer-events-none" />
+                <input
+                  type="text"
+                  placeholder="Search category..."
+                  className="w-full h-9 px-4 pl-9 bg-[#0F172A] border-0 rounded-lg text-white text-sm placeholder-gray-500 focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                  value={query}
+                  onChange={(e) => setQuery(e.target.value)}
+                  autoFocus
+                />
+              </div>
+              <div className="space-y-1">
+                <div
+                  onClick={() => setValue("")}
+                  className={`flex items-center justify-between px-3 py-2 rounded-lg cursor-pointer transition-colors ${selectedId === "" ? "bg-blue-500/20 text-blue-400" : "text-gray-400 hover:bg-white/5"}`}
+                >
+                  <span>No category</span>
+                  {selectedId === "" && <X className="h-4 w-4" />}
                 </div>
-                <ul className="menu menu-sm w-full p-0">
-                    <li>
-                        <a onClick={() => setValue("")} className="flex justify-between">
-                            <span className="opacity-70">Tanpa kategori</span>
-                            {selectedId === "" && <X className="h-4 w-4 opacity-50" />}
-                        </a>
-                    </li>
-                    {filtered.length === 0 && (
-                        <li className="disabled text-base-content/50 px-4 py-2 text-sm">Tidak ada hasil</li>
-                    )}
-                    {filtered.map((c) => (
-                        <li key={c.id}>
-                            <a
-                                onClick={() => setValue(c.id)}
-                                className={`flex justify-between ${selectedId === c.id ? "active" : ""}`}
-                            >
-                                <span className="truncate">{c.name}</span>
-                                {selectedId === c.id && <Check className="h-4 w-4" />}
-                            </a>
-                        </li>
-                    ))}
-                </ul>
+                {filtered.length === 0 && (
+                  <div className="text-gray-500 px-3 py-2 text-sm">No results</div>
+                )}
+                {filtered.map((c) => (
+                  <div
+                    key={c.id}
+                    onClick={() => setValue(c.id)}
+                    className={`flex items-center justify-between px-3 py-2 rounded-lg cursor-pointer transition-colors ${selectedId === c.id ? "bg-blue-500/20 text-blue-400" : "text-gray-300 hover:bg-white/5"}`}
+                  >
+                    <span className="truncate">{c.name}</span>
+                    {selectedId === c.id && <Check className="h-4 w-4" />}
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
         )}

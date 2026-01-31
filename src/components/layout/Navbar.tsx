@@ -152,9 +152,9 @@ export function Navbar({ siteName = "Gamingqu", logoUrl = null, user = null }: P
                 <ul tabIndex={0} className="dropdown-content z-[1] menu p-2 shadow-2xl bg-[#0F172A]/95 backdrop-blur-xl border border-white/10 rounded-2xl w-56 mt-4">
                   <li className="menu-title px-4 py-2 text-xs text-gray-500">{user.email ?? user.name ?? "Account"}</li>
                   {(user.role === "ADMIN" || user.role === "SUPERADMIN") && (
-                    <li><Link href="/admin" className="hover:bg-white/10 rounded-xl"><FiGrid className="h-4 w-4 text-blue-400" /> Dashboard</Link></li>
+                    <li><Link href="/admin" onClick={closeDropdown} className="hover:bg-white/10 rounded-xl"><FiGrid className="h-4 w-4 text-blue-400" /> Dashboard</Link></li>
                   )}
-                  <li><Link href="/orders" className="hover:bg-white/10 rounded-xl"><FiShoppingCart className="h-4 w-4 text-cyan-400" /> My orders</Link></li>
+                  <li><Link href="/orders" onClick={closeDropdown} className="hover:bg-white/10 rounded-xl"><FiShoppingCart className="h-4 w-4 text-cyan-400" /> My orders</Link></li>
                   <li><button onClick={() => signOut({ callbackUrl: "/" })} className="hover:bg-white/10 rounded-xl text-red-400"><FiLogOut className="h-4 w-4" /> Logout</button></li>
                 </ul>
               </div>
@@ -169,13 +169,13 @@ export function Navbar({ siteName = "Gamingqu", logoUrl = null, user = null }: P
                 <GridRoundedIcon className="h-5 w-5" />
               </div>
               <ul tabIndex={0} className="dropdown-content z-[1] menu p-2 shadow-2xl bg-[#0F172A]/95 backdrop-blur-xl border border-white/10 rounded-2xl w-56 mt-4">
-                <li><Link href="/about" className="hover:bg-white/10 rounded-xl"><FiZap className="h-4 w-4 text-blue-400" /> About us</Link></li>
-                <li><Link href="/cashback" className="hover:bg-white/10 rounded-xl"><FiPercent className="h-4 w-4 text-emerald-400" /> Cashback</Link></li>
-                <li><Link href="/blog" className="hover:bg-white/10 rounded-xl"><FiBookOpen className="h-4 w-4 text-cyan-400" /> Blog</Link></li>
-                <li><Link href="/work-with-us" className="hover:bg-white/10 rounded-xl"><FiThumbsUp className="h-4 w-4 text-orange-400" /> Work with us</Link></li>
+                <li><Link href="/about" onClick={closeDropdown} className="hover:bg-white/10 rounded-xl"><FiZap className="h-4 w-4 text-blue-400" /> About us</Link></li>
+                <li><Link href="/cashback" onClick={closeDropdown} className="hover:bg-white/10 rounded-xl"><FiPercent className="h-4 w-4 text-emerald-400" /> Cashback</Link></li>
+                <li><Link href="/blog" onClick={closeDropdown} className="hover:bg-white/10 rounded-xl"><FiBookOpen className="h-4 w-4 text-cyan-400" /> Blog</Link></li>
+                <li><Link href="/work-with-us" onClick={closeDropdown} className="hover:bg-white/10 rounded-xl"><FiThumbsUp className="h-4 w-4 text-orange-400" /> Work with us</Link></li>
                 <div className="divider my-1 border-white/10"></div>
-                <li><Link href="/trust-safety" className="hover:bg-white/10 rounded-xl"><FiShield className="h-4 w-4 text-emerald-400" /> Trust & safety</Link></li>
-                <li><Link href="/contact" className="hover:bg-white/10 rounded-xl"><FiMail className="h-4 w-4 text-blue-400" /> Contact us</Link></li>
+                <li><Link href="/trust-safety" onClick={closeDropdown} className="hover:bg-white/10 rounded-xl"><FiShield className="h-4 w-4 text-emerald-400" /> Trust & safety</Link></li>
+                <li><Link href="/contact" onClick={closeDropdown} className="hover:bg-white/10 rounded-xl"><FiMail className="h-4 w-4 text-blue-400" /> Contact us</Link></li>
               </ul>
             </div>
           </div>

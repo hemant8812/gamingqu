@@ -226,9 +226,7 @@ export function HomeContent() {
         {/* Section Title */}
         <div className="flex items-center gap-4 mb-8">
           <div className="flex items-center gap-3">
-            <div className="p-2.5 rounded-xl bg-gradient-to-br from-blue-500/20 to-cyan-500/20 border border-blue-500/20">
-              <Trophy className="h-6 w-6 text-blue-400" />
-            </div>
+            <Trophy className="h-6 w-6 text-blue-400" />
             <h2 className="text-2xl font-bold text-white">Popular Games</h2>
           </div>
           <div className="flex-1 h-px bg-gradient-to-r from-blue-500/30 to-transparent" />
@@ -238,7 +236,7 @@ export function HomeContent() {
         <section className="grid md:grid-cols-4 gap-5 mb-10">
           {games.slice(0, 12).map((g) => (
             <Link
-              href={`/games/${g.slug}`}
+              href={`/${g.slug}`}
               key={g.slug}
               className="card-gaming rounded-2xl overflow-hidden h-44 relative group cursor-pointer"
             >
@@ -295,9 +293,7 @@ export function HomeContent() {
           <div className="flex items-center justify-between mb-8">
             <div className="flex items-center gap-4">
               <div className="flex items-center gap-3">
-                <div className="p-2.5 rounded-xl bg-gradient-to-br from-orange-500/20 to-red-500/20 border border-orange-500/20">
-                  <Flame className="h-6 w-6 text-orange-400" />
-                </div>
+                <Flame className="h-6 w-6 text-orange-400" />
                 <h2 className="text-2xl font-bold text-white">Hot Right Now</h2>
               </div>
               <div className="flex-1 h-px bg-gradient-to-r from-orange-500/30 to-transparent ml-4" />

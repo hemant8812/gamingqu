@@ -22,7 +22,7 @@ export function PageToast({ message, type = "success" }: { message?: string; typ
         url.searchParams.delete("toast");
         history.replaceState(null, "", url.toString());
       }
-    } catch {}
+    } catch { }
   }, [message, type]);
-  return <Toaster position="top-center" richColors theme="dark" />;
+  return <Toaster position="top-center" richColors theme="dark" offset="80px" />;
 }

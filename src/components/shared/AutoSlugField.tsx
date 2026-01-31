@@ -83,18 +83,17 @@ export function AutoSlugField({
 
   return (
     <div className={className ?? "mt-3"}>
-      <label htmlFor={name} className="block text-sm font-semibold">{label}</label>
+      <label htmlFor={name} className="block text-sm font-medium text-gray-300 mb-2">{label}</label>
       <input
         id={name}
         name={name}
         type="text"
-        placeholder="Otomatis dari Nama, bisa diubah"
-        className="mt-1 w-full rounded-md bg-zinc-900 border border-zinc-800 px-3 py-2 text-sm text-white"
+        placeholder="e.g. rank-boost-pvp"
+        className="w-full h-11 px-4 bg-[#0A0E17] border-0 rounded-xl text-white placeholder-gray-500 focus:ring-2 focus:ring-blue-500 focus:outline-none"
         ref={inputRef}
         onInput={() => setLocked(false)}
         defaultValue={initialValue}
       />
-      <div className="mt-1 text-xs text-zinc-500">Otomatis dari Nama; bisa disesuaikan manual. Panjang maksimum {maxLen} karakter.</div>
     </div>
   );
 }
