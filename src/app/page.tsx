@@ -1,6 +1,6 @@
 import { HomeContent } from "@/components/home/HomeContent";
 import type { Metadata } from "next";
-import { getWebsiteSettingCore } from "@/lib/settings";
+import { getWebsiteSettingCore, getFooterSettings } from "@/lib/settings";
 import { getBaseUrl } from "@/lib/site";
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -33,12 +33,17 @@ export async function generateMetadata(): Promise<Metadata> {
 
 export default async function Home() {
   const s = await getWebsiteSettingCore();
+  const f = await getFooterSettings();
   const base = getBaseUrl();
   const title = s?.siteName ?? "Gamingqu";
   const favicon = s?.faviconUrl ?? "/icons/logo.png";
   const logo = s?.logoUrl ?? favicon;
   const contactEmail = (s?.contactEmail ?? "").trim();
   const contactPhone = (s?.contactPhone ?? "").trim();
+  const legalAddress = (f?.legalAddress ?? "").trim();
+  const sms = [f?.smTelegramUrl, f?.smYoutubeUrl, f?.smDiscordUrl, f?.smFacebookUrl]
+    .map((x) => (x ?? "").trim())
+    .filter((x) => x.length > 0);
   const hasContact = !!contactEmail || !!contactPhone;
   const websiteLd = {
     "@context": "https://schema.org",
@@ -67,6 +72,15 @@ export default async function Home() {
         contactType: "customer support",
       },
     ];
+  }
+  if (legalAddress) {
+    (orgLd as { address?: unknown }).address = {
+      "@type": "PostalAddress",
+      streetAddress: legalAddress,
+    };
+  }
+  if (sms.length > 0) {
+    (orgLd as { sameAs?: string[] }).sameAs = sms;
   }
   return (
     <>

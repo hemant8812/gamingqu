@@ -1,9 +1,10 @@
 "use client";
 import { useState } from "react";
-import { Settings as SettingsIcon, Code2 as CodeIcon, Layout as LayoutIcon } from "lucide-react";
+import { Settings as SettingsIcon, Code2 as CodeIcon, Layout as LayoutIcon, Search as SearchIcon } from "lucide-react";
 import { SettingsForm } from "@/components/admin/settings/SettingsForm";
 import { FooterSettingsForm } from "@/components/admin/settings/FooterSettingsForm";
 import { EmbedSettings } from "@/components/admin/settings/EmbedSettings";
+import { SeoSettingsForm } from "@/components/admin/settings/SeoSettingsForm";
 
 type SettingCore = {
     siteName?: string | null;
@@ -59,7 +60,12 @@ type Props = {
 };
 
 export function AdminSettingsTabs({ initialTab, setting, footer }: Props) {
-    const [activeTab, setActiveTab] = useState(initialTab === "footer" ? "footer" : initialTab === "embed" ? "embed" : "general");
+    const [activeTab, setActiveTab] = useState(
+        initialTab === "footer" ? "footer" :
+        initialTab === "embed" ? "embed" :
+        initialTab === "seo" ? "seo" :
+        "general"
+    );
 
     return (
         <div>
@@ -93,6 +99,16 @@ export function AdminSettingsTabs({ initialTab, setting, footer }: Props) {
                 >
                     <CodeIcon className="w-4 h-4" />
                     Embed
+                </button>
+                <button
+                    className={`h-10 px-4 font-medium text-sm rounded-xl flex items-center gap-2 transition-colors ${activeTab === "seo"
+                            ? "bg-blue-600 text-white"
+                            : "bg-white/5 text-gray-400 hover:bg-white/10 hover:text-white"
+                        }`}
+                    onClick={() => setActiveTab("seo")}
+                >
+                    <SearchIcon className="w-4 h-4" />
+                    SEO
                 </button>
             </div>
 
@@ -148,6 +164,21 @@ export function AdminSettingsTabs({ initialTab, setting, footer }: Props) {
                 )}
                 {activeTab === "embed" && (
                     <EmbedSettings />
+                )}
+                {activeTab === "seo" && (
+                    <SeoSettingsForm initial={{
+                        siteName: setting?.siteName ?? "Gamingqu",
+                        tagline: setting?.tagline ?? "",
+                        contactEmail: setting?.contactEmail ?? "",
+                        contactPhone: setting?.contactPhone ?? "",
+                        shortDescription: footer?.shortDescription ?? "",
+                        legalAddress: footer?.legalAddress ?? "",
+                        regNumber: footer?.regNumber ?? "",
+                        smTelegramUrl: footer?.smTelegramUrl ?? "",
+                        smYoutubeUrl: footer?.smYoutubeUrl ?? "",
+                        smDiscordUrl: footer?.smDiscordUrl ?? "",
+                        smFacebookUrl: footer?.smFacebookUrl ?? "",
+                    }} />
                 )}
             </div>
         </div>

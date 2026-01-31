@@ -4,6 +4,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { getBaseUrl } from "@/lib/site";
+import { getWebsiteSettingCore } from "@/lib/settings";
 
 type Props = { params: Promise<{ slug?: string | string[] }> };
 
@@ -61,8 +62,11 @@ export default async function BlogDetailPage({ params }: Props) {
   });
   const related = others.slice(0, 4);
 
+  const s = await getWebsiteSettingCore();
+  const base = getBaseUrl();
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 pt-16 pb-14">
+      {(() => null)()}
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
@@ -73,9 +77,14 @@ export default async function BlogDetailPage({ params }: Props) {
             datePublished: new Date(post.createdAt).toISOString(),
             dateModified: new Date(post.createdAt).toISOString(),
             image: post.imageUrl ? [post.imageUrl] : undefined,
-            mainEntityOfPage: `${getBaseUrl()}/blog/${post.slug}`,
-            author: { "@type": "Organization", name: "Gamingqu" },
-            publisher: { "@type": "Organization", name: "Gamingqu" },
+            mainEntityOfPage: `${base}/blog/${post.slug}`,
+            author: { "@type": "Organization", name: s?.siteName ?? "Gamingqu" },
+            publisher: {
+              "@type": "Organization",
+              name: s?.siteName ?? "Gamingqu",
+              url: base,
+              logo: s?.logoUrl ?? "/icons/logo.png",
+            },
             description: post.excerpt ?? post.title,
           }),
         }}
