@@ -1,7 +1,7 @@
 "use client";
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import Image from "next/image";
-import { Plus, Trash2, Pencil } from "lucide-react";
+import { Plus, Trash2, Pencil, AlertTriangle, X } from "lucide-react";
 import { BennerModal } from "./BennerModal";
 
 type Item = {
@@ -22,6 +22,9 @@ type Props = {
 export function BennerManager({ items, canAdd }: Props) {
   const [editingItem, setEditingItem] = useState<Item | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isConfirmOpen, setIsConfirmOpen] = useState(false);
+  const [deleteId, setDeleteId] = useState<string | null>(null);
+  const dialogRef = useRef<HTMLDialogElement>(null);
 
   const openCreate = () => {
     setEditingItem(null);
@@ -38,13 +41,28 @@ export function BennerManager({ items, canAdd }: Props) {
     setEditingItem(null);
   };
 
-  const handleDelete = async (id: string) => {
-    if (!confirm("Are you sure you want to delete this banner?")) return;
+  useEffect(() => {
+    if (isConfirmOpen) {
+      dialogRef.current?.showModal();
+    } else {
+      dialogRef.current?.close();
+    }
+  }, [isConfirmOpen]);
+
+  const openConfirm = (id: string) => {
+    setDeleteId(id);
+    setIsConfirmOpen(true);
+  };
+
+  const confirmDelete = async () => {
+    if (!deleteId) return;
     const fd = new FormData();
     fd.set("mode", "DELETE");
-    fd.set("id", id);
+    fd.set("id", deleteId);
     const res = await fetch("/api/admin/benner", { method: "POST", body: fd });
     window.location.assign(`/admin/benner?toast=${res.ok ? "success" : "error"}`);
+    setIsConfirmOpen(false);
+    setDeleteId(null);
   };
 
   return (
@@ -91,7 +109,7 @@ export function BennerManager({ items, canAdd }: Props) {
                     <Pencil className="h-4 w-4" />
                   </button>
                   <button
-                    onClick={() => handleDelete(b.id)}
+                    onClick={() => openConfirm(b.id)}
                     className="w-8 h-8 flex items-center justify-center rounded-lg bg-red-500/10 text-red-400 hover:bg-red-500/20 transition-colors"
                     title="Delete"
                   >
@@ -126,6 +144,36 @@ export function BennerManager({ items, canAdd }: Props) {
       </div>
 
       <BennerModal editing={editingItem} isOpen={isModalOpen} onClose={closeModal} />
+      <dialog ref={dialogRef} className="modal">
+        <div className="modal-box bg-[#0F172A] border-0 text-white rounded-2xl">
+          <div className="flex flex-col items-center text-center gap-2 mb-4">
+            <AlertTriangle className="h-10 w-10 text-yellow-400" />
+            <h3 className="font-bold text-xl">Delete Banner</h3>
+            <p className="text-sm text-gray-400">Are you sure you want to delete this banner?</p>
+          </div>
+          <div className="flex justify-center gap-3 pt-4 border-t border-white/10">
+            <button
+              type="button"
+              onClick={() => setIsConfirmOpen(false)}
+              className="h-10 px-4 bg-white/5 hover:bg-white/10 text-gray-300 font-medium rounded-xl transition-colors inline-flex items-center gap-2"
+            >
+              <X className="h-4 w-4" />
+              <span>Cancel</span>
+            </button>
+            <button
+              type="button"
+              onClick={confirmDelete}
+              className="h-10 px-4 bg-red-600 hover:bg-red-700 text-white font-medium rounded-xl transition-colors inline-flex items-center gap-2"
+            >
+              <Trash2 className="h-4 w-4" />
+              <span>Delete</span>
+            </button>
+          </div>
+        </div>
+        <form method="dialog" className="modal-backdrop bg-black/60">
+          <button onClick={() => setIsConfirmOpen(false)}>close</button>
+        </form>
+      </dialog>
     </div>
   );
 }

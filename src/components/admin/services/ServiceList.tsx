@@ -1,7 +1,8 @@
 "use client";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { Pencil, Trash2 } from "lucide-react";
+import { Pencil, Trash2, AlertTriangle, X } from "lucide-react";
+import { useState, useRef, useEffect } from "react";
 
 type ServiceItem = {
   id: string;
@@ -17,15 +18,31 @@ type ServiceItem = {
 
 export function ServiceList({ services }: { services: ServiceItem[] }) {
   const router = useRouter();
-  const onDelete = async (id: string) => {
-    const ok = typeof window !== "undefined" ? window.confirm("Delete this service?") : true;
-    if (!ok) return;
+  const [isConfirmOpen, setIsConfirmOpen] = useState(false);
+  const [deleteId, setDeleteId] = useState<string | null>(null);
+  const dialogRef = useRef<HTMLDialogElement>(null);
+  useEffect(() => {
+    if (isConfirmOpen) {
+      dialogRef.current?.showModal();
+    } else {
+      dialogRef.current?.close();
+    }
+  }, [isConfirmOpen]);
+  const openConfirm = (id: string) => {
+    setDeleteId(id);
+    setIsConfirmOpen(true);
+  };
+  const confirmDelete = async () => {
+    if (!deleteId) return;
     const fd = new FormData();
-    fd.set("id", id);
+    fd.set("id", deleteId);
     const res = await fetch("/api/admin/services", { method: "DELETE", body: fd });
     router.replace(`/admin/services?toast=${res.ok ? "deleted" : "error"}`);
+    setIsConfirmOpen(false);
+    setDeleteId(null);
   };
   return (
+    <>
     <div className="space-y-3">
       {services.length === 0 && (
         <div className="text-gray-500 text-center py-12">No services found</div>
@@ -69,7 +86,7 @@ export function ServiceList({ services }: { services: ServiceItem[] }) {
             </a>
             <button
               aria-label="Delete"
-              onClick={() => onDelete(s.id)}
+              onClick={() => openConfirm(s.id)}
               className="w-8 h-8 flex items-center justify-center rounded-lg bg-red-500/10 text-red-400 hover:bg-red-500/20 transition-colors"
             >
               <Trash2 className="h-4 w-4" />
@@ -78,5 +95,36 @@ export function ServiceList({ services }: { services: ServiceItem[] }) {
         </div>
       ))}
     </div>
+    <dialog ref={dialogRef} className="modal">
+      <div className="modal-box bg-[#0F172A] border-0 text-white rounded-2xl">
+        <div className="flex flex-col items-center text-center gap-2 mb-4">
+          <AlertTriangle className="h-10 w-10 text-yellow-400" />
+          <h3 className="font-bold text-xl">Delete Service</h3>
+          <p className="text-sm text-gray-400">Are you sure you want to delete this service?</p>
+        </div>
+        <div className="flex justify-center gap-3 pt-4 border-t border-white/10">
+          <button
+            type="button"
+            onClick={() => setIsConfirmOpen(false)}
+            className="h-10 px-4 bg-white/5 hover:bg-white/10 text-gray-300 font-medium rounded-xl transition-colors inline-flex items-center gap-2"
+          >
+            <X className="h-4 w-4" />
+            <span>Cancel</span>
+          </button>
+          <button
+            type="button"
+            onClick={confirmDelete}
+            className="h-10 px-4 bg-red-600 hover:bg-red-700 text-white font-medium rounded-xl transition-colors inline-flex items-center gap-2"
+          >
+            <Trash2 className="h-4 w-4" />
+            <span>Delete</span>
+          </button>
+        </div>
+      </div>
+      <form method="dialog" className="modal-backdrop bg-black/60">
+        <button onClick={() => setIsConfirmOpen(false)}>close</button>
+      </form>
+    </dialog>
+    </>
   );
 }

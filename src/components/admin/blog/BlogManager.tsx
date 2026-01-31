@@ -2,7 +2,7 @@
 import { useState, useRef, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
-import { Save, X, Trash2, Globe, RefreshCw, Plus, ChevronLeft, ChevronRight } from "lucide-react";
+import { Save, X, Trash2, Globe, RefreshCw, Plus, ChevronLeft, ChevronRight, AlertTriangle } from "lucide-react";
 import { RichTextEditor } from "@/components/shared/RichTextEditor";
 import { ImageUploadField } from "@/components/shared/ImageUploadField";
 import { AutoSlugField } from "@/components/shared/AutoSlugField";
@@ -41,6 +41,9 @@ export function BlogManager({ posts, sources, page, totalPages }: { posts: Post[
     const [isSourceModalOpen, setIsSourceModalOpen] = useState(false);
     const sourceDialogRef = useRef<HTMLDialogElement>(null);
     const [editingSource, setEditingSource] = useState<ScraperSource | null>(null);
+    const [isConfirmOpen, setIsConfirmOpen] = useState(false);
+    const confirmDialogRef = useRef<HTMLDialogElement>(null);
+    const [confirmTarget, setConfirmTarget] = useState<{ id: string; kind: "post" | "source" } | null>(null);
 
     useEffect(() => {
         const editId = searchParams.get("edit");
@@ -80,6 +83,14 @@ export function BlogManager({ posts, sources, page, totalPages }: { posts: Post[
             setEditingSource(null);
         }
     }, [isSourceModalOpen]);
+    useEffect(() => {
+        if (isConfirmOpen) {
+            confirmDialogRef.current?.showModal();
+        } else {
+            confirmDialogRef.current?.close();
+            setConfirmTarget(null);
+        }
+    }, [isConfirmOpen]);
 
     const openEditSource = (s: ScraperSource) => {
         setEditingSource(s);
@@ -117,23 +128,28 @@ export function BlogManager({ posts, sources, page, totalPages }: { posts: Post[
             setIsImporting(false);
         }
     };
-    const handleDeletePost = async (id: string) => {
-        if (!confirm("Are you sure you want to delete this post?")) return;
-        try {
-            await fetch(`/api/admin/blog?id=${id}`, { method: "DELETE" });
-            router.refresh();
-        } catch (e) {
-            console.error(e);
-        }
+    const handleDeletePost = (id: string) => {
+        setConfirmTarget({ id, kind: "post" });
+        setIsConfirmOpen(true);
     };
 
-    const handleDeleteSource = async (id: string) => {
-        if (!confirm("Delete this source?")) return;
+    const handleDeleteSource = (id: string) => {
+        setConfirmTarget({ id, kind: "source" });
+        setIsConfirmOpen(true);
+    };
+    const confirmDelete = async () => {
+        if (!confirmTarget) return;
         try {
-            await fetch(`/api/admin/scraper?id=${id}`, { method: "DELETE" });
+            if (confirmTarget.kind === "post") {
+                await fetch(`/api/admin/blog?id=${confirmTarget.id}`, { method: "DELETE" });
+            } else {
+                await fetch(`/api/admin/scraper?id=${confirmTarget.id}`, { method: "DELETE" });
+            }
             router.refresh();
-        } catch (e) {
-            console.error(e);
+        } catch {
+        } finally {
+            setIsConfirmOpen(false);
+            setConfirmTarget(null);
         }
     };
 
@@ -492,6 +508,38 @@ export function BlogManager({ posts, sources, page, totalPages }: { posts: Post[
                 </div>
                 <form method="dialog" className="modal-backdrop bg-black/60">
                     <button onClick={() => setIsPostModalOpen(false)}>close</button>
+                </form>
+            </dialog>
+            <dialog ref={confirmDialogRef} className="modal">
+                <div className="modal-box bg-[#0F172A] border-0 text-white rounded-2xl">
+                    <div className="flex flex-col items-center text-center gap-2 mb-4">
+                        <AlertTriangle className="h-10 w-10 text-yellow-400" />
+                        <h3 className="font-bold text-xl">Confirm Deletion</h3>
+                        <p className="text-sm text-gray-400">
+                            {confirmTarget?.kind === "post" ? "Are you sure you want to delete this post?" : "Delete this source?"}
+                        </p>
+                    </div>
+                    <div className="flex justify-center gap-3 pt-4 border-t border-white/10">
+                        <button
+                            type="button"
+                            onClick={() => setIsConfirmOpen(false)}
+                            className="h-10 px-4 bg-white/5 hover:bg-white/10 text-gray-300 font-medium rounded-xl transition-colors inline-flex items-center gap-2"
+                        >
+                            <X className="h-4 w-4" />
+                            <span>Cancel</span>
+                        </button>
+                        <button
+                            type="button"
+                            onClick={confirmDelete}
+                            className="h-10 px-4 bg-red-600 hover:bg-red-700 text-white font-medium rounded-xl transition-colors inline-flex items-center gap-2"
+                        >
+                            <Trash2 className="h-4 w-4" />
+                            <span>Delete</span>
+                        </button>
+                    </div>
+                </div>
+                <form method="dialog" className="modal-backdrop bg-black/60">
+                    <button onClick={() => setIsConfirmOpen(false)}>close</button>
                 </form>
             </dialog>
         </div>
