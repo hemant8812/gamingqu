@@ -32,9 +32,36 @@ export default async function BlogPage() {
     orderBy: { createdAt: "desc" },
     select: { id: true, title: true, slug: true, excerpt: true, imageUrl: true, createdAt: true, sourceUrl: true },
   });
+  const base = getBaseUrl();
+  const breadcrumbLd = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "Home", item: `${base}/` },
+      { "@type": "ListItem", position: 2, name: "Blog", item: `${base}/blog` },
+    ],
+  };
+  const itemListLd = {
+    "@context": "https://schema.org",
+    "@type": "ItemList",
+    itemListElement: posts.map((p, i) => ({
+      "@type": "ListItem",
+      position: i + 1,
+      url: `${base}/blog/${p.slug}`,
+      name: p.title,
+    })),
+  };
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 pt-10 pb-10">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbLd) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(itemListLd) }}
+      />
       <div className="mb-6">
         <h1 className="text-4xl font-extrabold tracking-tight">Blog</h1>
         <p className="text-base opacity-70 mt-2">Latest articles from our team and official sources.</p>

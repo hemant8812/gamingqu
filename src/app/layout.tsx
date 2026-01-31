@@ -30,7 +30,6 @@ export async function generateMetadata(): Promise<Metadata> {
     title: s?.siteName ?? "Gamingqu",
     description: s?.tagline ?? "Layanan Boosting Game Profesional",
     metadataBase: new URL(baseUrl),
-    alternates: { canonical: "/" },
     robots: {
       index: true,
       follow: true,

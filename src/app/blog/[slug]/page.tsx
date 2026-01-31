@@ -80,6 +80,20 @@ export default async function BlogDetailPage({ params }: Props) {
           }),
         }}
       />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "BreadcrumbList",
+            itemListElement: [
+              { "@type": "ListItem", position: 1, name: "Home", item: `${getBaseUrl()}/` },
+              { "@type": "ListItem", position: 2, name: "Blog", item: `${getBaseUrl()}/blog` },
+              { "@type": "ListItem", position: 3, name: post.title, item: `${getBaseUrl()}/blog/${post.slug}` },
+            ],
+          }),
+        }}
+      />
       <div className="relative w-full h-72 overflow-hidden rounded-2xl mb-8">
         {post.imageUrl ? (
           <Image src={post.imageUrl} alt={post.title} fill className="object-cover" unoptimized />
