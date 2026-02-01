@@ -26,9 +26,12 @@ export async function generateMetadata(): Promise<Metadata> {
   const s = await getWebsiteSettingCore();
   const faviconUrl = s?.faviconUrl ?? "/icons/logo.png";
   const baseUrl = getBaseUrl();
+  const siteName = s?.siteName ?? "Gamingqu";
+  const tagline = s?.tagline ?? "Layanan Boosting Game Profesional";
+
   return {
-    title: s?.siteName ?? "Gamingqu",
-    description: s?.tagline ?? "Layanan Boosting Game Profesional",
+    title: siteName,
+    description: tagline,
     metadataBase: new URL(baseUrl),
     robots: {
       index: true,
@@ -36,17 +39,17 @@ export async function generateMetadata(): Promise<Metadata> {
       googleBot: { index: true, follow: true },
     },
     openGraph: {
-      title: s?.siteName ?? "Gamingqu",
-      description: s?.tagline ?? "Layanan Boosting Game Profesional",
+      title: siteName,
+      description: tagline,
       url: baseUrl,
-      siteName: s?.siteName ?? "Gamingqu",
+      siteName: siteName,
       type: "website",
       images: [{ url: s?.logoUrl ?? faviconUrl }],
     },
     twitter: {
       card: "summary_large_image",
-      title: s?.siteName ?? "Gamingqu",
-      description: s?.tagline ?? "Layanan Boosting Game Profesional",
+      title: siteName,
+      description: tagline,
       images: [s?.logoUrl ?? faviconUrl],
     },
     icons: {
@@ -71,7 +74,7 @@ export default async function RootLayout({
       select: { id: true, code: true, placement: true },
       orderBy: { createdAt: "asc" },
     });
-  } catch {}
+  } catch { }
   const headEmbeds = embeds.filter((e) => e.placement === "HEAD");
   const bodyEmbeds = embeds.filter((e) => e.placement === "BODY");
   const footerEmbeds = embeds.filter((e) => e.placement === "FOOTER");

@@ -7,24 +7,26 @@ export async function generateMetadata(): Promise<Metadata> {
   const s = await getWebsiteSettingCore();
   const base = getBaseUrl();
   const favicon = s?.faviconUrl ?? "/icons/logo.png";
-  const title = s?.siteName ?? "Gamingqu";
-  const description = s?.tagline ?? "Layanan Boosting Game Profesional";
+  const siteName = s?.siteName ?? "Gamingqu";
+  const tagline = s?.tagline ?? "Layanan Boosting Game Profesional";
+  const fullTitle = `${siteName}${tagline ? ` - ${tagline}` : ""}`;
+
   return {
-    title,
-    description,
+    title: fullTitle,
+    description: tagline,
     alternates: { canonical: `${base}/` },
     openGraph: {
-      title,
-      description,
+      title: fullTitle,
+      description: tagline,
       url: `${base}/`,
-      siteName: title,
+      siteName: siteName,
       type: "website",
       images: [{ url: s?.logoUrl ?? favicon }],
     },
     twitter: {
       card: "summary_large_image",
-      title,
-      description,
+      title: fullTitle,
+      description: tagline,
       images: [s?.logoUrl ?? favicon],
     },
     robots: { index: true, follow: true },
