@@ -1,10 +1,14 @@
 import type { NextAuthOptions, User } from "next-auth";
 import Credentials from "next-auth/providers/credentials";
+import Google from "next-auth/providers/google";
+import Discord from "next-auth/providers/discord";
 import { PrismaAdapter } from "@next-auth/prisma-adapter";
+import type { Adapter, AdapterUser } from "next-auth/adapters";
 import { db } from "@/lib/prisma";
 import { compare } from "bcrypt";
 import { z } from "zod";
 import { normalizeEmail } from "@/lib/sanitize";
+import { generateRandomUserId } from "@/lib/userId";
 
 const LOGIN_WINDOW_MS = 15 * 60 * 1000;
 const LOGIN_MAX_ATTEMPTS = 10;
@@ -20,9 +24,54 @@ declare global {
   var __loginAttemptMap__: Map<string, { windowStart: number; count: number }> | undefined;
 }
 
+function baseUsernameFrom(name?: string | null, email?: string | null): string {
+  const local = (email ?? "").split("@")[0] || "user";
+  const source = (name || local).toLowerCase();
+  const cleaned = source.replace(/[^a-z0-9._-]+/g, "-").replace(/-+/g, "-").replace(/^\W+|\W+$/g, "");
+  const candidate = cleaned.length >= 3 ? cleaned.slice(0, 32) : (local || "user").slice(0, 32);
+  return candidate || "user";
+}
+
+async function ensureUniqueUsername(base: string): Promise<string> {
+  const existing = await db.user.findUnique({ where: { username: base } });
+  if (!existing) return base;
+  let i = 1;
+  const prefix = base.slice(0, 24);
+  while (i < 50) {
+    const candidate = `${prefix}-${i}`;
+    const ex = await db.user.findUnique({ where: { username: candidate } });
+    if (!ex) return candidate;
+    i += 1;
+  }
+  return `${prefix}-${Date.now().toString().slice(-6)}`;
+}
+
+const baseAdapter = PrismaAdapter(db);
+const customAdapter: Adapter = {
+  ...baseAdapter,
+  createUser: async (data: Omit<AdapterUser, "id">): Promise<AdapterUser> => {
+    const email = data.email ? normalizeEmail(data.email) : null;
+    const base = baseUsernameFrom(data.name ?? null, email ?? null);
+    const username = await ensureUniqueUsername(base);
+    const id = await generateRandomUserId("G", 4);
+    const created = await db.user.create({
+      data: {
+        id,
+        name: data.name ?? null,
+        email,
+        image: data.image ?? null,
+        emailVerified: data.emailVerified ?? null,
+        role: "MEMBER",
+        username,
+      },
+      select: { id: true, name: true, email: true, image: true, emailVerified: true },
+    });
+    return created as AdapterUser;
+  },
+};
 
 export const authOptions: NextAuthOptions = {
-  adapter: PrismaAdapter(db),
+  adapter: customAdapter,
   session: { strategy: "jwt", maxAge: SESSION_MAX_AGE },
   providers: [
     Credentials({
@@ -71,6 +120,22 @@ export const authOptions: NextAuthOptions = {
         return u;
       },
     }),
+    ...(process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET
+      ? [
+          Google({
+            clientId: process.env.GOOGLE_CLIENT_ID!,
+            clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
+          }),
+        ]
+      : []),
+    ...(process.env.DISCORD_CLIENT_ID && process.env.DISCORD_CLIENT_SECRET
+      ? [
+          Discord({
+            clientId: process.env.DISCORD_CLIENT_ID!,
+            clientSecret: process.env.DISCORD_CLIENT_SECRET!,
+          }),
+        ]
+      : []),
   ],
   callbacks: {
     jwt: async ({ token, user }) => {
