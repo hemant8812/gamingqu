@@ -124,55 +124,59 @@ export default async function DashboardPage() {
               </div>
               <Link href="/" className="btn btn-gaming btn-sm">Browse Services</Link>
             </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-              <div className="bg-[#0F172A] border border-white/10 rounded-2xl p-5 flex items-center justify-between">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+              <div className="relative bg-[#0F172A] border border-white/10 rounded-2xl p-5 flex items-center justify-between ring-1 ring-white/5 hover:ring-white/10 transition-all hover:-translate-y-[2px] hover:bg-[#101827]">
+                <div className="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-blue-500/25 to-cyan-500/25" />
                 <div>
                   <p className="text-sm text-gray-400 mb-1">Active Orders</p>
                   <p className="text-3xl font-bold text-white">{stats.active}</p>
                 </div>
-                <div className="w-12 h-12 rounded-xl bg-blue-500/20 flex items-center justify-center text-blue-400">
+                <div className="w-12 h-12 rounded-xl bg-blue-500/20 flex items-center justify-center text-blue-400 ring-1 ring-blue-500/20">
                   <Activity className="h-6 w-6" />
                 </div>
               </div>
-              <div className="bg-[#0F172A] border border-white/10 rounded-2xl p-5 flex items-center justify-between">
+              <div className="relative bg-[#0F172A] border border-white/10 rounded-2xl p-5 flex items-center justify-between ring-1 ring-white/5 hover:ring-white/10 transition-all hover:-translate-y-[2px] hover:bg-[#101827]">
+                <div className="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-emerald-500/25 to-lime-500/25" />
                 <div>
                   <p className="text-sm text-gray-400 mb-1">Completed</p>
                   <p className="text-3xl font-bold text-white">{stats.completed}</p>
                 </div>
-                <div className="w-12 h-12 rounded-xl bg-emerald-500/20 flex items-center justify-center text-emerald-400">
+                <div className="w-12 h-12 rounded-xl bg-emerald-500/20 flex items-center justify-center text-emerald-400 ring-1 ring-emerald-500/20">
                   <CheckCircle className="h-6 w-6" />
                 </div>
               </div>
-              <div className="bg-[#0F172A] border border-white/10 rounded-2xl p-5 flex items-center justify-between">
+              <div className="relative bg-[#0F172A] border border-white/10 rounded-2xl p-5 flex items-center justify-between ring-1 ring-white/5 hover:ring-white/10 transition-all hover:-translate-y-[2px] hover:bg-[#101827]">
+                <div className="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-purple-500/25 to-pink-500/25" />
                 <div>
                   <p className="text-sm text-gray-400 mb-1">Wallet Balance</p>
                   <p className="text-3xl font-bold text-white">{stats.wallet}</p>
                 </div>
-                <div className="w-12 h-12 rounded-xl bg-purple-500/20 flex items-center justify-center text-purple-400">
+                <div className="w-12 h-12 rounded-xl bg-purple-500/20 flex items-center justify-center text-purple-400 ring-1 ring-purple-500/20">
                   <Wallet className="h-6 w-6" />
                 </div>
               </div>
-              <div className="bg-[#0F172A] border border-white/10 rounded-2xl p-5 flex items-center justify-between">
+              <div className="relative bg-[#0F172A] border border-white/10 rounded-2xl p-5 flex items-center justify-between ring-1 ring-white/5 hover:ring-white/10 transition-all hover:-translate-y-[2px] hover:bg-[#101827]">
+                <div className="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-pink-500/25 to-rose-500/25" />
                 <div>
                   <p className="text-sm text-gray-400 mb-1">Reviews Given</p>
                   <p className="text-3xl font-bold text-white">{stats.reviews}</p>
                 </div>
-                <div className="w-12 h-12 rounded-xl bg-pink-500/20 flex items-center justify-center text-pink-400">
+                <div className="w-12 h-12 rounded-xl bg-pink-500/20 flex items-center justify-center text-pink-400 ring-1 ring-pink-500/20">
                   <Star className="h-6 w-6" />
                 </div>
               </div>
             </div>
             <div className="space-y-6">
-              <section className="bg-[#0F172A] border border-white/10 rounded-2xl overflow-hidden">
+              <section className="bg-[#0F172A] border border-white/10 rounded-2xl overflow-hidden ring-1 ring-white/5">
                 <div className="p-6 border-b border-white/10 flex items-center justify-between">
                   <h3 className="text-lg font-bold text-white">Active Orders</h3>
                   <Link href="/dashboard/orders" className="flex items-center gap-2 text-sm text-blue-400 hover:text-blue-300" aria-label="View all">
                     View All <ChevronRight className="h-4 w-4" />
                   </Link>
                 </div>
-                <div className="p-4 space-y-4">
+                <div className="p-4 md:p-6 space-y-4">
                   {orders.map((o) => (
-                    <div key={o.id} className="rounded-xl border border-white/10 bg-[#0A0E17] p-4">
+                    <div key={o.id} className="rounded-2xl border border-white/10 bg-[#0A0E17] p-4 md:p-5 transition-colors hover:bg-white/[0.04]">
                       <div className="flex items-start justify-between gap-4 mb-3">
                         <div className="min-w-0">
                           <div className="text-xs text-gray-500">{o.id}</div>
@@ -180,7 +184,7 @@ export default async function DashboardPage() {
                           <div className="text-sm text-gray-500">{o.game}</div>
                         </div>
                         <div className="flex items-center gap-2 shrink-0">
-                          <span className={`inline-flex items-center gap-2 px-2.5 py-1 text-xs font-medium rounded-lg ${
+                          <span className={`inline-flex items-center gap-2 px-2.5 py-1 text-xs font-medium rounded-xl ring-1 ring-white/10 ${
                             o.status === "Completed" ? "bg-emerald-500/20 text-emerald-400" :
                             o.status === "Pending" ? "bg-yellow-500/20 text-yellow-400" :
                             "bg-blue-500/20 text-blue-400"
@@ -195,7 +199,7 @@ export default async function DashboardPage() {
                         </div>
                       </div>
                       <div className="space-y-2">
-                        <div className="h-2 rounded-full bg-white/10 overflow-hidden">
+                        <div className="h-2 rounded-full bg-white/10 overflow-hidden ring-1 ring-white/10">
                           <div className="h-full bg-gradient-to-r from-blue-500 to-cyan-500" style={{ width: `${o.percent}%` }} />
                         </div>
                         <div className="flex items-center justify-between text-xs text-gray-400">
