@@ -77,11 +77,11 @@ export function Navbar({ siteName = "Gamingqu", logoUrl = null, user = null }: P
             )}
 
             <div className="dropdown">
-              <div tabIndex={0} role="button" className="btn btn-ghost btn-sm gap-2 text-gray-300 hover:text-white hover:bg-white/10 rounded-xl">
+              <button type="button" className="btn btn-ghost btn-sm gap-2 text-gray-300 hover:text-white hover:bg-white/10 rounded-xl" aria-haspopup="menu" aria-label={isAdminContext ? "Open main menu" : "Select game"}>
                 {isAdminContext ? <FiGrid className="h-4 w-4" /> : <Gamepad2 className="h-4 w-4" />}
                 <span className="font-bold">{isAdminContext ? "Main Menu" : "Select Game"}</span>
                 <FiChevronDown className="h-4 w-4" />
-              </div>
+              </button>
               <ul tabIndex={0} className="dropdown-content z-[1] menu p-2 shadow-2xl bg-[#0F172A]/95 backdrop-blur-xl border border-white/10 rounded-2xl w-56 mt-4">
                 {isAdminContext ? (
                   <>
@@ -124,18 +124,18 @@ export function Navbar({ siteName = "Gamingqu", logoUrl = null, user = null }: P
 
           {/* Right Side: Icons */}
           <div className="flex items-center gap-1">
-            <Link href="/search" className="btn btn-ghost btn-circle text-gray-400 hover:text-white hover:bg-white/10">
+            <Link href="/search" aria-label="Search" className="btn btn-ghost btn-circle text-gray-400 hover:text-white hover:bg-white/10">
               <FiSearch className="h-5 w-5" />
             </Link>
-            <Link href="/wishlist" className="btn btn-ghost btn-circle text-gray-400 hover:text-white hover:bg-white/10">
+            <Link href="/wishlist" aria-label="Wishlist" className="btn btn-ghost btn-circle text-gray-400 hover:text-white hover:bg-white/10">
               <FiHeart className="h-5 w-5" />
             </Link>
 
             <div className="dropdown dropdown-end">
-              <div tabIndex={0} role="button" className="btn btn-ghost gap-1 px-2 text-gray-400 hover:text-white hover:bg-white/10">
+              <button type="button" className="btn btn-ghost gap-1 px-2 text-gray-400 hover:text-white hover:bg-white/10" aria-haspopup="menu" aria-label="Change currency">
                 <span className="text-lg font-sans">{currency}</span>
                 <FiChevronDown className="h-4 w-4" />
-              </div>
+              </button>
               <ul tabIndex={0} className="dropdown-content z-[1] menu p-2 shadow-2xl bg-[#0F172A]/95 backdrop-blur-xl border border-white/10 rounded-2xl w-24 mt-4">
                 <li><button onClick={() => setCurrency("$")} className="hover:bg-white/10 rounded-xl">$ US</button></li>
                 <li><button onClick={() => setCurrency("€")} className="hover:bg-white/10 rounded-xl">€ EU</button></li>
@@ -144,11 +144,11 @@ export function Navbar({ siteName = "Gamingqu", logoUrl = null, user = null }: P
 
             {user ? (
               <div className="dropdown dropdown-end">
-                <div tabIndex={0} role="button" className="btn btn-ghost btn-circle text-gray-400 hover:text-white hover:bg-white/10">
+                <button type="button" className="btn btn-ghost btn-circle text-gray-400 hover:text-white hover:bg-white/10" aria-haspopup="menu" aria-label="Account menu">
                   <div className="w-10 rounded-full flex items-center justify-center">
                     <FiUser className="h-5 w-5" />
                   </div>
-                </div>
+                </button>
                 <ul tabIndex={0} className="dropdown-content z-[1] menu p-2 shadow-2xl bg-[#0F172A]/95 backdrop-blur-xl border border-white/10 rounded-2xl w-56 mt-4">
                   <li className="menu-title px-4 py-2 text-xs text-gray-500">{user.email ?? user.name ?? "Account"}</li>
                   {(user.role === "ADMIN" || user.role === "SUPERADMIN") && (
@@ -159,15 +159,15 @@ export function Navbar({ siteName = "Gamingqu", logoUrl = null, user = null }: P
                 </ul>
               </div>
             ) : (
-              <Link href="/login" className="btn btn-ghost btn-circle text-gray-400 hover:text-white hover:bg-white/10">
+              <Link href="/login" aria-label="Login" className="btn btn-ghost btn-circle text-gray-400 hover:text-white hover:bg-white/10">
                 <FiUser className="h-5 w-5" />
               </Link>
             )}
 
             <div className="dropdown dropdown-end">
-              <div tabIndex={0} role="button" className="btn btn-ghost btn-circle text-gray-400 hover:text-white hover:bg-white/10">
+              <button type="button" className="btn btn-ghost btn-circle text-gray-400 hover:text-white hover:bg-white/10" aria-haspopup="menu" aria-label="Open quick menu">
                 <GridRoundedIcon className="h-5 w-5" />
-              </div>
+              </button>
               <ul tabIndex={0} className="dropdown-content z-[1] menu p-2 shadow-2xl bg-[#0F172A]/95 backdrop-blur-xl border border-white/10 rounded-2xl w-56 mt-4">
                 <li><Link href="/about" onClick={closeDropdown} className="hover:bg-white/10 rounded-xl"><FiZap className="h-4 w-4 text-blue-400" /> About us</Link></li>
                 <li><Link href="/cashback" onClick={closeDropdown} className="hover:bg-white/10 rounded-xl"><FiPercent className="h-4 w-4 text-emerald-400" /> Cashback</Link></li>

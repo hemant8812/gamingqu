@@ -89,7 +89,7 @@ export async function Footer() {
 
                     <div className="flex-1 flex flex-col md:flex-row justify-between gap-10">
                         <nav className="flex flex-col gap-2 min-w-[150px]">
-                            <h6 className="font-bold text-white text-sm uppercase tracking-wider mb-2">{siteName}</h6>
+                            <div className="font-bold text-white text-sm uppercase tracking-wider mb-2">{siteName}</div>
                             {navs.map((n, i) => (
                                 <Link key={i} href={n.url || "#"} className="text-gray-400 hover:text-blue-400 transition-colors text-sm">
                                     {n.title || n.fallback}

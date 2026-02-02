@@ -128,20 +128,20 @@ body {
    GAMING BUTTON STYLES
    ============================================ */
 .btn-gaming {
-  background: #3B82F6;
+  background: #2563EB;
   border: none;
   color: white;
   font-weight: 700;
   position: relative;
   overflow: hidden;
   transition: all 0.3s ease;
-  box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3);
+  box-shadow: 0 4px 15px rgba(37, 99, 235, 0.35);
 }
 
 .btn-gaming:hover {
-  background: #2563EB;
+  background: #1D4ED8;
   transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(59, 130, 246, 0.4);
+  box-shadow: 0 6px 20px rgba(29, 78, 216, 0.4);
 }
 
 /* Removed shimmer effect from buttons for cleaner look */
@@ -392,11 +392,26 @@ body {
   gap: 8px;
 }
 
-.hero-dot {
-  width: 8px;
-  height: 8px;
+.hero-dot-btn {
+  width: 44px;
+  height: 44px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: none;
   border-radius: 9999px;
-  background: rgba(255, 255, 255, 0.45);
+  cursor: pointer;
+}
+.hero-dot-btn:focus-visible {
+  outline: 2px solid #3B82F6;
+  outline-offset: 2px;
+}
+.hero-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 9999px;
+  background: rgba(255, 255, 255, 0.75);
   transition: transform 200ms ease, background 200ms ease;
 }
 

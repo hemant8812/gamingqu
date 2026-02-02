@@ -192,14 +192,16 @@ export function HomeContent() {
               {/* Hero dots */}
               <div className="hero-dots">
                 {heroSlides.map((_, i) => (
-                  <span
+                  <button
                     key={i}
-                    role="button"
-                    tabIndex={0}
+                    type="button"
                     aria-label={`Go to slide ${i + 1}`}
                     onClick={() => goToSlide(i)}
-                    className={`hero-dot cursor-pointer ${heroSlide === i ? "hero-dot-active" : ""}`}
-                  />
+                    className="hero-dot-btn"
+                    title={`Slide ${i + 1}`}
+                  >
+                    <span className={`hero-dot ${heroSlide === i ? "hero-dot-active" : ""}`} />
+                  </button>
                 ))}
               </div>
             </div>
@@ -285,6 +287,8 @@ export function HomeContent() {
               onClick={refreshHotServices}
               disabled={hotLoading}
               className="btn btn-ghost btn-circle glass-light hover:glow-primary transition-all"
+              aria-label="Refresh hot services"
+              title="Refresh hot services"
             >
               <FiRefreshCw className={`h-5 w-5 ${hotLoading ? "animate-spin" : ""}`} />
             </button>
