@@ -3,7 +3,7 @@ import Image from "next/image";
 import { GameSearchInput } from "./GameSearchInput";
 
 type Game = {
-  id: string;
+  id: number;
   name: string;
   slug: string;
   imageUrl: string | null;

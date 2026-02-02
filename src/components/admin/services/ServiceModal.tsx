@@ -8,16 +8,16 @@ import { RichTextEditor } from "@/components/shared/RichTextEditor";
 import { GameSelect } from "@/components/admin/games/GameSelect";
 import { CategorySelect } from "@/components/admin/categories/CategorySelect";
 
-type GameOption = { id: string; name: string };
-type CategoryOption = { id: string; name: string; gameId: string };
+type GameOption = { id: number; name: string };
+type CategoryOption = { id: number; name: string; gameId: number };
 type Editing = {
-  id: string;
+  id: number;
   name: string;
   slug: string;
   description?: string | null;
   imageUrl?: string | null;
-  gameId: string;
-  categoryId?: string | null;
+  gameId: number;
+  categoryId?: number | null;
   features?: string[] | null;
   price: string;
   isHotOffer: boolean;
@@ -31,7 +31,7 @@ export function ServiceModal({ games, categories, editing }: { games: GameOption
 
   const isCreate = searchParams.has("create");
   const shouldOpen = !!editing || isCreate;
-  const [selectedGame, setSelectedGame] = useState<string>(editing?.gameId ?? "");
+  const [selectedGame, setSelectedGame] = useState<number | undefined>(editing?.gameId ?? undefined);
   const [features, setFeatures] = useState<string[]>(editing?.features ?? []);
   const [priceValue, setPriceValue] = useState(editing?.price ? parseFloat(editing.price).toFixed(2) : "");
   const canAddFeature = features.length < 3;
@@ -59,7 +59,7 @@ export function ServiceModal({ games, categories, editing }: { games: GameOption
   }, [shouldOpen]);
 
   const closeModal = () => {
-    setSelectedGame("");
+    setSelectedGame(undefined);
     setFeatures([]);
     router.replace("/admin/services");
   };
@@ -124,7 +124,7 @@ export function ServiceModal({ games, categories, editing }: { games: GameOption
               </div>
               <AutoSlugField nameInputId="name" name="slug" label="Slug" initialValue={editing?.slug ?? ""} className="mt-0" />
             </div>
-            {editing && <input type="hidden" name="id" defaultValue={editing.id} />}
+            {editing && <input type="hidden" name="id" defaultValue={String(editing.id)} />}
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <GameSelect games={games} name="gameId" label="Game" onChange={setSelectedGame} initialValue={editing?.gameId} />

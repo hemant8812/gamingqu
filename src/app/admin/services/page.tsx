@@ -7,13 +7,13 @@ import { normalizeQuery, parseToast } from "@/lib/page-utils";
 import { getSimpleGames, getSimpleCategories } from "@/lib/selects";
 
 type EditingDb = {
-  id: string;
+  id: number;
   name: string;
   slug: string;
   description: string | null;
   imageUrl: string | null;
-  gameId: string;
-  categoryId: string | null;
+  gameId: number;
+  categoryId: number | null;
   features: unknown;
   price: unknown;
   isHotOffer: boolean;
@@ -80,7 +80,8 @@ export default async function AdminServicesPage({ searchParams }: { searchParams
   const categories = await getSimpleCategories();
   const services = await getServices(q || undefined);
   const editParam = sp?.edit;
-  const editId = typeof editParam === "string" ? editParam : Array.isArray(editParam) ? editParam[0] ?? null : null;
+  const editIdStr = typeof editParam === "string" ? editParam : Array.isArray(editParam) ? editParam[0] ?? null : null;
+  const editId = editIdStr != null ? Number(editIdStr) : null;
   let editing: EditingDb = null;
   if (editId) {
     try {

@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { db } from "@/lib/prisma";
 import { hash } from "bcrypt";
 import { z } from "zod";
-import { generateNextUserId } from "@/lib/userId";
+import { generateRandomUserId } from "@/lib/userId";
 import { sanitizePlain, normalizeEmail } from "@/lib/sanitize";
 
 export async function POST(req: Request) {
@@ -36,7 +36,7 @@ export async function POST(req: Request) {
   if (exUser) {
     return NextResponse.json({ error: "Username sudah terpakai" }, { status: 409 });
   }
-  const id = await generateNextUserId("GQ", 3);
+  const id = await generateRandomUserId("G", 4);
   const passwordHash = await hash(password, 10);
   await db.user.create({
     data: {

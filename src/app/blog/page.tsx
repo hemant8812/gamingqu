@@ -53,48 +53,54 @@ export default async function BlogPage() {
   };
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 pt-10 pb-10">
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbLd) }}
-      />
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(itemListLd) }}
-      />
-      <div className="mb-6">
-        <h1 className="text-4xl font-extrabold tracking-tight">Blog</h1>
-        <p className="text-base opacity-70 mt-2">Latest articles from our team and official sources.</p>
+    <div className="min-h-screen bg-[#0A0E17] text-white">
+      <div className="fixed inset-0 pointer-events-none">
+        <div className="absolute top-0 left-1/4 w-96 h-96 bg-blue-600/10 rounded-full blur-3xl" />
+        <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-cyan-500/10 rounded-full blur-3xl" />
       </div>
-      {posts.length === 0 && (
-        <div className="text-center opacity-60">No articles yet.</div>
-      )}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-        {posts.map((p) => (
-          <article key={p.id} className="overflow-hidden rounded-xl border border-base-300 bg-base-100 shadow transition-transform hover:-translate-y-0.5">
-            <Link href={`/blog/${p.slug}`} className="block">
-              <div className="relative w-full h-44">
-                {p.imageUrl ? (
-                  <Image src={p.imageUrl} alt={p.title} fill className="object-cover" unoptimized />
-                ) : (
-                  <div className="absolute inset-0 bg-gradient-to-br from-primary/20 to-base-300" />
-                )}
-                <div className="absolute inset-x-0 bottom-0 h-20 bg-gradient-to-t from-black/60 to-transparent" />
-              </div>
-              <div className="p-4">
-                <div className="mb-2 text-xs opacity-60">{new Date(p.createdAt).toLocaleDateString()}</div>
-                <h2 className="font-semibold text-lg leading-tight">
-                  {p.title}
-                </h2>
-                {p.excerpt && (
-                  <p className="text-sm opacity-80 mt-2">
-                    {p.excerpt} <span className="text-primary font-medium">Read more →</span>
-                  </p>
-                )}
-              </div>
-            </Link>
-          </article>
-        ))}
+      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 pt-10 pb-10">
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbLd) }}
+        />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(itemListLd) }}
+        />
+        <div className="mb-6">
+          <h1 className="text-4xl font-extrabold tracking-tight">Blog</h1>
+          <p className="text-base opacity-70 mt-2">Latest articles from our team and official sources.</p>
+        </div>
+        {posts.length === 0 && (
+          <div className="text-center opacity-60">No articles yet.</div>
+        )}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          {posts.map((p) => (
+            <article key={p.id} className="overflow-hidden rounded-xl border border-base-300 bg-base-100 shadow transition-transform hover:-translate-y-0.5">
+              <Link href={`/blog/${p.slug}`} className="block">
+                <div className="relative w-full h-44">
+                  {p.imageUrl ? (
+                    <Image src={p.imageUrl} alt={p.title} fill className="object-cover" unoptimized />
+                  ) : (
+                    <div className="absolute inset-0 bg-gradient-to-br from-primary/20 to-base-300" />
+                  )}
+                  <div className="absolute inset-x-0 bottom-0 h-20 bg-gradient-to-t from-black/60 to-transparent" />
+                </div>
+                <div className="p-4">
+                  <div className="mb-2 text-xs opacity-60">{new Date(p.createdAt).toLocaleDateString()}</div>
+                  <h2 className="font-semibold text-lg leading-tight">
+                    {p.title}
+                  </h2>
+                  {p.excerpt && (
+                    <p className="text-sm opacity-80 mt-2">
+                      {p.excerpt} <span className="text-primary font-medium">Read more →</span>
+                    </p>
+                  )}
+                </div>
+              </Link>
+            </article>
+          ))}
+        </div>
       </div>
     </div>
   );

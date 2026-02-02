@@ -42,12 +42,13 @@ export async function POST(req: Request) {
     const form = await req.formData();
     const name = (form.get("name") as string | null) ?? "";
     const inputSlug = (form.get("slug") as string | null) ?? "";
-    const gameId = (form.get("gameId") as string | null) ?? "";
+    const gameIdStr = (form.get("gameId") as string | null) ?? "";
+    const gameId = Number(gameIdStr);
     const isActive = form.get("isActive") === "on" || form.get("isActive") === "true";
     if (!name.trim()) {
       return NextResponse.json({ error: "Invalid name" }, { status: 400 });
     }
-    if (!gameId.trim()) {
+    if (!Number.isFinite(gameId) || gameId <= 0) {
       return NextResponse.json({ error: "Invalid gameId" }, { status: 400 });
     }
     let baseSlug = slugify(inputSlug || name || "");
@@ -82,12 +83,14 @@ export async function PUT(req: Request) {
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
     const form = await req.formData();
-    const id = (form.get("id") as string | null) ?? "";
+    const idStr = (form.get("id") as string | null) ?? "";
+    const id = Number(idStr);
     const name = (form.get("name") as string | null) ?? "";
     const inputSlug = (form.get("slug") as string | null) ?? "";
-    const gameId = (form.get("gameId") as string | null) ?? "";
+    const gameIdStr = (form.get("gameId") as string | null) ?? "";
+    const gameId = Number(gameIdStr);
     const isActive = form.get("isActive") === "on" || form.get("isActive") === "true";
-    if (!id) {
+    if (!Number.isFinite(id) || id <= 0) {
       return NextResponse.json({ error: "Invalid id" }, { status: 400 });
     }
     const current = await db.category.findUnique({ where: { id }, select: { id: true, name: true, slug: true } });
@@ -108,7 +111,7 @@ export async function PUT(req: Request) {
       data: {
         name,
         slug,
-        gameId: gameId || undefined,
+        gameId: Number.isFinite(gameId) ? gameId : undefined,
         isActive,
       },
     });
@@ -127,8 +130,9 @@ export async function DELETE(req: Request) {
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
     const form = await req.formData();
-    const id = (form.get("id") as string | null) ?? "";
-    if (!id) {
+    const idStr = (form.get("id") as string | null) ?? "";
+    const id = Number(idStr);
+    if (!Number.isFinite(id) || id <= 0) {
       return NextResponse.json({ error: "Invalid id" }, { status: 400 });
     }
     await db.category.delete({ where: { id } });

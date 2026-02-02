@@ -81,7 +81,8 @@ export async function PUT(req: Request) {
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
     const form = await req.formData();
-    const id = (form.get("id") as string | null) ?? "";
+    const idStr = (form.get("id") as string | null) ?? "";
+    const id = Number(idStr);
     const name = (form.get("name") as string | null) ?? "";
     const description = (form.get("description") as string | null) ?? "";
     const inputSlug = (form.get("slug") as string | null) ?? "";
@@ -89,7 +90,7 @@ export async function PUT(req: Request) {
     const isActive = form.get("isActive") === "on";
     const imageFile = form.get("image") as File | null;
     const iconFile = form.get("icon") as File | null;
-    if (!id) {
+    if (!Number.isFinite(id) || id <= 0) {
       return NextResponse.json({ error: "Invalid id" }, { status: 400 });
     }
     const current = await db.game.findUnique({ where: { id }, select: { id: true, name: true, slug: true, imageUrl: true, iconUrl: true } });

@@ -65,7 +65,12 @@ export default async function BlogDetailPage({ params }: Props) {
   const s = await getWebsiteSettingCore();
   const base = getBaseUrl();
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 pt-16 pb-14">
+    <div className="min-h-screen bg-[#0A0E17] text-white">
+      <div className="fixed inset-0 pointer-events-none">
+        <div className="absolute top-0 left-1/4 w-96 h-96 bg-blue-600/10 rounded-full blur-3xl" />
+        <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-cyan-500/10 rounded-full blur-3xl" />
+      </div>
+      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 pt-16 pb-14">
       {(() => null)()}
       <script
         type="application/ld+json"
@@ -150,6 +155,7 @@ export default async function BlogDetailPage({ params }: Props) {
             </Link>
           ))}
         </div>
+      </div>
       </div>
     </div>
   );

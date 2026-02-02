@@ -4,7 +4,7 @@ import { Save as SaveIcon, X } from "lucide-react";
 import Image from "next/image";
 
 type Item = {
-  id: string;
+  id: number;
   title?: string | null;
   subtitle?: string | null;
   buttonLink?: string | null;
@@ -47,7 +47,7 @@ export function BennerModal({ editing, isOpen, onClose }: { editing: Item | null
 
       if (editing) {
         fd.set("mode", "UPDATE");
-        fd.set("id", editing.id);
+        fd.set("id", String(editing.id));
       } else {
         fd.set("mode", "CREATE");
       }

@@ -5,17 +5,17 @@ import { Pencil, Trash2, AlertTriangle, X } from "lucide-react";
 import { useState, useRef, useEffect } from "react";
 
 type CategoryItem = {
-  id: string;
+  id: number;
   name: string;
   slug: string;
   isActive: boolean;
-  game: { id: string; name: string; iconUrl: string | null };
+  game: { id: number; name: string; iconUrl: string | null };
 };
 
 export function CategoryList({ categories }: { categories: CategoryItem[] }) {
   const router = useRouter();
   const [isConfirmOpen, setIsConfirmOpen] = useState(false);
-  const [deleteId, setDeleteId] = useState<string | null>(null);
+  const [deleteId, setDeleteId] = useState<number | null>(null);
   const dialogRef = useRef<HTMLDialogElement>(null);
   useEffect(() => {
     if (isConfirmOpen) {
@@ -24,14 +24,14 @@ export function CategoryList({ categories }: { categories: CategoryItem[] }) {
       dialogRef.current?.close();
     }
   }, [isConfirmOpen]);
-  const openConfirm = (id: string) => {
+  const openConfirm = (id: number) => {
     setDeleteId(id);
     setIsConfirmOpen(true);
   };
   const confirmDelete = async () => {
     if (!deleteId) return;
     const fd = new FormData();
-    fd.set("id", deleteId);
+    fd.set("id", String(deleteId));
     const res = await fetch("/api/admin/categories", { method: "DELETE", body: fd });
     router.replace(`/admin/categories?toast=${res.ok ? "deleted" : "error"}`);
     setIsConfirmOpen(false);

@@ -66,8 +66,10 @@ export async function POST(req: Request) {
         const name = (form.get("name") as string | null) ?? "";
         const description = (form.get("description") as string | null) ?? "";
         const inputSlug = (form.get("slug") as string | null) ?? "";
-        const gameId = (form.get("gameId") as string | null) ?? "";
-        const categoryId = (form.get("categoryId") as string | null) || null;
+        const gameIdStr = (form.get("gameId") as string | null) ?? "";
+        const categoryIdStr = (form.get("categoryId") as string | null) || null;
+        const gameId = Number(gameIdStr);
+        const categoryId = categoryIdStr != null && categoryIdStr !== "" ? Number(categoryIdStr) : null;
         const price = (form.get("price") as string | null) ?? "0";
         const featuresRaw = (form.get("features") as string | null) ?? "[]";
         const isHotOffer = form.get("isHotOffer") === "on" || form.get("isHotOffer") === "true";
@@ -77,7 +79,7 @@ export async function POST(req: Request) {
         if (!name.trim()) {
             return NextResponse.json({ error: "Invalid name" }, { status: 400 });
         }
-        if (!gameId.trim()) {
+        if (!Number.isFinite(gameId) || gameId <= 0) {
             return NextResponse.json({ error: "Invalid gameId" }, { status: 400 });
         }
 
@@ -104,7 +106,7 @@ export async function POST(req: Request) {
                 slug,
                 description: description || undefined,
                 gameId,
-                categoryId: categoryId || undefined,
+                categoryId: categoryId ?? undefined,
                 price: parseFloat(price) || 0,
                 features,
                 imageUrl,
@@ -128,19 +130,22 @@ export async function PUT(req: Request) {
             return NextResponse.json({ error: "Forbidden" }, { status: 403 });
         }
         const form = await req.formData();
-        const id = (form.get("id") as string | null) ?? "";
+        const idStr = (form.get("id") as string | null) ?? "";
+        const id = Number(idStr);
         const name = (form.get("name") as string | null) ?? "";
         const description = (form.get("description") as string | null) ?? "";
         const inputSlug = (form.get("slug") as string | null) ?? "";
-        const gameId = (form.get("gameId") as string | null) ?? "";
-        const categoryId = (form.get("categoryId") as string | null) || null;
+        const gameIdStr = (form.get("gameId") as string | null) ?? "";
+        const categoryIdStr = (form.get("categoryId") as string | null) || null;
+        const gameId = Number(gameIdStr);
+        const categoryId = categoryIdStr != null && categoryIdStr !== "" ? Number(categoryIdStr) : null;
         const price = (form.get("price") as string | null) ?? "0";
         const featuresRaw = (form.get("features") as string | null) ?? "[]";
         const isHotOffer = form.get("isHotOffer") === "on" || form.get("isHotOffer") === "true";
         const isActive = form.get("isActive") === "on" || form.get("isActive") === "true";
         const imageFile = form.get("image") as File | null;
 
-        if (!id) {
+        if (!Number.isFinite(id) || id <= 0) {
             return NextResponse.json({ error: "Invalid id" }, { status: 400 });
         }
         const current = await db.service.findUnique({ where: { id }, select: { id: true, name: true, slug: true, imageUrl: true } });
@@ -172,7 +177,7 @@ export async function PUT(req: Request) {
                 slug,
                 description: description || undefined,
                 gameId,
-                categoryId: categoryId || undefined,
+                categoryId: categoryId ?? undefined,
                 price: parseFloat(price) || 0,
                 features,
                 imageUrl: imageUrl ?? current.imageUrl,
@@ -195,8 +200,9 @@ export async function DELETE(req: Request) {
         if (role !== "ADMIN" && role !== "SUPERADMIN") {
             return NextResponse.json({ error: "Forbidden" }, { status: 403 });
         }
-        const { id } = await req.json();
-        if (!id) {
+        const { id: rawId } = await req.json();
+        const id = Number(rawId);
+        if (!Number.isFinite(id) || id <= 0) {
             return NextResponse.json({ error: "Invalid id" }, { status: 400 });
         }
         await db.service.delete({ where: { id } });

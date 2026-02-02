@@ -2,7 +2,7 @@
 import * as React from "react";
 import { Search as SearchIcon, ChevronDown, Check } from "lucide-react";
 
-type GameOption = { id: string; name: string };
+type GameOption = { id: number; name: string };
 
 export function GameSelect({
   games,
@@ -14,11 +14,11 @@ export function GameSelect({
   games: GameOption[];
   name?: string;
   label?: string;
-  initialValue?: string;
-  onChange?: (id: string) => void;
+  initialValue?: number;
+  onChange?: (id: number) => void;
 }) {
   const [query, setQuery] = React.useState("");
-  const [selectedId, setSelectedId] = React.useState<string>("");
+  const [selectedId, setSelectedId] = React.useState<number | null>(null);
   const [isOpen, setIsOpen] = React.useState(false);
   const dropdownRef = React.useRef<HTMLDivElement>(null);
 
@@ -38,7 +38,7 @@ export function GameSelect({
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  const selectedName = React.useMemo(() => games.find((g) => g.id === selectedId)?.name ?? "", [selectedId, games]);
+  const selectedName = React.useMemo(() => (selectedId != null ? games.find((g) => g.id === selectedId)?.name ?? "" : ""), [selectedId, games]);
   const filtered = React.useMemo(() => {
     const q = query.trim().toLowerCase();
     if (!q) return games;
@@ -97,7 +97,7 @@ export function GameSelect({
           </div>
         )}
       </div>
-      <input id={name} name={name} type="hidden" value={selectedId} />
+      <input id={name} name={name} type="hidden" value={selectedId != null ? String(selectedId) : ""} />
     </div>
   );
 }

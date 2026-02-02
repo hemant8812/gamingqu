@@ -66,7 +66,7 @@ export async function PUT(req: Request) {
   
     try {
       const formData = await req.formData();
-      const id = formData.get("id") as string;
+    const idStr = formData.get("id") as string;
       const title = formData.get("title") as string;
       const content = formData.get("content") as string;
       const excerpt = formData.get("excerpt") as string;
@@ -74,12 +74,13 @@ export async function PUT(req: Request) {
       const imageUrl = formData.get("imageUrl") as string;
       const isPublished = formData.get("isPublished") === "true";
   
-      if (!id || !title || !slug) {
+    const id = Number(idStr);
+    if (!Number.isFinite(id) || !title || !slug) {
         return NextResponse.json({ error: "ID, Title and Slug are required" }, { status: 400 });
       }
   
       const post = await db.post.update({
-        where: { id },
+      where: { id },
         data: {
           title: sanitizePlain(title),
           slug: sanitizePlain(slug),
@@ -105,9 +106,10 @@ export async function DELETE(req: Request) {
 
     try {
         const { searchParams } = new URL(req.url);
-        const id = searchParams.get("id");
+    const idStr = searchParams.get("id");
 
-        if (!id) {
+    const id = Number(idStr);
+    if (!Number.isFinite(id)) {
             return NextResponse.json({ error: "ID is required" }, { status: 400 });
         }
 

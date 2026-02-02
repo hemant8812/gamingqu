@@ -8,16 +8,16 @@ import { RichTextEditor } from "@/components/shared/RichTextEditor";
 import { GameSelect } from "@/components/admin/games/GameSelect";
 import { CategorySelect } from "@/components/admin/categories/CategorySelect";
 
-type GameOption = { id: string; name: string };
-type CategoryOption = { id: string; name: string; gameId: string };
+type GameOption = { id: number; name: string };
+type CategoryOption = { id: number; name: string; gameId: number };
 type Editing = {
-  id: string;
+  id: number;
   name: string;
   slug: string;
   description?: string | null;
   imageUrl?: string | null;
-  gameId: string;
-  categoryId?: string | null;
+  gameId: number;
+  categoryId?: number | null;
   features?: string[] | null;
   price: string;
   isHotOffer: boolean;
@@ -27,7 +27,7 @@ export function ServiceForm({ games, categories, editing }: { games: GameOption[
   const router = useRouter();
   const [isOpen, setIsOpen] = useState(!!editing);
   const [busy, setBusy] = useState(false);
-  const [selectedGame, setSelectedGame] = useState<string>(editing?.gameId ?? "");
+  const [selectedGame, setSelectedGame] = useState<number | undefined>(editing?.gameId ?? undefined);
   const [features, setFeatures] = useState<string[]>(editing?.features ?? []);
   const canAddFeature = features.length < 3;
   const addFeature = () => {

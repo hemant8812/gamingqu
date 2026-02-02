@@ -67,7 +67,7 @@ export default async function RootLayout({
 }>) {
   const session = await getServerSession(authOptions).catch(() => null);
   const s = await getWebsiteSettingCore();
-  let embeds: { id: string; code: string; placement: "HEAD" | "BODY" | "FOOTER" }[] = [];
+  let embeds: { id: number; code: string; placement: "HEAD" | "BODY" | "FOOTER" }[] = [];
   try {
     embeds = await db.embedCode.findMany({
       where: { isActive: true },

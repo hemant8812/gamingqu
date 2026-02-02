@@ -65,8 +65,9 @@ export async function POST(req: Request) {
       });
       return NextResponse.json({ ok: true, data: created });
     } else if (mode === "UPDATE") {
-      const id = ((form.get("id") as string | null) ?? "").trim();
-      if (!id) return NextResponse.json({ error: "id diperlukan" }, { status: 400 });
+      const idStr = ((form.get("id") as string | null) ?? "").trim();
+      const id = Number(idStr);
+      if (!Number.isFinite(id) || id <= 0) return NextResponse.json({ error: "id diperlukan" }, { status: 400 });
       const title = ((form.get("title") as string | null) ?? "").trim();
       const subtitle = ((form.get("subtitle") as string | null) ?? "").trim();
       const buttonLink = ((form.get("buttonLink") as string | null) ?? "").trim();
@@ -87,8 +88,9 @@ export async function POST(req: Request) {
       });
       return NextResponse.json({ ok: true, data: updated });
     } else if (mode === "DELETE") {
-      const id = ((form.get("id") as string | null) ?? "").trim();
-      if (!id) return NextResponse.json({ error: "id diperlukan" }, { status: 400 });
+      const idStr = ((form.get("id") as string | null) ?? "").trim();
+      const id = Number(idStr);
+      if (!Number.isFinite(id) || id <= 0) return NextResponse.json({ error: "id diperlukan" }, { status: 400 });
       await db.banner.delete({ where: { id } });
       return NextResponse.json({ ok: true });
     } else {

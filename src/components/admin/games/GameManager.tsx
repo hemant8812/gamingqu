@@ -5,7 +5,7 @@ import { GameList } from "./GameList";
 import { GameModal } from "./GameModal";
 
 type Game = {
-  id: string;
+  id: number;
   name: string;
   slug: string;
   imageUrl: string | null;
@@ -15,7 +15,7 @@ type Game = {
 };
 
 type Editing = {
-  id: string;
+  id: number;
   name: string;
   slug: string;
   imageUrl?: string | null;

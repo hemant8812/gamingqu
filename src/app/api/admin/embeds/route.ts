@@ -59,8 +59,9 @@ export async function PUT(req: Request) {
   }
   try {
     const body = await req.json().catch(() => ({}));
-    const id = typeof body.id === "string" ? body.id : "";
-    if (!id) return NextResponse.json({ error: "id diperlukan" }, { status: 400 });
+    const idStr = body.id;
+    const id = Number(idStr);
+    if (!Number.isFinite(id)) return NextResponse.json({ error: "id diperlukan" }, { status: 400 });
     const data: Record<string, unknown> = {};
     if (typeof body.name === "string") data.name = body.name.trim();
     if (typeof body.code === "string") data.code = body.code.trim();
@@ -83,8 +84,9 @@ export async function DELETE(req: Request) {
   }
   try {
     const body = await req.json().catch(() => ({}));
-    const id = typeof body.id === "string" ? body.id : "";
-    if (!id) return NextResponse.json({ error: "id diperlukan" }, { status: 400 });
+    const idStr = body.id;
+    const id = Number(idStr);
+    if (!Number.isFinite(id)) return NextResponse.json({ error: "id diperlukan" }, { status: 400 });
     await db.embedCode.delete({ where: { id } });
     revalidatePath("/");
     revalidatePath("/admin/settings");

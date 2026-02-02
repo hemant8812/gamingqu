@@ -6,27 +6,27 @@ import { ServiceModal } from "./ServiceModal";
 import { GameSearchInput } from "@/components/admin/games/GameSearchInput";
 
 type ServiceItem = {
-  id: string;
+  id: number;
   name: string;
   slug: string;
   price: string;
   isHotOffer: boolean;
   isActive: boolean;
   imageUrl?: string | null;
-  game: { id: string; name: string };
-  category?: { id: string; name: string } | null;
+  game: { id: number; name: string };
+  category?: { id: number; name: string } | null;
 };
 
-type GameOption = { id: string; name: string };
-type CategoryOption = { id: string; name: string; gameId: string };
+type GameOption = { id: number; name: string };
+type CategoryOption = { id: number; name: string; gameId: number };
 type Editing = {
-  id: string;
+  id: number;
   name: string;
   slug: string;
   description?: string | null;
   imageUrl?: string | null;
-  gameId: string;
-  categoryId?: string | null;
+  gameId: number;
+  categoryId?: number | null;
   features?: string[] | null;
   price: string;
   isHotOffer: boolean;

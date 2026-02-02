@@ -8,7 +8,7 @@ import { ImageUploadField } from "@/components/shared/ImageUploadField";
 import { AutoSlugField } from "@/components/shared/AutoSlugField";
 
 type Post = {
-    id: string;
+    id: number;
     title: string;
     slug: string;
     excerpt?: string | null;
@@ -19,7 +19,7 @@ type Post = {
 };
 
 type ScraperSource = {
-    id: string;
+    id: number;
     name: string;
     url: string;
     isActive: boolean;
@@ -43,14 +43,15 @@ export function BlogManager({ posts, sources, page, totalPages }: { posts: Post[
     const [editingSource, setEditingSource] = useState<ScraperSource | null>(null);
     const [isConfirmOpen, setIsConfirmOpen] = useState(false);
     const confirmDialogRef = useRef<HTMLDialogElement>(null);
-    const [confirmTarget, setConfirmTarget] = useState<{ id: string; kind: "post" | "source" } | null>(null);
+    const [confirmTarget, setConfirmTarget] = useState<{ id: number; kind: "post" | "source" } | null>(null);
 
     useEffect(() => {
-        const editId = searchParams.get("edit");
+        const editIdStr = searchParams.get("edit");
         const create = searchParams.get("create");
 
-        if (editId) {
-            const post = posts.find(p => p.id === editId);
+        if (editIdStr) {
+            const editId = Number(editIdStr);
+            const post = Number.isFinite(editId) ? posts.find(p => p.id === editId) : undefined;
             if (post) {
                 setEditingPost(post);
                 setIsPostModalOpen(true);
@@ -128,12 +129,12 @@ export function BlogManager({ posts, sources, page, totalPages }: { posts: Post[
             setIsImporting(false);
         }
     };
-    const handleDeletePost = (id: string) => {
+    const handleDeletePost = (id: number) => {
         setConfirmTarget({ id, kind: "post" });
         setIsConfirmOpen(true);
     };
 
-    const handleDeleteSource = (id: string) => {
+    const handleDeleteSource = (id: number) => {
         setConfirmTarget({ id, kind: "source" });
         setIsConfirmOpen(true);
     };
@@ -414,7 +415,7 @@ export function BlogManager({ posts, sources, page, totalPages }: { posts: Post[
                     {/* Content */}
                     <div className="flex-1 overflow-y-auto p-6">
                         <form id="post-form" onSubmit={handleSavePost} className="space-y-6">
-                            {editingPost && <input type="hidden" name="id" value={editingPost.id} />}
+                            {editingPost && <input type="hidden" name="id" value={String(editingPost.id)} />}
 
                             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                                 {/* Left Column */}

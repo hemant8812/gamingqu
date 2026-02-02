@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react";
 
 type Item = {
-  id: string;
+  id: number;
   name: string;
   code: string;
   placement: "HEAD" | "BODY" | "FOOTER";
@@ -32,7 +32,7 @@ export function EmbedSettings() {
   const [isActive, setIsActive] = useState(true);
   const [code, setCode] = useState("");
 
-  const [editingId, setEditingId] = useState<string | null>(null);
+  const [editingId, setEditingId] = useState<number | null>(null);
   const [editName, setEditName] = useState("");
   const [editPlacement, setEditPlacement] = useState<Item["placement"]>("BODY");
   const [editActive, setEditActive] = useState(true);
@@ -91,7 +91,7 @@ export function EmbedSettings() {
     }
   };
 
-  const openEdit = (id: string) => {
+  const openEdit = (id: number) => {
     setEditingId(id);
     const it = items.find((x) => x.id === id);
     if (!it) return;
@@ -130,7 +130,7 @@ export function EmbedSettings() {
     }
   };
 
-  const removeItem = async (id: string) => {
+  const removeItem = async (id: number) => {
     setLoading(true);
     setError(null);
     try {

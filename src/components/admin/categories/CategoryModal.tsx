@@ -5,12 +5,12 @@ import { Save as SaveIcon, X } from "lucide-react";
 import { AutoSlugField } from "@/components/shared/AutoSlugField";
 import { GameSelect } from "@/components/admin/games/GameSelect";
 
-type GameOption = { id: string; name: string };
+type GameOption = { id: number; name: string };
 type Editing = {
-  id: string;
+  id: number;
   name: string;
   slug: string;
-  gameId: string;
+  gameId: number;
   isActive: boolean;
 } | null;
 

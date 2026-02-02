@@ -5,21 +5,21 @@ import { Pencil, Trash2, AlertTriangle, X } from "lucide-react";
 import { useState, useRef, useEffect } from "react";
 
 type ServiceItem = {
-  id: string;
+  id: number;
   name: string;
   slug: string;
   price: string;
   isHotOffer: boolean;
   isActive: boolean;
   imageUrl?: string | null;
-  game: { id: string; name: string };
-  category?: { id: string; name: string } | null;
+  game: { id: number; name: string };
+  category?: { id: number; name: string } | null;
 };
 
 export function ServiceList({ services }: { services: ServiceItem[] }) {
   const router = useRouter();
   const [isConfirmOpen, setIsConfirmOpen] = useState(false);
-  const [deleteId, setDeleteId] = useState<string | null>(null);
+  const [deleteId, setDeleteId] = useState<number | null>(null);
   const dialogRef = useRef<HTMLDialogElement>(null);
   useEffect(() => {
     if (isConfirmOpen) {
@@ -28,15 +28,13 @@ export function ServiceList({ services }: { services: ServiceItem[] }) {
       dialogRef.current?.close();
     }
   }, [isConfirmOpen]);
-  const openConfirm = (id: string) => {
+  const openConfirm = (id: number) => {
     setDeleteId(id);
     setIsConfirmOpen(true);
   };
   const confirmDelete = async () => {
     if (!deleteId) return;
-    const fd = new FormData();
-    fd.set("id", deleteId);
-    const res = await fetch("/api/admin/services", { method: "DELETE", body: fd });
+    const res = await fetch("/api/admin/services", { method: "DELETE", body: JSON.stringify({ id: deleteId }) });
     router.replace(`/admin/services?toast=${res.ok ? "deleted" : "error"}`);
     setIsConfirmOpen(false);
     setDeleteId(null);

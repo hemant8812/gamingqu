@@ -20,3 +20,15 @@ export async function generateNextUserId(prefix: string, minDigits: number) {
   }
   return `${prefix}${String(nextNum).padStart(width, "0")}`;
 }
+
+export async function generateRandomUserId(prefix = "G", digits = 4) {
+  const min = 10 ** (digits - 1);
+  const max = 10 ** digits - 1;
+  for (let attempt = 0; attempt < 10; attempt++) {
+    const n = Math.floor(Math.random() * (max - min + 1)) + min;
+    const id = `${prefix}${n}`;
+    const exists = await db.user.findUnique({ where: { id } });
+    if (!exists) return id;
+  }
+  return generateNextUserId(prefix, digits);
+}

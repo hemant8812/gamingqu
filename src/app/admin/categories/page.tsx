@@ -65,8 +65,9 @@ export default async function AdminCategoriesPage({ searchParams }: { searchPara
   const categories = await getCategories(q || undefined);
 
   const editParam = sp?.edit;
-  const editId = typeof editParam === "string" ? editParam : Array.isArray(editParam) ? editParam[0] ?? null : null;
-  let editing = null as null | { id: string; name: string; slug: string; gameId: string; isActive: boolean };
+  const editIdStr = typeof editParam === "string" ? editParam : Array.isArray(editParam) ? editParam[0] ?? null : null;
+  const editId = editIdStr != null ? Number(editIdStr) : null;
+  let editing = null as null | { id: number; name: string; slug: string; gameId: number; isActive: boolean };
 
   if (editId) {
     try {

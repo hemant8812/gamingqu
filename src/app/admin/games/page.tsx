@@ -54,11 +54,12 @@ export default async function AdminGamesPage({ searchParams }: { searchParams: P
   const q = normalizeQuery(sp, "q", 64);
   const games = await getGames(q || undefined);
   const editParam = sp?.edit;
-  const editId = typeof editParam === "string" ? editParam : Array.isArray(editParam) ? editParam[0] ?? null : null;
+  const editIdStr = typeof editParam === "string" ? editParam : Array.isArray(editParam) ? editParam[0] ?? null : null;
+  const editId = editIdStr != null ? Number(editIdStr) : null;
   let editing = null as null | {
-    id: string; name: string; slug: string; imageUrl: string | null; iconUrl: string | null; description: string | null; isHotOffer: boolean; isActive: boolean;
+    id: number; name: string; slug: string; imageUrl: string | null; iconUrl: string | null; description: string | null; isHotOffer: boolean; isActive: boolean;
   };
-  if (editId) {
+  if (editId && Number.isFinite(editId)) {
     try {
       editing = await db.game.findUnique({
         where: { id: editId },

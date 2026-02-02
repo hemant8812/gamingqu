@@ -7,7 +7,7 @@ import { ImageUploadField } from "@/components/shared/ImageUploadField";
 import { RichTextEditor } from "@/components/shared/RichTextEditor";
 
 type Editing = {
-  id: string;
+  id: number;
   name: string;
   slug: string;
   imageUrl?: string | null;
@@ -96,7 +96,7 @@ export function GameModal({ editing }: { editing: Editing }) {
               defaultValue={editing?.name ?? ""}
             />
             <AutoSlugField nameInputId="name" name="slug" label="Slug" initialValue={editing?.slug ?? ""} />
-            {editing && <input type="hidden" name="id" defaultValue={editing.id} />}
+            {editing && <input type="hidden" name="id" defaultValue={String(editing.id)} />}
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

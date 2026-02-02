@@ -243,9 +243,10 @@ export async function DELETE(req: Request) {
     
     try {
         const { searchParams } = new URL(req.url);
-        const id = searchParams.get("id");
+        const idStr = searchParams.get("id");
+        const id = Number(idStr);
         
-        if (!id) return NextResponse.json({ error: "ID required" }, { status: 400 });
+        if (!Number.isFinite(id)) return NextResponse.json({ error: "ID required" }, { status: 400 });
 
         await db.scraperSource.delete({ where: { id } });
         return NextResponse.json({ success: true });

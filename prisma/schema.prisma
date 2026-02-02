@@ -91,7 +91,7 @@ model VerificationToken {
 }
 
 model BoosterApplication {
-  id         String                   @id @default(cuid())
+  id         Int                      @id @default(autoincrement())
   userId     String
   status     BoosterApplicationStatus @default(PENDING)
   motivation String?                  @db.Text
@@ -105,7 +105,7 @@ model BoosterApplication {
 }
 
 model AdminPermission {
-  id        String   @id @default(cuid())
+  id        Int      @id @default(autoincrement())
   key       String   @unique
   label     String
   enabled   Boolean  @default(false)
@@ -116,7 +116,7 @@ model AdminPermission {
 }
 
 model Game {
-  id          String   @id @default(cuid())
+  id          Int      @id @default(autoincrement())
   name        String   @unique
   slug        String   @unique
   imageUrl    String?
@@ -133,10 +133,10 @@ model Game {
 }
 
 model Category {
-  id        String   @id @default(cuid())
+  id        Int      @id @default(autoincrement())
   name      String
   slug      String   @unique
-  gameId    String
+  gameId    Int
   isActive  Boolean  @default(true)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -149,11 +149,11 @@ model Category {
 }
 
 model Service {
-  id          String   @id @default(cuid())
+  id          Int      @id @default(autoincrement())
   name        String
   slug        String   @unique
-  gameId      String
-  categoryId  String?
+  gameId      Int
+  categoryId  Int?
   description String?  @db.Text
   imageUrl    String?
   features    Json?
@@ -188,7 +188,7 @@ enum EmbedPlacement {
 }
 
 model EmbedCode {
-  id        String         @id @default(cuid())
+  id        Int            @id @default(autoincrement())
   name      String
   code      String         @db.Text
   placement EmbedPlacement
@@ -244,7 +244,7 @@ model FooterSetting {
 }
 
 model Banner {
-  id             String   @id @default(cuid())
+  id             Int      @id @default(autoincrement())
   title          String?
   subtitle       String?
   buttonLink     String?
@@ -258,7 +258,7 @@ model Banner {
 }
 
 model Post {
-  id          String   @id @default(cuid())
+  id          Int      @id @default(autoincrement())
   title       String
   slug        String   @unique
   excerpt     String?  @db.Text
@@ -277,7 +277,7 @@ model Post {
 }
 
 model ScraperSource {
-  id          String   @id @default(cuid())
+  id          Int      @id @default(autoincrement())
   name        String
   url         String   @unique
   scrapeInterval Int   @default(60) // Interval in minutes

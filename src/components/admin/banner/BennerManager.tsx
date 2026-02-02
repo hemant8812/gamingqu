@@ -5,7 +5,7 @@ import { Plus, Trash2, Pencil, AlertTriangle, X } from "lucide-react";
 import { BennerModal } from "./BennerModal";
 
 type Item = {
-  id: string;
+  id: number;
   title?: string | null;
   subtitle?: string | null;
   buttonLink?: string | null;
@@ -23,7 +23,7 @@ export function BennerManager({ items, canAdd }: Props) {
   const [editingItem, setEditingItem] = useState<Item | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isConfirmOpen, setIsConfirmOpen] = useState(false);
-  const [deleteId, setDeleteId] = useState<string | null>(null);
+  const [deleteId, setDeleteId] = useState<number | null>(null);
   const dialogRef = useRef<HTMLDialogElement>(null);
 
   const openCreate = () => {
@@ -49,7 +49,7 @@ export function BennerManager({ items, canAdd }: Props) {
     }
   }, [isConfirmOpen]);
 
-  const openConfirm = (id: string) => {
+  const openConfirm = (id: number) => {
     setDeleteId(id);
     setIsConfirmOpen(true);
   };
@@ -58,7 +58,7 @@ export function BennerManager({ items, canAdd }: Props) {
     if (!deleteId) return;
     const fd = new FormData();
     fd.set("mode", "DELETE");
-    fd.set("id", deleteId);
+    fd.set("id", String(deleteId));
     const res = await fetch("/api/admin/benner", { method: "POST", body: fd });
     window.location.assign(`/admin/benner?toast=${res.ok ? "success" : "error"}`);
     setIsConfirmOpen(false);

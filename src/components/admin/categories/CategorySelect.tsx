@@ -2,7 +2,7 @@
 import * as React from "react";
 import { Search as SearchIcon, ChevronDown, Check, X } from "lucide-react";
 
-type CategoryOption = { id: string; name: string; gameId: string };
+type CategoryOption = { id: number; name: string; gameId: number };
 
 export function CategorySelect({
   categories,
@@ -15,12 +15,12 @@ export function CategorySelect({
   categories: CategoryOption[];
   name?: string;
   label?: string;
-  gameId?: string;
-  initialValue?: string | null;
-  onChange?: (id: string) => void;
+  gameId?: number;
+  initialValue?: number | null;
+  onChange?: (id: number | null) => void;
 }) {
   const [query, setQuery] = React.useState("");
-  const [selectedId, setSelectedId] = React.useState<string>(initialValue ?? "");
+  const [selectedId, setSelectedId] = React.useState<number | null>(initialValue ?? null);
   const [isOpen, setIsOpen] = React.useState(false);
   const dropdownRef = React.useRef<HTMLDivElement>(null);
 
@@ -36,11 +36,11 @@ export function CategorySelect({
 
   React.useEffect(() => {
     if (initialValue !== undefined) {
-      setSelectedId(initialValue ?? "");
+      setSelectedId(initialValue ?? null);
     }
   }, [initialValue]);
 
-  const selectedName = React.useMemo(() => categories.find((c) => c.id === selectedId)?.name ?? "", [selectedId, categories]);
+  const selectedName = React.useMemo(() => (selectedId != null ? categories.find((c) => c.id === selectedId)?.name ?? "" : ""), [selectedId, categories]);
   const filtered = React.useMemo(() => {
     const list = gameId ? categories.filter((c) => c.gameId === gameId) : categories;
     const q = query.trim().toLowerCase();
@@ -48,7 +48,7 @@ export function CategorySelect({
     return list.filter((c) => c.name.toLowerCase().includes(q));
   }, [categories, query, gameId]);
 
-  const setValue = (id: string) => {
+  const setValue = (id: number | null) => {
     setSelectedId(id);
     onChange?.(id);
     setIsOpen(false);
@@ -85,11 +85,11 @@ export function CategorySelect({
               </div>
               <div className="space-y-1">
                 <div
-                  onClick={() => setValue("")}
-                  className={`flex items-center justify-between px-3 py-2 rounded-lg cursor-pointer transition-colors ${selectedId === "" ? "bg-blue-500/20 text-blue-400" : "text-gray-400 hover:bg-white/5"}`}
+                  onClick={() => setValue(null)}
+                  className={`flex items-center justify-between px-3 py-2 rounded-lg cursor-pointer transition-colors ${selectedId == null ? "bg-blue-500/20 text-blue-400" : "text-gray-400 hover:bg-white/5"}`}
                 >
                   <span>No category</span>
-                  {selectedId === "" && <X className="h-4 w-4" />}
+                  {selectedId == null && <X className="h-4 w-4" />}
                 </div>
                 {filtered.length === 0 && (
                   <div className="text-gray-500 px-3 py-2 text-sm">No results</div>
@@ -109,7 +109,7 @@ export function CategorySelect({
           </div>
         )}
       </div>
-      <input id={name} name={name} type="hidden" value={selectedId} />
+      <input id={name} name={name} type="hidden" value={selectedId != null ? String(selectedId) : ""} />
     </div>
   );
 }

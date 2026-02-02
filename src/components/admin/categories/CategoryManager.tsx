@@ -6,19 +6,19 @@ import { CategoryModal } from "./CategoryModal";
 import { GameSearchInput } from "@/components/admin/games/GameSearchInput";
 
 type CategoryItem = {
-  id: string;
+  id: number;
   name: string;
   slug: string;
   isActive: boolean;
-  game: { id: string; name: string; iconUrl: string | null };
+  game: { id: number; name: string; iconUrl: string | null };
 };
 
-type GameOption = { id: string; name: string };
+type GameOption = { id: number; name: string };
 type Editing = {
-  id: string;
+  id: number;
   name: string;
   slug: string;
-  gameId: string;
+  gameId: number;
   isActive: boolean;
 } | null;
 

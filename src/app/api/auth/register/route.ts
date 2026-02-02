@@ -3,6 +3,7 @@ import { hash } from "bcrypt";
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { sanitizePlain, normalizeEmail } from "@/lib/sanitize";
+import { generateRandomUserId } from "@/lib/userId";
 
 const RegisterSchema = z.object({
   name: z.string().min(2).max(100),
@@ -54,8 +55,10 @@ export async function POST(req: Request) {
       }
     }
 
+    const id = await generateRandomUserId("G", 4);
     await db.user.create({
       data: {
+        id,
         name,
         email,
         password: hashed,

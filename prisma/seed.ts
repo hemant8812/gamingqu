@@ -23,6 +23,18 @@ const prisma = new PrismaClient({
   })(),
 });
 
+async function generateRandomUserId(prefix = "G", digits = 4) {
+  const min = 10 ** (digits - 1);
+  const max = 10 ** digits - 1;
+  for (let i = 0; i < 20; i++) {
+    const n = Math.floor(Math.random() * (max - min + 1)) + min;
+    const id = `${prefix}${n}`;
+    const exists = await prisma.user.findUnique({ where: { id } });
+    if (!exists) return id;
+  }
+  return `${prefix}${Date.now().toString().slice(-digits)}`;
+}
+
 async function main() {
   await prisma.adminPermission.upsert({
     where: { key: "users" },
@@ -47,42 +59,46 @@ async function main() {
 
   const pwd = await hash("password123", 10);
 
+  const memberId = await generateRandomUserId("G", 4);
   await prisma.user.upsert({
     where: { email: "member@gamingqu.com" },
     update: {},
-    create: { username: "member", name: "Member Satu", email: "member@gamingqu.com", password: pwd, role: "MEMBER" },
+    create: { id: memberId, username: "member", name: "Member Satu", email: "member@gamingqu.com", password: pwd, role: "MEMBER" },
   });
 
+  const boosterId = await generateRandomUserId("G", 4);
   await prisma.user.upsert({
     where: { email: "booster@gamingqu.com" },
     update: {},
-    create: { username: "booster", name: "Booster Satu", email: "booster@gamingqu.com", password: pwd, role: "BOOSTER" },
+    create: { id: boosterId, username: "booster", name: "Booster Satu", email: "booster@gamingqu.com", password: pwd, role: "BOOSTER" },
   });
 
+  const adminId = await generateRandomUserId("G", 4);
   await prisma.user.upsert({
     where: { email: "admin@gamingqu.com" },
     update: {},
-    create: { username: "admin", name: "Admin Satu", email: "admin@gamingqu.com", password: pwd, role: "ADMIN" },
+    create: { id: adminId, username: "admin", name: "Admin Satu", email: "admin@gamingqu.com", password: pwd, role: "ADMIN" },
   });
 
+  const superadminId = await generateRandomUserId("G", 4);
   await prisma.user.upsert({
     where: { email: "superadmin@gamingqu.com" },
     update: {},
-    create: { username: "superadmin", name: "Super Admin", email: "superadmin@gamingqu.com", password: pwd, role: "SUPERADMIN" },
+    create: { id: superadminId, username: "superadmin", name: "Super Admin", email: "superadmin@gamingqu.com", password: pwd, role: "SUPERADMIN" },
   });
 
   const member = await prisma.user.findUnique({ where: { email: "member@gamingqu.com" } });
   if (member) {
-    await prisma.boosterApplication.upsert({
-      where: { id: member.id.slice(0, 24) }, // stable key (dummy)
-      update: {},
-      create: {
-        id: member.id.slice(0, 24),
-        userId: member.id,
-        status: "PENDING",
-        motivation: "Saya berpengalaman boosting di beberapa game FPS.",
-      },
-    });
+    const exists = await prisma.boosterApplication.findFirst({ where: { userId: member.id } });
+    if (!exists) {
+      await prisma.boosterApplication.create({
+        data: {
+          userId: member.id,
+          status: "PENDING",
+          motivation: "Saya berpengalaman boosting di beberapa game FPS.",
+        },
+      });
+    }
   }
 
   const blizzardUrl = "https://news.blizzard.com/en-us/world-of-warcraft";

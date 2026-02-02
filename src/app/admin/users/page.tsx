@@ -9,7 +9,7 @@ import { hash } from "bcrypt";
 import { Users as UsersIcon, User as UserIcon, Zap as ZapIcon, UserX as UserXIcon } from "lucide-react";
 import { PageToast } from "@/components/shared/PageToast";
 import { UsersSearchInput } from "@/components/admin/users/UsersSearchInput";
-import { generateNextUserId } from "@/lib/userId";
+import { generateRandomUserId } from "@/lib/userId";
 import { UserList } from "@/components/admin/users/UserList";
 import { normalizeQuery, parseToast, getParamStr } from "@/lib/page-utils";
 
@@ -70,7 +70,7 @@ export default async function AdminUsersPage({ searchParams }: { searchParams: P
       return { ok: false, message: "Username sudah terpakai" };
     }
     try {
-      const customId = await generateNextUserId("GQ", 3);
+      const customId = await generateRandomUserId("G", 4);
       await db.user.create({
         data: {
           id: customId,
