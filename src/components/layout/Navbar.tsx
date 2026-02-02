@@ -152,9 +152,12 @@ export function Navbar({ siteName = "Gamingqu", logoUrl = null, user = null }: P
                 <ul tabIndex={0} className="dropdown-content z-[1] menu p-2 shadow-2xl bg-[#0F172A]/95 backdrop-blur-xl border border-white/10 rounded-2xl w-56 mt-4">
                   <li className="menu-title px-4 py-2 text-xs text-gray-500">{user.email ?? user.name ?? "Account"}</li>
                   {(user.role === "ADMIN" || user.role === "SUPERADMIN") && (
-                    <li><Link href="/admin" onClick={closeDropdown} className="hover:bg-white/10 rounded-xl"><FiGrid className="h-4 w-4 text-blue-400" /> Dashboard</Link></li>
+                    <li><Link href="/admin" onClick={closeDropdown} className="hover:bg-white/10 rounded-xl"><FiGrid className="h-4 w-4 text-blue-400" /> Admin Panel</Link></li>
                   )}
-                  <li><Link href="/orders" onClick={closeDropdown} className="hover:bg-white/10 rounded-xl"><FiShoppingCart className="h-4 w-4 text-cyan-400" /> My orders</Link></li>
+                  {user.role === "MEMBER" && (
+                    <li><Link href="/dashboard" onClick={closeDropdown} className="hover:bg-white/10 rounded-xl"><FiGrid className="h-4 w-4 text-blue-400" /> Dashboard</Link></li>
+                  )}
+                  <li><Link href="/dashboard/orders" onClick={closeDropdown} className="hover:bg-white/10 rounded-xl"><FiShoppingCart className="h-4 w-4 text-cyan-400" /> My orders</Link></li>
                   <li><button onClick={() => signOut({ callbackUrl: "/" })} className="hover:bg-white/10 rounded-xl text-red-400"><FiLogOut className="h-4 w-4" /> Logout</button></li>
                 </ul>
               </div>
