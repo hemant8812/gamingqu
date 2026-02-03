@@ -361,7 +361,7 @@ export function Navbar({ siteName = "Gamingqu", logoUrl = null, user = null }: P
 
             <div className="dropdown dropdown-end">
               <button type="button" className="btn btn-ghost gap-1 px-2 text-gray-400 hover:text-white hover:bg-white/10" aria-haspopup="menu" aria-label="Change currency">
-                <span className="text-lg font-sans">{currency}</span>
+                <span className="text-lg font-sans" suppressHydrationWarning>{currency}</span>
                 <FiChevronDown className="h-4 w-4" />
               </button>
               <ul tabIndex={0} className="dropdown-content z-[1] menu p-2 shadow-2xl bg-[#0F172A]/95 backdrop-blur-xl border border-white/10 rounded-2xl w-24 mt-4">
