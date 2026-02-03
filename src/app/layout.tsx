@@ -95,7 +95,7 @@ export default async function RootLayout({
         {bodyEmbeds.map((e) => (
           <script key={e.id} dangerouslySetInnerHTML={{ __html: `try{document.body.insertAdjacentHTML("afterbegin", ${JSON.stringify(e.code)})}catch{}` }} />
         ))}
-        <Providers>
+        <Providers eurPerUsd={typeof s?.eurPerUsd === "number" ? (s?.eurPerUsd as number) :  (s?.eurPerUsd ? Number(s?.eurPerUsd as unknown as number) : 1)}>
           <Navbar siteName={siteName} logoUrl={logoUrl} user={session?.user ?? null} />
           <main className="pt-16">{children}</main>
         </Providers>

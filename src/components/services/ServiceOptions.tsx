@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import { useCurrency } from "@/app/providers";
 
 type DetailItem = {
   id: number;
@@ -27,6 +28,7 @@ function OptionSelect({
   options: NonNullable<DetailItem["options"]>;
   onChangeExtras?: (extras: Array<{ price: number; kind: "fixed" }>) => void;
 }) {
+  const { symbol: currency, convert } = useCurrency();
   const [val, setVal] = React.useState<string>("");
   const [open, setOpen] = React.useState(false);
   const ref = React.useRef<HTMLDivElement>(null);
@@ -59,7 +61,7 @@ function OptionSelect({
           <span className={val ? "text-white" : "text-gray-400"}>
             {val ? (
               <>
-                {val} {selected && Number.isFinite(selected.price) && selected.price > 0 ? `(+$${selected.price})` : ""}
+                {val} {selected && Number.isFinite(selected.price) && selected.price > 0 ? `(+${currency}${convert(selected.price).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })})` : ""}
               </>
             ) : defaultLabel}
           </span>
@@ -97,7 +99,7 @@ function OptionSelect({
               >
                 <span>{o.label}</span>
                 {Number.isFinite(o.price) && o.price > 0 && (
-                  <span className="text-sm opacity-80">(+${o.price})</span>
+                  <span className="text-sm opacity-80">(+{currency}{convert(o.price).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })})</span>
                 )}
               </div>
             ))}
@@ -123,6 +125,7 @@ function OptionRadio({
   priceType: "fixed" | "percent";
   currentSubtotal?: number;
 }) {
+  const { symbol: currency, convert } = useCurrency();
   const [val, setVal] = React.useState<string>("");
   const isDual = options.length === 2;
   const isList = options.length >= 3;
@@ -166,11 +169,8 @@ function OptionRadio({
               </div>
               {Number.isFinite(o.price) && o.price > 0 && (
                 <span className="font-semibold text-gray-300">
-                  +$
-                  {(priceType === "percent"
-                    ? ((currentSubtotal ?? 0) * (o.price / 100))
-                    : o.price
-                  ).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                  +{currency}
+                  {convert(priceType === "percent" ? ((currentSubtotal ?? 0) * (o.price / 100)) : o.price).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                 </span>
               )}
             </label>
@@ -205,10 +205,7 @@ function OptionRadio({
             <span className={`text-sm font-medium ${val === o.label ? "text-white" : "text-gray-300"}`}>
               {o.label}{" "}
               {Number.isFinite(o.price) && o.price > 0
-                ? `(+$${(priceType === "percent"
-                    ? ((currentSubtotal ?? 0) * (o.price / 100))
-                    : o.price
-                  ).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })})`
+                ? `(+${currency}${convert(priceType === "percent" ? ((currentSubtotal ?? 0) * (o.price / 100)) : o.price).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })})`
                 : ""}
             </span>
           </label>
@@ -229,6 +226,7 @@ function OptionCheckboxGroup({
   options: NonNullable<DetailItem["options"]>;
   onChangeExtras?: (extras: Array<{ price: number; kind: "fixed" }>) => void;
 }) {
+  const { symbol: currency, convert } = useCurrency();
   const [vals, setVals] = React.useState<Record<string, boolean>>({});
   React.useEffect(() => {
     const extras: Array<{ price: number; kind: "fixed" }> = [];
@@ -255,7 +253,7 @@ function OptionCheckboxGroup({
               <span className="font-semibold text-white">{o.label}</span>
             </div>
             {Number.isFinite(o.price) && o.price > 0 && (
-              <span className="font-semibold text-gray-300">+${o.price}</span>
+              <span className="font-semibold text-gray-300">+{currency}{convert(o.price).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
             )}
           </label>
         ))}
@@ -279,6 +277,7 @@ function OptionSingleCheckbox({
   onChangeExtras?: (extras: Array<{ price: number; kind: "fixed" | "percent" }>) => void;
   currentSubtotal?: number;
 }) {
+  const { symbol: currency, convert } = useCurrency();
   const [checked, setChecked] = React.useState(false);
   React.useEffect(() => {
     const extras = checked && Number.isFinite(price) && price > 0 ? [{ price, kind: priceType === "percent" ? "percent" : "fixed" }] : [];
@@ -299,11 +298,8 @@ function OptionSingleCheckbox({
           </div>
           {Number.isFinite(price) && price > 0 && (
             <span className="font-semibold text-gray-300">
-              +$
-              {(priceType === "percent"
-                ? ((currentSubtotal ?? 0) * (price / 100))
-                : price
-              ).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+              +{currency}
+              {convert(priceType === "percent" ? ((currentSubtotal ?? 0) * (price / 100)) : price).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
             </span>
           )}
         </label>

@@ -58,17 +58,19 @@ export async function getFooterSettings() {
 
 export async function getWebsiteSettingCore() {
   try {
-    return await db.websiteSetting.findUnique({
+    const s = await (db.websiteSetting as any).findUnique({
       where: { id: "singleton" },
-      select: {
-        siteName: true,
-        tagline: true,
-        logoUrl: true,
-        faviconUrl: true,
-        contactEmail: true,
-        contactPhone: true,
-      },
     });
+    if (!s) return null;
+    return {
+      siteName: s.siteName,
+      tagline: s.tagline,
+      logoUrl: s.logoUrl,
+      faviconUrl: s.faviconUrl,
+      contactEmail: s.contactEmail,
+      contactPhone: s.contactPhone,
+      eurPerUsd: typeof s.eurPerUsd === "number" ? s.eurPerUsd : (s.eurPerUsd ? Number(s.eurPerUsd) : undefined),
+    };
   } catch {
     return null;
   }

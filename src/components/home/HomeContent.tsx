@@ -6,6 +6,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Flame, Trophy } from "lucide-react";
 import { formatPrice } from "@/lib/formatPrice";
+import { useCurrency } from "@/app/providers";
 
 type GameItem = {
   slug: string;
@@ -34,6 +35,7 @@ export function HomeContent() {
   const [games, setGames] = useState<GameItem[]>([]);
   const [hotServices, setHotServices] = useState<HotService[]>([]);
   const [hotLoading, setHotLoading] = useState(false);
+  const { symbol: currency, convert } = useCurrency();
   const [heroSlides, setHeroSlides] = useState([
     {
       subtitle: "Boost your game — and your wallet",
@@ -351,7 +353,8 @@ export function HomeContent() {
                   <div className="flex items-center justify-between pt-2 border-t border-white/10">
                     <span className="font-bold text-lg text-white flex items-center">
                       {(() => {
-                        const { whole, decimal, showDecimal } = formatPrice(h.price);
+                        const converted = convert(h.price);
+                        const { whole, decimal, showDecimal } = formatPrice(converted);
                         return (
                           <span className="gradient-text">
                             {whole}
@@ -363,7 +366,7 @@ export function HomeContent() {
                           </span>
                         );
                       })()}
-                      <span className="text-md ml-1 text-gray-400">€</span>
+                      <span className="text-md ml-1 text-gray-400">{currency}</span>
                     </span>
                     <Link
                       href={`/${h.game.slug}/${h.slug}`}

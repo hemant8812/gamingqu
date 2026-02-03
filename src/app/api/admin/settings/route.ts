@@ -77,7 +77,7 @@ export async function POST(req: Request) {
     const faviconFile = form.get("favicon") as File | null;
     const logoUrl = await saveBrandFile(logoFile, "logo");
     const faviconUrl = await saveBrandFile(faviconFile, "favicon");
-    const updated = await db.websiteSetting.upsert({
+    const updated = await (db.websiteSetting as any).upsert({
       where: { id: "singleton" },
       update: {
         siteName: siteName || undefined,
@@ -86,6 +86,12 @@ export async function POST(req: Request) {
         contactPhone: contactPhone || undefined,
         logoUrl: logoUrl ?? undefined,
         faviconUrl: faviconUrl ?? undefined,
+        // Currency settings
+        eurPerUsd: (() => {
+          const raw = (form.get("eurPerUsd") as string | null) ?? "";
+          const n = parseFloat(raw);
+          return Number.isFinite(n) && n > 0 ? n : undefined;
+        })(),
       },
       create: {
         id: "singleton",
@@ -95,6 +101,11 @@ export async function POST(req: Request) {
         contactPhone: contactPhone || undefined,
         logoUrl: logoUrl ?? undefined,
         faviconUrl: faviconUrl ?? undefined,
+        eurPerUsd: (() => {
+          const raw = (form.get("eurPerUsd") as string | null) ?? "";
+          const n = parseFloat(raw);
+          return Number.isFinite(n) && n > 0 ? n : undefined;
+        })(),
       },
     });
     const footerFieldNames = [

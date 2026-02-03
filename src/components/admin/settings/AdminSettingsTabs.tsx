@@ -1,10 +1,11 @@
 "use client";
 import { useState } from "react";
-import { Settings as SettingsIcon, Code2 as CodeIcon, Layout as LayoutIcon, Search as SearchIcon } from "lucide-react";
+import { Settings as SettingsIcon, Code2 as CodeIcon, Layout as LayoutIcon, Search as SearchIcon, Coins as CoinsIcon } from "lucide-react";
 import { SettingsForm } from "@/components/admin/settings/SettingsForm";
 import { FooterSettingsForm } from "@/components/admin/settings/FooterSettingsForm";
 import { EmbedSettings } from "@/components/admin/settings/EmbedSettings";
 import { SeoSettingsForm } from "@/components/admin/settings/SeoSettingsForm";
+import { CurrencySettingsForm } from "@/components/admin/settings/CurrencySettingsForm";
 
 type SettingCore = {
     siteName?: string | null;
@@ -13,6 +14,7 @@ type SettingCore = {
     faviconUrl?: string | null;
     contactEmail?: string | null;
     contactPhone?: string | null;
+    eurPerUsd?: number | null;
 } | null;
 
 type FooterInitial = {
@@ -62,6 +64,7 @@ type Props = {
 export function AdminSettingsTabs({ initialTab, setting, footer }: Props) {
     const [activeTab, setActiveTab] = useState(
         initialTab === "footer" ? "footer" :
+        initialTab === "currency" ? "currency" :
         initialTab === "embed" ? "embed" :
         initialTab === "seo" ? "seo" :
         "general"
@@ -79,6 +82,16 @@ export function AdminSettingsTabs({ initialTab, setting, footer }: Props) {
                 >
                     <SettingsIcon className="w-4 h-4" />
                     General
+                </button>
+                <button
+                    className={`h-10 px-4 font-medium text-sm rounded-xl flex items-center gap-2 transition-colors ${activeTab === "currency"
+                            ? "bg-blue-600 text-white"
+                            : "bg-white/5 text-gray-400 hover:bg-white/10 hover:text-white"
+                        }`}
+                    onClick={() => setActiveTab("currency")}
+                >
+                    <CoinsIcon className="w-4 h-4" />
+                    Currency
                 </button>
                 <button
                     className={`h-10 px-4 font-medium text-sm rounded-xl flex items-center gap-2 transition-colors ${activeTab === "footer"
@@ -122,6 +135,9 @@ export function AdminSettingsTabs({ initialTab, setting, footer }: Props) {
                         contactEmail: setting?.contactEmail ?? "",
                         contactPhone: setting?.contactPhone ?? ""
                     }} />
+                )}
+                {activeTab === "currency" && (
+                    <CurrencySettingsForm initialRate={typeof setting?.eurPerUsd === "number" ? setting?.eurPerUsd as number : (setting?.eurPerUsd ? Number(setting?.eurPerUsd as unknown as number) : undefined)} />
                 )}
                 {activeTab === "footer" && (
                     <FooterSettingsForm initial={{

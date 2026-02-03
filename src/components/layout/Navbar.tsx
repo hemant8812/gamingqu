@@ -7,6 +7,7 @@ import { signOut } from "next-auth/react";
 import { usePathname, useRouter } from "next/navigation";
 import { Gamepad2 } from "lucide-react";
 import { formatPrice } from "@/lib/formatPrice";
+import { useCurrency } from "@/app/providers";
 
 function GridRoundedIcon(props: React.SVGProps<SVGSVGElement>) {
   return (
@@ -40,7 +41,7 @@ type Props = {
 };
 
 export function Navbar({ siteName = "Gamingqu", logoUrl = null, user = null }: Props) {
-  const [currency, setCurrency] = useState<"$" | "€">("$");
+  const { symbol: currency, setSymbol: setCurrency, convert } = useCurrency();
   const [showLogo, setShowLogo] = useState<boolean>(!!logoUrl);
   const pathname = usePathname();
   const router = useRouter();
@@ -218,7 +219,7 @@ export function Navbar({ siteName = "Gamingqu", logoUrl = null, user = null }: P
                 }
                 setSearchOpen(false);
               }}
-              className={`overflow-visible transition-all duration-300 relative z-40 ${searchOpen ? "w-80 md:w-96 mr-2" : "w-0 mr-0"}`}
+              className={`overflow-visible transition-all duration-300 relative z-40 ${searchOpen ? "w-[10rem] md:w-[20rem] lg:w-[30rem] mr-2" : "w-0 mr-0"}`}
             >
               {searchOpen && (
                 <>
@@ -288,7 +289,7 @@ export function Navbar({ siteName = "Gamingqu", logoUrl = null, user = null }: P
                                   <div className="absolute inset-0 bg-gradient-to-br from-zinc-900 to-zinc-800" />
                                 )}
                                 <div className="absolute top-2 right-2 text-xs font-semibold bg-pink-600 text-white px-2 py-1 rounded-md">
-                                  From {currency}{formatPrice(p.price ?? 0).formatted}
+                                  From {currency}{formatPrice(convert(p.price ?? 0)).formatted}
                                 </div>
                               </div>
                               <div className="px-4 py-3">
@@ -365,8 +366,8 @@ export function Navbar({ siteName = "Gamingqu", logoUrl = null, user = null }: P
                 <FiChevronDown className="h-4 w-4" />
               </button>
               <ul tabIndex={0} className="dropdown-content z-[1] menu p-2 shadow-2xl bg-[#0F172A]/95 backdrop-blur-xl border border-white/10 rounded-2xl w-24 mt-4">
-                <li><button onClick={() => setCurrency("$")} className="hover:bg-white/10 rounded-xl">$ US</button></li>
-                <li><button onClick={() => setCurrency("€")} className="hover:bg-white/10 rounded-xl">€ EU</button></li>
+                <li><button onClick={() => { setCurrency("$"); closeDropdown(); }} className="hover:bg-white/10 rounded-xl">$ US</button></li>
+                <li><button onClick={() => { setCurrency("€"); closeDropdown(); }} className="hover:bg-white/10 rounded-xl">€ EU</button></li>
               </ul>
             </div>
 

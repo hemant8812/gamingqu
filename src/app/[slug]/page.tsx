@@ -7,6 +7,7 @@ import Link from "next/link";
 import { Zap, Tag, ShoppingBag } from "lucide-react";
 import { formatPrice } from "@/lib/formatPrice";
 import { stripHtml } from "@/lib/text";
+import { useCurrency } from "@/app/providers";
 
 type ServiceItem = {
     id: string;
@@ -38,7 +39,9 @@ type GameData = {
 };
 
 function ServiceCard({ s, gameSlug }: { s: ServiceItem; gameSlug: string }) {
-    const { whole, decimal, showDecimal } = formatPrice(s.price);
+    const { symbol: currency, convert } = useCurrency();
+    const conv = convert(typeof s.price === "string" ? parseFloat(s.price) : (s.price as unknown as number));
+    const { whole, decimal, showDecimal } = formatPrice(conv);
     const router = useRouter();
     const href = `/${gameSlug}/${s.slug}`;
 
@@ -100,7 +103,7 @@ function ServiceCard({ s, gameSlug }: { s: ServiceItem; gameSlug: string }) {
                                 </span>
                             )}
                         </span>
-                        <span className="text-md ml-1 text-gray-400">€</span>
+                        <span className="text-md ml-1 text-gray-400">{currency}</span>
                     </span>
                     <Link
                         href={href}

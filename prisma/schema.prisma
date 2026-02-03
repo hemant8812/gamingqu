@@ -222,6 +222,8 @@ model WebsiteSetting {
   faviconUrl   String?
   contactEmail String?
   contactPhone String?
+  /// Currency: base is USD; eurPerUsd means 1 USD equals X EUR
+  eurPerUsd    Decimal? @db.Decimal(10, 4)
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
 }

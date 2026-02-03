@@ -6,6 +6,7 @@ import { ServiceOptions } from "./ServiceOptions";
 import { Clock, Timer, ShoppingCart, CheckCircle } from "lucide-react";
 import { SiStripe, SiVisa, SiAmericanexpress, SiApplepay, SiGooglepay, SiPaypal, SiBitcoin } from "react-icons/si";
 import { formatPrice } from "@/lib/formatPrice";
+import { useCurrency } from "@/app/providers";
 
 type DetailItem = {
   id: number;
@@ -32,6 +33,7 @@ export function ServicePanel({
   serviceSlug: string;
   basePrice: number;
 }) {
+  const { symbol: currency, convert } = useCurrency();
   const [fromLevel, setFromLevel] = React.useState<number | null>(null);
   const [toLevel, setToLevel] = React.useState<number | null>(null);
   const [extras, setExtras] = React.useState<Array<{ price: number; kind: "fixed" | "percent" }>>([]);
@@ -69,7 +71,7 @@ export function ServicePanel({
     }
     return { subtotal, totalPrice: subtotal + percentAdd };
   }, [extras, basePrice, diff, details]);
-  const computedFmt = formatPrice(totalPrice);
+  const computedFmt = formatPrice(convert(totalPrice));
 
   return (
     <aside className="relative space-y-0">
@@ -93,7 +95,7 @@ export function ServicePanel({
               {computedFmt.whole}
               {computedFmt.showDecimal && <span className="text-lg">,{computedFmt.decimal}</span>}
             </span>
-            <span className="text-white/80 text-xl ml-2">$</span>
+            <span className="text-white/80 text-xl ml-2">{currency}</span>
           </div>
 
           <div className="space-y-1 mb-3">
