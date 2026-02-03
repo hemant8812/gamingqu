@@ -47,6 +47,7 @@ export default async function AdminPermissionsPage() {
     { key: "games", label: "Games" },
     { key: "categories", label: "Categories" },
     { key: "services", label: "Services" },
+    { key: "payment-method", label: "Payment Method" },
     { key: "blog", label: "Blog" },
     { key: "benner", label: "Banners" },
     { key: "settings", label: "Settings" },

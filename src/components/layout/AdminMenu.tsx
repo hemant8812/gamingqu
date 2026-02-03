@@ -14,6 +14,7 @@ export function AdminMenu() {
     { href: "/admin/orders", label: "Orders" },
     { href: "/admin/analytics", label: "Analytics" },
     { href: "/admin/games", label: "Games" },
+    { href: "/admin/payment-method", label: "Payment Method" },
     { href: "/admin/blog", label: "Blog" },
     { href: "/admin/settings", label: "Settings" },
   ];

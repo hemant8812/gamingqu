@@ -1,13 +1,13 @@
 "use client";
 import React from "react";
- 
- import { useEffect, useState } from "react";
- import { useParams, useRouter } from "next/navigation";
- import Link from "next/link";
- import { useCurrency } from "@/app/providers";
- import { formatPrice } from "@/lib/formatPrice";
-import { CreditCard, Wallet, Banknote, ShieldCheck, AlertTriangle } from "lucide-react";
- import { useSession } from "next-auth/react";
+import { useEffect, useState } from "react";
+import { useParams, useRouter } from "next/navigation";
+import Link from "next/link";
+import { useCurrency } from "@/app/providers";
+import { formatPrice } from "@/lib/formatPrice";
+import { CreditCard, ShieldCheck, AlertTriangle } from "lucide-react";
+import { useSession } from "next-auth/react";
+import Image from "next/image";
  
  type PurchaseData = {
    serviceSlug: string;
@@ -20,18 +20,27 @@ import { CreditCard, Wallet, Banknote, ShieldCheck, AlertTriangle } from "lucide
   selectedOptions?: Array<{ title: string; values: string[] }>;
  };
  
- export default function CheckoutPage() {
+ type PaymentMethodPublic = {
+   slug: string;
+   iconUrl: string | null;
+   feePercent: number | null;
+   feeFixed: number | null;
+   sortOrder: number;
+ };
+ 
+export default function CheckoutPage() {
    const params = useParams<{ service?: string }>();
    const router = useRouter();
    const { symbol: currency, convert } = useCurrency();
   const { data: session, status } = useSession();
    const [data, setData] = useState<PurchaseData | null>(null);
-  const [method, setMethod] = useState<"card" | "paypal" | "bank" | null>(null);
+  const [method, setMethod] = useState<string | null>(null);
   const [serviceName, setServiceName] = useState<string>("");
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
   const [discord, setDiscord] = useState<string>("");
   const [characterName, setCharacterName] = useState<string>("");
+  const [pmList, setPmList] = useState<PaymentMethodPublic[]>([]);
  
    const service = Array.isArray(params?.service) ? params?.service?.[0] : params?.service ?? "";
  
@@ -88,7 +97,7 @@ import { CreditCard, Wallet, Banknote, ShieldCheck, AlertTriangle } from "lucide
             fromLevel: data.fromLevel,
             toLevel: data.toLevel,
             selectedOptions: data.selectedOptions ?? [],
-            method,
+            method: method ?? undefined,
           }),
         });
         const json = await res.json();
@@ -107,8 +116,26 @@ import { CreditCard, Wallet, Banknote, ShieldCheck, AlertTriangle } from "lucide
     };
     run();
   }, [data, method]);
+  useEffect(() => {
+    (async () => {
+      try {
+        const res = await fetch("/api/payment-methods", { cache: "no-store" });
+        const json = await res.json();
+        const list = Array.isArray(json?.methods) ? (json.methods as PaymentMethodPublic[]) : [];
+        setPmList(list);
+      } catch {
+        setPmList([]);
+      }
+    })();
+  }, []);
   const itemsRaw = quote ? quote.items : data?.totalPrice ?? 0;
-  const feeRaw = quote ? quote.fee : (!method ? 0 : method === "card" ? itemsRaw * 0.029 + 0.3 : method === "paypal" ? itemsRaw * 0.035 + 0.49 : 0);
+  const selectedPm = method ? pmList.find((m) => m.slug === method) : undefined;
+  const feeRaw =
+    quote
+      ? quote.fee
+      : !selectedPm
+      ? 0
+      : itemsRaw * (((selectedPm.feePercent ?? 0) as number) / 100) + ((selectedPm.feeFixed ?? 0) as number);
   const amountRaw = quote ? quote.amount : itemsRaw + feeRaw;
   const itemsFmt = formatPrice(convert(itemsRaw));
   const feeFmt = formatPrice(convert(feeRaw));
@@ -233,18 +260,20 @@ import { CreditCard, Wallet, Banknote, ShieldCheck, AlertTriangle } from "lucide
                     </div>
                   </div>
                 )}
-                <div className="mt-4 relative rounded-xl overflow-hidden">
-                  <div className="absolute inset-y-0 left-0 w-2 bg-yellow-500" />
-                  <div className="bg-gradient-to-r from-yellow-500/20 via-yellow-500/10 to-yellow-500/5 p-3 pl-5">
-                    <div className="flex items-start gap-2">
-                      <AlertTriangle className="h-6 w-6 text-yellow-400 mt-0.5" />
-                      <p className="text-xs text-yellow-200">
-                        The information above (email and password) is requested solely to establish your customer account on this
-                        website. It is not game‑account data.
-                      </p>
+                {status !== "authenticated" && (
+                  <div className="mt-4 relative rounded-xl overflow-hidden">
+                    <div className="absolute inset-y-0 left-0 w-2 bg-yellow-500" />
+                    <div className="bg-gradient-to-r from-yellow-500/20 via-yellow-500/10 to-yellow-500/5 p-3 pl-5">
+                      <div className="flex items-start gap-2">
+                        <AlertTriangle className="h-6 w-6 text-yellow-400 mt-0.5" />
+                        <p className="text-xs text-yellow-200">
+                          The information above (email and password) is requested solely to establish your customer account on this
+                          website. It is not game‑account data.
+                        </p>
+                      </div>
                     </div>
                   </div>
-                </div>
+                )}
               </div>
             </div>
           </div>
@@ -258,27 +287,37 @@ import { CreditCard, Wallet, Banknote, ShieldCheck, AlertTriangle } from "lucide
                 </div>
               </div>
               <div className="p-6 space-y-3">
-                <label className={`flex items-center justify-between p-4 rounded-xl cursor-pointer border ${method === "card" ? "border-blue-500 bg-blue-600/10" : "border-white/10 bg-white/5 hover:bg-white/10"}`}>
-                  <div className="flex items-center gap-3">
-                    <CreditCard className="h-5 w-5 text-blue-400" />
-                    <div className="text-sm font-semibold">Card (Visa / Mastercard)</div>
-                  </div>
-                  <input type="radio" name="pay-method" checked={method === "card"} onChange={() => setMethod("card")} />
-                </label>
-                <label className={`flex items-center justify-between p-4 rounded-xl cursor-pointer border ${method === "paypal" ? "border-blue-500 bg-blue-600/10" : "border-white/10 bg-white/5 hover:bg-white/10"}`}>
-                  <div className="flex items-center gap-3">
-                    <Wallet className="h-5 w-5 text-emerald-400" />
-                    <div className="text-sm font-semibold">PayPal</div>
-                  </div>
-                  <input type="radio" name="pay-method" checked={method === "paypal"} onChange={() => setMethod("paypal")} />
-                </label>
-                <label className={`flex items-center justify-between p-4 rounded-xl cursor-pointer border ${method === "bank" ? "border-blue-500 bg-blue-600/10" : "border-white/10 bg-white/5 hover:bg-white/10"}`}>
-                  <div className="flex items-center gap-3">
-                    <Banknote className="h-5 w-5 text-pink-400" />
-                    <div className="text-sm font-semibold">Bank Transfer</div>
-                  </div>
-                  <input type="radio" name="pay-method" checked={method === "bank"} onChange={() => setMethod("bank")} />
-                </label>
+                <div className="space-y-3">
+                  {pmList.map((pm) => (
+                    <label
+                      key={pm.slug}
+                      className={`flex items-center justify-between p-2 rounded-xl cursor-pointer border transition-all ${
+                        method === pm.slug ? "border-blue-500 bg-blue-600/15 ring-2 ring-blue-500/30" : "border-white/10 hover:bg-white/5"
+                      }`}
+                      onClick={() => setMethod(pm.slug)}
+                    >
+                      <div className="flex-1 h-12 flex items-center">
+                        {pm.iconUrl ? (
+                          <Image
+                            src={pm.iconUrl}
+                            alt={pm.slug}
+                            width={112}
+                            height={28}
+                            className="object-contain object-left max-h-8 w-auto"
+                            quality={100}
+                            unoptimized
+                          />
+                        ) : (
+                          <div className="text-sm text-gray-500">{pm.slug}</div>
+                        )}
+                      </div>
+                      <input className="sr-only" type="radio" name="pay-method" checked={method === pm.slug} onChange={() => setMethod(pm.slug)} />
+                    </label>
+                  ))}
+                </div>
+                {pmList.length === 0 && (
+                  <div className="text-sm text-gray-400 px-2">No payment methods available</div>
+                )}
                 <div className="px-2">
                   <div className="text-lg font-bold mb-1">Summary</div>
                   <div className="space-y-1">

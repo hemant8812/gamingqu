@@ -333,3 +333,18 @@ model ScraperSource {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 }
+
+model PaymentMethod {
+  id         Int      @id @default(autoincrement())
+  name       String
+  slug       String   @unique
+  iconUrl    String?
+  feePercent Decimal? @db.Decimal(10, 4)
+  feeFixed   Decimal? @db.Decimal(10, 2)
+  isActive   Boolean  @default(true)
+  sortOrder  Int      @default(0)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@index([isActive, sortOrder])
+}

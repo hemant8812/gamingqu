@@ -3,7 +3,7 @@ import Link from "next/link";
 import {
     FiUsers, FiStar, FiShoppingCart, FiBarChart2,
     FiGrid, FiLayers, FiSettings, FiFileText,
-    FiImage, FiShield, FiArrowRight, FiTrendingUp
+    FiImage, FiShield, FiArrowRight, FiTrendingUp, FiCreditCard
 } from "react-icons/fi";
 
 interface AdminCardProps {
@@ -91,6 +91,7 @@ export function AdminDashboardClient({ enabled, stats }: AdminDashboardClientPro
         { key: "categories", title: "Categories", description: "Organize game categories", href: "/admin/categories", icon: <FiLayers className="h-6 w-6" />, color: "bg-pink-500/20 text-pink-400" },
         { key: "services", title: "Services", description: "Manage boosting services", href: "/admin/services", icon: <FiSettings className="h-6 w-6" />, color: "bg-orange-500/20 text-orange-400" },
         { key: "services-data", title: "Data Service", description: "View service data", href: "/admin/service-data", icon: <FiSettings className="h-6 w-6" />, color: "bg-orange-500/20 text-orange-400" },
+        { key: "payment-method", title: "Payment Method", description: "Manage payment methods and fees", href: "/admin/payment-method", icon: <FiCreditCard className="h-6 w-6" />, color: "bg-blue-500/20 text-blue-400" },
         { key: "blog", title: "Blog", description: "Write and publish articles", href: "/admin/blog", icon: <FiFileText className="h-6 w-6" />, color: "bg-indigo-500/20 text-indigo-400" },
         { key: "benner", title: "Banners", description: "Manage promotional banners", href: "/admin/benner", icon: <FiImage className="h-6 w-6" />, color: "bg-rose-500/20 text-rose-400" },
         { key: "settings", title: "Settings", description: "Configure website settings", href: "/admin/settings", icon: <FiSettings className="h-6 w-6" />, color: "bg-slate-500/20 text-slate-400" },

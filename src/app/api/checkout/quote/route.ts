@@ -5,7 +5,7 @@ export async function POST(req: Request) {
   try {
     const body = await req.json();
     const serviceSlug = String(body?.serviceSlug ?? "");
-    const method = body?.method as "card" | "paypal" | "bank" | undefined;
+    const method = body?.method as string | undefined;
     const fromLevelRaw = body?.fromLevel;
     const toLevelRaw = body?.toLevel;
     const selectedOptions = Array.isArray(body?.selectedOptions) ? body.selectedOptions as Array<{ title: string; values: string[] }> : [];
@@ -110,10 +110,34 @@ export async function POST(req: Request) {
     const percentAdd = subtotal * (percentRate / 100);
     const totalPrice = subtotal + percentAdd;
     let fee = 0;
-    if (method === "card") {
-      fee = totalPrice * 0.029 + 0.3;
-    } else if (method === "paypal") {
-      fee = totalPrice * 0.035 + 0.49;
+    try {
+      if (method) {
+        const pm = await db.paymentMethod.findUnique({
+          where: { slug: method },
+          select: { isActive: true, feePercent: true, feeFixed: true },
+        });
+        if (pm && pm.isActive) {
+          const pct = pm.feePercent != null ? Number.parseFloat(pm.feePercent.toString()) : 0;
+          const fix = pm.feeFixed != null ? Number.parseFloat(pm.feeFixed.toString()) : 0;
+          fee = totalPrice * (pct / 100) + fix;
+        } else {
+          if (method === "card") {
+            fee = totalPrice * 0.029 + 0.3;
+          } else if (method === "paypal") {
+            fee = totalPrice * 0.035 + 0.49;
+          } else {
+            fee = 0;
+          }
+        }
+      }
+    } catch {
+      if (method === "card") {
+        fee = totalPrice * 0.029 + 0.3;
+      } else if (method === "paypal") {
+        fee = totalPrice * 0.035 + 0.49;
+      } else {
+        fee = 0;
+      }
     }
     const amount = totalPrice + fee;
     return NextResponse.json({
