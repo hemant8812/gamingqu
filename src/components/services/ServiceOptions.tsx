@@ -137,7 +137,7 @@ function OptionRadio({
   }, [options, val]);
   React.useEffect(() => {
     const selected = options.find((o) => o.label === val);
-    const extras =
+    const extras: Array<{ price: number; kind: "fixed" | "percent" }> =
       selected && Number.isFinite(selected.price) && selected.price > 0
         ? [{ price: selected.price, kind: priceType === "percent" ? "percent" : "fixed" }]
         : [];
@@ -280,7 +280,10 @@ function OptionSingleCheckbox({
   const { symbol: currency, convert } = useCurrency();
   const [checked, setChecked] = React.useState(false);
   React.useEffect(() => {
-    const extras = checked && Number.isFinite(price) && price > 0 ? [{ price, kind: priceType === "percent" ? "percent" : "fixed" }] : [];
+    const extras: Array<{ price: number; kind: "fixed" | "percent" }> =
+      checked && Number.isFinite(price) && price > 0
+        ? [{ price, kind: priceType === "percent" ? "percent" : "fixed" }]
+        : [];
     if (onChangeExtras) onChangeExtras(extras);
   }, [checked, price, priceType, onChangeExtras, id]);
   return (

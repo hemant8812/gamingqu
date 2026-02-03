@@ -425,15 +425,57 @@ export function ServiceDataManager({ services }: { services: ServiceOption[] }) 
               <div className="mt-4 grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div>
                   <label className="text-xs text-gray-400 mb-1 block">Min</label>
-                  <input type="number" className="input input-bordered w-full" value={form.range?.min ?? 0} onChange={(e) => onChange({ range: { ...(form.range ?? {}), min: Number(e.target.value) || 0 } })} />
+                  <input
+                    type="number"
+                    className="input input-bordered w-full"
+                    value={form.range?.min ?? 0}
+                    onChange={(e) =>
+                      onChange({
+                        range: {
+                          min: Number(e.target.value) || 0,
+                          max: form.range?.max ?? 0,
+                          step: form.range?.step ?? 1,
+                          dual: form.range?.dual ?? false,
+                        },
+                      })
+                    }
+                  />
                 </div>
                 <div>
                   <label className="text-xs text-gray-400 mb-1 block">Max</label>
-                  <input type="number" className="input input-bordered w-full" value={form.range?.max ?? 0} onChange={(e) => onChange({ range: { ...(form.range ?? {}), max: Number(e.target.value) || 0 } })} />
+                  <input
+                    type="number"
+                    className="input input-bordered w-full"
+                    value={form.range?.max ?? 0}
+                    onChange={(e) =>
+                      onChange({
+                        range: {
+                          min: form.range?.min ?? 0,
+                          max: Number(e.target.value) || 0,
+                          step: form.range?.step ?? 1,
+                          dual: form.range?.dual ?? false,
+                        },
+                      })
+                    }
+                  />
                 </div>
                 <div>
                   <label className="text-xs text-gray-400 mb-1 block">Step</label>
-                  <input type="number" className="input input-bordered w-full" value={form.range?.step ?? 1} onChange={(e) => onChange({ range: { ...(form.range ?? {}), step: Number(e.target.value) || 1 } })} />
+                  <input
+                    type="number"
+                    className="input input-bordered w-full"
+                    value={form.range?.step ?? 1}
+                    onChange={(e) =>
+                      onChange({
+                        range: {
+                          min: form.range?.min ?? 0,
+                          max: form.range?.max ?? 0,
+                          step: Number(e.target.value) || 1,
+                          dual: form.range?.dual ?? false,
+                        },
+                      })
+                    }
+                  />
                 </div>
               </div>
             ) : null}
@@ -453,11 +495,37 @@ export function ServiceDataManager({ services }: { services: ServiceOption[] }) 
                 </div>
                 <div>
                   <label className="text-xs text-gray-400 mb-1 block">Min (number only)</label>
-                  <input type="number" className="input input-bordered w-full" value={form.inputMeta?.min ?? 0} onChange={(e) => onChange({ inputMeta: { ...(form.inputMeta ?? {}), min: Number(e.target.value) || 0 } })} />
+                  <input
+                    type="number"
+                    className="input input-bordered w-full"
+                    value={form.inputMeta?.min ?? 0}
+                    onChange={(e) =>
+                      onChange({
+                        inputMeta: {
+                          kind: form.inputMeta?.kind ?? "text",
+                          min: Number(e.target.value) || 0,
+                          max: form.inputMeta?.max,
+                        },
+                      })
+                    }
+                  />
                 </div>
                 <div>
                   <label className="text-xs text-gray-400 mb-1 block">Max (number only)</label>
-                  <input type="number" className="input input-bordered w-full" value={form.inputMeta?.max ?? 0} onChange={(e) => onChange({ inputMeta: { ...(form.inputMeta ?? {}), max: Number(e.target.value) || 0 } })} />
+                  <input
+                    type="number"
+                    className="input input-bordered w-full"
+                    value={form.inputMeta?.max ?? 0}
+                    onChange={(e) =>
+                      onChange({
+                        inputMeta: {
+                          kind: form.inputMeta?.kind ?? "text",
+                          min: form.inputMeta?.min,
+                          max: Number(e.target.value) || 0,
+                        },
+                      })
+                    }
+                  />
                 </div>
               </div>
             ) : null}

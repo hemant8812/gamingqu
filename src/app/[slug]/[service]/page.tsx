@@ -64,21 +64,9 @@ export default async function ServiceDetailPage({ params }: { params: Params }) 
   // Compute starting price using ServiceDetail if available
   const basePrice = parseFloat(service.price.toString());
   let startingPrice = basePrice;
-  let detailsData: Array<{
-    id: number;
-    title: string;
-    fieldName: string;
-    inputType: "select" | "radio" | "range" | "checkbox" | "input";
-    displayType?: "number" | "text" | "dual" | "single";
-    priceType: "fixed" | "percent";
-    price: number;
-    sortOrder?: number;
-    options?: Array<{ label: string; price: number }>;
-    range?: { min: number; max: number; step?: number; dual?: boolean };
-    inputMeta?: { kind: "text" | "number"; min?: number; max?: number };
-  }> = [];
+  let detailsRaw: unknown[] = [];
   try {
-    detailsData = await db.serviceDetail.findMany({
+    detailsRaw = await db.serviceDetail.findMany({
       where: { serviceId: service.id, isActive: true },
       select: {
         id: true,
@@ -96,7 +84,19 @@ export default async function ServiceDetailPage({ params }: { params: Params }) 
       orderBy: [{ sortOrder: "asc" }, { createdAt: "desc" }],
       take: 200,
     });
-    for (const d of detailsData) {
+    for (const d of detailsRaw as Array<{
+      id: number;
+      title: string;
+      fieldName: string;
+      inputType: string;
+      displayType: string | null;
+      priceType: string;
+      price: number | string;
+      sortOrder?: number;
+      options?: unknown;
+      range?: unknown;
+      inputMeta?: unknown;
+    }>) {
       if (d.inputType === "select" || d.inputType === "radio") {
         const opts = Array.isArray(d.options as unknown)
           ? (d.options as unknown as Array<{ label: string; price: number }>)
@@ -116,13 +116,25 @@ export default async function ServiceDetailPage({ params }: { params: Params }) 
       }
     }
   } catch {}
-  const detailsForClient = detailsData.map((d) => ({
+  const detailsForClient = (detailsRaw as Array<{
+    id: number;
+    title: string;
+    fieldName: string;
+    inputType: string;
+    displayType: string | null;
+    priceType: string;
+    price: number | string;
+    sortOrder?: number;
+    options?: unknown;
+    range?: unknown;
+    inputMeta?: unknown;
+  }>).map((d) => ({
     id: d.id,
     title: d.title,
     fieldName: d.fieldName,
-    inputType: d.inputType,
-    displayType: d.displayType ?? undefined,
-    priceType: d.priceType,
+    inputType: (d.inputType as "select" | "radio" | "range" | "checkbox" | "input"),
+    displayType: d.displayType ? (d.displayType as "number" | "text" | "dual" | "single") : undefined,
+    priceType: (d.priceType as "fixed" | "percent"),
     price: Number.parseFloat(d.price.toString()),
     sortOrder: d.sortOrder,
     options: Array.isArray(d.options as unknown)
@@ -143,7 +155,7 @@ export default async function ServiceDetailPage({ params }: { params: Params }) 
     inputMeta:
       typeof d.inputMeta === "object" && d.inputMeta != null
         ? {
-            kind: ((d.inputMeta as { kind?: "text" | "number" }).kind === "number" ? "number" : "text"),
+            kind: (((d.inputMeta as { kind?: "text" | "number" }).kind === "number") ? "number" : "text") as "number" | "text",
             min: ((d.inputMeta as { min?: number }).min != null ? Number((d.inputMeta as { min?: number }).min) : undefined),
             max: ((d.inputMeta as { max?: number }).max != null ? Number((d.inputMeta as { max?: number }).max) : undefined),
           }

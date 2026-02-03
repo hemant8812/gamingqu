@@ -40,6 +40,15 @@ type Props = {
   } | null;
 };
 
+type ApiServiceDTO = {
+  id: number | string;
+  name?: string;
+  slug?: string;
+  game?: { slug?: string };
+  imageUrl?: string | null;
+  price?: number | string;
+};
+
 export function Navbar({ siteName = "Gamingqu", logoUrl = null, user = null }: Props) {
   const { symbol: currency, setSymbol: setCurrency, convert } = useCurrency();
   const [showLogo, setShowLogo] = useState<boolean>(!!logoUrl);
@@ -72,7 +81,7 @@ export function Navbar({ siteName = "Gamingqu", logoUrl = null, user = null }: P
         .then((data) => {
           if (canceled) return;
           const list = Array.isArray(data?.services)
-            ? data.services.map((s) => ({
+            ? data.services.map((s: ApiServiceDTO) => ({
                 id: Number(s.id),
                 name: String(s.name ?? ""),
                 slug: String(s.slug ?? ""),
@@ -104,7 +113,7 @@ export function Navbar({ siteName = "Gamingqu", logoUrl = null, user = null }: P
         .then((r) => r.json())
         .then((data) => {
           const list = Array.isArray(data?.services)
-            ? data.services.map((s) => ({
+            ? data.services.map((s: ApiServiceDTO) => ({
                 id: Number(s.id),
                 name: String(s.name ?? ""),
                 slug: String(s.slug ?? ""),
@@ -308,8 +317,6 @@ export function Navbar({ siteName = "Gamingqu", logoUrl = null, user = null }: P
               tabIndex={0}
               className="relative z-[60] inline-flex items-center justify-center w-10 h-10 text-gray-400 hover:text-white focus:outline-none ring-0 outline-none rounded-none bg-transparent hover:bg-transparent active:bg-transparent select-none"
               style={{
-                // Reset semua style bawaan agar tidak ada bentuk/lingkaran
-                // @ts-expect-error - properti CSS 'all' tidak ter-definisi di tipe React
                 all: "unset",
                 display: "inline-flex",
                 alignItems: "center",
