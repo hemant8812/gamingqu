@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { notFound, useParams } from "next/navigation";
+import { notFound, useParams, useRouter } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
 import { Zap, Tag, ShoppingBag } from "lucide-react";
@@ -39,9 +39,22 @@ type GameData = {
 
 function ServiceCard({ s, gameSlug }: { s: ServiceItem; gameSlug: string }) {
     const { whole, decimal, showDecimal } = formatPrice(s.price);
+    const router = useRouter();
+    const href = `/${gameSlug}/${s.slug}`;
 
     return (
-        <div className="card-gaming rounded-2xl overflow-hidden group flex flex-col border border-white/10 hover:border-blue-500/50 transition-all duration-300 hover:shadow-[0_0_30px_-5px_rgba(139,92,246,0.3)]">
+        <div
+            className="card-gaming rounded-2xl overflow-hidden group flex flex-col border border-white/10 hover:border-blue-500/50 transition-all duration-300 hover:shadow-[0_0_30px_-5px_rgba(139,92,246,0.3)] cursor-pointer"
+            role="link"
+            tabIndex={0}
+            onClick={() => router.push(href)}
+            onKeyDown={(e) => {
+                if (e.key === "Enter" || e.key === " ") {
+                    e.preventDefault();
+                    router.push(href);
+                }
+            }}
+        >
             {/* Image */}
             <figure className="relative h-32 shrink-0 overflow-hidden">
                 {s.imageUrl ? (
@@ -90,7 +103,8 @@ function ServiceCard({ s, gameSlug }: { s: ServiceItem; gameSlug: string }) {
                         <span className="text-md ml-1 text-gray-400">€</span>
                     </span>
                     <Link
-                        href={`/${gameSlug}/${s.slug}`}
+                        href={href}
+                        onClick={(e) => e.stopPropagation()}
                         className="btn btn-gaming btn-sm px-4 h-9 rounded-xl text-xs font-bold"
                     >
                         Buy now

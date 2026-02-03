@@ -3,6 +3,7 @@ import Image from "next/image";
 import { FiRefreshCw, FiArrowRight, FiZap } from "react-icons/fi";
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { Flame, Trophy } from "lucide-react";
 import { formatPrice } from "@/lib/formatPrice";
 
@@ -28,6 +29,7 @@ type HotService = {
 };
 
 export function HomeContent() {
+  const router = useRouter();
   const [moreCount, setMoreCount] = useState(0);
   const [games, setGames] = useState<GameItem[]>([]);
   const [hotServices, setHotServices] = useState<HotService[]>([]);
@@ -300,7 +302,16 @@ export function HomeContent() {
             {hotServices.map((h) => (
               <div
                 key={h.id}
-                className="card-gaming rounded-2xl overflow-hidden group flex flex-col border border-white/10 hover:border-blue-500/50 transition-all duration-300 hover:shadow-[0_0_30px_-5px_rgba(139,92,246,0.3)]"
+                className="card-gaming rounded-2xl overflow-hidden group flex flex-col border border-white/10 hover:border-blue-500/50 transition-all duration-300 hover:shadow-[0_0_30px_-5px_rgba(139,92,246,0.3)] cursor-pointer"
+                role="link"
+                tabIndex={0}
+                onClick={() => router.push(`/${h.game.slug}/${h.slug}`)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" || e.key === " ") {
+                    e.preventDefault();
+                    router.push(`/${h.game.slug}/${h.slug}`);
+                  }
+                }}
               >
                 {/* Image */}
                 <figure className="relative h-32 shrink-0 overflow-hidden">
@@ -356,6 +367,7 @@ export function HomeContent() {
                     </span>
                     <Link
                       href={`/${h.game.slug}/${h.slug}`}
+                      onClick={(e) => e.stopPropagation()}
                       className="btn btn-gaming btn-sm px-4 h-9 rounded-xl text-xs font-bold"
                     >
                       Buy now
