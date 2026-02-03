@@ -33,7 +33,14 @@ export function useCurrency(): CurrencyContextValue {
 }
 
 export function Providers({ children, eurPerUsd = 1 }: PropsWithChildren<{ eurPerUsd?: number }>) {
-  const [symbol, setSymbol] = useState<CurrencySymbol>("$");
+  const [symbol, setSymbol] = useState<CurrencySymbol>(() => {
+    try {
+      const s = window.localStorage.getItem("currency_symbol");
+      return s === "€" || s === "$" ? (s as CurrencySymbol) : "$";
+    } catch {
+      return "$";
+    }
+  });
   const rate = Number.isFinite(eurPerUsd) && eurPerUsd > 0 ? eurPerUsd : 1;
   const value = useMemo<CurrencyContextValue>(() => ({
     symbol,
@@ -45,12 +52,6 @@ export function Providers({ children, eurPerUsd = 1 }: PropsWithChildren<{ eurPe
       return symbol === "€" ? base * rate : base;
     },
   }), [symbol, rate]);
-  useEffect(() => {
-    try {
-      const s = window.localStorage.getItem("currency_symbol");
-      if (s === "€" || s === "$") setSymbol(s as CurrencySymbol);
-    } catch {}
-  }, []);
   useEffect(() => {
     try {
       window.localStorage.setItem("currency_symbol", symbol);

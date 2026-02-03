@@ -77,7 +77,7 @@ export async function POST(req: Request) {
     const faviconFile = form.get("favicon") as File | null;
     const logoUrl = await saveBrandFile(logoFile, "logo");
     const faviconUrl = await saveBrandFile(faviconFile, "favicon");
-    const updated = await (db.websiteSetting as any).upsert({
+    const updated = await db.websiteSetting.upsert({
       where: { id: "singleton" },
       update: {
         siteName: siteName || undefined,

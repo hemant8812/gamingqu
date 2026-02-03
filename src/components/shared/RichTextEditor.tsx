@@ -108,7 +108,7 @@ export function RichTextEditor({ name, initialHtml = "", placeholder = "Deskrips
       document.execCommand("formatBlock", false, "p");
     } else {
       document.execCommand("formatBlock", false, tag);
-      let after = String(document.queryCommandValue("formatBlock") || "").toLowerCase();
+      const after = String(document.queryCommandValue("formatBlock") || "").toLowerCase();
       if (after !== tag) {
         const sel = window.getSelection();
         if (sel && sel.rangeCount > 0) {

@@ -29,10 +29,7 @@ export function ServiceDataManager({ services }: { services: ServiceOption[] }) 
   const [optPrice, setOptPrice] = React.useState<number | "">("");
   const [deleteId, setDeleteId] = React.useState<number | null>(null);
   const confirmDialogRef = React.useRef<HTMLDialogElement>(null);
-  const [openServices, setOpenServices] = React.useState<Set<number>>(new Set());
-  const [selectedByService, setSelectedByService] = React.useState<Map<number, string>>(new Map());
   const [selectedSid, setSelectedSid] = React.useState<number | null>(null);
-  const [selectedTitle, setSelectedTitle] = React.useState<string>("");
   const [editingId, setEditingId] = React.useState<number | null>(null);
 
   const [form, setForm] = React.useState<Partial<DetailItem>>({
@@ -57,11 +54,6 @@ export function ServiceDataManager({ services }: { services: ServiceOption[] }) 
       setSelectedSid(services[0].id);
     }
   }, [services, selectedSid]);
-  React.useEffect(() => {
-    if (selectedSid == null) return;
-    const titles = Array.from(new Set(items.filter(r => r.serviceId === selectedSid).map(r => r.title))).sort((a, b) => a.localeCompare(b));
-    setSelectedTitle((prev) => titles.includes(prev) ? prev : (titles[0] ?? ""));
-  }, [items, selectedSid]);
 
   React.useEffect(() => {
     if (deleteId) {
@@ -104,12 +96,13 @@ export function ServiceDataManager({ services }: { services: ServiceOption[] }) 
     } else {
       if (form.displayType) {
         setForm((f) => {
-          const { displayType, ...rest } = f;
-          return { ...rest };
+          const rest: Partial<DetailItem> = { ...f };
+          delete rest.displayType;
+          return rest;
         });
       }
     }
-  }, [form.inputType]);
+  }, [form.inputType, form.displayType]);
   React.useEffect(() => {
     setOptName("");
     setOptPrice("");
@@ -211,7 +204,6 @@ export function ServiceDataManager({ services }: { services: ServiceOption[] }) 
             (() => {
               const name = services.find(s => s.id === selectedSid)?.name || `Service ${selectedSid}`;
               const rows = items.filter(r => r.serviceId === selectedSid);
-              const titles = Array.from(new Set(rows.map(r => r.title))).sort((a, b) => a.localeCompare(b));
               return (
                 <div className="p-4">
                   <div className="flex items-center justify-between mb-3">

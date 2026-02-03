@@ -4,7 +4,6 @@ import React from "react";
 import Link from "next/link";
 import { ServiceOptions } from "./ServiceOptions";
 import { Clock, Timer, ShoppingCart, CheckCircle } from "lucide-react";
-import { SiStripe, SiVisa, SiAmericanexpress, SiApplepay, SiGooglepay, SiPaypal, SiBitcoin } from "react-icons/si";
 import { formatPrice } from "@/lib/formatPrice";
 import { useCurrency } from "@/app/providers";
 
@@ -24,12 +23,10 @@ type DetailItem = {
 
 export function ServicePanel({
   details,
-  priceFmt,
   serviceSlug,
   basePrice,
 }: {
   details: DetailItem[];
-  priceFmt: { whole: string; decimal?: string; showDecimal?: boolean };
   serviceSlug: string;
   basePrice: number;
 }) {
@@ -75,7 +72,7 @@ export function ServicePanel({
 
   return (
     <aside className="relative space-y-0">
-      <div className="glass-card rounded-t-2xl rounded-b-none p-6 border-b-0 shadow-none">
+      <div className="bg-[#0F172A] border border-white/10 rounded-t-2xl rounded-b-none p-6 border-b-0 shadow-none">
         <div className="space-y-6">
           <ServiceOptions
             details={details}
@@ -89,7 +86,7 @@ export function ServicePanel({
         </div>
       </div>
       <div className="sticky bottom-6">
-        <div className="glass-card rounded-b-2xl rounded-t-none p-4 border-t-0 -mt-px shadow-none">
+        <div className="bg-[#0F172A] border border-white/10 rounded-b-2xl rounded-t-none p-4 border-t-0 -mt-px shadow-none">
           <div className="text-3xl font-black text-white tracking-tight mb-3">
             <span className="gradient-text">
               {computedFmt.whole}

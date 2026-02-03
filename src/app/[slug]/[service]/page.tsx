@@ -2,12 +2,8 @@ import { db } from "@/lib/prisma";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { formatPrice } from "@/lib/formatPrice";
-import { ServiceOptions } from "@/components/services/ServiceOptions";
 import { ServicePanel } from "@/components/services/ServicePanel";
 import type { Metadata } from "next";
-import { Clock, Timer, ShoppingCart, CheckCircle } from "lucide-react";
-import { SiStripe, SiVisa, SiAmericanexpress, SiApplepay, SiGooglepay, SiPaypal, SiBitcoin } from "react-icons/si";
 
 export const dynamic = "force-dynamic";
 
@@ -120,7 +116,6 @@ export default async function ServiceDetailPage({ params }: { params: Params }) 
       }
     }
   } catch {}
-  const priceFmt = formatPrice(startingPrice.toString());
   const detailsForClient = detailsData.map((d) => ({
     id: d.id,
     title: d.title,
@@ -137,20 +132,20 @@ export default async function ServiceDetailPage({ params }: { params: Params }) 
         }))
       : undefined,
     range:
-      (d.range as unknown as { min?: number; max?: number; step?: number; dual?: boolean }) && typeof d.range === "object"
+      typeof d.range === "object" && d.range != null
         ? {
-            min: Number((d.range as any).min ?? 0),
-            max: Number((d.range as any).max ?? 0),
-            step: Number((d.range as any).step ?? 1),
-            dual: !!(d.range as any).dual,
+            min: Number(((d.range as { min?: number }).min ?? 0)),
+            max: Number(((d.range as { max?: number }).max ?? 0)),
+            step: Number(((d.range as { step?: number }).step ?? 1)),
+            dual: Boolean(((d.range as { dual?: boolean }).dual)),
           }
         : undefined,
     inputMeta:
-      (d.inputMeta as unknown as { kind?: "text" | "number"; min?: number; max?: number }) && typeof d.inputMeta === "object"
+      typeof d.inputMeta === "object" && d.inputMeta != null
         ? {
-            kind: (d.inputMeta as any).kind === "number" ? "number" : "text",
-            min: (d.inputMeta as any).min != null ? Number((d.inputMeta as any).min) : undefined,
-            max: (d.inputMeta as any).max != null ? Number((d.inputMeta as any).max) : undefined,
+            kind: ((d.inputMeta as { kind?: "text" | "number" }).kind === "number" ? "number" : "text"),
+            min: ((d.inputMeta as { min?: number }).min != null ? Number((d.inputMeta as { min?: number }).min) : undefined),
+            max: ((d.inputMeta as { max?: number }).max != null ? Number((d.inputMeta as { max?: number }).max) : undefined),
           }
         : undefined,
   }));
@@ -226,7 +221,7 @@ export default async function ServiceDetailPage({ params }: { params: Params }) 
             )}
           </section>
 
-          <ServicePanel details={detailsForClient} priceFmt={priceFmt} serviceSlug={service.slug} basePrice={basePrice} />
+          <ServicePanel details={detailsForClient} serviceSlug={service.slug} basePrice={basePrice} />
         </div>
       </main>
     </div>

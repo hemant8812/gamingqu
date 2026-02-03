@@ -53,7 +53,6 @@ export function Navbar({ siteName = "Gamingqu", logoUrl = null, user = null }: P
   const [searchSuggestions, setSearchSuggestions] = useState<Array<{ id: number; name: string; slug: string; gameSlug: string }>>([]);
   const [loadingSuggestions, setLoadingSuggestions] = useState<boolean>(false);
   const [popularProducts, setPopularProducts] = useState<Array<{ id: number; name: string; slug: string; gameSlug: string; imageUrl?: string | null; price?: number }>>([]);
-  const [loadingPopular, setLoadingPopular] = useState<boolean>(false);
 
   const closeDropdown = () => {
     const elem = document.activeElement;
@@ -64,18 +63,16 @@ export function Navbar({ siteName = "Gamingqu", logoUrl = null, user = null }: P
 
   useEffect(() => {
     if (!searchOpen) {
-      setSearchSuggestions([]);
       return;
     }
     if (popularProducts.length === 0) {
       let canceled = false;
-      setLoadingPopular(true);
       fetch("/api/services/hot")
         .then((r) => r.json())
         .then((data) => {
           if (canceled) return;
           const list = Array.isArray(data?.services)
-            ? data.services.map((s: any) => ({
+            ? data.services.map((s) => ({
                 id: Number(s.id),
                 name: String(s.name ?? ""),
                 slug: String(s.slug ?? ""),
@@ -85,21 +82,12 @@ export function Navbar({ siteName = "Gamingqu", logoUrl = null, user = null }: P
               }))
             : [];
           setPopularProducts(list);
-          if (searchQuery.trim().length === 0) {
-            setSearchSuggestions(list.map(({ id, name, slug, gameSlug }) => ({ id, name, slug, gameSlug })));
-          }
         })
         .catch(() => {})
-        .finally(() => {
-          if (!canceled) setLoadingPopular(false);
-        });
+        .finally(() => {});
       return () => {
         canceled = true;
       };
-    } else {
-      if (searchQuery.trim().length === 0) {
-        setSearchSuggestions(popularProducts.map(({ id, name, slug, gameSlug }) => ({ id, name, slug, gameSlug })));
-      }
     }
   }, [searchOpen, popularProducts, searchQuery]);
 
@@ -107,7 +95,6 @@ export function Navbar({ siteName = "Gamingqu", logoUrl = null, user = null }: P
     if (!searchOpen) return;
     const q = searchQuery.trim();
     if (q.length === 0) {
-      setSearchSuggestions(popularProducts.map(({ id, name, slug, gameSlug }) => ({ id, name, slug, gameSlug })));
       return;
     }
     const ctrl = new AbortController();
@@ -117,7 +104,7 @@ export function Navbar({ siteName = "Gamingqu", logoUrl = null, user = null }: P
         .then((r) => r.json())
         .then((data) => {
           const list = Array.isArray(data?.services)
-            ? data.services.map((s: any) => ({
+            ? data.services.map((s) => ({
                 id: Number(s.id),
                 name: String(s.name ?? ""),
                 slug: String(s.slug ?? ""),
@@ -134,6 +121,11 @@ export function Navbar({ siteName = "Gamingqu", logoUrl = null, user = null }: P
       clearTimeout(t);
     };
   }, [searchOpen, searchQuery, popularProducts]);
+
+  const suggestionsToShow =
+    searchQuery.trim().length === 0
+      ? popularProducts.map(({ id, name, slug, gameSlug }) => ({ id, name, slug, gameSlug }))
+      : searchSuggestions;
 
   return (
     <div className="fixed top-0 left-0 right-0 z-50 bg-[#0A0E17]/80 backdrop-blur-xl border-b border-white/5">
@@ -243,9 +235,9 @@ export function Navbar({ siteName = "Gamingqu", logoUrl = null, user = null }: P
                       <div className="px-2 pb-2 text-sm font-semibold text-white">Frequently searched</div>
                       {loadingSuggestions ? (
                         <div className="px-3 py-2 text-gray-400">Loading...</div>
-                      ) : searchSuggestions.length > 0 ? (
+                      ) : suggestionsToShow.length > 0 ? (
                         <ul className="max-h-80 overflow-y-auto">
-                          {searchSuggestions.map((s) => (
+                          {suggestionsToShow.map((s) => (
                             <li key={`${s.id}-${s.slug}`}>
                               <Link
                                 href={`/${s.gameSlug}/${s.slug}`}
@@ -266,7 +258,7 @@ export function Navbar({ siteName = "Gamingqu", logoUrl = null, user = null }: P
                     </div>
                     <div>
                       <div className="px-2 pb-2 text-sm font-semibold text-white">Popular Products</div>
-                      {loadingPopular && popularProducts.length === 0 ? (
+                      {searchOpen && popularProducts.length === 0 ? (
                         <div className="px-3 py-2 text-gray-400">Loading...</div>
                       ) : popularProducts.length > 0 ? (
                         <div className="max-h-80 overflow-y-auto flex flex-col gap-3 pr-1">

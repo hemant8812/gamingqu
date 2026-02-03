@@ -608,8 +608,7 @@ export function ServiceOptions({
   onSelectionsChange?: (extras: Array<{ price: number; kind: "fixed" | "percent" }>) => void;
   currentSubtotal?: number;
 }) {
-  if (!Array.isArray(details) || details.length === 0) return null;
-  const ordered = [...details].sort((a, b) => (a.sortOrder ?? 0) - (b.sortOrder ?? 0));
+  const ordered = Array.isArray(details) ? [...details].sort((a, b) => (a.sortOrder ?? 0) - (b.sortOrder ?? 0)) : [];
   const extrasByItemRef = React.useRef<Map<number, Array<{ price: number; kind: "fixed" | "percent" }>>>(new Map());
   const setExtrasForItem = (id: number, extras: Array<{ price: number; kind: "fixed" | "percent" }>) => {
     extrasByItemRef.current.set(id, extras);
@@ -714,6 +713,7 @@ export function ServiceOptions({
         }
         return null;
       })}
+      {ordered.length === 0 ? <div /> : null}
     </div>
   );
 }

@@ -58,8 +58,17 @@ export async function getFooterSettings() {
 
 export async function getWebsiteSettingCore() {
   try {
-    const s = await (db.websiteSetting as any).findUnique({
+    const s = await db.websiteSetting.findUnique({
       where: { id: "singleton" },
+      select: {
+        siteName: true,
+        tagline: true,
+        logoUrl: true,
+        faviconUrl: true,
+        contactEmail: true,
+        contactPhone: true,
+        eurPerUsd: true,
+      },
     });
     if (!s) return null;
     return {
