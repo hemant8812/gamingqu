@@ -2,7 +2,6 @@
 import React from "react";
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
-import Link from "next/link";
 import { useCurrency } from "@/app/providers";
 import { formatPrice } from "@/lib/formatPrice";
 import { CreditCard, ShieldCheck, AlertTriangle } from "lucide-react";
@@ -83,7 +82,6 @@ export default function CheckoutPage() {
     data && data.fromLevel != null && data.toLevel != null
       ? `${data.fromLevel}–${data.toLevel}`
       : null;
-  const totalFmt = data ? formatPrice(convert(data.totalPrice)) : null;
   const [quote, setQuote] = useState<{ items: number; fee: number; amount: number } | null>(null);
   useEffect(() => {
     const run = async () => {

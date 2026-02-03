@@ -18,7 +18,7 @@ type DetailItem = {
   sortOrder?: number;
   options?: Array<{ label: string; price: number }>;
   range?: { min: number; max: number; step?: number; dual?: boolean };
-  inputMeta?: { kind: "text" | "number"; min?: number; max?: number };
+  inputMeta?: { kind: "text" | "number"; min?: number; max?: number; required?: boolean };
 };
 
 export function ServiceDataManager({ services }: { services: ServiceOption[] }) {
@@ -221,13 +221,14 @@ export function ServiceDataManager({ services }: { services: ServiceOption[] }) 
                           <th className="text-left text-xs font-medium text-gray-400 uppercase tracking-wider px-4 py-3">Price Type</th>
                           <th className="text-left text-xs font-medium text-gray-400 uppercase tracking-wider px-4 py-3">Price</th>
                           <th className="text-left text-xs font-medium text-gray-400 uppercase tracking-wider px-4 py-3">Sort</th>
+                          <th className="text-left text-xs font-medium text-gray-400 uppercase tracking-wider px-4 py-3">Required</th>
                           <th className="text-left text-xs font-medium text-gray-400 uppercase tracking-wider px-4 py-3">Action</th>
                         </tr>
                       </thead>
                       <tbody>
                         {rows.length === 0 ? (
                           <tr>
-                            <td colSpan={8} className="text-center py-12 text-gray-500">No details found</td>
+                            <td colSpan={9} className="text-center py-12 text-gray-500">No details found</td>
                           </tr>
                         ) : (
                           rows
@@ -242,6 +243,7 @@ export function ServiceDataManager({ services }: { services: ServiceOption[] }) 
                                 <td className="px-4 py-3 text-sm text-gray-300">{it.priceType}</td>
                                 <td className="px-4 py-3 text-sm text-gray-300">${Number(it.price).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
                                 <td className="px-4 py-3 text-sm text-gray-300">{it.sortOrder ?? 0}</td>
+                                <td className="px-4 py-3 text-sm text-gray-300">{it.inputMeta?.required ? "Yes" : "No"}</td>
                                 <td className="px-4 py-3">
                                   <div className="flex items-center gap-2">
                                     <button onClick={() => startEdit(it)} className="btn btn-ghost btn-xs text-gray-300 hover:bg-white/10" aria-label="Edit">
@@ -529,6 +531,22 @@ export function ServiceDataManager({ services }: { services: ServiceOption[] }) 
                 </div>
               </div>
             ) : null}
+            <div className="mt-4">
+              <label className="text-xs text-gray-400 mb-1 block">Required</label>
+              <input
+                type="checkbox"
+                className="checkbox checkbox-bordered"
+                checked={form.inputMeta?.required ?? false}
+                onChange={(e) =>
+                  onChange({
+                    inputMeta: {
+                      ...(form.inputMeta ?? { kind: "text" }),
+                      required: e.target.checked,
+                    },
+                  })
+                }
+              />
+            </div>
 
               </div>
               <div className="px-6 py-4 flex justify-end gap-2">

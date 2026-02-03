@@ -49,7 +49,7 @@ export async function POST(req: Request) {
       sortOrder: d.sortOrder,
       options: Array.isArray(d.options as unknown) ? (d.options as unknown as Array<{ label: string; price: number }>) : undefined,
       range: d.range as { min: number; max: number; step?: number; dual?: boolean } | undefined,
-      inputMeta: d.inputMeta as { kind: "text" | "number"; min?: number; max?: number } | undefined,
+      inputMeta: d.inputMeta as { kind: "text" | "number"; min?: number; max?: number; required?: boolean } | undefined,
     }));
     const rangeDual = details.filter((d) => d.inputType === "range" && ((d.displayType === "dual") || d.range?.dual));
     let minLevel: number | null = null;
@@ -88,6 +88,40 @@ export async function POST(req: Request) {
       }
     }
     const extras: Array<{ price: number; kind: "fixed" | "percent" }> = [];
+    const selMap = new Map<string, string[]>();
+    for (const so of selectedOptions) {
+      const t = String(so?.title ?? "").toLowerCase();
+      const values = Array.isArray(so.values) ? so.values : [];
+      selMap.set(t, values);
+    }
+    const missingReq: string[] = [];
+    for (const d of details) {
+      const req = !!d.inputMeta?.required;
+      if (!req) continue;
+      if (d.inputType === "range") continue;
+      const key = String(d.title ?? "").toLowerCase();
+      const vals = selMap.get(key) ?? [];
+      if (d.inputType === "checkbox" && Array.isArray(d.options) && d.options.length > 0) {
+        if (vals.length === 0) {
+          missingReq.push(d.title);
+        }
+      } else if (d.inputType === "select" || d.inputType === "radio" || d.inputType === "input") {
+        const v0 = vals[0] ?? "";
+        if (!v0) {
+          missingReq.push(d.title);
+        } else if (d.inputType === "input" && d.inputMeta?.kind === "number") {
+          const v = Number(v0);
+          const minOk = d.inputMeta.min == null || v >= Number(d.inputMeta.min);
+          const maxOk = d.inputMeta.max == null || v <= Number(d.inputMeta.max);
+          if (!Number.isFinite(v) || !minOk || !maxOk) {
+            missingReq.push(d.title);
+          }
+        }
+      }
+    }
+    if (missingReq.length > 0) {
+      return NextResponse.json({ error: "Required fields missing", fields: missingReq }, { status: 400 });
+    }
     for (const so of selectedOptions) {
       const t = String(so?.title ?? "").toLowerCase();
       const detail = details.find((d) => String(d.title ?? "").toLowerCase() === t);

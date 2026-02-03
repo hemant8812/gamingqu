@@ -14,27 +14,39 @@ type DetailItem = {
   sortOrder?: number;
   options?: Array<{ label: string; price: number }>;
   range?: { min: number; max: number; step?: number; dual?: boolean };
-  inputMeta?: { kind: "text" | "number"; min?: number; max?: number };
+  inputMeta?: { kind: "text" | "number"; min?: number; max?: number; required?: boolean };
 };
 
 function OptionSelect({
-  id,
   title,
   options,
   onChangeExtras,
   onChangeLabels,
+  invalid,
 }: {
-  id: number;
   title: string;
   options: NonNullable<DetailItem["options"]>;
   onChangeExtras?: (extras: Array<{ price: number; kind: "fixed" }>) => void;
   onChangeLabels?: (values: string[]) => void;
+  invalid?: boolean;
 }) {
   const { symbol: currency, convert } = useCurrency();
   const [val, setVal] = React.useState<string>("");
   const [open, setOpen] = React.useState(false);
   const ref = React.useRef<HTMLDivElement>(null);
   const defaultLabel = title.toLowerCase().includes("profession") ? "Don't add Profession" : "Select";
+  const onExtrasRef = React.useRef(onChangeExtras);
+  const onLabelsRef = React.useRef(onChangeLabels);
+  React.useEffect(() => { onExtrasRef.current = onChangeExtras; }, [onChangeExtras]);
+  React.useEffect(() => { onLabelsRef.current = onChangeLabels; }, [onChangeLabels]);
+  React.useEffect(() => {
+    if (val) return;
+    const t = title.toLowerCase();
+    if (t.includes("leveling") && t.includes("speed")) {
+      const normal = options.find((o) => o.label.toLowerCase() === "normal");
+      if (normal) setVal(normal.label);
+    }
+  }, [val, title, options]);
 
   React.useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -49,16 +61,20 @@ function OptionSelect({
   const selected = options.find((o) => o.label === val);
   React.useEffect(() => {
     const extras = selected && Number.isFinite(selected.price) && selected.price > 0 ? [{ price: selected.price, kind: "fixed" as const }] : [];
-    if (onChangeExtras) onChangeExtras(extras);
-    if (onChangeLabels) onChangeLabels(val ? [val] : []);
-  }, [selected, onChangeExtras, id]);
+    if (onExtrasRef.current) onExtrasRef.current(extras);
+    if (onLabelsRef.current) onLabelsRef.current(val ? [val] : []);
+  }, [selected, val]);
 
   return (
     <div className="space-y-2" ref={ref}>
-      <div className="text-white font-semibold">{title}</div>
+      <div className="text-white font-semibold">
+        {title}
+      </div>
       <div className="relative">
         <div
-          className="flex items-center justify-between w-full px-4 py-3 bg-[#1e293b] text-white rounded-xl cursor-pointer select-none"
+          className={`flex items-center justify-between w-full px-4 py-3 text-white rounded-xl cursor-pointer select-none ${
+            invalid ? "bg-red-900/20 ring-2 ring-red-500/30 border border-red-500/40" : "bg-[#1e293b]"
+          }`}
           onClick={() => setOpen(!open)}
         >
           <span className={val ? "text-white" : "text-gray-400"}>
@@ -114,26 +130,38 @@ function OptionSelect({
 }
 
 function OptionRadio({
-  id,
   title,
   options,
   onChangeExtras,
   priceType,
   currentSubtotal,
   onChangeLabels,
+  invalid,
 }: {
-  id: number;
   title: string;
   options: NonNullable<DetailItem["options"]>;
   onChangeExtras?: (extras: Array<{ price: number; kind: "fixed" | "percent" }>) => void;
   priceType: "fixed" | "percent";
   currentSubtotal?: number;
   onChangeLabels?: (values: string[]) => void;
+  invalid?: boolean;
 }) {
   const { symbol: currency, convert } = useCurrency();
   const [val, setVal] = React.useState<string>("");
   const isDual = options.length === 2;
   const isList = options.length >= 3;
+  const onExtrasRef = React.useRef(onChangeExtras);
+  const onLabelsRef = React.useRef(onChangeLabels);
+  React.useEffect(() => { onExtrasRef.current = onChangeExtras; }, [onChangeExtras]);
+  React.useEffect(() => { onLabelsRef.current = onChangeLabels; }, [onChangeLabels]);
+  React.useEffect(() => {
+    if (val) return;
+    const t = title.toLowerCase();
+    if (t.includes("leveling") && t.includes("speed")) {
+      const normal = options.find((o) => o.label.toLowerCase() === "normal");
+      if (normal) setVal(normal.label);
+    }
+  }, [val, title, options]);
 
   React.useEffect(() => {
     if (options.length === 1 && val === "") {
@@ -146,15 +174,19 @@ function OptionRadio({
       selected && Number.isFinite(selected.price) && selected.price > 0
         ? [{ price: selected.price, kind: priceType === "percent" ? "percent" : "fixed" }]
         : [];
-    if (onChangeExtras) onChangeExtras(extras);
-    if (onChangeLabels) onChangeLabels(val ? [val] : []);
-  }, [val, options, onChangeExtras, id, priceType]);
+    if (onExtrasRef.current) onExtrasRef.current(extras);
+    if (onLabelsRef.current) onLabelsRef.current(val ? [val] : []);
+  }, [val, options, priceType]);
 
   if (isList) {
     return (
       <div className="space-y-2">
-        <div className="text-white font-semibold">{title}</div>
-        <div className="bg-[#1e293b] rounded-xl overflow-hidden divide-y divide-white/10 border-0">
+        <div className="text-white font-semibold">
+          {title}
+        </div>
+        <div className={`rounded-xl overflow-hidden divide-y divide-white/10 border-0 ${
+          invalid ? "bg-red-900/20 ring-2 ring-red-500/30 border-red-500/40" : "bg-[#1e293b]"
+        }`}>
           {options.map((o, i) => (
             <label 
               key={i} 
@@ -188,8 +220,11 @@ function OptionRadio({
 
   return (
     <div className="space-y-2">
-      <div className="text-white font-semibold">{title}</div>
-      <div className={`grid gap-3 ${isDual ? "grid-cols-2" : "grid-cols-1"}`}>
+      <div className="text-white font-semibold">
+        {title}
+      </div>
+      <div className={`${invalid ? "bg-red-900/20 ring-2 ring-red-500/30 rounded-xl p-2" : ""}`}>
+        <div className={`grid gap-3 ${isDual ? "grid-cols-2" : "grid-cols-1"}`}>
         {options.map((o, i) => (
           <label 
             key={i} 
@@ -216,26 +251,31 @@ function OptionRadio({
             </span>
           </label>
         ))}
+        </div>
       </div>
     </div>
   );
 }
 
 function OptionCheckboxGroup({
-  id,
   title,
   options,
   onChangeExtras,
   onChangeLabels,
+  invalid,
 }: {
-  id: number;
   title: string;
   options: NonNullable<DetailItem["options"]>;
   onChangeExtras?: (extras: Array<{ price: number; kind: "fixed" }>) => void;
   onChangeLabels?: (values: string[]) => void;
+  invalid?: boolean;
 }) {
   const { symbol: currency, convert } = useCurrency();
   const [vals, setVals] = React.useState<Record<string, boolean>>({});
+  const onExtrasRef = React.useRef(onChangeExtras);
+  const onLabelsRef = React.useRef(onChangeLabels);
+  React.useEffect(() => { onExtrasRef.current = onChangeExtras; }, [onChangeExtras]);
+  React.useEffect(() => { onLabelsRef.current = onChangeLabels; }, [onChangeLabels]);
   React.useEffect(() => {
     const extras: Array<{ price: number; kind: "fixed" }> = [];
     const labels: string[] = [];
@@ -247,13 +287,17 @@ function OptionCheckboxGroup({
         labels.push(o.label);
       }
     }
-    if (onChangeExtras) onChangeExtras(extras);
-    if (onChangeLabels) onChangeLabels(labels);
-  }, [vals, options, onChangeExtras, id]);
+    if (onExtrasRef.current) onExtrasRef.current(extras);
+    if (onLabelsRef.current) onLabelsRef.current(labels);
+  }, [vals, options]);
   return (
     <div className="space-y-2">
-      <div className="text-white font-semibold">{title}</div>
-      <div className="bg-[#1e293b] rounded-xl overflow-hidden divide-y divide-white/10 border-0">
+      <div className="text-white font-semibold">
+        {title}
+      </div>
+      <div className={`rounded-xl overflow-hidden divide-y divide-white/10 border-0 ${
+        invalid ? "bg-red-900/20 ring-2 ring-red-500/30 border-red-500/40" : "bg-[#1e293b]"
+      }`}>
         {options.map((o, i) => (
           <label key={i} className="flex items-center justify-between p-4 cursor-pointer hover:bg-white/5 transition-colors">
             <div className="flex items-center gap-4">
@@ -276,35 +320,41 @@ function OptionCheckboxGroup({
 }
 
 function OptionSingleCheckbox({
-  id,
   title,
   price,
   priceType,
   onChangeExtras,
   currentSubtotal,
   onChangeLabels,
+  invalid,
 }: {
-  id: number;
   title: string;
   price: number;
   priceType: "fixed" | "percent";
   onChangeExtras?: (extras: Array<{ price: number; kind: "fixed" | "percent" }>) => void;
   currentSubtotal?: number;
   onChangeLabels?: (values: string[]) => void;
+  invalid?: boolean;
 }) {
   const { symbol: currency, convert } = useCurrency();
   const [checked, setChecked] = React.useState(false);
+  const onExtrasRef = React.useRef(onChangeExtras);
+  const onLabelsRef = React.useRef(onChangeLabels);
+  React.useEffect(() => { onExtrasRef.current = onChangeExtras; }, [onChangeExtras]);
+  React.useEffect(() => { onLabelsRef.current = onChangeLabels; }, [onChangeLabels]);
   React.useEffect(() => {
     const extras: Array<{ price: number; kind: "fixed" | "percent" }> =
       checked && Number.isFinite(price) && price > 0
         ? [{ price, kind: priceType === "percent" ? "percent" : "fixed" }]
         : [];
-    if (onChangeExtras) onChangeExtras(extras);
-    if (onChangeLabels) onChangeLabels(checked ? [title] : []);
-  }, [checked, price, priceType, onChangeExtras, id]);
+    if (onExtrasRef.current) onExtrasRef.current(extras);
+    if (onLabelsRef.current) onLabelsRef.current(checked ? [title] : []);
+  }, [checked, price, priceType, title]);
   return (
     <div className="space-y-2">
-      <div className="bg-[#1e293b] rounded-xl overflow-hidden border-0">
+      <div className={`rounded-xl overflow-hidden border-0 ${
+        invalid ? "bg-red-900/20 ring-2 ring-red-500/30 border-red-500/40" : "bg-[#1e293b]"
+      }`}>
         <label className="flex items-center justify-between p-4 cursor-pointer hover:bg-white/5 transition-colors">
           <div className="flex items-center gap-4">
             <input
@@ -327,15 +377,23 @@ function OptionSingleCheckbox({
   );
 }
 
-function OptionInput({ title, meta }: { title: string; meta?: DetailItem["inputMeta"] }) {
+function OptionInput({ title, meta, onChangeLabels, invalid }: { title: string; meta?: DetailItem["inputMeta"]; onChangeLabels?: (values: string[]) => void; invalid?: boolean }) {
   const kind = meta?.kind === "number" ? "number" : "text";
   const [val, setVal] = React.useState(kind === "number" ? String(meta?.min ?? "") : "");
+  React.useEffect(() => {
+    if (onChangeLabels) {
+      const out = val && val !== "" ? [val] : [];
+      onChangeLabels(out);
+    }
+  }, [val, onChangeLabels]);
   return (
     <div className="space-y-2">
-      <div className="text-white font-semibold">{title}</div>
+      <div className="text-white font-semibold">
+        {title}
+      </div>
       <input
         type={kind}
-        className="input input-bordered w-full"
+        className={`input input-bordered w-full ${invalid ? "border-red-500 bg-red-900/20 ring-2 ring-red-500/30" : ""}`}
         value={val}
         min={kind === "number" && meta?.min != null ? Number(meta.min) : undefined}
         max={kind === "number" && meta?.max != null ? Number(meta.max) : undefined}
@@ -622,85 +680,36 @@ export function ServiceOptions({
   onSelectionsChange,
   currentSubtotal,
   onSelectionLabelsChange,
+  invalidTitles,
 }: {
   details: DetailItem[];
   onRangeChange?: (from: number, to: number) => void;
   onSelectionsChange?: (extras: Array<{ price: number; kind: "fixed" | "percent" }>) => void;
   currentSubtotal?: number;
   onSelectionLabelsChange?: (items: Array<{ title: string; values: string[] }>) => void;
+  invalidTitles?: string[];
 }) {
   const ordered = Array.isArray(details) ? [...details].sort((a, b) => (a.sortOrder ?? 0) - (b.sortOrder ?? 0)) : [];
   const extrasByItemRef = React.useRef<Map<number, Array<{ price: number; kind: "fixed" | "percent" }>>>(new Map());
   const labelsByItemRef = React.useRef<Map<number, { title: string; values: string[] }>>(new Map());
-  const setExtrasForItem = (id: number, extras: Array<{ price: number; kind: "fixed" | "percent" }>) => {
+  const setExtrasForItem = React.useCallback((id: number, extras: Array<{ price: number; kind: "fixed" | "percent" }>) => {
     extrasByItemRef.current.set(id, extras);
     const merged: Array<{ price: number; kind: "fixed" | "percent" }> = [];
     for (const v of extrasByItemRef.current.values()) {
       for (const e of v) merged.push(e);
     }
     if (onSelectionsChange) onSelectionsChange(merged);
-  };
-  const setLabelsForItem = (id: number, title: string, values: string[]) => {
+  }, [onSelectionsChange]);
+  const setLabelsForItem = React.useCallback((id: number, title: string, values: string[]) => {
     labelsByItemRef.current.set(id, { title, values });
     const merged: Array<{ title: string; values: string[] }> = [];
     for (const v of labelsByItemRef.current.values()) {
       if (v.values.length > 0) merged.push({ title: v.title, values: v.values });
     }
     if (onSelectionLabelsChange) onSelectionLabelsChange(merged);
-  };
+  }, [onSelectionLabelsChange]);
   return (
     <div className="space-y-3">
-      <style jsx>{`
-        input.dual-thumb {
-          position: absolute;
-          width: 100%;
-          height: 24px;
-          background: transparent;
-          -webkit-appearance: none;
-          appearance: none;
-          outline: none;
-        }
-        input.dual-thumb.range {
-          background: transparent !important;
-        }
-        input.dual-thumb::-webkit-slider-runnable-track {
-          background: transparent !important;
-          height: 0 !important;
-          border: 0 !important;
-          box-shadow: none !important;
-        }
-        input.dual-thumb::-moz-range-track {
-          background: transparent !important;
-          height: 0 !important;
-          border: 0 !important;
-        }
-        input.dual-thumb::-ms-track {
-          background: transparent !important;
-          border-color: transparent !important;
-          color: transparent !important;
-          height: 0 !important;
-          box-shadow: none !important;
-        }
-        input.dual-thumb::-webkit-slider-thumb {
-          -webkit-appearance: none;
-          appearance: none;
-          width: 18px;
-          height: 18px;
-          border-radius: 9999px;
-          background: #7c3aed;
-          border: 2px solid #fff;
-          box-shadow: 0 0 0 2px rgba(124, 58, 237, 0.4);
-          cursor: pointer;
-        }
-        input.dual-thumb::-moz-range-thumb {
-          width: 18px;
-          height: 18px;
-          border-radius: 9999px;
-          background: #7c3aed;
-          border: 2px solid #fff;
-          cursor: pointer;
-        }
-      `}</style>
       {ordered.map((d) => {
         if (d.inputType === "range" && d.range) {
           const dual = d.displayType === "dual" || !!d.range.dual;
@@ -719,25 +728,28 @@ export function ServiceOptions({
           );
         }
         if ((d.inputType === "select" || d.inputType === "radio" || d.inputType === "checkbox") && Array.isArray(d.options) && d.options.length > 0) {
+          const invalid = !!invalidTitles?.includes(d.title);
           return (
             <div key={d.id} className="space-y-1">
-              {d.inputType === "select" && <OptionSelect id={d.id} title={d.title} options={d.options} onChangeExtras={(extras) => setExtrasForItem(d.id, extras)} onChangeLabels={(vals) => setLabelsForItem(d.id, d.title, vals)} />}
-              {d.inputType === "radio" && <OptionRadio id={d.id} title={d.title} options={d.options} priceType={d.priceType} currentSubtotal={currentSubtotal} onChangeExtras={(extras) => setExtrasForItem(d.id, extras)} onChangeLabels={(vals) => setLabelsForItem(d.id, d.title, vals)} />}
-              {d.inputType === "checkbox" && <OptionCheckboxGroup id={d.id} title={d.title} options={d.options} onChangeExtras={(extras) => setExtrasForItem(d.id, extras)} onChangeLabels={(vals) => setLabelsForItem(d.id, d.title, vals)} />}
+              {d.inputType === "select" && <OptionSelect title={d.title} options={d.options} invalid={invalid} onChangeExtras={(extras) => setExtrasForItem(d.id, extras)} onChangeLabels={(vals) => setLabelsForItem(d.id, d.title, vals)} />}
+              {d.inputType === "radio" && <OptionRadio title={d.title} options={d.options} priceType={d.priceType} currentSubtotal={currentSubtotal} invalid={invalid} onChangeExtras={(extras) => setExtrasForItem(d.id, extras)} onChangeLabels={(vals) => setLabelsForItem(d.id, d.title, vals)} />}
+              {d.inputType === "checkbox" && <OptionCheckboxGroup title={d.title} options={d.options} invalid={invalid} onChangeExtras={(extras) => setExtrasForItem(d.id, extras)} onChangeLabels={(vals) => setLabelsForItem(d.id, d.title, vals)} />}
             </div>
           );
         }
         if (d.inputType === "checkbox" && (!Array.isArray(d.options) || d.options.length === 0)) {
+          const invalid = !!invalidTitles?.includes(d.title);
           return (
             <div key={d.id} className="space-y-1">
-              <OptionSingleCheckbox id={d.id} title={d.title} price={d.price} priceType={d.priceType} currentSubtotal={currentSubtotal} onChangeExtras={(extras) => setExtrasForItem(d.id, extras)} onChangeLabels={(vals) => setLabelsForItem(d.id, d.title, vals)} />
+              <OptionSingleCheckbox title={d.title} price={d.price} priceType={d.priceType} currentSubtotal={currentSubtotal} invalid={invalid} onChangeExtras={(extras) => setExtrasForItem(d.id, extras)} onChangeLabels={(vals) => setLabelsForItem(d.id, d.title, vals)} />
             </div>
           );
         }
         if (d.inputType === "input") {
+          const invalid = !!invalidTitles?.includes(d.title);
           return (
             <div key={d.id} className="space-y-1">
-              <OptionInput title={d.title} meta={d.inputMeta} />
+              <OptionInput title={d.title} meta={d.inputMeta} invalid={invalid} onChangeLabels={(vals) => setLabelsForItem(d.id, d.title, vals)} />
             </div>
           );
         }

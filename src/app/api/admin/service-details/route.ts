@@ -42,7 +42,7 @@ export async function GET() {
       sortOrder: it.sortOrder,
       options: Array.isArray(it.options as unknown) ? (it.options as unknown as Array<{ label: string; price: number }>) : undefined,
       range: it.range as unknown as { min: number; max: number; step?: number; dual?: boolean } | undefined,
-      inputMeta: it.inputMeta as unknown as { kind: "text" | "number"; min?: number; max?: number } | undefined,
+      inputMeta: it.inputMeta as unknown as { kind: "text" | "number"; min?: number; max?: number; required?: boolean } | undefined,
     }));
     return NextResponse.json(data);
   } catch {
@@ -80,7 +80,7 @@ export async function POST(req: Request) {
       sortOrder?: number;
       options?: Array<{ label: string; price: number }>;
       range?: { min: number; max: number; step?: number; dual?: boolean };
-      inputMeta?: { kind: "text" | "number"; min?: number; max?: number };
+      inputMeta?: { kind: "text" | "number"; min?: number; max?: number; required?: boolean };
     };
 
     if (!Number.isFinite(serviceId)) {
@@ -128,8 +128,15 @@ export async function POST(req: Request) {
             kind: inputMeta.kind === "number" ? "number" : "text",
             min: Number.isFinite(inputMeta.min) ? Number(inputMeta.min) : undefined,
             max: Number.isFinite(inputMeta.max) ? Number(inputMeta.max) : undefined,
+            required: !!inputMeta.required,
           }
         : undefined;
+    if ((inputMetaResolved?.required ?? false) && (inputType === "select" || inputType === "radio" || inputType === "checkbox")) {
+      const hasOpts = Array.isArray(optionsResolved) && optionsResolved.length > 0;
+      if (!hasOpts) {
+        return NextResponse.json({ error: "Field bertipe opsi yang wajib memerlukan daftar options" }, { status: 400 });
+      }
+    }
 
     const created = await db.serviceDetail.create({
       data: {
@@ -175,7 +182,7 @@ export async function POST(req: Request) {
       sortOrder: created.sortOrder,
       options: Array.isArray(created.options as unknown) ? (created.options as unknown as Array<{ label: string; price: number }>) : undefined,
       range: created.range as unknown as { min: number; max: number; step?: number; dual?: boolean } | undefined,
-      inputMeta: created.inputMeta as unknown as { kind: "text" | "number"; min?: number; max?: number } | undefined,
+      inputMeta: created.inputMeta as unknown as { kind: "text" | "number"; min?: number; max?: number; required?: boolean } | undefined,
     });
   } catch (e) {
     console.error(e);
@@ -215,7 +222,7 @@ export async function PUT(req: Request) {
       sortOrder?: number;
       options?: Array<{ label: string; price: number }>;
       range?: { min: number; max: number; step?: number; dual?: boolean };
-      inputMeta?: { kind: "text" | "number"; min?: number; max?: number };
+      inputMeta?: { kind: "text" | "number"; min?: number; max?: number; required?: boolean };
     };
 
     if (!Number.isFinite(id)) {
@@ -270,8 +277,15 @@ export async function PUT(req: Request) {
             kind: inputMeta.kind === "number" ? "number" : "text",
             min: Number.isFinite(inputMeta.min) ? Number(inputMeta.min) : undefined,
             max: Number.isFinite(inputMeta.max) ? Number(inputMeta.max) : undefined,
+            required: !!inputMeta.required,
           }
         : undefined;
+    if ((inputMetaResolved?.required ?? false) && (inputType === "select" || inputType === "radio" || inputType === "checkbox")) {
+      const hasOpts = Array.isArray(optionsResolved) && optionsResolved.length > 0;
+      if (!hasOpts) {
+        return NextResponse.json({ error: "Field bertipe opsi yang wajib memerlukan daftar options" }, { status: 400 });
+      }
+    }
 
     const updated = await db.serviceDetail.update({
       where: { id },
@@ -318,7 +332,7 @@ export async function PUT(req: Request) {
       sortOrder: updated.sortOrder,
       options: Array.isArray(updated.options as unknown) ? (updated.options as unknown as Array<{ label: string; price: number }>) : undefined,
       range: updated.range as unknown as { min: number; max: number; step?: number; dual?: boolean } | undefined,
-      inputMeta: updated.inputMeta as unknown as { kind: "text" | "number"; min?: number; max?: number } | undefined,
+      inputMeta: updated.inputMeta as unknown as { kind: "text" | "number"; min?: number; max?: number; required?: boolean } | undefined,
     });
   } catch (e) {
     console.error(e);

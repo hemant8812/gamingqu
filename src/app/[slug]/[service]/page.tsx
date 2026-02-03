@@ -158,6 +158,7 @@ export default async function ServiceDetailPage({ params }: { params: Params }) 
             kind: (((d.inputMeta as { kind?: "text" | "number" }).kind === "number") ? "number" : "text") as "number" | "text",
             min: ((d.inputMeta as { min?: number }).min != null ? Number((d.inputMeta as { min?: number }).min) : undefined),
             max: ((d.inputMeta as { max?: number }).max != null ? Number((d.inputMeta as { max?: number }).max) : undefined),
+            required: Boolean(((d.inputMeta as { required?: boolean }).required)),
           }
         : undefined,
   }));

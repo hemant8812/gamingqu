@@ -8,8 +8,6 @@ import { PaymentMethodModal } from "@/components/admin/payment/PaymentMethodModa
 import { db } from "@/lib/prisma";
 import { PageToast } from "@/components/shared/PageToast";
 import { parseToast } from "@/lib/page-utils";
-import path from "path";
-import { promises as fs } from "fs";
 
 export default async function AdminPaymentMethodPage({ searchParams }: { searchParams?: Promise<Record<string, string | string[] | undefined>> }) {
   const session = await getServerSession(authOptions);
@@ -41,88 +39,7 @@ export default async function AdminPaymentMethodPage({ searchParams }: { searchP
     take: 200,
   });
 
-  async function createMethod(formData: FormData) {
-    "use server";
-    const name = String(formData.get("name") ?? "");
-    const slug = String(formData.get("slug") ?? "");
-    const iconUrl = String(formData.get("iconUrl") ?? "");
-    const feePercentStr = String(formData.get("feePercent") ?? "");
-    const feeFixedStr = String(formData.get("feeFixed") ?? "");
-    const sortOrderStr = String(formData.get("sortOrder") ?? "");
-    await fetch(`${process.env.NEXTAUTH_URL || "http://localhost:3000"}/api/admin/payment-method`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        name,
-        slug,
-        iconUrl: iconUrl || null,
-        feePercent: feePercentStr ? Number(feePercentStr) : null,
-        feeFixed: feeFixedStr ? Number(feeFixedStr) : null,
-        sortOrder: sortOrderStr ? Number(sortOrderStr) : 0,
-        isActive: true,
-      }),
-    });
-    revalidatePath("/admin/payment-method");
-  }
-
-  async function updateMethod(formData: FormData) {
-    "use server";
-    const id = Number(String(formData.get("id") ?? "0"));
-    const name = String(formData.get("name") ?? "");
-    const slug = String(formData.get("slug") ?? "");
-    const feeType = String(formData.get("feeType") ?? "");
-    const feeValueStr = String(formData.get("feeValue") ?? "");
-    const isActive = String(formData.get("isActive") ?? "true") === "true" || String(formData.get("isActive") ?? "") === "on";
-    const sortOrderStr = String(formData.get("sortOrder") ?? "");
-    const iconFile = formData.get("icon") as File | null;
-    if (!Number.isFinite(id) || id <= 0) return;
-    const existing = await db.paymentMethod.findUnique({ where: { id } });
-    if (!existing) return;
-    let iconUrl = existing.iconUrl ?? undefined;
-    if (iconFile && iconFile.size > 0) {
-      const t = (iconFile as unknown as { type?: string }).type || "";
-      if (t.startsWith("image/")) {
-        const uploadDir = path.join(process.cwd(), "public", "uploads", "payment-methods");
-        await fs.mkdir(uploadDir, { recursive: true });
-        const nameGuess = iconFile.name || "icon.png";
-        const extRaw = path.extname(nameGuess).toLowerCase();
-        const allowed = [".png", ".jpg", ".jpeg", ".webp", ".gif"];
-        const ext = allowed.includes(extRaw) ? extRaw : ".png";
-        const filename = `${(slug || existing.slug)}-icon-${Date.now()}${ext}`;
-        const buf = Buffer.from(await iconFile.arrayBuffer());
-        await fs.writeFile(path.join(uploadDir, filename), buf);
-        iconUrl = `/uploads/payment-methods/${filename}`;
-      }
-    }
-    let feePercent: number | undefined = existing.feePercent != null ? Number(existing.feePercent) : undefined;
-    let feeFixed: number | undefined = existing.feeFixed != null ? Number(existing.feeFixed) : undefined;
-    if (feeType === "percent" || feeType === "fixed") {
-      const v = feeValueStr ? Number(feeValueStr) : NaN;
-      if (Number.isFinite(v)) {
-        feePercent = feeType === "percent" ? v : undefined;
-        feeFixed = feeType === "fixed" ? v : undefined;
-      }
-    }
-    await db.paymentMethod.update({
-      where: { id },
-      data: {
-        name: name || existing.name,
-        slug: slug || existing.slug,
-        iconUrl,
-        feePercent,
-        feeFixed,
-        isActive,
-        sortOrder: sortOrderStr ? Number(sortOrderStr) : existing.sortOrder,
-      },
-    });
-    revalidatePath("/admin/payment-method");
-  }
-
-  async function deleteMethod(id: number) {
-    "use server";
-    await db.paymentMethod.delete({ where: { id } });
-    revalidatePath("/admin/payment-method");
-  }
+ 
   async function deleteMethodAction(formData: FormData) {
     "use server";
     const idStr = String(formData.get("id") ?? "");

@@ -6,6 +6,7 @@ import { ServiceOptions } from "./ServiceOptions";
 import { Clock, Timer, ShoppingCart, CheckCircle } from "lucide-react";
 import { formatPrice } from "@/lib/formatPrice";
 import { useCurrency } from "@/app/providers";
+import { Toaster, toast as sonnerToast } from "sonner";
 
 type DetailItem = {
   id: number;
@@ -18,7 +19,7 @@ type DetailItem = {
   sortOrder?: number;
   options?: Array<{ label: string; price: number }>;
   range?: { min: number; max: number; step?: number; dual?: boolean };
-  inputMeta?: { kind: "text" | "number"; min?: number; max?: number };
+  inputMeta?: { kind: "text" | "number"; min?: number; max?: number; required?: boolean };
 };
 
 export function ServicePanel({
@@ -35,6 +36,8 @@ export function ServicePanel({
   const [toLevel, setToLevel] = React.useState<number | null>(null);
   const [extras, setExtras] = React.useState<Array<{ price: number; kind: "fixed" | "percent" }>>([]);
   const [selectedOptions, setSelectedOptions] = React.useState<Array<{ title: string; values: string[] }>>([]);
+  const [invalidTitles, setInvalidTitles] = React.useState<string[]>([]);
+  const [showErrors, setShowErrors] = React.useState(false);
   const diff = fromLevel != null && toLevel != null ? Math.max(0, toLevel - fromLevel) : 0;
   const isDualActive = diff > 0;
   const isSpecial =
@@ -70,20 +73,60 @@ export function ServicePanel({
     return { subtotal, totalPrice: subtotal + percentAdd };
   }, [extras, basePrice, diff, details]);
   const computedFmt = formatPrice(convert(totalPrice));
+  const handleRangeChange = React.useCallback((from: number, to: number) => {
+    setFromLevel(from);
+    setToLevel(to);
+  }, []);
+  const handleSelectionsChange = React.useCallback((s: Array<{ price: number; kind: "fixed" | "percent" }>) => {
+    setExtras(s);
+  }, []);
+  const handleSelectionLabelsChange = React.useCallback((items: Array<{ title: string; values: string[] }>) => {
+    setSelectedOptions(items);
+  }, []);
+  const computeMissing = React.useCallback(() => {
+    const missing: string[] = [];
+    for (const d of details) {
+      const req = !!d.inputMeta?.required;
+      if (!req) continue;
+      if (d.inputType === "range") continue;
+      const item = selectedOptions.find((i) => i.title === d.title);
+      const hasVal = item && Array.isArray(item.values) && item.values.length > 0 && item.values[0] !== "";
+      if (d.inputType === "checkbox" && Array.isArray(d.options) && d.options.length > 0) {
+        if (!item || !Array.isArray(item.values) || item.values.length === 0) {
+          missing.push(d.title);
+        }
+      } else if (d.inputType === "select" || d.inputType === "radio" || d.inputType === "input") {
+        if (!hasVal) {
+          missing.push(d.title);
+        } else if (d.inputType === "input" && d.inputMeta?.kind === "number") {
+          const v = Number(item!.values[0]);
+          const minOk = d.inputMeta.min == null || v >= Number(d.inputMeta.min);
+          const maxOk = d.inputMeta.max == null || v <= Number(d.inputMeta.max);
+          if (!Number.isFinite(v) || !minOk || !maxOk) {
+            missing.push(d.title);
+          }
+        }
+      }
+    }
+    return missing;
+  }, [details, selectedOptions]);
+  React.useEffect(() => {
+    if (!showErrors) return;
+    setInvalidTitles(computeMissing());
+  }, [showErrors, computeMissing]);
 
   return (
     <aside className="relative space-y-0">
+      <Toaster position="top-center" richColors theme="dark" offset="80px" />
       <div className="bg-[#0F172A] border border-white/10 rounded-t-2xl rounded-b-none p-6 border-b-0 shadow-none">
         <div className="space-y-6">
           <ServiceOptions
             details={details}
-            onRangeChange={(from, to) => {
-              setFromLevel(from);
-              setToLevel(to);
-            }}
-            onSelectionsChange={(s) => setExtras(s)}
+            onRangeChange={handleRangeChange}
+            onSelectionsChange={handleSelectionsChange}
             currentSubtotal={subtotal}
-            onSelectionLabelsChange={(items) => setSelectedOptions(items)}
+            onSelectionLabelsChange={handleSelectionLabelsChange}
+            invalidTitles={invalidTitles}
           />
         </div>
       </div>
@@ -96,8 +139,7 @@ export function ServicePanel({
             </span>
             <span className="text-white/80 text-xl ml-2">{currency}</span>
           </div>
-
-          {/* Summary table removed from service page per requirement */}
+          
 
           <div className="space-y-1 mb-3">
             {isDualActive && (
@@ -118,8 +160,16 @@ export function ServicePanel({
 
           <Link
             href={`/checkout/${serviceSlug}`}
-            onClick={() => {
+            onClick={(e) => {
               try {
+                const missing = computeMissing();
+                if (missing.length > 0) {
+                  e.preventDefault();
+                  setShowErrors(true);
+                  setInvalidTitles(missing);
+                  sonnerToast.error(`Required fields are missing: ${missing.join(", ")}`);
+                  return;
+                }
                 const data = {
                   serviceSlug,
                   basePrice,

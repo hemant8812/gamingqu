@@ -52,8 +52,17 @@ export function PaymentMethodModal() {
       (async () => {
         try {
           const res = await fetch("/api/admin/payment-method", { cache: "no-store" });
-          const list = await res.json();
-          const found = Array.isArray(list) ? list.find((m: any) => m.id === editId) : null;
+          const list = await res.json() as Array<{
+            id: number;
+            name: string;
+            slug: string;
+            iconUrl?: string | null;
+            feePercent?: number | string | null;
+            feeFixed?: number | string | null;
+            isActive: boolean;
+            sortOrder: number;
+          }>;
+          const found = Array.isArray(list) ? list.find((m) => m.id === editId) : null;
           if (found) {
             setInitial({
               id: found.id,
