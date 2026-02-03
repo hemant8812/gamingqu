@@ -22,11 +22,13 @@ function OptionSelect({
   title,
   options,
   onChangeExtras,
+  onChangeLabels,
 }: {
   id: number;
   title: string;
   options: NonNullable<DetailItem["options"]>;
   onChangeExtras?: (extras: Array<{ price: number; kind: "fixed" }>) => void;
+  onChangeLabels?: (values: string[]) => void;
 }) {
   const { symbol: currency, convert } = useCurrency();
   const [val, setVal] = React.useState<string>("");
@@ -48,6 +50,7 @@ function OptionSelect({
   React.useEffect(() => {
     const extras = selected && Number.isFinite(selected.price) && selected.price > 0 ? [{ price: selected.price, kind: "fixed" as const }] : [];
     if (onChangeExtras) onChangeExtras(extras);
+    if (onChangeLabels) onChangeLabels(val ? [val] : []);
   }, [selected, onChangeExtras, id]);
 
   return (
@@ -117,6 +120,7 @@ function OptionRadio({
   onChangeExtras,
   priceType,
   currentSubtotal,
+  onChangeLabels,
 }: {
   id: number;
   title: string;
@@ -124,6 +128,7 @@ function OptionRadio({
   onChangeExtras?: (extras: Array<{ price: number; kind: "fixed" | "percent" }>) => void;
   priceType: "fixed" | "percent";
   currentSubtotal?: number;
+  onChangeLabels?: (values: string[]) => void;
 }) {
   const { symbol: currency, convert } = useCurrency();
   const [val, setVal] = React.useState<string>("");
@@ -142,6 +147,7 @@ function OptionRadio({
         ? [{ price: selected.price, kind: priceType === "percent" ? "percent" : "fixed" }]
         : [];
     if (onChangeExtras) onChangeExtras(extras);
+    if (onChangeLabels) onChangeLabels(val ? [val] : []);
   }, [val, options, onChangeExtras, id, priceType]);
 
   if (isList) {
@@ -220,22 +226,29 @@ function OptionCheckboxGroup({
   title,
   options,
   onChangeExtras,
+  onChangeLabels,
 }: {
   id: number;
   title: string;
   options: NonNullable<DetailItem["options"]>;
   onChangeExtras?: (extras: Array<{ price: number; kind: "fixed" }>) => void;
+  onChangeLabels?: (values: string[]) => void;
 }) {
   const { symbol: currency, convert } = useCurrency();
   const [vals, setVals] = React.useState<Record<string, boolean>>({});
   React.useEffect(() => {
     const extras: Array<{ price: number; kind: "fixed" }> = [];
+    const labels: string[] = [];
     for (const o of options) {
       if (vals[o.label] && Number.isFinite(o.price) && o.price > 0) {
         extras.push({ price: o.price, kind: "fixed" });
       }
+      if (vals[o.label]) {
+        labels.push(o.label);
+      }
     }
     if (onChangeExtras) onChangeExtras(extras);
+    if (onChangeLabels) onChangeLabels(labels);
   }, [vals, options, onChangeExtras, id]);
   return (
     <div className="space-y-2">
@@ -269,6 +282,7 @@ function OptionSingleCheckbox({
   priceType,
   onChangeExtras,
   currentSubtotal,
+  onChangeLabels,
 }: {
   id: number;
   title: string;
@@ -276,6 +290,7 @@ function OptionSingleCheckbox({
   priceType: "fixed" | "percent";
   onChangeExtras?: (extras: Array<{ price: number; kind: "fixed" | "percent" }>) => void;
   currentSubtotal?: number;
+  onChangeLabels?: (values: string[]) => void;
 }) {
   const { symbol: currency, convert } = useCurrency();
   const [checked, setChecked] = React.useState(false);
@@ -285,6 +300,7 @@ function OptionSingleCheckbox({
         ? [{ price, kind: priceType === "percent" ? "percent" : "fixed" }]
         : [];
     if (onChangeExtras) onChangeExtras(extras);
+    if (onChangeLabels) onChangeLabels(checked ? [title] : []);
   }, [checked, price, priceType, onChangeExtras, id]);
   return (
     <div className="space-y-2">
@@ -605,14 +621,17 @@ export function ServiceOptions({
   onRangeChange,
   onSelectionsChange,
   currentSubtotal,
+  onSelectionLabelsChange,
 }: {
   details: DetailItem[];
   onRangeChange?: (from: number, to: number) => void;
   onSelectionsChange?: (extras: Array<{ price: number; kind: "fixed" | "percent" }>) => void;
   currentSubtotal?: number;
+  onSelectionLabelsChange?: (items: Array<{ title: string; values: string[] }>) => void;
 }) {
   const ordered = Array.isArray(details) ? [...details].sort((a, b) => (a.sortOrder ?? 0) - (b.sortOrder ?? 0)) : [];
   const extrasByItemRef = React.useRef<Map<number, Array<{ price: number; kind: "fixed" | "percent" }>>>(new Map());
+  const labelsByItemRef = React.useRef<Map<number, { title: string; values: string[] }>>(new Map());
   const setExtrasForItem = (id: number, extras: Array<{ price: number; kind: "fixed" | "percent" }>) => {
     extrasByItemRef.current.set(id, extras);
     const merged: Array<{ price: number; kind: "fixed" | "percent" }> = [];
@@ -620,6 +639,14 @@ export function ServiceOptions({
       for (const e of v) merged.push(e);
     }
     if (onSelectionsChange) onSelectionsChange(merged);
+  };
+  const setLabelsForItem = (id: number, title: string, values: string[]) => {
+    labelsByItemRef.current.set(id, { title, values });
+    const merged: Array<{ title: string; values: string[] }> = [];
+    for (const v of labelsByItemRef.current.values()) {
+      if (v.values.length > 0) merged.push({ title: v.title, values: v.values });
+    }
+    if (onSelectionLabelsChange) onSelectionLabelsChange(merged);
   };
   return (
     <div className="space-y-3">
@@ -694,16 +721,16 @@ export function ServiceOptions({
         if ((d.inputType === "select" || d.inputType === "radio" || d.inputType === "checkbox") && Array.isArray(d.options) && d.options.length > 0) {
           return (
             <div key={d.id} className="space-y-1">
-              {d.inputType === "select" && <OptionSelect id={d.id} title={d.title} options={d.options} onChangeExtras={(extras) => setExtrasForItem(d.id, extras)} />}
-              {d.inputType === "radio" && <OptionRadio id={d.id} title={d.title} options={d.options} priceType={d.priceType} currentSubtotal={currentSubtotal} onChangeExtras={(extras) => setExtrasForItem(d.id, extras)} />}
-              {d.inputType === "checkbox" && <OptionCheckboxGroup id={d.id} title={d.title} options={d.options} onChangeExtras={(extras) => setExtrasForItem(d.id, extras)} />}
+              {d.inputType === "select" && <OptionSelect id={d.id} title={d.title} options={d.options} onChangeExtras={(extras) => setExtrasForItem(d.id, extras)} onChangeLabels={(vals) => setLabelsForItem(d.id, d.title, vals)} />}
+              {d.inputType === "radio" && <OptionRadio id={d.id} title={d.title} options={d.options} priceType={d.priceType} currentSubtotal={currentSubtotal} onChangeExtras={(extras) => setExtrasForItem(d.id, extras)} onChangeLabels={(vals) => setLabelsForItem(d.id, d.title, vals)} />}
+              {d.inputType === "checkbox" && <OptionCheckboxGroup id={d.id} title={d.title} options={d.options} onChangeExtras={(extras) => setExtrasForItem(d.id, extras)} onChangeLabels={(vals) => setLabelsForItem(d.id, d.title, vals)} />}
             </div>
           );
         }
         if (d.inputType === "checkbox" && (!Array.isArray(d.options) || d.options.length === 0)) {
           return (
             <div key={d.id} className="space-y-1">
-              <OptionSingleCheckbox id={d.id} title={d.title} price={d.price} priceType={d.priceType} currentSubtotal={currentSubtotal} onChangeExtras={(extras) => setExtrasForItem(d.id, extras)} />
+              <OptionSingleCheckbox id={d.id} title={d.title} price={d.price} priceType={d.priceType} currentSubtotal={currentSubtotal} onChangeExtras={(extras) => setExtrasForItem(d.id, extras)} onChangeLabels={(vals) => setLabelsForItem(d.id, d.title, vals)} />
             </div>
           );
         }

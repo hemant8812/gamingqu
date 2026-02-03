@@ -34,6 +34,7 @@ export function ServicePanel({
   const [fromLevel, setFromLevel] = React.useState<number | null>(null);
   const [toLevel, setToLevel] = React.useState<number | null>(null);
   const [extras, setExtras] = React.useState<Array<{ price: number; kind: "fixed" | "percent" }>>([]);
+  const [selectedOptions, setSelectedOptions] = React.useState<Array<{ title: string; values: string[] }>>([]);
   const diff = fromLevel != null && toLevel != null ? Math.max(0, toLevel - fromLevel) : 0;
   const isDualActive = diff > 0;
   const isSpecial =
@@ -82,6 +83,7 @@ export function ServicePanel({
             }}
             onSelectionsChange={(s) => setExtras(s)}
             currentSubtotal={subtotal}
+            onSelectionLabelsChange={(items) => setSelectedOptions(items)}
           />
         </div>
       </div>
@@ -94,6 +96,8 @@ export function ServicePanel({
             </span>
             <span className="text-white/80 text-xl ml-2">{currency}</span>
           </div>
+
+          {/* Summary table removed from service page per requirement */}
 
           <div className="space-y-1 mb-3">
             {isDualActive && (
@@ -114,6 +118,21 @@ export function ServicePanel({
 
           <Link
             href={`/checkout/${serviceSlug}`}
+            onClick={() => {
+              try {
+                const data = {
+                  serviceSlug,
+                  basePrice,
+                  fromLevel,
+                  toLevel,
+                  subtotal,
+                  totalPrice,
+                  selectedOptions,
+                  ts: Date.now(),
+                };
+                window.localStorage.setItem(`checkout:${serviceSlug}`, JSON.stringify(data));
+              } catch {}
+            }}
             className="btn btn-gaming w-full h-12 mt-2 rounded-md inline-flex items-center justify-center text-base md:text-lg"
           >
             <ShoppingCart className="h-5 w-5 mr-2" />

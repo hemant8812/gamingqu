@@ -39,7 +39,7 @@ export function Providers({ children, eurPerUsd = 1 }: PropsWithChildren<{ eurPe
     try {
       const s = window.localStorage.getItem("currency_symbol");
       if (s === "€" || s === "$") {
-        setSymbol(s as CurrencySymbol);
+        setTimeout(() => setSymbol(s as CurrencySymbol), 0);
       }
     } catch {}
     initializedRef.current = true;
