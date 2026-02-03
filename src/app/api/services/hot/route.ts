@@ -3,9 +3,10 @@ import { db } from "@/lib/prisma";
 
 export async function GET() {
     try {
-        // Ambil semua service yang aktif
-        const allServices = await db.service.findMany({
-            where: { isActive: true },
+        const hot = await db.service.findMany({
+            where: { isActive: true, isHotOffer: true },
+            orderBy: { createdAt: "desc" },
+            take: 5,
             select: {
                 id: true,
                 name: true,
@@ -17,12 +18,30 @@ export async function GET() {
                 game: { select: { slug: true, name: true } },
             },
         });
-
-        // Shuffle array dan ambil 5 random
-        const shuffled = allServices.sort(() => Math.random() - 0.5);
-        const randomServices = shuffled.slice(0, 5);
-
-        return NextResponse.json({ services: randomServices });
+        let services = hot;
+        if (hot.length < 5) {
+            const remainder = 5 - hot.length;
+            const total = await db.service.count({ where: { isActive: true, isHotOffer: false } });
+            const skip = total > remainder ? Math.max(0, Math.floor(Math.random() * Math.max(1, total - remainder))) : 0;
+            const fallback = await db.service.findMany({
+                where: { isActive: true, isHotOffer: false },
+                orderBy: { createdAt: "desc" },
+                skip,
+                take: remainder,
+                select: {
+                    id: true,
+                    name: true,
+                    slug: true,
+                    price: true,
+                    imageUrl: true,
+                    features: true,
+                    isHotOffer: true,
+                    game: { select: { slug: true, name: true } },
+                },
+            });
+            services = [...hot, ...fallback];
+        }
+        return NextResponse.json({ services });
     } catch {
         return NextResponse.json({ error: "Server error" }, { status: 500 });
     }

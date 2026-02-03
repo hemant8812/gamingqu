@@ -195,14 +195,14 @@ export default async function ServiceDetailPage({ params }: { params: Params }) 
                 </div>
               )}
               <div>
-                <div className="text-sm text-gray-400">
-                  <Link href={`/${service.game.slug}`} className="hover:text-white font-semibold">
+                <h1 className="text-3xl md:text-4xl font-black text-white tracking-tight">
+                  <Link href={`/${service.game.slug}`} className="hover:text-white">
                     {service.game.name}
                   </Link>
-                </div>
-                <h1 className="text-2xl md:text-3xl font-black text-white tracking-tight">
-                  {service.name}
                 </h1>
+                <div className="text-sm md:text-base text-gray-300 font-semibold">
+                  {service.name}
+                </div>
               </div>
             </div>
           </div>
