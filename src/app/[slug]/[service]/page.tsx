@@ -204,7 +204,7 @@ export default async function ServiceDetailPage({ params }: { params: Params }) 
 
       <main className="mx-auto max-w-7xl px-6 py-10">
         <div className="grid grid-cols-1 md:grid-cols-[1fr_420px] gap-8">
-          <section className="glass-card rounded-2xl p-6">
+          <section>
             {service.description && (
               <div
                 className="prose prose-invert max-w-none"

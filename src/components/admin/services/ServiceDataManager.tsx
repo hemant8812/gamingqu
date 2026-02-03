@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { AlertTriangle, Trash2, X } from "lucide-react";
+import { AlertTriangle, Trash2, X, Pencil } from "lucide-react";
 
 type ServiceOption = { id: number; name: string; slug: string; price: string };
 
@@ -29,6 +29,11 @@ export function ServiceDataManager({ services }: { services: ServiceOption[] }) 
   const [optPrice, setOptPrice] = React.useState<number | "">("");
   const [deleteId, setDeleteId] = React.useState<number | null>(null);
   const confirmDialogRef = React.useRef<HTMLDialogElement>(null);
+  const [openServices, setOpenServices] = React.useState<Set<number>>(new Set());
+  const [selectedByService, setSelectedByService] = React.useState<Map<number, string>>(new Map());
+  const [selectedSid, setSelectedSid] = React.useState<number | null>(null);
+  const [selectedTitle, setSelectedTitle] = React.useState<string>("");
+  const [editingId, setEditingId] = React.useState<number | null>(null);
 
   const [form, setForm] = React.useState<Partial<DetailItem>>({
     priceType: "fixed",
@@ -47,6 +52,16 @@ export function ServiceDataManager({ services }: { services: ServiceOption[] }) 
   };
 
   React.useEffect(() => { load(); }, []);
+  React.useEffect(() => {
+    if (selectedSid == null && services.length > 0) {
+      setSelectedSid(services[0].id);
+    }
+  }, [services, selectedSid]);
+  React.useEffect(() => {
+    if (selectedSid == null) return;
+    const titles = Array.from(new Set(items.filter(r => r.serviceId === selectedSid).map(r => r.title))).sort((a, b) => a.localeCompare(b));
+    setSelectedTitle((prev) => titles.includes(prev) ? prev : (titles[0] ?? ""));
+  }, [items, selectedSid]);
 
   React.useEffect(() => {
     if (deleteId) {
@@ -113,15 +128,16 @@ export function ServiceDataManager({ services }: { services: ServiceOption[] }) 
     try {
       const serviceId = Number(form.serviceId);
       const serviceName = services.find(s => s.id === serviceId)?.name || "";
-      const payload = { ...form, serviceId, serviceName };
+      const payload = { ...form, serviceId, serviceName, id: editingId ?? undefined };
       const res = await fetch("/api/admin/service-details", {
-        method: "POST",
+        method: editingId ? "PUT" : "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
       });
       if (res.ok) {
         setOpen(false);
         reset();
+        setEditingId(null);
         await load();
       }
     } catch { }
@@ -143,25 +159,118 @@ export function ServiceDataManager({ services }: { services: ServiceOption[] }) 
 
   const isOptionType = ["select", "radio", "checkbox"].includes(form.inputType ?? "");
 
+  const startEdit = (it: DetailItem) => {
+    setEditingId(it.id);
+    setForm({
+      serviceId: it.serviceId,
+      title: it.title,
+      fieldName: it.fieldName,
+      inputType: it.inputType,
+      displayType: it.displayType,
+      priceType: it.priceType,
+      price: it.price,
+      sortOrder: it.sortOrder ?? 0,
+      options: it.options,
+      range: it.range,
+      inputMeta: it.inputMeta,
+    });
+    setOpen(true);
+  };
+  const closeModal = () => {
+    setOpen(false);
+    setEditingId(null);
+    reset();
+  };
   return (
     <div className="bg-[#0F172A] border border-white/10 rounded-2xl p-6">
       <div className="flex items-center justify-between mb-4">
         <h2 className="text-lg font-bold">Service Details</h2>
-        <button onClick={() => { reset(); setOpen(true); }} className="btn btn-gaming btn-sm rounded-xl">Add Detail</button>
+        <button onClick={() => { setEditingId(null); reset(); setOpen(true); }} className="btn btn-gaming btn-sm rounded-xl">Add Detail</button>
       </div>
 
-      <div className="space-y-3">
-        {items.length === 0 ? (
-          <div className="text-gray-500">No details yet</div>
-        ) : items.map(it => (
-          <div key={it.id} className="p-3 rounded-xl bg-[#0A0E17] border border-white/10 flex justify-between items-center">
-            <div>
-              <div className="text-white font-semibold">{it.title} <span className="text-gray-400">({it.fieldName})</span></div>
-              <div className="text-sm text-gray-400">{it.serviceName} • {it.inputType} • {it.displayType ?? "-"}</div>
-            </div>
-            <button onClick={() => remove(it.id)} className="btn btn-ghost btn-xs text-red-400 hover:bg-red-500/10">Delete</button>
+      <div className="grid grid-cols-1 md:grid-cols-[280px_1fr] gap-4">
+        <div className="rounded-2xl bg-[#0A0E17] border border-white/10 overflow-hidden">
+          <div className="px-4 py-3 text-xs text-gray-400">Services</div>
+          <div className="divide-y divide-white/10">
+            {services.map((s) => (
+              <button
+                key={s.id}
+                type="button"
+                onClick={() => setSelectedSid(s.id)}
+                className={`w-full px-4 py-3 text-left ${selectedSid === s.id ? "bg-blue-600/20 text-white" : "text-gray-300 hover:bg-white/5"}`}
+              >
+                {s.name}
+              </button>
+            ))}
           </div>
-        ))}
+        </div>
+        <div className="rounded-2xl bg-[#0A0E17] border border-white/10 overflow-hidden">
+          {selectedSid == null ? (
+            <div className="p-6 text-gray-500">Select a service to view details</div>
+          ) : (
+            (() => {
+              const name = services.find(s => s.id === selectedSid)?.name || `Service ${selectedSid}`;
+              const rows = items.filter(r => r.serviceId === selectedSid);
+              const titles = Array.from(new Set(rows.map(r => r.title))).sort((a, b) => a.localeCompare(b));
+              return (
+                <div className="p-4">
+                  <div className="flex items-center justify-between mb-3">
+                    <div className="text-white font-bold">{name}</div>
+                    <div className="text-xs text-gray-400">{rows.length} details</div>
+                  </div>
+                  <div className="rounded-xl bg-white/5 overflow-x-auto">
+                    <table className="w-full">
+                      <thead>
+                        <tr className="border-b border-white/10">
+                          <th className="text-left text-xs font-medium text-gray-400 uppercase tracking-wider px-4 py-3">Title</th>
+                          <th className="text-left text-xs font-medium text-gray-400 uppercase tracking-wider px-4 py-3">Field</th>
+                          <th className="text-left text-xs font-medium text-gray-400 uppercase tracking-wider px-4 py-3">Input</th>
+                          <th className="text-left text-xs font-medium text-gray-400 uppercase tracking-wider px-4 py-3">Display</th>
+                          <th className="text-left text-xs font-medium text-gray-400 uppercase tracking-wider px-4 py-3">Price Type</th>
+                          <th className="text-left text-xs font-medium text-gray-400 uppercase tracking-wider px-4 py-3">Price</th>
+                          <th className="text-left text-xs font-medium text-gray-400 uppercase tracking-wider px-4 py-3">Sort</th>
+                          <th className="text-left text-xs font-medium text-gray-400 uppercase tracking-wider px-4 py-3">Action</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {rows.length === 0 ? (
+                          <tr>
+                            <td colSpan={8} className="text-center py-12 text-gray-500">No details found</td>
+                          </tr>
+                        ) : (
+                          rows
+                            .slice()
+                            .sort((a, b) => (a.sortOrder ?? 0) - (b.sortOrder ?? 0) || a.fieldName.localeCompare(b.fieldName))
+                            .map((it) => (
+                              <tr key={it.id} className="border-b border-white/5 hover:bg-white/5">
+                                <td className="px-4 py-3 text-sm text-white">{it.title}</td>
+                                <td className="px-4 py-3 text-sm text-white">{it.fieldName}</td>
+                                <td className="px-4 py-3 text-sm text-gray-300">{it.inputType}</td>
+                                <td className="px-4 py-3 text-sm text-gray-300">{it.displayType ?? "-"}</td>
+                                <td className="px-4 py-3 text-sm text-gray-300">{it.priceType}</td>
+                                <td className="px-4 py-3 text-sm text-gray-300">${Number(it.price).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
+                                <td className="px-4 py-3 text-sm text-gray-300">{it.sortOrder ?? 0}</td>
+                                <td className="px-4 py-3">
+                                  <div className="flex items-center gap-2">
+                                    <button onClick={() => startEdit(it)} className="btn btn-ghost btn-xs text-gray-300 hover:bg-white/10" aria-label="Edit">
+                                      <Pencil className="h-4 w-4" />
+                                    </button>
+                                    <button onClick={() => remove(it.id)} className="btn btn-ghost btn-xs text-red-400 hover:bg-red-500/10" aria-label="Delete">
+                                      <Trash2 className="h-4 w-4" />
+                                    </button>
+                                  </div>
+                                </td>
+                              </tr>
+                            ))
+                        )}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              );
+            })()
+          )}
+        </div>
       </div>
 
       <dialog ref={confirmDialogRef} className="modal">
@@ -197,9 +306,11 @@ export function ServiceDataManager({ services }: { services: ServiceOption[] }) 
 
       {open && (
         <div className="fixed inset-0 z-[60] flex items-center justify-center">
-          <div className="absolute inset-0 bg-black/40" onClick={() => setOpen(false)} />
-          <div className="relative w-full max-w-2xl bg-[#0F172A] border border-white/10 rounded-2xl p-6">
-            <div className="text-xl font-bold mb-4">Add New Service Detail</div>
+          <div className="absolute inset-0 bg-black/40" onClick={closeModal} />
+          <div className="relative w-full max-w-2xl bg-[#0F172A] border border-white/10 rounded-2xl">
+            <div className="flex flex-col max-h-[80vh]">
+              <div className="px-6 pt-6 pb-4 text-xl font-bold">{editingId ? "Edit Service Detail" : "Add New Service Detail"}</div>
+              <div className="px-6 overflow-y-auto">
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
@@ -359,9 +470,11 @@ export function ServiceDataManager({ services }: { services: ServiceOption[] }) 
               </div>
             ) : null}
 
-            <div className="mt-6 flex justify-end gap-2">
-              <button className="btn" onClick={() => setOpen(false)}>Cancel</button>
-              <button className={`btn btn-gaming ${saving ? "loading" : ""}`} onClick={save} disabled={saving}>Create Detail</button>
+              </div>
+              <div className="px-6 py-4 flex justify-end gap-2">
+                <button className="btn" onClick={closeModal}>Cancel</button>
+                <button className={`btn btn-gaming ${saving ? "loading" : ""}`} onClick={save} disabled={saving}>{editingId ? "Save Changes" : "Create Detail"}</button>
+              </div>
             </div>
           </div>
         </div>

@@ -30,6 +30,7 @@ function OptionSelect({
   const [val, setVal] = React.useState<string>("");
   const [open, setOpen] = React.useState(false);
   const ref = React.useRef<HTMLDivElement>(null);
+  const defaultLabel = title.toLowerCase().includes("profession") ? "Don't add Profession" : "Select";
 
   React.useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -60,7 +61,7 @@ function OptionSelect({
               <>
                 {val} {selected && Number.isFinite(selected.price) && selected.price > 0 ? `(+$${selected.price})` : ""}
               </>
-            ) : "Select"}
+            ) : defaultLabel}
           </span>
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -81,7 +82,7 @@ function OptionSelect({
                 setOpen(false);
               }}
             >
-              Select
+              {defaultLabel}
             </div>
             {options.map((o, i) => (
               <div
