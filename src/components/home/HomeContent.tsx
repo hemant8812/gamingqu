@@ -24,6 +24,7 @@ type HotService = {
   imageUrl?: string | null;
   features: string[] | null;
   isHotOffer: boolean;
+  game: { slug: string; name: string };
 };
 
 export function HomeContent() {
@@ -354,7 +355,7 @@ export function HomeContent() {
                       <span className="text-md ml-1 text-gray-400">€</span>
                     </span>
                     <Link
-                      href={`/buy/${h.slug}`}
+                      href={`/${h.game.slug}/${h.slug}`}
                       className="btn btn-gaming btn-sm px-4 h-9 rounded-xl text-xs font-bold"
                     >
                       Buy now

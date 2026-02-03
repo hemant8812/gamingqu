@@ -6,6 +6,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { Zap, Tag, ShoppingBag } from "lucide-react";
 import { formatPrice } from "@/lib/formatPrice";
+import { stripHtml } from "@/lib/text";
 
 type ServiceItem = {
     id: string;
@@ -36,7 +37,7 @@ type GameData = {
     services: ServiceItem[];
 };
 
-function ServiceCard({ s }: { s: ServiceItem }) {
+function ServiceCard({ s, gameSlug }: { s: ServiceItem; gameSlug: string }) {
     const { whole, decimal, showDecimal } = formatPrice(s.price);
 
     return (
@@ -89,7 +90,7 @@ function ServiceCard({ s }: { s: ServiceItem }) {
                         <span className="text-md ml-1 text-gray-400">€</span>
                     </span>
                     <Link
-                        href={`/buy/${s.slug}`}
+                        href={`/${gameSlug}/${s.slug}`}
                         className="btn btn-gaming btn-sm px-4 h-9 rounded-xl text-xs font-bold"
                     >
                         Buy now
@@ -195,10 +196,9 @@ export default function GamePage() {
                                     {game.name}
                                 </h1>
                                 {game.description && (
-                                    <p
-                                        className="text-gray-300 text-base md:text-lg mt-2 max-w-2xl line-clamp-2"
-                                        dangerouslySetInnerHTML={{ __html: game.description }}
-                                    />
+                                    <p className="text-gray-300 text-base md:text-lg mt-2 max-w-2xl line-clamp-2">
+                                        {stripHtml(game.description)}
+                                    </p>
                                 )}
                             </div>
                         </div>
@@ -265,7 +265,7 @@ export default function GamePage() {
                 ) : (
                     <section className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-5">
                         {displayedServices.map((s) => (
-                            <ServiceCard key={s.id} s={s} />
+                            <ServiceCard key={s.id} s={s} gameSlug={game.slug} />
                         ))}
                     </section>
                 )}

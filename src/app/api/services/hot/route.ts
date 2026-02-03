@@ -14,6 +14,7 @@ export async function GET() {
                 imageUrl: true,
                 features: true,
                 isHotOffer: true,
+                game: { select: { slug: true, name: true } },
             },
         });
 
