@@ -16,7 +16,17 @@ type DetailItem = {
   inputMeta?: { kind: "text" | "number"; min?: number; max?: number };
 };
 
-function OptionSelect({ title, options }: { title: string; options: NonNullable<DetailItem["options"]> }) {
+function OptionSelect({
+  id,
+  title,
+  options,
+  onChangeExtras,
+}: {
+  id: number;
+  title: string;
+  options: NonNullable<DetailItem["options"]>;
+  onChangeExtras?: (extras: Array<{ price: number; kind: "fixed" }>) => void;
+}) {
   const [val, setVal] = React.useState<string>("");
   const [open, setOpen] = React.useState(false);
   const ref = React.useRef<HTMLDivElement>(null);
@@ -32,6 +42,10 @@ function OptionSelect({ title, options }: { title: string; options: NonNullable<
   }, []);
 
   const selected = options.find((o) => o.label === val);
+  React.useEffect(() => {
+    const extras = selected && Number.isFinite(selected.price) && selected.price > 0 ? [{ price: selected.price, kind: "fixed" as const }] : [];
+    if (onChangeExtras) onChangeExtras(extras);
+  }, [selected, onChangeExtras, id]);
 
   return (
     <div className="space-y-2" ref={ref}>
@@ -93,7 +107,21 @@ function OptionSelect({ title, options }: { title: string; options: NonNullable<
   );
 }
 
-function OptionRadio({ title, options }: { title: string; options: NonNullable<DetailItem["options"]> }) {
+function OptionRadio({
+  id,
+  title,
+  options,
+  onChangeExtras,
+  priceType,
+  currentSubtotal,
+}: {
+  id: number;
+  title: string;
+  options: NonNullable<DetailItem["options"]>;
+  onChangeExtras?: (extras: Array<{ price: number; kind: "fixed" | "percent" }>) => void;
+  priceType: "fixed" | "percent";
+  currentSubtotal?: number;
+}) {
   const [val, setVal] = React.useState<string>("");
   const isDual = options.length === 2;
   const isList = options.length >= 3;
@@ -103,6 +131,14 @@ function OptionRadio({ title, options }: { title: string; options: NonNullable<D
       setVal(options[0].label);
     }
   }, [options, val]);
+  React.useEffect(() => {
+    const selected = options.find((o) => o.label === val);
+    const extras =
+      selected && Number.isFinite(selected.price) && selected.price > 0
+        ? [{ price: selected.price, kind: priceType === "percent" ? "percent" : "fixed" }]
+        : [];
+    if (onChangeExtras) onChangeExtras(extras);
+  }, [val, options, onChangeExtras, id, priceType]);
 
   if (isList) {
     return (
@@ -128,7 +164,13 @@ function OptionRadio({ title, options }: { title: string; options: NonNullable<D
                 <span className="font-semibold text-white">{o.label}</span>
               </div>
               {Number.isFinite(o.price) && o.price > 0 && (
-                <span className="font-semibold text-gray-300">+${o.price}</span>
+                <span className="font-semibold text-gray-300">
+                  +$
+                  {(priceType === "percent"
+                    ? ((currentSubtotal ?? 0) * (o.price / 100))
+                    : o.price
+                  ).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                </span>
               )}
             </label>
           ))}
@@ -160,7 +202,13 @@ function OptionRadio({ title, options }: { title: string; options: NonNullable<D
               <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-3 h-3 rounded-full bg-blue-500 opacity-0 peer-checked:opacity-100 transition-opacity pointer-events-none" />
             </div>
             <span className={`text-sm font-medium ${val === o.label ? "text-white" : "text-gray-300"}`}>
-              {o.label} {Number.isFinite(o.price) && o.price > 0 ? `(+$${o.price})` : ""}
+              {o.label}{" "}
+              {Number.isFinite(o.price) && o.price > 0
+                ? `(+$${(priceType === "percent"
+                    ? ((currentSubtotal ?? 0) * (o.price / 100))
+                    : o.price
+                  ).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })})`
+                : ""}
             </span>
           </label>
         ))}
@@ -169,8 +217,27 @@ function OptionRadio({ title, options }: { title: string; options: NonNullable<D
   );
 }
 
-function OptionCheckboxGroup({ title, options }: { title: string; options: NonNullable<DetailItem["options"]> }) {
+function OptionCheckboxGroup({
+  id,
+  title,
+  options,
+  onChangeExtras,
+}: {
+  id: number;
+  title: string;
+  options: NonNullable<DetailItem["options"]>;
+  onChangeExtras?: (extras: Array<{ price: number; kind: "fixed" }>) => void;
+}) {
   const [vals, setVals] = React.useState<Record<string, boolean>>({});
+  React.useEffect(() => {
+    const extras: Array<{ price: number; kind: "fixed" }> = [];
+    for (const o of options) {
+      if (vals[o.label] && Number.isFinite(o.price) && o.price > 0) {
+        extras.push({ price: o.price, kind: "fixed" });
+      }
+    }
+    if (onChangeExtras) onChangeExtras(extras);
+  }, [vals, options, onChangeExtras, id]);
   return (
     <div className="space-y-2">
       <div className="text-white font-semibold">{title}</div>
@@ -196,8 +263,26 @@ function OptionCheckboxGroup({ title, options }: { title: string; options: NonNu
   );
 }
 
-function OptionSingleCheckbox({ title, price }: { title: string; price: number }) {
+function OptionSingleCheckbox({
+  id,
+  title,
+  price,
+  priceType,
+  onChangeExtras,
+  currentSubtotal,
+}: {
+  id: number;
+  title: string;
+  price: number;
+  priceType: "fixed" | "percent";
+  onChangeExtras?: (extras: Array<{ price: number; kind: "fixed" | "percent" }>) => void;
+  currentSubtotal?: number;
+}) {
   const [checked, setChecked] = React.useState(false);
+  React.useEffect(() => {
+    const extras = checked && Number.isFinite(price) && price > 0 ? [{ price, kind: priceType === "percent" ? "percent" : "fixed" }] : [];
+    if (onChangeExtras) onChangeExtras(extras);
+  }, [checked, price, priceType, onChangeExtras, id]);
   return (
     <div className="space-y-2">
       <div className="bg-[#1e293b] rounded-xl overflow-hidden border-0">
@@ -212,7 +297,13 @@ function OptionSingleCheckbox({ title, price }: { title: string; price: number }
             <span className="font-semibold text-white">{title}</span>
           </div>
           {Number.isFinite(price) && price > 0 && (
-            <span className="font-semibold text-gray-300">+${price}</span>
+            <span className="font-semibold text-gray-300">
+              +$
+              {(priceType === "percent"
+                ? ((currentSubtotal ?? 0) * (price / 100))
+                : price
+              ).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+            </span>
           )}
         </label>
       </div>
@@ -509,9 +600,28 @@ function RangeSingle({ range, title }: { range: NonNullable<DetailItem["range"]>
   );
 }
 
-export function ServiceOptions({ details, onRangeChange }: { details: DetailItem[]; onRangeChange?: (from: number, to: number) => void }) {
+export function ServiceOptions({
+  details,
+  onRangeChange,
+  onSelectionsChange,
+  currentSubtotal,
+}: {
+  details: DetailItem[];
+  onRangeChange?: (from: number, to: number) => void;
+  onSelectionsChange?: (extras: Array<{ price: number; kind: "fixed" | "percent" }>) => void;
+  currentSubtotal?: number;
+}) {
   if (!Array.isArray(details) || details.length === 0) return null;
   const ordered = [...details].sort((a, b) => (a.sortOrder ?? 0) - (b.sortOrder ?? 0));
+  const extrasByItemRef = React.useRef<Map<number, Array<{ price: number; kind: "fixed" | "percent" }>>>(new Map());
+  const setExtrasForItem = (id: number, extras: Array<{ price: number; kind: "fixed" | "percent" }>) => {
+    extrasByItemRef.current.set(id, extras);
+    const merged: Array<{ price: number; kind: "fixed" | "percent" }> = [];
+    for (const v of extrasByItemRef.current.values()) {
+      for (const e of v) merged.push(e);
+    }
+    if (onSelectionsChange) onSelectionsChange(merged);
+  };
   return (
     <div className="space-y-3">
       <style jsx>{`
@@ -585,9 +695,16 @@ export function ServiceOptions({ details, onRangeChange }: { details: DetailItem
         if ((d.inputType === "select" || d.inputType === "radio" || d.inputType === "checkbox") && Array.isArray(d.options) && d.options.length > 0) {
           return (
             <div key={d.id} className="space-y-1">
-              {d.inputType === "select" && <OptionSelect title={d.title} options={d.options} />}
-              {d.inputType === "radio" && <OptionRadio title={d.title} options={d.options} />}
-              {d.inputType === "checkbox" && <OptionCheckboxGroup title={d.title} options={d.options} />}
+              {d.inputType === "select" && <OptionSelect id={d.id} title={d.title} options={d.options} onChangeExtras={(extras) => setExtrasForItem(d.id, extras)} />}
+              {d.inputType === "radio" && <OptionRadio id={d.id} title={d.title} options={d.options} priceType={d.priceType} currentSubtotal={currentSubtotal} onChangeExtras={(extras) => setExtrasForItem(d.id, extras)} />}
+              {d.inputType === "checkbox" && <OptionCheckboxGroup id={d.id} title={d.title} options={d.options} onChangeExtras={(extras) => setExtrasForItem(d.id, extras)} />}
+            </div>
+          );
+        }
+        if (d.inputType === "checkbox" && (!Array.isArray(d.options) || d.options.length === 0)) {
+          return (
+            <div key={d.id} className="space-y-1">
+              <OptionSingleCheckbox id={d.id} title={d.title} price={d.price} priceType={d.priceType} currentSubtotal={currentSubtotal} onChangeExtras={(extras) => setExtrasForItem(d.id, extras)} />
             </div>
           );
         }

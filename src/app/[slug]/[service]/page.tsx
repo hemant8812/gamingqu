@@ -226,7 +226,7 @@ export default async function ServiceDetailPage({ params }: { params: Params }) 
             )}
           </section>
 
-          <ServicePanel details={detailsForClient} priceFmt={priceFmt} serviceSlug={service.slug} />
+          <ServicePanel details={detailsForClient} priceFmt={priceFmt} serviceSlug={service.slug} basePrice={basePrice} />
         </div>
       </main>
     </div>
