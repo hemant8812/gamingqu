@@ -75,13 +75,44 @@ import { CreditCard, Wallet, Banknote, ShieldCheck, AlertTriangle } from "lucide
       ? `${data.fromLevel}–${data.toLevel}`
       : null;
   const totalFmt = data ? formatPrice(convert(data.totalPrice)) : null;
-  const items = data?.totalPrice ?? 0;
-  const feeBase =
-    !method ? 0 : method === "card" ? items * 0.029 + 0.3 : method === "paypal" ? items * 0.035 + 0.49 : 0;
-  const amount = items + feeBase;
-  const itemsFmt = formatPrice(convert(items));
-  const feeFmt = formatPrice(convert(feeBase));
-  const amountFmt = formatPrice(convert(amount));
+  const [quote, setQuote] = useState<{ items: number; fee: number; amount: number } | null>(null);
+  useEffect(() => {
+    const run = async () => {
+      if (!data?.serviceSlug) return;
+      try {
+        const res = await fetch("/api/checkout/quote", {
+          method: "POST",
+          headers: { "content-type": "application/json" },
+          body: JSON.stringify({
+            serviceSlug: data.serviceSlug,
+            fromLevel: data.fromLevel,
+            toLevel: data.toLevel,
+            selectedOptions: data.selectedOptions ?? [],
+            method,
+          }),
+        });
+        const json = await res.json();
+        if (json?.ok) {
+          setQuote({
+            items: Number(json.items) || 0,
+            fee: Number(json.fee) || 0,
+            amount: Number(json.amount) || 0,
+          });
+        } else {
+          setQuote(null);
+        }
+      } catch {
+        setQuote(null);
+      }
+    };
+    run();
+  }, [data, method]);
+  const itemsRaw = quote ? quote.items : data?.totalPrice ?? 0;
+  const feeRaw = quote ? quote.fee : (!method ? 0 : method === "card" ? itemsRaw * 0.029 + 0.3 : method === "paypal" ? itemsRaw * 0.035 + 0.49 : 0);
+  const amountRaw = quote ? quote.amount : itemsRaw + feeRaw;
+  const itemsFmt = formatPrice(convert(itemsRaw));
+  const feeFmt = formatPrice(convert(feeRaw));
+  const amountFmt = formatPrice(convert(amountRaw));
  
   return (
     <div className="min-h-screen bg-[#0A0E17] text-white">
@@ -292,6 +323,7 @@ import { CreditCard, Wallet, Banknote, ShieldCheck, AlertTriangle } from "lucide
                       const payload = {
                         ...data,
                         method,
+                        quote: quote ?? undefined,
                         contact: {
                           email: session?.user?.email ?? email,
                           discord,
