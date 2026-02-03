@@ -3,7 +3,11 @@ import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { formatPrice } from "@/lib/formatPrice";
+import { ServiceOptions } from "@/components/services/ServiceOptions";
+import { ServicePanel } from "@/components/services/ServicePanel";
 import type { Metadata } from "next";
+import { Clock, Timer, ShoppingCart, CheckCircle } from "lucide-react";
+import { SiStripe, SiVisa, SiAmericanexpress, SiApplepay, SiGooglepay, SiPaypal, SiBitcoin } from "react-icons/si";
 
 export const dynamic = "force-dynamic";
 
@@ -20,7 +24,7 @@ export async function generateMetadata({ params }: { params: Params }): Promise<
       select: { name: true, description: true, imageUrl: true, game: { select: { name: true, slug: true } } },
     });
     if (!s) return {};
-    const title = `${s.name} — ${s.game.name}`;
+    const title = `${s.name} - ${s.game.name}`;
     const desc = (s.description ?? "").trim() || `${s.name} for ${s.game.name}`;
     return {
       title,
@@ -61,7 +65,95 @@ export default async function ServiceDetailPage({ params }: { params: Params }) 
     notFound();
   }
 
-  const priceFmt = formatPrice(service.price.toString());
+  // Compute starting price using ServiceDetail if available
+  const basePrice = parseFloat(service.price.toString());
+  let startingPrice = basePrice;
+  let detailsData: Array<{
+    id: number;
+    title: string;
+    fieldName: string;
+    inputType: "select" | "radio" | "range" | "checkbox" | "input";
+    displayType?: "number" | "text" | "dual" | "single";
+    priceType: "fixed" | "percent";
+    price: number;
+    sortOrder?: number;
+    options?: Array<{ label: string; price: number }>;
+    range?: { min: number; max: number; step?: number; dual?: boolean };
+    inputMeta?: { kind: "text" | "number"; min?: number; max?: number };
+  }> = [];
+  try {
+    detailsData = await db.serviceDetail.findMany({
+      where: { serviceId: service.id, isActive: true },
+      select: {
+        id: true,
+        title: true,
+        fieldName: true,
+        inputType: true,
+        displayType: true,
+        priceType: true,
+        price: true,
+        sortOrder: true,
+        options: true,
+        range: true,
+        inputMeta: true,
+      },
+      orderBy: [{ sortOrder: "asc" }, { createdAt: "desc" }],
+      take: 200,
+    });
+    for (const d of detailsData) {
+      if (d.inputType === "select" || d.inputType === "radio") {
+        const opts = Array.isArray(d.options as unknown)
+          ? (d.options as unknown as Array<{ label: string; price: number }>)
+          : [];
+        for (const opt of opts) {
+          const val = d.priceType === "percent" ? basePrice * (opt.price / 100) : opt.price;
+          if (Number.isFinite(val)) {
+            startingPrice = Math.min(startingPrice, val);
+          }
+        }
+      } else {
+        const p = parseFloat(d.price.toString());
+        const val = d.priceType === "percent" ? basePrice * (p / 100) : p;
+        if (Number.isFinite(val) && val > 0) {
+          startingPrice = Math.min(startingPrice, val);
+        }
+      }
+    }
+  } catch {}
+  const priceFmt = formatPrice(startingPrice.toString());
+  const detailsForClient = detailsData.map((d) => ({
+    id: d.id,
+    title: d.title,
+    fieldName: d.fieldName,
+    inputType: d.inputType,
+    displayType: d.displayType ?? undefined,
+    priceType: d.priceType,
+    price: Number.parseFloat(d.price.toString()),
+    sortOrder: d.sortOrder,
+    options: Array.isArray(d.options as unknown)
+      ? (d.options as unknown as Array<{ label: string; price: number }>).map((o) => ({
+          label: String(o.label),
+          price: Number(o.price),
+        }))
+      : undefined,
+    range:
+      (d.range as unknown as { min?: number; max?: number; step?: number; dual?: boolean }) && typeof d.range === "object"
+        ? {
+            min: Number((d.range as any).min ?? 0),
+            max: Number((d.range as any).max ?? 0),
+            step: Number((d.range as any).step ?? 1),
+            dual: !!(d.range as any).dual,
+          }
+        : undefined,
+    inputMeta:
+      (d.inputMeta as unknown as { kind?: "text" | "number"; min?: number; max?: number }) && typeof d.inputMeta === "object"
+        ? {
+            kind: (d.inputMeta as any).kind === "number" ? "number" : "text",
+            min: (d.inputMeta as any).min != null ? Number((d.inputMeta as any).min) : undefined,
+            max: (d.inputMeta as any).max != null ? Number((d.inputMeta as any).max) : undefined,
+          }
+        : undefined,
+  }));
 
   return (
     <div className="min-h-screen mesh-gradient text-base-content">
@@ -111,14 +203,8 @@ export default async function ServiceDetailPage({ params }: { params: Params }) 
       </div>
 
       <main className="mx-auto max-w-7xl px-6 py-10">
-        <div className="grid grid-cols-1 md:grid-cols-[1fr_320px] gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-[1fr_420px] gap-8">
           <section className="glass-card rounded-2xl p-6">
-            {service.imageUrl && (
-              <div className="relative w-full aspect-[16/9] rounded-xl overflow-hidden mb-6">
-                <Image src={service.imageUrl} alt={service.name} fill className="object-cover" sizes="800px" />
-                <div className="absolute inset-0 bg-gradient-to-t from-[#0F172A]/40 to-transparent" />
-              </div>
-            )}
             {service.description && (
               <div
                 className="prose prose-invert max-w-none"
@@ -140,31 +226,7 @@ export default async function ServiceDetailPage({ params }: { params: Params }) 
             )}
           </section>
 
-          <aside className="space-y-4">
-            <div className="glass-card rounded-2xl p-6">
-              <div className="text-gray-400 text-sm mb-1">Starting from</div>
-              <div className="text-3xl font-black text-white">
-                <span className="gradient-text">{priceFmt.whole}</span>
-                {priceFmt.showDecimal && <span className="text-lg ml-1">,{priceFmt.decimal}</span>}
-                <span className="text-white/80 text-xl ml-2">€</span>
-              </div>
-              <Link
-                href={`/checkout/${service.slug}`}
-                className="btn btn-gaming btn-wide mt-4 rounded-xl"
-              >
-                Buy now
-              </Link>
-            </div>
-            <div className="glass-card rounded-2xl p-6">
-              <div className="font-semibold mb-2">Need Help?</div>
-              <p className="text-sm opacity-80">
-                Our team can explain this service and how it works.
-              </p>
-              <Link href="/blog" className="btn btn-ghost btn-sm mt-4">
-                Read our blog
-              </Link>
-            </div>
-          </aside>
+          <ServicePanel details={detailsForClient} priceFmt={priceFmt} serviceSlug={service.slug} />
         </div>
       </main>
     </div>
