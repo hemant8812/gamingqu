@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/auth";
 import { db } from "@/lib/prisma";
-import { revalidatePath } from "next/cache";
+import { revalidatePath, revalidateTag } from "next/cache";
 import path from "path";
 import { promises as fs } from "fs";
 import { sanitizeHtml, sanitizePlain } from "@/lib/sanitize";
@@ -117,6 +117,7 @@ export async function POST(req: Request) {
             },
         });
         revalidatePath("/admin/services");
+        revalidateTag("services", { expire: 0 });
         return NextResponse.json({ ok: true, toast: "saved" });
     } catch (e) {
         console.error(e);
@@ -189,6 +190,7 @@ export async function PUT(req: Request) {
             },
         });
         revalidatePath("/admin/services");
+        revalidateTag("services", { expire: 0 });
         return NextResponse.json({ ok: true, toast: "updated" });
     } catch (e) {
         console.error(e);
@@ -210,6 +212,7 @@ export async function DELETE(req: Request) {
         }
         await db.service.delete({ where: { id } });
         revalidatePath("/admin/services");
+        revalidateTag("services", { expire: 0 });
         return NextResponse.json({ ok: true, toast: "deleted" });
     } catch {
         return NextResponse.json({ error: "Server error" }, { status: 500 });

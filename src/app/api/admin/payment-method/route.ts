@@ -2,7 +2,7 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/auth";
 import { db } from "@/lib/prisma";
 import { NextResponse } from "next/server";
-import { revalidatePath } from "next/cache";
+import { revalidatePath, revalidateTag } from "next/cache";
 import path from "path";
 import { promises as fs } from "fs";
 
@@ -72,6 +72,7 @@ export async function POST(req: Request) {
       },
     });
     revalidatePath("/admin/payment-method");
+    revalidateTag("payment-methods", { expire: 0 });
     return NextResponse.json(created);
   } catch {
     return NextResponse.json({ error: "Server error" }, { status: 500 });
@@ -142,6 +143,7 @@ export async function PUT(req: Request) {
       },
     });
     revalidatePath("/admin/payment-method");
+    revalidateTag("payment-methods", { expire: 0 });
     return NextResponse.json(updated);
   } catch {
     return NextResponse.json({ error: "Server error" }, { status: 500 });
@@ -163,6 +165,7 @@ export async function DELETE(req: Request) {
     }
     await db.paymentMethod.delete({ where: { id } });
     revalidatePath("/admin/payment-method");
+    revalidateTag("payment-methods", { expire: 0 });
     return NextResponse.json({ ok: true });
   } catch {
     return NextResponse.json({ error: "Server error" }, { status: 500 });

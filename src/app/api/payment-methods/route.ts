@@ -1,20 +1,27 @@
 import { NextResponse } from "next/server";
 import { db } from "@/lib/prisma";
+import { unstable_cache } from "next/cache";
 
 export async function GET() {
   try {
-    const list = await db.paymentMethod.findMany({
-      where: { isActive: true },
-      orderBy: [{ sortOrder: "asc" }, { createdAt: "desc" }],
-      take: 200,
-      select: {
-        slug: true,
-        iconUrl: true,
-        feePercent: true,
-        feeFixed: true,
-        sortOrder: true,
+    const list = await unstable_cache(
+      async () => {
+        return await db.paymentMethod.findMany({
+          where: { isActive: true },
+          orderBy: [{ sortOrder: "asc" }, { createdAt: "desc" }],
+          take: 200,
+          select: {
+            slug: true,
+            iconUrl: true,
+            feePercent: true,
+            feeFixed: true,
+            sortOrder: true,
+          },
+        });
       },
-    });
+      ["payment-methods-list"],
+      { tags: ["payment-methods"], revalidate: 3600 }
+    )();
     const data = list.map((m) => ({
       slug: m.slug,
       iconUrl: m.iconUrl ?? null,

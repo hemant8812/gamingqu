@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/auth";
 import { db } from "@/lib/prisma";
+import { revalidateTag } from "next/cache";
 import path from "path";
 import { promises as fs } from "fs";
 
@@ -63,6 +64,7 @@ export async function POST(req: Request) {
           order: count,
         },
       });
+      revalidateTag("banners", { expire: 0 });
       return NextResponse.json({ ok: true, data: created });
     } else if (mode === "UPDATE") {
       const idStr = ((form.get("id") as string | null) ?? "").trim();
@@ -86,12 +88,14 @@ export async function POST(req: Request) {
           ...(activeRaw != null ? { isActive } : {}),
         },
       });
+      revalidateTag("banners", { expire: 0 });
       return NextResponse.json({ ok: true, data: updated });
     } else if (mode === "DELETE") {
       const idStr = ((form.get("id") as string | null) ?? "").trim();
       const id = Number(idStr);
       if (!Number.isFinite(id) || id <= 0) return NextResponse.json({ error: "id diperlukan" }, { status: 400 });
       await db.banner.delete({ where: { id } });
+      revalidateTag("banners", { expire: 0 });
       return NextResponse.json({ ok: true });
     } else {
       return NextResponse.json({ error: "mode tidak dikenal" }, { status: 400 });

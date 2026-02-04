@@ -139,6 +139,7 @@ export async function DELETE(req: Request) {
     }
     await db.category.delete({ where: { id } });
     revalidatePath("/admin/categories");
+    revalidateTag("categories", { expire: 0 });
     return NextResponse.json({ ok: true });
   } catch {
     return NextResponse.json({ error: "Server error" }, { status: 500 });
