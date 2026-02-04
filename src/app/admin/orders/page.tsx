@@ -1,6 +1,8 @@
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/auth";
-import { FiShoppingCart, FiDownload, FiSearch } from "react-icons/fi";
+import { FiShoppingCart } from "react-icons/fi";
+import { db } from "@/lib/prisma";
+import { AdminOrdersTable } from "@/components/admin/orders/AdminOrdersTable";
 
 export default async function AdminOrdersPage() {
   const session = await getServerSession(authOptions);
@@ -15,6 +17,46 @@ export default async function AdminOrdersPage() {
       </div>
     );
   }
+
+  const orders = await db.order.findMany({
+    orderBy: [{ createdAt: "desc" }],
+    take: 200,
+    select: {
+      code: true,
+      user: { select: { id: true, username: true } },
+      service: { select: { name: true, game: { select: { name: true } } } },
+      methodSlug: true,
+      status: true,
+      fulfillmentStatus: true,
+      items: true,
+      fee: true,
+      amount: true,
+      currency: true,
+      contactEmail: true,
+      contactDiscord: true,
+      characterName: true,
+      createdAt: true,
+    },
+  });
+
+  const uiOrders = orders.map((o) => ({
+    code: o.code,
+    user: o.user ? { id: o.user.id, username: o.user.username } : null,
+    service: o.service
+      ? { name: o.service.name, game: o.service.game ? { name: o.service.game.name } : null }
+      : null,
+    methodSlug: o.methodSlug,
+    status: o.status,
+    fulfillmentStatus: o.fulfillmentStatus,
+    items: Number.parseFloat(o.items.toString()),
+    fee: Number.parseFloat(o.fee.toString()),
+    amount: Number.parseFloat(o.amount.toString()),
+    currency: o.currency,
+    contactEmail: o.contactEmail ?? null,
+    contactDiscord: o.contactDiscord ?? null,
+    characterName: o.characterName ?? null,
+    createdAt: o.createdAt.toISOString(),
+  }));
 
   return (
     <div className="min-h-screen bg-[#0A0E17] text-white">
@@ -31,33 +73,7 @@ export default async function AdminOrdersPage() {
           <p className="text-gray-400">Manage customer orders</p>
         </div>
 
-        {/* Action Bar */}
-        <div className="flex items-center gap-3 mb-6">
-          <div className="relative flex-1 max-w-md">
-            <FiSearch className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 h-5 w-5" />
-            <input
-              type="text"
-              placeholder="Search orders..."
-              className="w-full pl-12 pr-4 h-12 bg-[#0F172A] border border-white/10 rounded-xl text-white placeholder-gray-500 focus:border-blue-500 focus:outline-none transition-colors"
-            />
-          </div>
-          <button className="h-12 px-6 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-xl flex items-center gap-2 transition-colors">
-            <FiDownload className="h-5 w-5" />
-            Export
-          </button>
-        </div>
-
-        {/* Orders Table Card */}
-        <div className="bg-[#0F172A] border border-white/10 rounded-2xl overflow-hidden">
-          <div className="p-6 border-b border-white/10">
-            <h3 className="text-lg font-bold text-white">Recent Orders</h3>
-          </div>
-          <div className="p-16 flex flex-col items-center justify-center text-gray-500">
-            <FiShoppingCart className="h-16 w-16 mb-4 opacity-30" />
-            <p className="text-lg">No orders yet</p>
-            <p className="text-sm">Orders will appear here when customers make purchases</p>
-          </div>
-        </div>
+        <AdminOrdersTable orders={uiOrders} />
       </div>
     </div>
   );
