@@ -9,6 +9,7 @@ import { authOptions } from "@/auth";
 import { getWebsiteSettingCore } from "@/lib/settings";
 import { getBaseUrl } from "@/lib/site";
 import { getEmbeds } from "@/lib/embeds";
+import { headers } from "next/headers";
 import { EmbedInjector } from "@/components/EmbedInjector";
 
 const geistSans = Geist({
@@ -67,6 +68,7 @@ export default async function RootLayout({
   const session = await getServerSession(authOptions).catch(() => null);
   const s = await getWebsiteSettingCore();
   const embeds = await getEmbeds();
+  const nonce = (await headers()).get("x-nonce") || "";
   
   const siteName = s?.siteName ?? "Gamingqu";
   const faviconUrl = s?.faviconUrl ?? "/icons/logo.png";
@@ -80,7 +82,7 @@ export default async function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <EmbedInjector embeds={embeds} />
+        <EmbedInjector embeds={embeds} nonce={nonce} />
         <Providers eurPerUsd={typeof s?.eurPerUsd === "number" ? (s?.eurPerUsd as number) :  (s?.eurPerUsd ? Number(s?.eurPerUsd as unknown as number) : 1)}>
           <Navbar siteName={siteName} logoUrl={logoUrl} user={session?.user ?? null} />
           <main className="pt-16">{children}</main>

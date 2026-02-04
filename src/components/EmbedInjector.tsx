@@ -8,7 +8,7 @@ type Embed = {
   placement: string;
 };
 
-export function EmbedInjector({ embeds }: { embeds: Embed[] }) {
+export function EmbedInjector({ embeds, nonce }: { embeds: Embed[]; nonce?: string }) {
   const injectedRef = useRef<Set<string | number>>(new Set());
 
   useEffect(() => {
@@ -34,6 +34,10 @@ export function EmbedInjector({ embeds }: { embeds: Embed[] }) {
             Array.from(originalScript.attributes).forEach((attr) => {
               newScript.setAttribute(attr.name, attr.value);
             });
+            
+            if (nonce) {
+              newScript.setAttribute("nonce", nonce);
+            }
 
             // Copy content
             newScript.textContent = originalScript.textContent;
