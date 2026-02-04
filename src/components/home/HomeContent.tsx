@@ -180,9 +180,11 @@ export function HomeContent() {
                       </p>
                       <Link
                         href={s.href}
+                        aria-label={`Explore ${s.title}`}
+                        title={`Explore ${s.title}`}
                         className="btn btn-gaming h-10 px-5 text-sm rounded-xl inline-flex items-center gap-2 group"
                       >
-                        {s.cta}
+                        Explore {s.title}
                         <FiArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
                       </Link>
                     </div>
