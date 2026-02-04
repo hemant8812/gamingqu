@@ -46,9 +46,16 @@ export async function middleware(req: NextRequest) {
     }
   }
 
-  const res = NextResponse.next();
-
   const nonce = generateNonce();
+  const requestHeaders = new Headers(req.headers);
+  requestHeaders.set("x-nonce", nonce);
+
+  const res = NextResponse.next({
+    request: {
+      headers: requestHeaders,
+    },
+  });
+
   const isDev = process.env.NODE_ENV !== "production";
   const csp = [
     "default-src 'self'",
