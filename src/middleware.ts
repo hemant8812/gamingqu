@@ -26,6 +26,13 @@ function shouldBlockByIp(ip: string): boolean {
   return rec.count > RATE_LIMIT_MAX;
 }
 
+function generateNonce(): string {
+  // Use Web Crypto API available in Edge runtime
+  const bytes = new Uint8Array(16);
+  crypto.getRandomValues(bytes);
+  return Array.from(bytes).map((b) => b.toString(16).padStart(2, "0")).join("");
+}
+
 export async function middleware(req: NextRequest) {
   const url = req.nextUrl;
 
@@ -40,9 +47,34 @@ export async function middleware(req: NextRequest) {
     }
   }
 
-  return NextResponse.next();
+  const res = NextResponse.next();
+
+  // Set a strict CSP with per-request nonce; allow required external sources
+  const nonce = generateNonce();
+  const isDev = process.env.NODE_ENV !== "production";
+  const csp = [
+    "default-src 'self'",
+    "base-uri 'self'",
+    "frame-ancestors 'none'",
+    "form-action 'self'",
+    "img-src 'self' data: blob: https:",
+    "style-src 'self' 'unsafe-inline'",
+    "font-src 'self' data:",
+    `connect-src 'self' https:${isDev ? " http: ws:" : ""}`,
+    `script-src 'self' 'nonce-${nonce}'${isDev ? " 'unsafe-eval' 'unsafe-inline'" : ""} https://static.cloudflareinsights.com`,
+  ].join("; ");
+
+  res.headers.set("Content-Security-Policy", csp);
+  res.headers.set("x-nonce", nonce);
+
+  return res;
 }
 
 export const config = {
-  matcher: ["/api/auth/:path*", "/api/register"],
+  matcher: [
+    // Apply CSP to all pages; skip static assets to avoid unnecessary header propagation
+    "/((?!_next/static|_next/image|favicon.ico).*)",
+    "/api/auth/:path*",
+    "/api/register",
+  ],
 };

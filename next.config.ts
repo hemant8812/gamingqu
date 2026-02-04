@@ -1,32 +1,21 @@
 import type { NextConfig } from "next";
 
-const isDev = process.env.NODE_ENV !== "production";
-const csp = [
-  `default-src 'self'`,
-  `base-uri 'self'`,
-  `frame-ancestors 'none'`,
-  `form-action 'self'`,
-  `img-src 'self' data: blob: https:`,
-  `style-src 'self' 'unsafe-inline'`,
-  `font-src 'self' data:`,
-  `connect-src 'self' https:${isDev ? " http: ws:" : ""}`,
-  `script-src 'self'${isDev ? " 'unsafe-eval' 'unsafe-inline'" : ""}`,
-].join("; ");
-
 const nextConfig: NextConfig = {
   reactCompiler: true,
   experimental: {
     optimizeCss: false,
   },
   images: {
-    qualities: [100, 75],
+    remotePatterns: [
+      { protocol: "https", hostname: "picsum.photos" },
+      { protocol: "https", hostname: "gamingqu.com" },
+    ],
   },
   async headers() {
     return [
       {
         source: "/(.*)",
         headers: [
-          { key: "Content-Security-Policy", value: csp },
           { key: "X-Content-Type-Options", value: "nosniff" },
           { key: "X-Frame-Options", value: "DENY" },
           { key: "Referrer-Policy", value: "no-referrer" },
