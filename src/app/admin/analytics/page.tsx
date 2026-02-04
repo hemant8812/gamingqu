@@ -22,12 +22,19 @@ export default async function AdminAnalyticsPage() {
   let avgOrderValue = "$0";
   let revenueSeries: Array<{ date: string; value: number }> = [];
   let ordersByGame: Array<{ label: string; count: number }> = [];
+  let conversionRate = "0%";
+  let netTrendText = "+0% vs yesterday";
+  let netTrendUp = true;
   try {
     const now = new Date();
     const start = new Date(now);
     start.setHours(0, 0, 0, 0);
     start.setDate(start.getDate() - 29);
-    const [revenueAgg, ordersCount, paidOrders] = await Promise.all([
+    const todayStart = new Date(now);
+    todayStart.setHours(0, 0, 0, 0);
+    const yesterdayStart = new Date(todayStart);
+    yesterdayStart.setDate(yesterdayStart.getDate() - 1);
+    const [revenueAgg, ordersCount, paidOrders, totalOrders30, netTodayAgg, netYesterdayAgg] = await Promise.all([
       db.order.aggregate({
         _sum: { items: true, boosterPay: true },
         where: { status: "PAID" },
@@ -44,6 +51,15 @@ export default async function AdminAnalyticsPage() {
         orderBy: [{ createdAt: "asc" }],
         take: 5000,
       }),
+      db.order.count({ where: { createdAt: { gte: start } } }),
+      db.order.aggregate({
+        _sum: { items: true, boosterPay: true },
+        where: { status: "PAID", createdAt: { gte: todayStart } },
+      }),
+      db.order.aggregate({
+        _sum: { items: true, boosterPay: true },
+        where: { status: "PAID", createdAt: { gte: yesterdayStart, lt: todayStart } },
+      }),
     ]);
     const totalItems = Number.parseFloat(((revenueAgg._sum.items ?? 0) as unknown as { toString: () => string } | number).toString());
     const totalBooster = Number.parseFloat(((revenueAgg._sum.boosterPay ?? 0) as unknown as { toString: () => string } | number).toString());
@@ -51,6 +67,19 @@ export default async function AdminAnalyticsPage() {
     totalRevenue = `$${total.toFixed(2)}`;
     totalOrders = ordersCount;
     avgOrderValue = `$${(ordersCount > 0 ? total / ordersCount : 0).toFixed(2)}`;
+    const paidCount30 = paidOrders.length;
+    conversionRate = `${totalOrders30 > 0 ? Math.round((paidCount30 / totalOrders30) * 100) : 0}%`;
+    const netToday = Number.parseFloat(((netTodayAgg._sum.items ?? 0) as unknown as { toString: () => string } | number).toString()) -
+      Number.parseFloat(((netTodayAgg._sum.boosterPay ?? 0) as unknown as { toString: () => string } | number).toString());
+    const netYesterday = Number.parseFloat(((netYesterdayAgg._sum.items ?? 0) as unknown as { toString: () => string } | number).toString()) -
+      Number.parseFloat(((netYesterdayAgg._sum.boosterPay ?? 0) as unknown as { toString: () => string } | number).toString());
+    const pct = (a: number, b: number) => {
+      if (b === 0) return a > 0 ? 100 : 0;
+      return Math.round(((a - b) / b) * 100);
+    };
+    const netPct = pct(netToday, netYesterday);
+    netTrendText = `${netPct >= 0 ? "+" : ""}${netPct}% vs yesterday`;
+    netTrendUp = netPct >= 0;
     const dayKeys = Array.from({ length: 30 }, (_, i) => {
       const d = new Date(start);
       d.setDate(start.getDate() + i);
@@ -100,9 +129,9 @@ export default async function AdminAnalyticsPage() {
               <div>
                 <p className="text-sm text-gray-400 mb-1">Net Profit</p>
                 <p className="text-3xl font-bold text-white">{totalRevenue}</p>
-                <p className="text-sm text-emerald-400 flex items-center gap-1 mt-1">
-                  <FiTrendingUp className="h-4 w-4" />
-                  +0% vs last month
+                <p className={`text-sm flex items-center gap-1 mt-1 ${netTrendUp ? "text-emerald-400" : "text-red-400"}`}>
+                  <FiTrendingUp className={`h-4 w-4 ${!netTrendUp ? "rotate-180" : ""}`} />
+                  {netTrendText}
                 </p>
               </div>
               <div className="w-12 h-12 rounded-xl bg-emerald-500/20 flex items-center justify-center text-emerald-400">
@@ -136,7 +165,7 @@ export default async function AdminAnalyticsPage() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-gray-400 mb-1">Conversion Rate</p>
-                <p className="text-3xl font-bold text-white">0%</p>
+                <p className="text-3xl font-bold text-white">{conversionRate}</p>
               </div>
               <div className="w-12 h-12 rounded-xl bg-cyan-500/20 flex items-center justify-center text-cyan-400">
                 <FiTrendingUp className="h-6 w-6" />

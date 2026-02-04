@@ -79,6 +79,12 @@ interface AdminDashboardClientProps {
         totalOrders?: number;
         totalRevenue?: string;
         totalGames?: number;
+        usersTrendText?: string;
+        usersTrendUp?: boolean;
+        ordersTrendText?: string;
+        ordersTrendUp?: boolean;
+        revenueTrendText?: string;
+        revenueTrendUp?: boolean;
     };
 }
 
@@ -125,20 +131,22 @@ export function AdminDashboardClient({ enabled, isSuperAdmin, stats }: AdminDash
                             title="Total Users"
                             value={stats.totalUsers ?? 0}
                             icon={<FiUsers className="h-6 w-6" />}
-                            trend="+12% from last month"
-                            trendUp={true}
+                            trend={stats.usersTrendText}
+                            trendUp={stats.usersTrendUp}
                         />
                         <StatsCard
                             title="Total Orders"
                             value={stats.totalOrders ?? 0}
                             icon={<FiShoppingCart className="h-6 w-6" />}
-                            trend="+8% from last month"
-                            trendUp={true}
+                            trend={stats.ordersTrendText}
+                            trendUp={stats.ordersTrendUp}
                         />
                         <StatsCard
                             title="Revenue"
                             value={stats.totalRevenue ?? "$0"}
                             icon={<FiBarChart2 className="h-6 w-6" />}
+                            trend={stats.revenueTrendText}
+                            trendUp={stats.revenueTrendUp}
                         />
                         <StatsCard
                             title="Active Games"
