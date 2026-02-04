@@ -1,26 +1,10 @@
 import { getServerSession } from "next-auth";
 import Link from "next/link";
 import { authOptions } from "@/auth";
-import {
-  Home,
-  ShoppingCart,
-  User,
-  Wallet,
-  Star,
-  MessageSquare,
-  Settings,
-  LogOut,
-  Activity,
-  CheckCircle,
-  Shield,
-  ChevronRight,
-  Eye,
-  Clock,
-  ArrowUpCircle,
-  ArrowDownCircle,
-} from "lucide-react";
+import { Home, ShoppingCart, User, Wallet, Star, MessageSquare, Settings, LogOut, Activity, CheckCircle, Shield, ChevronRight, Eye, Clock, ArrowUpCircle, ArrowDownCircle } from "lucide-react";
 import { FiLock } from "react-icons/fi";
 import { db } from "@/lib/prisma";
+import { MemberSidebar } from "@/components/dashboard/MemberSidebar";
 
 export default async function DashboardPage() {
   const session = await getServerSession(authOptions);
@@ -151,7 +135,7 @@ export default async function DashboardPage() {
                   </Link>
                 </li>
                 <li>
-                  <Link href="#" className="flex items-center gap-3 px-3 py-2 rounded-xl hover:bg-white/5 text-gray-300" aria-disabled>
+                  <Link href="/dashboard/profile" className="flex items-center gap-3 px-3 py-2 rounded-xl hover:bg-white/5 text-gray-300">
                     <User className="h-4 w-4" />
                     <span>Profile</span>
                   </Link>
@@ -192,58 +176,7 @@ export default async function DashboardPage() {
         </div>
         <div className="grid grid-cols-1 lg:grid-cols-[260px_1fr] gap-6">
           <aside className="space-y-6 hidden lg:block lg:sticky lg:top-8 self-start">
-            <nav className="bg-[#0F172A] border border-white/10 rounded-2xl p-4">
-              <ul className="space-y-1">
-                <li>
-                  <Link href="/dashboard" className="flex items-center gap-3 px-3 py-2 rounded-xl bg-white/10 text-white">
-                    <Home className="h-4 w-4" />
-                    <span>Overview</span>
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/dashboard/orders" className="flex items-center gap-3 px-3 py-2 rounded-xl hover:bg-white/5 text-gray-300">
-                    <ShoppingCart className="h-4 w-4" />
-                    <span>My Orders</span>
-                  </Link>
-                </li>
-                <li>
-                  <Link href="#" className="flex items-center gap-3 px-3 py-2 rounded-xl hover:bg-white/5 text-gray-300" aria-disabled>
-                    <User className="h-4 w-4" />
-                    <span>Profile</span>
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/dashboard/wallet" className="flex items-center gap-3 px-3 py-2 rounded-xl hover:bg-white/5 text-gray-300">
-                    <Wallet className="h-4 w-4" />
-                    <span>Wallet</span>
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/dashboard/reviews" className="flex items-center gap-3 px-3 py-2 rounded-xl hover:bg-white/5 text-gray-300">
-                    <Star className="h-4 w-4" />
-                    <span>Reviews</span>
-                  </Link>
-                </li>
-                <li>
-                  <Link href="#" className="flex items-center gap-3 px-3 py-2 rounded-xl hover:bg-white/5 text-gray-300" aria-disabled>
-                    <MessageSquare className="h-4 w-4" />
-                    <span>Messages</span>
-                  </Link>
-                </li>
-                <li>
-                  <Link href="#" className="flex items-center gap-3 px-3 py-2 rounded-xl hover:bg-white/5 text-gray-300" aria-disabled>
-                    <Settings className="h-4 w-4" />
-                    <span>Settings</span>
-                  </Link>
-                </li>
-              </ul>
-              <div className="border-t border-white/10 mt-4 pt-4">
-                <button type="button" className="flex items-center gap-3 px-3 py-2 rounded-xl hover:bg-white/5 text-gray-300" aria-label="Logout">
-                  <LogOut className="h-4 w-4" />
-                  <span>Logout</span>
-                </button>
-              </div>
-            </nav>
+            <MemberSidebar active="overview" />
           </aside>
           <main>
             <div className="flex flex-col sm:flex-row items-start justify-between gap-3 mb-6">
