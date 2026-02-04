@@ -61,8 +61,71 @@ export default async function DashboardPage() {
         <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-cyan-500/10 rounded-full blur-3xl" />
       </div>
       <div className="relative z-10 mx-auto max-w-7xl px-6 py-8">
+        <div className="lg:hidden mb-4">
+          <details className="rounded-2xl border border-white/10 bg-[#0F172A]">
+            <summary className="flex items-center justify-between px-4 py-3 cursor-pointer">
+              <span className="flex items-center gap-3 text-white">
+                <Home className="h-4 w-4" />
+                <span>Menu Dashboard</span>
+              </span>
+              <ChevronRight className="h-4 w-4" />
+            </summary>
+            <nav className="p-3">
+              <ul className="space-y-1">
+                <li>
+                  <Link href="/dashboard" className="flex items-center gap-3 px-3 py-2 rounded-xl bg-white/10 text-white">
+                    <Home className="h-4 w-4" />
+                    <span>Overview</span>
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/dashboard/orders" className="flex items-center gap-3 px-3 py-2 rounded-xl hover:bg-white/5 text-gray-300">
+                    <ShoppingCart className="h-4 w-4" />
+                    <span>My Orders</span>
+                  </Link>
+                </li>
+                <li>
+                  <Link href="#" className="flex items-center gap-3 px-3 py-2 rounded-xl hover:bg-white/5 text-gray-300" aria-disabled>
+                    <User className="h-4 w-4" />
+                    <span>Profile</span>
+                  </Link>
+                </li>
+                <li>
+                  <Link href="#" className="flex items-center gap-3 px-3 py-2 rounded-xl hover:bg-white/5 text-gray-300" aria-disabled>
+                    <Wallet className="h-4 w-4" />
+                    <span>Wallet</span>
+                  </Link>
+                </li>
+                <li>
+                  <Link href="#" className="flex items-center gap-3 px-3 py-2 rounded-xl hover:bg-white/5 text-gray-300" aria-disabled>
+                    <Star className="h-4 w-4" />
+                    <span>Reviews</span>
+                  </Link>
+                </li>
+                <li>
+                  <Link href="#" className="flex items-center gap-3 px-3 py-2 rounded-xl hover:bg-white/5 text-gray-300" aria-disabled>
+                    <MessageSquare className="h-4 w-4" />
+                    <span>Messages</span>
+                  </Link>
+                </li>
+                <li>
+                  <Link href="#" className="flex items-center gap-3 px-3 py-2 rounded-xl hover:bg-white/5 text-gray-300" aria-disabled>
+                    <Settings className="h-4 w-4" />
+                    <span>Settings</span>
+                  </Link>
+                </li>
+              </ul>
+              <div className="border-t border-white/10 mt-4 pt-4">
+                <button type="button" className="flex items-center gap-3 px-3 py-2 rounded-xl hover:bg-white/5 text-gray-300" aria-label="Logout">
+                  <LogOut className="h-4 w-4" />
+                  <span>Logout</span>
+                </button>
+              </div>
+            </nav>
+          </details>
+        </div>
         <div className="grid grid-cols-1 lg:grid-cols-[260px_1fr] gap-6">
-          <aside className="space-y-6 lg:block">
+          <aside className="space-y-6 hidden lg:block lg:sticky lg:top-8 self-start">
             <nav className="bg-[#0F172A] border border-white/10 rounded-2xl p-4">
               <ul className="space-y-1">
                 <li>
@@ -117,7 +180,7 @@ export default async function DashboardPage() {
             </nav>
           </aside>
           <main>
-            <div className="flex items-start justify-between mb-6">
+            <div className="flex flex-col sm:flex-row items-start justify-between gap-3 mb-6">
               <div>
                 <h1 className="text-3xl font-bold text-white">Welcome back, {String(name)}!</h1>
                 <p className="text-gray-400">Here&apos;s what&apos;s happening with your orders</p>
@@ -125,8 +188,7 @@ export default async function DashboardPage() {
               <Link href="/" className="btn btn-gaming btn-sm">Browse Services</Link>
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-              <div className="relative bg-[#0F172A] border border-white/10 rounded-2xl p-5 flex items-center justify-between ring-1 ring-white/5 hover:ring-white/10 transition-all hover:-translate-y-[2px] hover:bg-[#101827]">
-                <div className="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-blue-500/25 to-cyan-500/25" />
+              <div className="relative card-gaming rounded-2xl p-5 flex items-center justify-between">
                 <div>
                   <p className="text-sm text-gray-400 mb-1">Active Orders</p>
                   <p className="text-3xl font-bold text-white">{stats.active}</p>
@@ -135,8 +197,7 @@ export default async function DashboardPage() {
                   <Activity className="h-6 w-6" />
                 </div>
               </div>
-              <div className="relative bg-[#0F172A] border border-white/10 rounded-2xl p-5 flex items-center justify-between ring-1 ring-white/5 hover:ring-white/10 transition-all hover:-translate-y-[2px] hover:bg-[#101827]">
-                <div className="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-emerald-500/25 to-lime-500/25" />
+              <div className="relative card-gaming rounded-2xl p-5 flex items-center justify-between">
                 <div>
                   <p className="text-sm text-gray-400 mb-1">Completed</p>
                   <p className="text-3xl font-bold text-white">{stats.completed}</p>
@@ -145,8 +206,7 @@ export default async function DashboardPage() {
                   <CheckCircle className="h-6 w-6" />
                 </div>
               </div>
-              <div className="relative bg-[#0F172A] border border-white/10 rounded-2xl p-5 flex items-center justify-between ring-1 ring-white/5 hover:ring-white/10 transition-all hover:-translate-y-[2px] hover:bg-[#101827]">
-                <div className="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-purple-500/25 to-pink-500/25" />
+              <div className="relative card-gaming rounded-2xl p-5 flex items-center justify-between">
                 <div>
                   <p className="text-sm text-gray-400 mb-1">Wallet Balance</p>
                   <p className="text-3xl font-bold text-white">{stats.wallet}</p>
@@ -155,8 +215,7 @@ export default async function DashboardPage() {
                   <Wallet className="h-6 w-6" />
                 </div>
               </div>
-              <div className="relative bg-[#0F172A] border border-white/10 rounded-2xl p-5 flex items-center justify-between ring-1 ring-white/5 hover:ring-white/10 transition-all hover:-translate-y-[2px] hover:bg-[#101827]">
-                <div className="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-pink-500/25 to-rose-500/25" />
+              <div className="relative card-gaming rounded-2xl p-5 flex items-center justify-between">
                 <div>
                   <p className="text-sm text-gray-400 mb-1">Reviews Given</p>
                   <p className="text-3xl font-bold text-white">{stats.reviews}</p>
@@ -177,7 +236,7 @@ export default async function DashboardPage() {
                 <div className="p-4 md:p-6 space-y-4">
                   {orders.map((o) => (
                     <div key={o.id} className="rounded-2xl border border-white/10 bg-[#0A0E17] p-4 md:p-5 transition-colors hover:bg-white/[0.04]">
-                      <div className="flex items-start justify-between gap-4 mb-3">
+                      <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3 mb-3">
                         <div className="min-w-0">
                           <div className="text-xs text-gray-500">{o.id}</div>
                           <div className="text-white font-semibold">{o.title}</div>

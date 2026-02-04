@@ -42,7 +42,6 @@ export function GameModal({ editing }: { editing: Editing }) {
     const dialog = dialogRef.current;
     if (!dialog) return;
     if (shouldOpen) {
-      setBusy(false);
       if (!dialog.open) dialog.showModal();
     } else if (dialog.open) {
       dialog.close();
