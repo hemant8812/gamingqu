@@ -355,21 +355,45 @@ export default function CheckoutPage() {
                   className="btn btn-gaming w-full mt-2"
                   disabled={!method || !data}
                   onClick={() => {
-                    try {
-                      if (!method || !data) return;
-                      const payload = {
-                        ...data,
-                        method,
-                        quote: quote ?? undefined,
-                        contact: {
-                          email: session?.user?.email ?? email,
-                          discord,
-                          characterName,
-                        },
-                      };
-                      window.localStorage.setItem(`checkout:${service}:method`, method);
-                      window.localStorage.setItem(`checkout:${service}:payload`, JSON.stringify(payload));
-                    } catch {}
+                    (async () => {
+                      try {
+                        if (!method || !data) return;
+                        window.localStorage.setItem(`checkout:${service}:method`, method);
+                        if (method === "paypal") {
+                          const res = await fetch("/api/checkout/paypal/create", {
+                            method: "POST",
+                            headers: { "content-type": "application/json" },
+                            body: JSON.stringify({
+                              serviceSlug: data.serviceSlug,
+                              fromLevel: data.fromLevel,
+                              toLevel: data.toLevel,
+                              selectedOptions: data.selectedOptions ?? [],
+                              contact: {
+                                email: session?.user?.email ?? email,
+                                discord,
+                                characterName,
+                              },
+                            }),
+                          });
+                          const json = await res.json().catch(() => ({}));
+                          if (res.ok && json?.redirectUrl) {
+                            window.location.href = String(json.redirectUrl);
+                            return;
+                          }
+                        }
+                        const payload = {
+                          ...data,
+                          method,
+                          quote: quote ?? undefined,
+                          contact: {
+                            email: session?.user?.email ?? email,
+                            discord,
+                            characterName,
+                          },
+                        };
+                        window.localStorage.setItem(`checkout:${service}:payload`, JSON.stringify(payload));
+                      } catch {}
+                    })();
                   }}
                 >
                   Pay Now

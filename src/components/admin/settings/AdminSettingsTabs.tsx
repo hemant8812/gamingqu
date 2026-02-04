@@ -15,6 +15,8 @@ type SettingCore = {
     contactEmail?: string | null;
     contactPhone?: string | null;
     eurPerUsd?: number | null;
+    webSharePercent?: number | null;
+    boosterSharePercent?: number | null;
 } | null;
 
 type FooterInitial = {
@@ -137,7 +139,29 @@ export function AdminSettingsTabs({ initialTab, setting, footer }: Props) {
                     }} />
                 )}
                 {activeTab === "currency" && (
-                    <CurrencySettingsForm initialRate={typeof setting?.eurPerUsd === "number" ? setting?.eurPerUsd as number : (setting?.eurPerUsd ? Number(setting?.eurPerUsd as unknown as number) : undefined)} />
+                    <CurrencySettingsForm
+                        initialRate={
+                            typeof setting?.eurPerUsd === "number"
+                                ? (setting?.eurPerUsd as number)
+                                : setting?.eurPerUsd
+                                ? Number(setting?.eurPerUsd as unknown as number)
+                                : undefined
+                        }
+                        initialWebShare={
+                            typeof setting?.webSharePercent === "number"
+                                ? (setting?.webSharePercent as number)
+                                : setting?.webSharePercent
+                                ? Number(setting?.webSharePercent as unknown as number)
+                                : undefined
+                        }
+                        initialBoosterShare={
+                            typeof setting?.boosterSharePercent === "number"
+                                ? (setting?.boosterSharePercent as number)
+                                : setting?.boosterSharePercent
+                                ? Number(setting?.boosterSharePercent as unknown as number)
+                                : undefined
+                        }
+                    />
                 )}
                 {activeTab === "footer" && (
                     <FooterSettingsForm initial={{

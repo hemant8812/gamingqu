@@ -64,6 +64,7 @@ model User {
   sessions      Session[]
   boosterApplications BoosterApplication[]
   posts         Post[]
+  orders        Order[]
 
   @@index([createdAt])
   @@index([role])
@@ -187,6 +188,7 @@ model Service {
   game     Game     @relation(fields: [gameId], references: [id], onDelete: Cascade)
   category Category? @relation(fields: [categoryId], references: [id], onDelete: SetNull)
   details  ServiceDetail[]
+  orders   Order[]
 
   @@index([gameId, categoryId])
   @@index([isActive, createdAt])
@@ -224,6 +226,9 @@ model WebsiteSetting {
   contactPhone String?
   /// Currency: base is USD; eurPerUsd means 1 USD equals X EUR
   eurPerUsd    Decimal? @db.Decimal(10, 4)
+  /// Revenue split percentages
+  webSharePercent     Decimal? @db.Decimal(10, 4)
+  boosterSharePercent Decimal? @db.Decimal(10, 4)
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
 }
@@ -347,4 +352,75 @@ model PaymentMethod {
   updatedAt  DateTime @updatedAt
 
   @@index([isActive, sortOrder])
+}
+
+// Checkout and payment
+enum OrderStatus {
+  CREATED
+  PENDING
+  PAID
+  CANCELED
+  FAILED
+}
+
+enum PaymentStatus {
+  CREATED
+  APPROVAL_REQUIRED
+  APPROVED
+  CAPTURED
+  CANCELED
+  FAILED
+}
+
+enum OrderFulfillmentStatus {
+  PENDING
+  ACCEPTED
+  IN_PROGRESS
+  COMPLETED
+  CANCELED
+}
+
+model Order {
+  id            Int         @id @default(autoincrement())
+  code          String      @unique
+  userId        String?
+  serviceId     Int
+  serviceSlug   String
+  methodSlug    String
+  items         Decimal     @db.Decimal(10, 2)
+  fee           Decimal     @db.Decimal(10, 2)
+  amount        Decimal     @db.Decimal(10, 2)
+  boosterPay    Decimal     @db.Decimal(10, 2)
+  currency      String      @default("USD")
+  status        OrderStatus @default(CREATED)
+  fulfillmentStatus OrderFulfillmentStatus @default(PENDING)
+  contactEmail  String?
+  contactDiscord String?
+  characterName String?
+  payload       Json?
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+
+  user    User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+  service Service  @relation(fields: [serviceId], references: [id], onDelete: Cascade)
+  payments Payment[]
+
+  @@index([userId, status, createdAt])
+  @@index([serviceId, methodSlug])
+}
+
+model Payment {
+  id              Int           @id @default(autoincrement())
+  orderId         Int
+  provider        String
+  providerOrderId String?
+  approvalUrl     String?       @db.Text
+  status          PaymentStatus @default(CREATED)
+  raw             Json?
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+
+  order Order @relation(fields: [orderId], references: [id], onDelete: Cascade)
+
+  @@index([orderId, provider, status])
 }

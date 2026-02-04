@@ -92,6 +92,17 @@ export async function POST(req: Request) {
           const n = parseFloat(raw);
           return Number.isFinite(n) && n > 0 ? n : undefined;
         })(),
+        // Revenue split
+        webSharePercent: (() => {
+          const raw = (form.get("webSharePercent") as string | null) ?? "";
+          const n = parseFloat(raw);
+          return Number.isFinite(n) && n >= 0 ? n : undefined;
+        })(),
+        boosterSharePercent: (() => {
+          const raw = (form.get("boosterSharePercent") as string | null) ?? "";
+          const n = parseFloat(raw);
+          return Number.isFinite(n) && n >= 0 ? n : undefined;
+        })(),
       },
       create: {
         id: "singleton",
@@ -105,6 +116,16 @@ export async function POST(req: Request) {
           const raw = (form.get("eurPerUsd") as string | null) ?? "";
           const n = parseFloat(raw);
           return Number.isFinite(n) && n > 0 ? n : undefined;
+        })(),
+        webSharePercent: (() => {
+          const raw = (form.get("webSharePercent") as string | null) ?? "";
+          const n = parseFloat(raw);
+          return Number.isFinite(n) && n >= 0 ? n : undefined;
+        })(),
+        boosterSharePercent: (() => {
+          const raw = (form.get("boosterSharePercent") as string | null) ?? "";
+          const n = parseFloat(raw);
+          return Number.isFinite(n) && n >= 0 ? n : undefined;
         })(),
       },
     });

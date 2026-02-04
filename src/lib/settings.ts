@@ -74,6 +74,8 @@ export const getWebsiteSettingCore = unstable_cache(
           contactEmail: true,
           contactPhone: true,
           eurPerUsd: true,
+          webSharePercent: true,
+          boosterSharePercent: true,
         },
       });
       if (!s) return null;
@@ -89,6 +91,18 @@ export const getWebsiteSettingCore = unstable_cache(
             ? s.eurPerUsd
             : s.eurPerUsd
             ? Number(s.eurPerUsd)
+            : undefined,
+        webSharePercent:
+          typeof s.webSharePercent === "number"
+            ? s.webSharePercent
+            : s.webSharePercent
+            ? Number(s.webSharePercent)
+            : undefined,
+        boosterSharePercent:
+          typeof s.boosterSharePercent === "number"
+            ? s.boosterSharePercent
+            : s.boosterSharePercent
+            ? Number(s.boosterSharePercent)
             : undefined,
       };
     } catch {
@@ -123,4 +137,3 @@ export const getBanners = unstable_cache(
   ["banners-list"],
   { tags: ["banners"], revalidate: 3600 }
 );
-
