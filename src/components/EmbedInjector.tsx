@@ -1,26 +1,64 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 
 type Embed = {
   id: number | string;
   code: string;
-  placement: string; // Using string to match Prisma enum loosely
+  placement: string;
 };
 
 export function EmbedInjector({ embeds }: { embeds: Embed[] }) {
+  const injectedRef = useRef<Set<string | number>>(new Set());
+
   useEffect(() => {
     embeds.forEach((e) => {
+      if (injectedRef.current.has(e.id)) return;
+
       try {
         const target = e.placement === "HEAD" ? document.head : document.body;
-        // Match original logic:
-        // HEAD -> beforeend
-        // BODY -> afterbegin
-        // FOOTER -> beforeend
-        let position: InsertPosition = "beforeend";
-        if (e.placement === "BODY") position = "afterbegin";
         
-        target.insertAdjacentHTML(position, e.code);
+        // Create a temporary container to parse the string
+        const tempDiv = document.createElement("div");
+        tempDiv.innerHTML = e.code;
+
+        // Convert childNodes to an array to iterate safely while moving them
+        const nodes = Array.from(tempDiv.childNodes);
+
+        nodes.forEach((node) => {
+          if (node.nodeName === "SCRIPT") {
+            const originalScript = node as HTMLScriptElement;
+            const newScript = document.createElement("script");
+            
+            // Copy all attributes
+            Array.from(originalScript.attributes).forEach((attr) => {
+              newScript.setAttribute(attr.name, attr.value);
+            });
+
+            // Copy content
+            newScript.textContent = originalScript.textContent;
+            
+            // Special handling for inline scripts to ensure they run
+            // (Setting textContent usually works, but src scripts are handled by attributes)
+            
+            // Determine insertion point
+            if (e.placement === "BODY") {
+              target.insertBefore(newScript, target.firstChild);
+            } else {
+              target.appendChild(newScript);
+            }
+          } else {
+            // Non-script nodes (styles, divs, comments) can be moved directly
+            // Clone to be safe, though moving works if we don't need the tempDiv anymore
+            if (e.placement === "BODY") {
+               target.insertBefore(node, target.firstChild);
+            } else {
+               target.appendChild(node);
+            }
+          }
+        });
+
+        injectedRef.current.add(e.id);
       } catch (err) {
         console.error("Embed injection error:", err);
       }
