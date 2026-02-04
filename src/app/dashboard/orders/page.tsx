@@ -260,13 +260,13 @@ export default async function MyOrdersPage({ searchParams }: { searchParams?: Pr
                   </Link>
                 </li>
                 <li>
-                  <Link href="#" className="flex items-center gap-3 px-3 py-2 rounded-xl hover:bg-white/5 text-gray-300" aria-disabled>
+                  <Link href="/dashboard/wallet" className="flex items-center gap-3 px-3 py-2 rounded-xl hover:bg-white/5 text-gray-300">
                     <Wallet className="h-4 w-4" />
                     <span>Wallet</span>
                   </Link>
                 </li>
                 <li>
-                  <Link href="#" className="flex items-center gap-3 px-3 py-2 rounded-xl hover:bg-white/5 text-gray-300" aria-disabled>
+                  <Link href="/dashboard/reviews" className="flex items-center gap-3 px-3 py-2 rounded-xl hover:bg-white/5 text-gray-300">
                     <Star className="h-4 w-4" />
                     <span>Reviews</span>
                   </Link>
@@ -445,7 +445,10 @@ export default async function MyOrdersPage({ searchParams }: { searchParams?: Pr
                               </div>
                               <div className="rounded-xl bg-[#0A0E17] border border-white/10 p-4">
                                 {(() => {
-                                  const p = selected.payload as any;
+                                  const p = selected.payload as unknown as {
+                                    range?: { from?: number; to?: number };
+                                    selectedOptions?: Array<{ title: string; values: string[] }>;
+                                  };
                                   const rows: Array<{ label: string; value: string }> = [];
                                   const range = p?.range;
                                   if (range && (range.from != null || range.to != null)) {
