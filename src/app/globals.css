@@ -178,6 +178,18 @@ body {
 }
 
 /* ============================================
+   DISABLE CARD HOVER MOVEMENT (scoped)
+   ============================================ */
+.no-card-hover .card-gaming:hover {
+  transform: none !important;
+  box-shadow: none !important;
+  border-color: var(--gaming-border) !important;
+}
+.no-card-hover .card-gaming:hover::before {
+  opacity: 0 !important;
+}
+
+/* ============================================
    ANIMATED BACKGROUNDS
    ============================================ */
 .mesh-gradient {

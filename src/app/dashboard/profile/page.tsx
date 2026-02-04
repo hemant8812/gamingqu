@@ -3,8 +3,12 @@ import Link from "next/link";
 import { authOptions } from "@/auth";
 import { db } from "@/lib/prisma";
 import { MemberSidebar } from "@/components/dashboard/MemberSidebar";
-import { AlertTriangle, Lock } from "lucide-react";
+import { AlertTriangle, User } from "lucide-react";
 import { CreatePasswordForm } from "@/components/dashboard/CreatePasswordForm";
+import { ChangePasswordForm } from "@/components/dashboard/ChangePasswordForm";
+import { PageToast } from "@/components/shared/PageToast";
+import { UpdateProfileDetailsForm } from "@/components/dashboard/UpdateProfileDetailsForm";
+import { AvatarUpload } from "@/components/dashboard/AvatarUpload";
 
 function formatDateTimeEnglish(d: Date) {
   const months = [
@@ -75,6 +79,17 @@ export default async function ProfilePage({ searchParams }: { searchParams?: Pro
   const passwordSet = !!user?.password;
   const sp = searchParams ? await searchParams : {};
   const toast = typeof sp?.toast === "string" ? sp.toast : undefined;
+  const toastMessage =
+    toast === "pw_set"
+      ? "Password created successfully"
+      : toast === "pw_changed"
+      ? "Password changed successfully"
+      : toast === "info_updated"
+      ? "Profile updated successfully"
+      : toast === "error"
+      ? "Failed to update information"
+      : undefined;
+  const toastType: "success" | "error" = toast === "error" ? "error" : "success";
   return (
     <div className="min-h-screen bg-[#0A0E17] text-white">
       <div className="fixed inset-0 pointer-events-none">
@@ -90,23 +105,14 @@ export default async function ProfilePage({ searchParams }: { searchParams?: Pro
             <div className="flex items-center justify-between mb-6">
               <h1 className="text-2xl font-bold text-white">Profile</h1>
             </div>
-            {toast === "pw_set" ? (
-              <div className="mb-4 rounded-xl bg-emerald-500/15 text-emerald-300 border border-emerald-500/30 p-4">
-                <div className="font-semibold">Password created successfully</div>
-                <div className="text-sm">Your account is now protected with a password.</div>
-              </div>
-            ) : toast === "error" ? (
-              <div className="mb-4 rounded-xl bg-red-500/15 text-red-300 border border-red-500/30 p-4">
-                <div className="font-semibold">Unable to create password</div>
-                <div className="text-sm">Please check your inputs and try again.</div>
-              </div>
-            ) : null}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+            <PageToast message={toastMessage} type={toastType} />
+            <div className="no-card-hover grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
               <div className="relative card-gaming rounded-2xl p-5">
                 <div className="flex items-center gap-4">
-                  <div className="w-16 h-16 rounded-xl bg-white/10 flex items-center justify-center text-white text-xl font-bold">
-                    {String((user?.name ?? user?.username ?? "U").charAt(0)).toUpperCase()}
-                  </div>
+                  <AvatarUpload
+                    initialUrl={user?.image ?? null}
+                    initialLetter={String((user?.name ?? user?.username ?? "U").charAt(0)).toUpperCase()}
+                  />
                   <div>
                     <div className="text-sm text-gray-400">Member ID</div>
                     <div className="text-xl font-bold text-white">{user?.id ?? "-"}</div>
@@ -167,28 +173,33 @@ export default async function ProfilePage({ searchParams }: { searchParams?: Pro
                 </div>
                 <div className="bg-[#0F172A] border border-white/10 rounded-2xl p-5">
                   <div className="flex items-center gap-3 mb-4">
-                    <div className="w-9 h-9 rounded-xl bg-white/10 flex items-center justify-center text-white">
-                      <Lock className="h-5 w-5" />
+                    <div className="w-9 h-9 rounded-xl bg-blue-500/20 flex items-center justify-center text-blue-400 ring-1 ring-blue-500/20">
+                      <User className="h-5 w-5" />
                     </div>
                     <div>
-                      <div className="text-lg font-bold text-white">Create Password</div>
-                      <div className="text-xs text-gray-400">Use at least 8 characters including letters and numbers</div>
+                      <div className="text-lg font-bold text-white">Edit Profile & Create Password</div>
+                      <div className="text-xs text-gray-400">Update your information and secure your account</div>
                     </div>
                   </div>
+                  <UpdateProfileDetailsForm initialName={user?.name ?? ""} initialEmail={user?.email ?? ""} />
+                  <div className="my-6 h-px bg-white/10" />
                   <CreatePasswordForm />
                 </div>
               </div>
             ) : (
               <div className="bg-[#0F172A] border border-white/10 rounded-2xl p-5">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <div className="text-lg font-bold text-white">Manage Profile</div>
-                    <div className="text-sm text-gray-400">Edit your personal information</div>
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="w-9 h-9 rounded-xl bg-blue-500/20 flex items-center justify-center text-blue-400 ring-1 ring-blue-500/20">
+                    <User className="h-5 w-5" />
                   </div>
-                  <button type="button" className="btn btn-gaming btn-sm" aria-disabled>
-                    Coming Soon
-                  </button>
+                  <div>
+                    <div className="text-lg font-bold text-white">Edit Profile & Change Password</div>
+                    <div className="text-xs text-gray-400">Update your name and email, then change your password</div>
+                  </div>
                 </div>
+                <UpdateProfileDetailsForm initialName={user?.name ?? ""} initialEmail={user?.email ?? ""} />
+                <div className="my-6 h-px bg-white/10" />
+                <ChangePasswordForm />
               </div>
             )}
           </main>
