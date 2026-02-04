@@ -1,6 +1,5 @@
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/auth";
-import { FiShoppingCart } from "react-icons/fi";
 import { db } from "@/lib/prisma";
 import { AdminOrdersTable } from "@/components/admin/orders/AdminOrdersTable";
 

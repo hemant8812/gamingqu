@@ -67,7 +67,7 @@ export function EmbedInjector({ embeds, nonce }: { embeds: Embed[]; nonce?: stri
         console.error("Embed injection error:", err);
       }
     });
-  }, [embeds]);
+  }, [embeds, nonce]);
 
   return null;
 }

@@ -195,6 +195,8 @@ export async function POST(req: Request) {
     const fromLevelRaw = body?.fromLevel;
     const toLevelRaw = body?.toLevel;
     const contact: Contact = (body?.contact ?? {}) as Contact;
+    const currencyRaw = String(body?.currency ?? "").toUpperCase();
+    const currencyCode = currencyRaw === "EUR" ? "EUR" : "USD";
     if (!serviceSlug) {
       return NextResponse.json({ error: "Missing serviceSlug" }, { status: 400 });
     }
@@ -205,10 +207,11 @@ export async function POST(req: Request) {
     const session = await getServerSession(authOptions);
     const userId = session?.user?.id ?? null;
     let webShare = 50;
+    let eurPerUsd = 1;
     try {
       const s = await db.websiteSetting.findUnique({
         where: { id: "singleton" },
-        select: { webSharePercent: true },
+        select: { webSharePercent: true, eurPerUsd: true },
       });
       const v =
         typeof s?.webSharePercent === "number"
@@ -219,10 +222,24 @@ export async function POST(req: Request) {
       if (Number.isFinite(v as number)) {
         webShare = Math.max(0, Math.min(100, v as number));
       }
+      const r =
+        typeof s?.eurPerUsd === "number"
+          ? s?.eurPerUsd
+          : s?.eurPerUsd
+          ? Number(s?.eurPerUsd)
+          : undefined;
+      if (Number.isFinite(r as number) && (r as number) > 0) {
+        eurPerUsd = r as number;
+      }
     } catch {}
-    const itemsNum = Number(quote.items);
+    const rate = currencyCode === "EUR" ? eurPerUsd : 1;
+    const itemsNumUsd = Number(quote.items);
     const boosterPercent = Math.max(0, Math.min(100, 100 - webShare));
-    const boosterPay = itemsNum * (boosterPercent / 100);
+    const boosterPayUsd = itemsNumUsd * (boosterPercent / 100);
+    const itemsNum = itemsNumUsd * rate;
+    const feeNum = Number(quote.fee) * rate;
+    const amountNum = Number(quote.amount) * rate;
+    const boosterPay = boosterPayUsd * rate;
     const code = `ORD-${Date.now().toString().slice(-9)}-${Math.random().toString(36).slice(2, 6).toUpperCase()}`;
     const order = await db.order.create({
       data: {
@@ -230,11 +247,11 @@ export async function POST(req: Request) {
         service: { connect: { id: quote.serviceId! } },
         serviceSlug,
         methodSlug: "paypal",
-        items: Number(quote.items),
-        fee: Number(quote.fee),
-        amount: Number(quote.amount),
+        items: Number(itemsNum),
+        fee: Number(feeNum),
+        amount: Number(amountNum),
         boosterPay: Number(boosterPay.toFixed(2)),
-        currency: "USD",
+        currency: currencyCode,
         status: "PENDING",
         fulfillmentStatus: "PENDING",
         contactEmail: (contact.email ?? "").trim() || undefined,
@@ -264,8 +281,8 @@ export async function POST(req: Request) {
         purchase_units: [
           {
             amount: {
-              currency_code: "USD",
-              value: Number(quote.amount).toFixed(2),
+              currency_code: currencyCode,
+              value: Number(amountNum).toFixed(2),
             },
             custom_id: order.code,
           },

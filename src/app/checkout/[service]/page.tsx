@@ -316,14 +316,14 @@ export default function CheckoutPage() {
                         const feeFmt = formatPrice(convert(feeNum));
                         return (
                           <div className="hidden sm:block text-xs md:text-sm text-gray-300 mr-3">
-                            <span className="mr-1">Fee</span>
-                            <span className="font-semibold text-white">
+                            <span className="text-white">
                               +
-                              <span className="gradient-text">
+                              <span className="text-white">
+                                <span className="text-gray-100">{currency}</span>
                                 {feeFmt.whole}
                                 {feeFmt.showDecimal && <span>,{feeFmt.decimal}</span>}
                               </span>
-                              <span className="text-gray-400 ml-1">{currency}</span>
+                              <span className="ml-1">Fee</span>
                             </span>
                           </div>
                         );
@@ -394,6 +394,7 @@ export default function CheckoutPage() {
                               fromLevel: data.fromLevel,
                               toLevel: data.toLevel,
                               selectedOptions: data.selectedOptions ?? [],
+                              currency: currency === "€" ? "EUR" : "USD",
                               contact: {
                                 email: session?.user?.email ?? email,
                                 discord,
