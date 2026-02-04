@@ -6,7 +6,7 @@ const nextConfig: NextConfig = {
     optimizeCss: false,
   },
   images: {
-    unoptimized: true,
+    unoptimized: false,
     remotePatterns: [
       { protocol: "https", hostname: "picsum.photos" },
       { protocol: "https", hostname: "gamingqu.com" },

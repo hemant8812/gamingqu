@@ -4,6 +4,8 @@ import Link from "next/link";
 import type { Metadata } from "next";
 import { getBaseUrl } from "@/lib/site";
 
+const BLUR_DATA_URL = "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==";
+
 export async function generateMetadata(): Promise<Metadata> {
   const base = getBaseUrl();
   return {
@@ -24,10 +26,20 @@ export async function generateMetadata(): Promise<Metadata> {
     robots: { index: true, follow: true },
   };
 }
-export default async function BlogPage() {
+export default async function BlogPage({ searchParams }: { searchParams?: Promise<Record<string, string | string[] | undefined>> }) {
+  const sp = searchParams ? await searchParams : {};
+  const pageParam = sp?.page;
+  const pageRaw = typeof pageParam === "string" ? parseInt(pageParam, 10) : 1;
+  const page = Number.isFinite(pageRaw) && pageRaw > 0 ? pageRaw : 1;
+  const take = 12;
+  const total = await db.post.count({ where: { isPublished: true } });
+  const totalPages = Math.max(1, Math.ceil(total / take));
+  const currentPage = Math.min(page, totalPages);
   const posts = await db.post.findMany({
     where: { isPublished: true },
     orderBy: { createdAt: "desc" },
+    skip: (currentPage - 1) * take,
+    take,
     select: { id: true, title: true, slug: true, excerpt: true, imageUrl: true, createdAt: true, sourceUrl: true },
   });
   const base = getBaseUrl();
@@ -73,12 +85,22 @@ export default async function BlogPage() {
           <div className="text-center opacity-60">No articles yet.</div>
         )}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {posts.map((p) => (
+          {posts.map((p, idx) => (
             <article key={p.id} className="overflow-hidden rounded-xl border border-base-300 bg-base-100 shadow transition-transform hover:-translate-y-0.5">
               <Link href={`/blog/${p.slug}`} className="block">
                 <div className="relative w-full h-44">
                   {p.imageUrl ? (
-                    <Image src={p.imageUrl} alt={p.title} fill className="object-cover" unoptimized />
+                    <Image
+                      src={p.imageUrl}
+                      alt={p.title}
+                      fill
+                      className="object-cover"
+                      sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                      placeholder="blur"
+                      blurDataURL={BLUR_DATA_URL}
+                      priority={idx < 3}
+                      quality={70}
+                    />
                   ) : (
                     <div className="absolute inset-0 bg-gradient-to-br from-primary/20 to-base-300" />
                   )}
@@ -99,6 +121,72 @@ export default async function BlogPage() {
             </article>
           ))}
         </div>
+        {totalPages > 1 && (
+          <nav aria-label="Pagination" className="mt-8 flex items-center justify-center gap-2">
+            {currentPage > 1 ? (
+              <Link
+                href={`/blog?page=${currentPage - 1}`}
+                prefetch={false}
+                className="inline-flex items-center justify-center h-9 px-4 rounded-xl text-sm font-semibold bg-white/5 hover:bg-white/10 text-gray-300 transition-colors"
+              >
+                Prev
+              </Link>
+            ) : (
+              <span className="inline-flex items-center justify-center h-9 px-4 rounded-xl text-sm font-semibold bg-white/5 text-gray-600 pointer-events-none">
+                Prev
+              </span>
+            )}
+            {(() => {
+              const maxButtons = 5;
+              const pages: (number | string)[] = [];
+              if (totalPages <= maxButtons) {
+                for (let i = 1; i <= totalPages; i++) pages.push(i);
+              } else {
+                const start = Math.max(2, currentPage - 1);
+                const end = Math.min(totalPages - 1, currentPage + 1);
+                pages.push(1);
+                if (start > 2) pages.push("...");
+                for (let i = start; i <= end; i++) pages.push(i);
+                if (end < totalPages - 1) pages.push("...");
+                pages.push(totalPages);
+              }
+              return pages.map((p, i) =>
+                typeof p === "number" ? (
+                  <Link
+                    key={`${p}-${i}`}
+                    href={`/blog?page=${p}`}
+                    prefetch={false}
+                    aria-current={p === currentPage ? "page" : undefined}
+                    className={`inline-flex items-center justify-center h-9 min-w-9 px-4 rounded-xl text-sm font-semibold transition-colors ${
+                      p === currentPage
+                        ? "bg-gradient-to-r from-blue-500 to-cyan-500 text-white shadow-lg shadow-blue-500/25"
+                        : "bg-white/5 hover:bg-white/10 text-gray-300"
+                    }`}
+                  >
+                    {p}
+                  </Link>
+                ) : (
+                  <span key={`dots-${i}`} className="inline-flex items-center justify-center h-9 px-4 rounded-xl text-sm font-semibold text-gray-500">
+                    …
+                  </span>
+                )
+              );
+            })()}
+            {currentPage < totalPages ? (
+              <Link
+                href={`/blog?page=${currentPage + 1}`}
+                prefetch={false}
+                className="inline-flex items-center justify-center h-9 px-4 rounded-xl text-sm font-semibold bg-white/5 hover:bg-white/10 text-gray-300 transition-colors"
+              >
+                Next
+              </Link>
+            ) : (
+              <span className="inline-flex items-center justify-center h-9 px-4 rounded-xl text-sm font-semibold bg-white/5 text-gray-600 pointer-events-none">
+                Next
+              </span>
+            )}
+          </nav>
+        )}
       </div>
     </div>
   );
