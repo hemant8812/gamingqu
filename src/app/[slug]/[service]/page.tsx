@@ -6,8 +6,6 @@ import { ServicePanel } from "@/components/services/ServicePanel";
 import type { Metadata } from "next";
 import { sanitizePlain } from "@/lib/sanitize";
 
-export const dynamic = "force-dynamic";
-
 type Params = Promise<{ slug?: string | string[]; service?: string | string[] }>;
 
 export async function generateMetadata({ params }: { params: Params }): Promise<Metadata> {

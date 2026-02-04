@@ -4,8 +4,6 @@ import Link from "next/link";
 import type { Metadata } from "next";
 import { getBaseUrl } from "@/lib/site";
 
-export const dynamic = "force-dynamic";
-
 export async function generateMetadata(): Promise<Metadata> {
   const base = getBaseUrl();
   return {

@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/auth";
 import { db } from "@/lib/prisma";
-import { revalidatePath } from "next/cache";
+import { revalidatePath, revalidateTag } from "next/cache";
 
 function slugify(input: string) {
   return input.toLowerCase().trim().replace(/[\s_]+/g, "-").replace(/[^a-z0-9-]/g, "").replace(/-+/g, "-").replace(/^-|-$/g, "");
@@ -69,6 +69,7 @@ export async function POST(req: Request) {
       },
     });
     revalidatePath("/admin/categories");
+    revalidateTag("categories", { expire: 0 });
     return NextResponse.json({ ok: true, toast: "saved" });
   } catch {
     return NextResponse.json({ error: "Server error" }, { status: 500 });
@@ -116,6 +117,7 @@ export async function PUT(req: Request) {
       },
     });
     revalidatePath("/admin/categories");
+    revalidateTag("categories", { expire: 0 });
     return NextResponse.json({ ok: true, toast: "updated" });
   } catch {
     return NextResponse.json({ error: "Server error" }, { status: 500 });

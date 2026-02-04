@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/auth";
 import { db } from "@/lib/prisma";
-import { revalidatePath } from "next/cache";
+import { revalidatePath, revalidateTag } from "next/cache";
 import path from "path";
 import { promises as fs } from "fs";
 
@@ -67,6 +67,7 @@ export async function POST(req: Request) {
       },
     });
     revalidatePath("/admin/games");
+    revalidateTag("games", { expire: 0 });
     return NextResponse.json({ ok: true, toast: "saved" });
   } catch {
     return NextResponse.json({ error: "Server error" }, { status: 500 });
@@ -121,6 +122,7 @@ export async function PUT(req: Request) {
       },
     });
     revalidatePath("/admin/games");
+    revalidateTag("games", { expire: 0 });
     return NextResponse.json({ ok: true, toast: "updated" });
   } catch {
     return NextResponse.json({ error: "Server error" }, { status: 500 });

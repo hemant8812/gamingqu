@@ -4,13 +4,11 @@ import "./globals.css";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
 import { Providers } from "./providers";
-import { db } from "@/lib/prisma";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/auth";
 import { getWebsiteSettingCore } from "@/lib/settings";
 import { getBaseUrl } from "@/lib/site";
-export const dynamic = "force-dynamic";
-export const revalidate = 0;
+import { getEmbeds } from "@/lib/embeds";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -67,14 +65,8 @@ export default async function RootLayout({
 }>) {
   const session = await getServerSession(authOptions).catch(() => null);
   const s = await getWebsiteSettingCore();
-  let embeds: { id: number; code: string; placement: "HEAD" | "BODY" | "FOOTER" }[] = [];
-  try {
-    embeds = await db.embedCode.findMany({
-      where: { isActive: true },
-      select: { id: true, code: true, placement: true },
-      orderBy: { createdAt: "asc" },
-    });
-  } catch { }
+  const embeds = await getEmbeds();
+  
   const headEmbeds = embeds.filter((e) => e.placement === "HEAD");
   const bodyEmbeds = embeds.filter((e) => e.placement === "BODY");
   const footerEmbeds = embeds.filter((e) => e.placement === "FOOTER");

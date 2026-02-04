@@ -8,8 +8,6 @@ import { getWebsiteSettingCore } from "@/lib/settings";
 
 type Props = { params: Promise<{ slug?: string | string[] }> };
 
-export const dynamic = "force-dynamic";
-
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const p = await params;
   const slugParam = Array.isArray(p?.slug) ? p!.slug[0] : p?.slug;
