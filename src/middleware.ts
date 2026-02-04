@@ -27,7 +27,6 @@ function shouldBlockByIp(ip: string): boolean {
 }
 
 function generateNonce(): string {
-  // Use Web Crypto API available in Edge runtime
   const bytes = new Uint8Array(16);
   crypto.getRandomValues(bytes);
   return Array.from(bytes).map((b) => b.toString(16).padStart(2, "0")).join("");
@@ -49,7 +48,6 @@ export async function middleware(req: NextRequest) {
 
   const res = NextResponse.next();
 
-  // Set a strict CSP with per-request nonce; allow required external sources
   const nonce = generateNonce();
   const isDev = process.env.NODE_ENV !== "production";
   const csp = [
@@ -72,7 +70,6 @@ export async function middleware(req: NextRequest) {
 
 export const config = {
   matcher: [
-    // Apply CSP to all pages; skip static assets to avoid unnecessary header propagation
     "/((?!_next/static|_next/image|favicon.ico).*)",
     "/api/auth/:path*",
     "/api/register",

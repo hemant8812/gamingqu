@@ -151,6 +151,7 @@ export function Navbar({ siteName = "Gamingqu", logoUrl = null, user = null }: P
                   height={40}
                   className="h-8 w-auto object-contain"
                   onError={() => setShowLogo(false)}
+                  unoptimized
                   priority
                 />
               </Link>

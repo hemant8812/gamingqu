@@ -56,7 +56,7 @@ export async function Footer() {
                 <div className="footer flex flex-col md:flex-row gap-10">
                     <aside className="w-full md:w-[40%]">
                         {logo ? (
-                            <Image src={logo} alt={siteName} width={150} height={50} className="h-10 w-auto mb-4" />
+                            <Image src={logo} alt={siteName} width={150} height={50} className="h-10 w-auto mb-4" unoptimized />
                         ) : (
                             <span className="text-3xl font-black tracking-tighter mb-2 block gradient-text">{siteName}</span>
                         )}
