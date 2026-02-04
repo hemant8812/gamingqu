@@ -67,6 +67,7 @@ function ServiceCard({ s, gameSlug }: { s: ServiceItem; gameSlug: string }) {
                         fill
                         className="object-cover transition-transform duration-700 group-hover:scale-110"
                         sizes="300px"
+                        unoptimized
                     />
                 ) : (
                     <div className="absolute inset-0 bg-gradient-to-br from-slate-800 to-slate-900" />
@@ -186,6 +187,7 @@ export default function GamePage() {
                         className="object-cover"
                         priority
                         sizes="100vw"
+                        unoptimized
                     />
                 )}
                 <div className="absolute inset-0 bg-gradient-to-t from-[#0A0E17] via-[#0A0E17]/80 to-transparent" />

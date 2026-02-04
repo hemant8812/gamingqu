@@ -240,6 +240,7 @@ export function HomeContent() {
                   fill
                   className="object-cover transition-transform duration-700 group-hover:scale-110"
                   sizes="320px"
+                  unoptimized
                 />
               ) : (
                 <div className="absolute inset-0 bg-gradient-to-br from-blue-900/50 to-cyan-900/50" />
@@ -326,6 +327,7 @@ export function HomeContent() {
                       fill
                       className="object-cover transition-transform duration-700 group-hover:scale-110"
                       sizes="300px"
+                      unoptimized
                     />
                   ) : (
                     <div className="absolute inset-0 bg-gradient-to-br from-slate-800 to-slate-900" />

@@ -174,6 +174,7 @@ export default async function ServiceDetailPage({ params }: { params: Params }) 
             className="object-cover"
             priority
             sizes="100vw"
+            unoptimized
           />
         )}
         <div className="absolute inset-0 bg-gradient-to-t from-[#0A0E17] via-[#0A0E17]/80 to-transparent" />

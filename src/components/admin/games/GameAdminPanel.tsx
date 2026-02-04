@@ -130,7 +130,7 @@ export function GameAdminPanel({ games, createAction, updateAction }: Props) {
             >
               <div className="w-16 h-16 rounded-md bg-zinc-900 overflow-hidden flex items-center justify-center">
                 {g.imageUrl ? (
-                  <Image src={g.imageUrl} alt={g.name} width={64} height={64} className="object-cover w-16 h-16" />
+                  <Image src={g.imageUrl} alt={g.name} width={64} height={64} className="object-cover w-16 h-16" unoptimized />
                 ) : (
                   <div className="text-xs text-zinc-500">No image</div>
                 )}
@@ -145,7 +145,7 @@ export function GameAdminPanel({ games, createAction, updateAction }: Props) {
               </div>
               <div className="w-10 h-10 rounded-md bg-zinc-900 overflow-hidden flex items-center justify-center">
                 {g.iconUrl ? (
-                  <Image src={g.iconUrl} alt="icon" width={40} height={40} className="object-cover w-10 h-10" />
+                  <Image src={g.iconUrl} alt="icon" width={40} height={40} className="object-cover w-10 h-10" unoptimized />
                 ) : (
                   <div className="text-[10px] text-zinc-500">No icon</div>
                 )}

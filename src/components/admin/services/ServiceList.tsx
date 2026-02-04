@@ -52,7 +52,7 @@ export function ServiceList({ services }: { services: ServiceItem[] }) {
         >
           <div className="w-14 h-14 rounded-lg bg-white/5 overflow-hidden flex items-center justify-center shrink-0">
             {s.imageUrl ? (
-              <Image src={s.imageUrl} alt={s.name} width={56} height={56} className="object-cover w-full h-full" />
+              <Image src={s.imageUrl} alt={s.name} width={56} height={56} className="object-cover w-full h-full" unoptimized />
             ) : (
               <div className="text-xs text-gray-500">No image</div>
             )}

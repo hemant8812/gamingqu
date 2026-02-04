@@ -2,7 +2,8 @@ import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/auth";
 import { db } from "@/lib/prisma";
-import { revalidatePath, revalidateTag } from "next/cache";
+import { revalidateTag } from "next/cache";
+import { sanitizeHtml, sanitizePlain } from "@/lib/sanitize";
 import path from "path";
 import { promises as fs } from "fs";
 
@@ -44,6 +45,10 @@ export async function POST(req: Request) {
     if (!name.trim()) {
       return NextResponse.json({ error: "Invalid name" }, { status: 400 });
     }
+    const MAX_UPLOAD = 10 * 1024 * 1024;
+    if ((imageFile && imageFile.size > MAX_UPLOAD) || (iconFile && iconFile.size > MAX_UPLOAD)) {
+      return NextResponse.json({ error: "File terlalu besar" }, { status: 413 });
+    }
     let baseSlug = slugify(inputSlug || name || "");
     if (baseSlug.length > 60) {
       baseSlug = baseSlug.slice(0, 60).replace(/-+$/, "");
@@ -53,20 +58,21 @@ export async function POST(req: Request) {
     if (existing) {
       slug = `${slug}-${Math.random().toString(36).slice(2, 6)}`;
     }
-    const imageUrl = await saveFile(imageFile, slug, "image");
-    const iconUrl = await saveFile(iconFile, slug, "icon");
+    const [imageUrl, iconUrl] = await Promise.all([
+      saveFile(imageFile, slug, "image"),
+      saveFile(iconFile, slug, "icon"),
+    ]);
     await db.game.create({
       data: {
-        name,
+        name: sanitizePlain(name),
         slug,
-        description: description || undefined,
+        description: sanitizeHtml(description || "") || undefined,
         imageUrl,
         iconUrl,
         isHotOffer,
         isActive,
       },
     });
-    revalidatePath("/admin/games");
     revalidateTag("games", { expire: 0 });
     return NextResponse.json({ ok: true, toast: "saved" });
   } catch {
@@ -98,6 +104,10 @@ export async function PUT(req: Request) {
     if (!current) {
       return NextResponse.json({ error: "Not found" }, { status: 404 });
     }
+    const MAX_UPLOAD = 10 * 1024 * 1024;
+    if ((imageFile && imageFile.size > MAX_UPLOAD) || (iconFile && iconFile.size > MAX_UPLOAD)) {
+      return NextResponse.json({ error: "File terlalu besar" }, { status: 413 });
+    }
     let baseSlug = slugify(inputSlug || name || current.name || "");
     if (baseSlug.length > 60) {
       baseSlug = baseSlug.slice(0, 60).replace(/-+$/, "");
@@ -107,21 +117,22 @@ export async function PUT(req: Request) {
     if (existing && existing.id !== id) {
       slug = `${slug}-${Math.random().toString(36).slice(2, 6)}`;
     }
-    const imageUrl = await saveFile(imageFile, slug, "image");
-    const iconUrl = await saveFile(iconFile, slug, "icon");
+    const [imageUrl, iconUrl] = await Promise.all([
+      saveFile(imageFile, slug, "image"),
+      saveFile(iconFile, slug, "icon"),
+    ]);
     await db.game.update({
       where: { id },
       data: {
-        name,
+        name: sanitizePlain(name),
         slug,
-        description: description || undefined,
+        description: sanitizeHtml(description || "") || undefined,
         imageUrl: imageUrl ?? current.imageUrl,
         iconUrl: iconUrl ?? current.iconUrl,
         isHotOffer,
         isActive,
       },
     });
-    revalidatePath("/admin/games");
     revalidateTag("games", { expire: 0 });
     return NextResponse.json({ ok: true, toast: "updated" });
   } catch {

@@ -31,7 +31,7 @@ export function GameList({ games }: { games: Game[] }) {
           >
             <div className="w-14 h-14 rounded-lg bg-white/5 overflow-hidden flex items-center justify-center shrink-0">
               {g.imageUrl ? (
-                <Image src={g.imageUrl} alt={g.name} width={56} height={56} className="object-cover w-full h-full" />
+                <Image src={g.imageUrl} alt={g.name} width={56} height={56} className="object-cover w-full h-full" unoptimized />
               ) : (
                 <div className="text-xs text-gray-500">No image</div>
               )}
@@ -52,7 +52,7 @@ export function GameList({ games }: { games: Game[] }) {
             </div>
             <div className="w-10 h-10 rounded-lg bg-white/5 overflow-hidden flex items-center justify-center shrink-0">
               {g.iconUrl ? (
-                <Image src={g.iconUrl} alt="icon" width={40} height={40} className="object-cover w-full h-full" />
+                <Image src={g.iconUrl} alt="icon" width={40} height={40} className="object-cover w-full h-full" unoptimized />
               ) : (
                 <div className="text-[10px] text-gray-500">No icon</div>
               )}
