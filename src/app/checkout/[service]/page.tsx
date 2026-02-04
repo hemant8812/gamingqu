@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { useCurrency } from "@/app/providers";
 import { formatPrice } from "@/lib/formatPrice";
-import { CreditCard, ShieldCheck, AlertTriangle } from "lucide-react";
+import { CreditCard, ShieldCheck, AlertTriangle, Loader2 } from "lucide-react";
 import { useSession } from "next-auth/react";
 import Image from "next/image";
  
@@ -138,6 +138,7 @@ export default function CheckoutPage() {
   const itemsFmt = formatPrice(convert(itemsRaw));
   const feeFmt = formatPrice(convert(feeRaw));
   const amountFmt = formatPrice(convert(amountRaw));
+  const [submitting, setSubmitting] = useState(false);
  
   return (
     <div className="min-h-screen bg-[#0A0E17] text-white">
@@ -294,7 +295,7 @@ export default function CheckoutPage() {
                       }`}
                       onClick={() => setMethod(pm.slug)}
                     >
-                      <div className="flex-1 h-12 flex items-center">
+                      <div className="flex-1 h-12 flex items-center pl-3">
                         {pm.iconUrl ? (
                           <Image
                             src={pm.iconUrl}
@@ -309,6 +310,24 @@ export default function CheckoutPage() {
                           <div className="text-sm text-gray-500">{pm.slug}</div>
                         )}
                       </div>
+                      {(() => {
+                        const feeNum =
+                          itemsRaw * (((pm.feePercent ?? 0) as number) / 100) + ((pm.feeFixed ?? 0) as number);
+                        const feeFmt = formatPrice(convert(feeNum));
+                        return (
+                          <div className="hidden sm:block text-xs md:text-sm text-gray-300 mr-3">
+                            <span className="mr-1">Fee</span>
+                            <span className="font-semibold text-white">
+                              +
+                              <span className="gradient-text">
+                                {feeFmt.whole}
+                                {feeFmt.showDecimal && <span>,{feeFmt.decimal}</span>}
+                              </span>
+                              <span className="text-gray-400 ml-1">{currency}</span>
+                            </span>
+                          </div>
+                        );
+                      })()}
                       <input className="sr-only" type="radio" name="pay-method" checked={method === pm.slug} onChange={() => setMethod(pm.slug)} />
                     </label>
                   ))}
@@ -352,12 +371,19 @@ export default function CheckoutPage() {
                   </div>
                 </div>
                 <button
-                  className="btn btn-gaming w-full mt-2"
-                  disabled={!method || !data}
+                  className={`w-full mt-2 h-12 rounded-md inline-flex items-center justify-center text-base md:text-lg ${
+                    !method || !data
+                      ? "bg-slate-700/60 text-gray-300 border border-white/10 cursor-not-allowed"
+                      : submitting
+                      ? "bg-gradient-to-r from-blue-600 to-cyan-600 text-white ring-2 ring-blue-500/30"
+                      : "btn btn-gaming"
+                  }`}
+                  disabled={!method || !data || submitting}
                   onClick={() => {
                     (async () => {
                       try {
-                        if (!method || !data) return;
+                        if (!method || !data || submitting) return;
+                        setSubmitting(true);
                         window.localStorage.setItem(`checkout:${service}:method`, method);
                         if (method === "paypal") {
                           const res = await fetch("/api/checkout/paypal/create", {
@@ -380,6 +406,7 @@ export default function CheckoutPage() {
                             window.location.href = String(json.redirectUrl);
                             return;
                           }
+                          setSubmitting(false);
                         }
                         const payload = {
                           ...data,
@@ -392,11 +419,19 @@ export default function CheckoutPage() {
                           },
                         };
                         window.localStorage.setItem(`checkout:${service}:payload`, JSON.stringify(payload));
+                        setSubmitting(false);
                       } catch {}
                     })();
                   }}
                 >
-                  Pay Now
+                  {submitting ? (
+                    <span className="inline-flex items-center gap-2">
+                      <Loader2 className="h-5 w-5 animate-spin" />
+                      Processing...
+                    </span>
+                  ) : (
+                    "Pay Now"
+                  )}
                 </button>
                 <div className="flex items-center justify-center gap-2 text-emerald-400">
                   <ShieldCheck className="h-5 w-5" />
