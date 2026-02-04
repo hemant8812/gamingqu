@@ -123,50 +123,54 @@ export default async function DashboardPage() {
             <nav className="p-3">
               <ul className="space-y-1">
                 <li>
-                  <Link href="/dashboard" className="flex items-center gap-3 px-3 py-2 rounded-xl bg-white/10 text-white">
+                  <Link href="/dashboard" className="w-full flex items-center gap-3 px-3 py-2 rounded-xl bg-white/10 text-white">
                     <Home className="h-4 w-4" />
                     <span>Overview</span>
                   </Link>
                 </li>
                 <li>
-                  <Link href="/dashboard/orders" className="flex items-center gap-3 px-3 py-2 rounded-xl hover:bg-white/5 text-gray-300">
+                  <Link href="/dashboard/orders" className="w-full flex items-center gap-3 px-3 py-2 rounded-xl hover:bg-white/5 text-gray-300">
                     <ShoppingCart className="h-4 w-4" />
                     <span>My Orders</span>
                   </Link>
                 </li>
                 <li>
-                  <Link href="/dashboard/profile" className="flex items-center gap-3 px-3 py-2 rounded-xl hover:bg-white/5 text-gray-300">
+                  <Link href="/dashboard/profile" className="w-full flex items-center gap-3 px-3 py-2 rounded-xl hover:bg-white/5 text-gray-300">
                     <User className="h-4 w-4" />
                     <span>Profile</span>
                   </Link>
                 </li>
                 <li>
-                  <Link href="/dashboard/wallet" className="flex items-center gap-3 px-3 py-2 rounded-xl hover:bg-white/5 text-gray-300">
+                  <Link href="/dashboard/wallet" className="w-full flex items-center gap-3 px-3 py-2 rounded-xl hover:bg-white/5 text-gray-300">
                     <Wallet className="h-4 w-4" />
                     <span>Wallet</span>
                   </Link>
                 </li>
                 <li>
-                  <Link href="/dashboard/reviews" className="flex items-center gap-3 px-3 py-2 rounded-xl hover:bg-white/5 text-gray-300">
+                  <Link href="/dashboard/reviews" className="w-full flex items-center gap-3 px-3 py-2 rounded-xl hover:bg-white/5 text-gray-300">
                     <Star className="h-4 w-4" />
                     <span>Reviews</span>
                   </Link>
                 </li>
                 <li>
-                  <Link href="#" className="flex items-center gap-3 px-3 py-2 rounded-xl hover:bg-white/5 text-gray-300" aria-disabled>
+                  <Link href="#" className="w-full flex items-center gap-3 px-3 py-2 rounded-xl hover:bg-white/5 text-gray-300" aria-disabled>
                     <MessageSquare className="h-4 w-4" />
                     <span>Messages</span>
                   </Link>
                 </li>
                 <li>
-                  <Link href="#" className="flex items-center gap-3 px-3 py-2 rounded-xl hover:bg-white/5 text-gray-300" aria-disabled>
+                  <Link href="#" className="w-full flex items-center gap-3 px-3 py-2 rounded-xl hover:bg-white/5 text-gray-300" aria-disabled>
                     <Settings className="h-4 w-4" />
                     <span>Settings</span>
                   </Link>
                 </li>
               </ul>
               <div className="border-t border-white/10 mt-4 pt-4">
-                <button type="button" className="flex items-center gap-3 px-3 py-2 rounded-xl hover:bg-white/5 text-gray-300" aria-label="Logout">
+                <button
+                  type="button"
+                  className="w-full flex items-center gap-3 px-3 py-2 rounded-xl hover:bg-red-500/20 text-red-400"
+                  aria-label="Logout"
+                >
                   <LogOut className="h-4 w-4" />
                   <span>Logout</span>
                 </button>
@@ -276,107 +280,7 @@ export default async function DashboardPage() {
                   ))}
                 </div>
               </section>
-              <section className="bg-[#0F172A] border border-white/10 rounded-2xl overflow-hidden ring-1 ring-white/5">
-                <div className="p-6 border-b border-white/10 flex items-center justify-between">
-                  <h3 className="text-lg font-bold text-white">Recent Wallet Transactions</h3>
-                  <Link href="/dashboard/wallet" className="flex items-center gap-2 text-sm text-blue-400 hover:text-blue-300" aria-label="View wallet">
-                    View Wallet <ChevronRight className="h-4 w-4" />
-                  </Link>
-                </div>
-                <div className="px-4 py-2">
-                  <div className="hidden md:grid md:grid-cols-[220px_120px_160px_1fr] gap-3 px-3 py-2 text-xs text-gray-400">
-                    <span>DATE</span>
-                    <span>TYPE</span>
-                    <span>AMOUNT</span>
-                    <span>DETAILS</span>
-                  </div>
-                  <div className="divide-y divide-white/5">
-                    {recentTxs.length === 0 ? (
-                      <div className="px-6 py-10 text-center text-sm text-gray-400">No wallet transactions yet</div>
-                    ) : (
-                      recentTxs.map((t) => {
-                        const isCredit = t.type === "CREDIT";
-                        const Icon = isCredit ? ArrowUpCircle : ArrowDownCircle;
-                        const iconCls = isCredit ? "text-emerald-400" : "text-red-400";
-                        const amountNum = Number.parseFloat(t.amount);
-                        const amountStr = `${isCredit ? "+" : "-"}$${Math.abs(amountNum).toFixed(2)}`;
-                        return (
-                          <div key={t.id} className="px-3 py-3 hover:bg-white/[0.03]">
-                            <div className="grid grid-cols-1 md:grid-cols-[220px_120px_160px_1fr] gap-3 items-center">
-                              <div className="text-sm text-white">{new Date(t.createdAt).toLocaleString("en-GB", { hour12: false })}</div>
-                              <div className="flex items-center gap-2">
-                                <Icon className={`h-4 w-4 ${iconCls}`} />
-                                <span className={isCredit ? "text-emerald-400 text-sm font-medium" : "text-red-400 text-sm font-medium"}>
-                                  {isCredit ? "Credit" : "Debit"}
-                                </span>
-                              </div>
-                              <div className={isCredit ? "text-emerald-400 font-semibold" : "text-red-400 font-semibold"}>{amountStr}</div>
-                              <div className="text-sm text-gray-300">
-                                {t.orderCode ? (
-                                  <Link href={`/dashboard/orders?order=${encodeURIComponent(t.orderCode)}`} className="text-blue-400 hover:text-blue-300">
-                                    Linked to order {t.orderCode}
-                                  </Link>
-                                ) : (
-                                  <span>{t.description ?? "-"}</span>
-                                )}
-                              </div>
-                            </div>
-                          </div>
-                        );
-                      })
-                    )}
-                  </div>
-                </div>
-              </section>
-              <section className="bg-[#0F172A] border border-white/10 rounded-2xl overflow-hidden ring-1 ring-white/5">
-                <div className="p-6 border-b border-white/10 flex items-center justify-between">
-                  <h3 className="text-lg font-bold text-white">Your Reviews</h3>
-                  <Link href="/dashboard/reviews" className="flex items-center gap-2 text-sm text-blue-400 hover:text-blue-300" aria-label="View reviews">
-                    View Reviews <ChevronRight className="h-4 w-4" />
-                  </Link>
-                </div>
-                <div className="px-4 py-2">
-                  <div className="hidden md:grid md:grid-cols-[220px_160px_1fr_160px] gap-3 px-3 py-2 text-xs text-gray-400">
-                    <span>DATE</span>
-                    <span>RATING</span>
-                    <span>DETAILS</span>
-                    <span>STATUS</span>
-                  </div>
-                  <div className="divide-y divide-white/5">
-                    {recentReviews.length === 0 ? (
-                      <div className="px-6 py-10 text-center text-sm text-gray-400">You haven&apos;t written any reviews yet</div>
-                    ) : (
-                      recentReviews.map((r) => {
-                        return (
-                          <div key={r.id} className="px-3 py-3 hover:bg-white/[0.03]">
-                            <div className="grid grid-cols-1 md:grid-cols-[220px_160px_1fr_160px] gap-3 items-center">
-                              <div className="text-sm text-white">{new Date(r.createdAt).toLocaleString("en-GB", { hour12: false })}</div>
-                              <div className="flex items-center gap-1">
-                                {Array.from({ length: 5 }).map((_, i) => (
-                                  <Star key={i} className={`h-4 w-4 ${i < r.rating ? "text-yellow-400" : "text-gray-600"}`} />
-                                ))}
-                              </div>
-                              <div className="text-sm">
-                                <div className="text-white font-medium">{r.title ?? r.serviceName ?? "Unknown service"}</div>
-                                <div className="text-xs text-gray-500">{r.gameName ?? ""}</div>
-                                {r.orderCode ? (
-                                  <div className="text-xs mt-1">
-                                    <Link href={`/dashboard/orders?order=${encodeURIComponent(r.orderCode)}`} className="text-blue-400 hover:text-blue-300">View order</Link>
-                                  </div>
-                                ) : null}
-                                {r.comment ? <div className="text-gray-300 mt-1">{r.comment}</div> : null}
-                              </div>
-                              <div className={r.isPublished ? "text-emerald-400 text-sm font-semibold" : "text-yellow-400 text-sm font-semibold"}>
-                                {r.isPublished ? "Published" : "Draft"}
-                              </div>
-                            </div>
-                          </div>
-                        );
-                      })
-                    )}
-                  </div>
-                </div>
-              </section>
+             
             </div>
           </main>
         </div>

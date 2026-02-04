@@ -1,4 +1,6 @@
+'use client';
 import Link from "next/link";
+import { signOut } from "next-auth/react";
 import { Home, ShoppingCart, User, Wallet, Star, MessageSquare, Settings, LogOut } from "lucide-react";
 
 type ActiveTab = "overview" | "orders" | "profile" | "wallet" | "reviews" | "settings";
@@ -6,8 +8,8 @@ type ActiveTab = "overview" | "orders" | "profile" | "wallet" | "reviews" | "set
 export function MemberSidebar({ active }: { active: ActiveTab }) {
   const itemCls = (isActive: boolean) =>
     isActive
-      ? "flex items-center gap-3 px-3 py-2 rounded-xl bg-white/10 text-white"
-      : "flex items-center gap-3 px-3 py-2 rounded-xl hover:bg-white/5 text-gray-300";
+      ? "w-full flex items-center gap-3 px-3 py-2 rounded-xl bg-white/10 text-white"
+      : "w-full flex items-center gap-3 px-3 py-2 rounded-xl hover:bg-white/5 text-gray-300";
   return (
     <nav className="bg-[#0F172A] border border-white/10 rounded-2xl p-4">
       <ul className="space-y-1">
@@ -55,7 +57,12 @@ export function MemberSidebar({ active }: { active: ActiveTab }) {
         </li>
       </ul>
       <div className="border-t border-white/10 mt-4 pt-4">
-        <button type="button" className="flex items-center gap-3 px-3 py-2 rounded-xl hover:bg-white/5 text-gray-300" aria-label="Logout">
+        <button
+          type="button"
+          className="w-full flex items-center gap-3 px-3 py-2 rounded-xl hover:bg-red-500/20 text-red-400"
+          aria-label="Logout"
+          onClick={() => signOut({ callbackUrl: "/" })}
+        >
           <LogOut className="h-4 w-4" />
           <span>Logout</span>
         </button>

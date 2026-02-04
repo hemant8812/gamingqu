@@ -385,10 +385,10 @@ export function Navbar({ siteName = "Gamingqu", logoUrl = null, user = null }: P
                     <li><Link href="/admin" onClick={closeDropdown} className="hover:bg-white/10 rounded-xl"><FiGrid className="h-4 w-4 text-blue-400" /> Admin Panel</Link></li>
                   )}
                   {user.role === "MEMBER" && (
-                    <li><Link href="/dashboard" onClick={closeDropdown} className="hover:bg-white/10 rounded-xl"><FiGrid className="h-4 w-4 text-blue-400" /> Dashboard</Link></li>
+                    <li><Link href="/dashboard" onClick={closeDropdown} className="w-full hover:bg-white/10 rounded-xl"><FiGrid className="h-4 w-4 text-blue-400" /> Dashboard</Link></li>
                   )}
-                  <li><Link href="/dashboard/orders" onClick={closeDropdown} className="hover:bg-white/10 rounded-xl"><FiShoppingCart className="h-4 w-4 text-cyan-400" /> My orders</Link></li>
-                  <li><button onClick={() => signOut({ callbackUrl: "/" })} className="hover:bg-white/10 rounded-xl text-red-400"><FiLogOut className="h-4 w-4" /> Logout</button></li>
+                  <li><Link href="/dashboard/orders" onClick={closeDropdown} className="w-full hover:bg-white/10 rounded-xl"><FiShoppingCart className="h-4 w-4 text-blue-400" /> My orders</Link></li>
+                  <li><button onClick={() => signOut({ callbackUrl: "/" })} className="w-full hover:bg-red-500/20 rounded-xl text-red-400"><FiLogOut className="h-4 w-4" /> Logout</button></li>
                 </ul>
               </div>
             ) : (
