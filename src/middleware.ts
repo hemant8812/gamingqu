@@ -62,9 +62,9 @@ export async function middleware(req: NextRequest) {
     "base-uri 'self'",
     "frame-ancestors 'none'",
     "form-action 'self'",
-    "img-src 'self' data: blob: https:",
-    "style-src 'self' 'unsafe-inline'",
-    "font-src 'self' data:",
+    "img-src 'self' data: blob: https: https://*.tawk.to https://*.crisp.chat https://*.googleapis.com https://*.gstatic.com",
+    "style-src 'self' 'unsafe-inline' https://client.crisp.chat https://fonts.googleapis.com https://*.tawk.to",
+    "font-src 'self' data: https://client.crisp.chat https://fonts.gstatic.com https://*.tawk.to",
     `connect-src 'self' https: wss:`,
     `script-src 'self' 'nonce-${nonce}'${isDev ? " 'unsafe-eval' 'unsafe-inline'" : ""} https://static.cloudflareinsights.com https://www.googletagmanager.com https://client.crisp.chat https://embed.tawk.to https://*.tawk.to https://www.googleadservices.com https://googleads.g.doubleclick.net https://www.google.com https://adservice.google.com`,
   ].join("; ");
