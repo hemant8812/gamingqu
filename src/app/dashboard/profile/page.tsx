@@ -3,6 +3,8 @@ import Link from "next/link";
 import { authOptions } from "@/auth";
 import { db } from "@/lib/prisma";
 import { MemberSidebar } from "@/components/dashboard/MemberSidebar";
+import { AlertTriangle, Lock } from "lucide-react";
+import { CreatePasswordForm } from "@/components/dashboard/CreatePasswordForm";
 
 function formatDateTimeEnglish(d: Date) {
   const months = [
@@ -28,7 +30,7 @@ function formatDateTimeEnglish(d: Date) {
   return `${day}/${month}/${year}, ${hour}:${minute}:${second}`;
 }
 
-export default async function ProfilePage() {
+export default async function ProfilePage({ searchParams }: { searchParams?: Promise<Record<string, string | string[] | undefined>> }) {
   const session = await getServerSession(authOptions);
   const role = session?.user?.role;
   const isMember = role === "MEMBER";
@@ -71,6 +73,8 @@ export default async function ProfilePage() {
   });
   const oauthProviders = Array.isArray(user?.accounts) ? user!.accounts.map((a) => a.provider) : [];
   const passwordSet = !!user?.password;
+  const sp = searchParams ? await searchParams : {};
+  const toast = typeof sp?.toast === "string" ? sp.toast : undefined;
   return (
     <div className="min-h-screen bg-[#0A0E17] text-white">
       <div className="fixed inset-0 pointer-events-none">
@@ -86,6 +90,17 @@ export default async function ProfilePage() {
             <div className="flex items-center justify-between mb-6">
               <h1 className="text-2xl font-bold text-white">Profile</h1>
             </div>
+            {toast === "pw_set" ? (
+              <div className="mb-4 rounded-xl bg-emerald-500/15 text-emerald-300 border border-emerald-500/30 p-4">
+                <div className="font-semibold">Password created successfully</div>
+                <div className="text-sm">Your account is now protected with a password.</div>
+              </div>
+            ) : toast === "error" ? (
+              <div className="mb-4 rounded-xl bg-red-500/15 text-red-300 border border-red-500/30 p-4">
+                <div className="font-semibold">Unable to create password</div>
+                <div className="text-sm">Please check your inputs and try again.</div>
+              </div>
+            ) : null}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
               <div className="relative card-gaming rounded-2xl p-5">
                 <div className="flex items-center gap-4">
@@ -141,17 +156,41 @@ export default async function ProfilePage() {
                 </div>
               </div>
             </div>
-            <div className="bg-[#0F172A] border border-white/10 rounded-2xl p-5">
-              <div className="flex items-center justify-between">
-                <div>
-                  <div className="text-lg font-bold text-white">Manage Profile</div>
-                  <div className="text-sm text-gray-400">Edit your personal information</div>
+            {!passwordSet ? (
+              <div className="space-y-5">
+                <div className="rounded-xl bg-yellow-500/15 text-yellow-300 border border-yellow-500/30 p-4 flex items-start gap-3">
+                  <AlertTriangle className="h-5 w-5 mt-0.5" />
+                  <div>
+                    <div className="font-semibold">Security Notice</div>
+                    <div className="text-sm">For security, please create a password to protect your account.</div>
+                  </div>
                 </div>
-                <button type="button" className="btn btn-gaming btn-sm" aria-disabled>
-                  Coming Soon
-                </button>
+                <div className="bg-[#0F172A] border border-white/10 rounded-2xl p-5">
+                  <div className="flex items-center gap-3 mb-4">
+                    <div className="w-9 h-9 rounded-xl bg-white/10 flex items-center justify-center text-white">
+                      <Lock className="h-5 w-5" />
+                    </div>
+                    <div>
+                      <div className="text-lg font-bold text-white">Create Password</div>
+                      <div className="text-xs text-gray-400">Use at least 8 characters including letters and numbers</div>
+                    </div>
+                  </div>
+                  <CreatePasswordForm />
+                </div>
               </div>
-            </div>
+            ) : (
+              <div className="bg-[#0F172A] border border-white/10 rounded-2xl p-5">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <div className="text-lg font-bold text-white">Manage Profile</div>
+                    <div className="text-sm text-gray-400">Edit your personal information</div>
+                  </div>
+                  <button type="button" className="btn btn-gaming btn-sm" aria-disabled>
+                    Coming Soon
+                  </button>
+                </div>
+              </div>
+            )}
           </main>
         </div>
       </div>

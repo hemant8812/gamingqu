@@ -175,6 +175,18 @@ export const authOptions: NextAuthOptions = {
       return session;
     },
   },
+  events: {
+    async linkAccount({ user, account }) {
+      try {
+        if (account?.provider === "google") {
+          await db.user.update({
+            where: { id: user.id },
+            data: { emailVerified: new Date() },
+          });
+        }
+      } catch {}
+    },
+  },
   pages: { signIn: "/login" },
   secret: AUTH_SECRET,
 };
