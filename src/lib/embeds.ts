@@ -15,5 +15,5 @@ export const getEmbeds = unstable_cache(
     }
   },
   ["embeds-list"],
-  { tags: ["embeds"], revalidate: 3600 }
+  { tags: ["embeds"], revalidate: 1 }
 );
