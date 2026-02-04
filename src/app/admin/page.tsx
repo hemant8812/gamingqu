@@ -34,14 +34,19 @@ export default async function AdminDashboard() {
   };
 
   try {
-    const [userCount, gameCount] = await Promise.all([
+    const [userCount, gameCount, ordersCount, revenueAgg] = await Promise.all([
       db.user.count(),
       db.game.count(),
+      db.order.count(),
+      db.order.aggregate({
+        _sum: { items: true },
+        where: { status: "PAID" },
+      }),
     ]);
     stats = {
       totalUsers: userCount,
-      totalOrders: 0,
-      totalRevenue: "$0",
+      totalOrders: ordersCount,
+      totalRevenue: `$${Number.parseFloat(((revenueAgg._sum.items ?? 0) as unknown as { toString: () => string } | number).toString()).toFixed(2)}`,
       totalGames: gameCount,
     };
   } catch {
