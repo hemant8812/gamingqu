@@ -220,19 +220,6 @@ export default async function ServiceDetailPage({ params }: { params: Params }) 
                 dangerouslySetInnerHTML={{ __html: service.description }}
               />
             )}
-            {Array.isArray(service.features) && service.features.length > 0 && (
-              <div className="mt-6">
-                <div className="text-white font-bold mb-2">Features</div>
-                <ul className="space-y-2 text-gray-300 text-sm">
-                  {service.features.slice(0, 10).map((f: unknown, i: number) => (
-                    <li key={i} className="flex items-center gap-2">
-                      <span className="w-2 h-2 rounded-full bg-emerald-400" />
-                      <span>{String(f)}</span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            )}
           </section>
 
           <ServicePanel details={detailsForClient} serviceSlug={service.slug} basePrice={basePrice} />

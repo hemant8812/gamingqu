@@ -14,6 +14,7 @@ import {
   ListOrdered,
   Link as LinkIcon,
   Image as ImageIcon,
+  Code,
 } from "lucide-react";
 
 type Props = {
@@ -25,7 +26,9 @@ type Props = {
 export function RichTextEditor({ name, initialHtml = "", placeholder = "Deskripsi dan format bebas" }: Props) {
   const editorRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+  const sourceRef = useRef<HTMLTextAreaElement>(null);
   const [isEmpty, setIsEmpty] = useState(() => initialHtml.replace(/<br\s*\/?>|\s|&nbsp;/g, "").length === 0);
+  const [sourceMode, setSourceMode] = useState(false);
   const [dialogMode, setDialogMode] = useState<"link" | "image" | "table" | null>(null);
   const [dialogValue, setDialogValue] = useState<string>("");
   const [tableRows, setTableRows] = useState<number>(2);
@@ -49,12 +52,37 @@ export function RichTextEditor({ name, initialHtml = "", placeholder = "Deskrips
   }, [initialHtml]);
 
   const sync = () => {
+    if (sourceMode) return;
     const html = editorRef.current?.innerHTML || "";
     if (inputRef.current) {
       inputRef.current.value = html;
     }
     setIsEmpty(html.replace(/<br\s*\/?>|\s|&nbsp;/g, "").length === 0);
     updateToolbarState();
+  };
+
+  const toggleSource = () => {
+    if (sourceMode) {
+      // Switch to Visual
+      const html = sourceRef.current?.value || "";
+      if (editorRef.current) {
+        editorRef.current.innerHTML = html;
+      }
+      if (inputRef.current) {
+        inputRef.current.value = html;
+      }
+      setIsEmpty(html.replace(/<br\s*\/?>|\s|&nbsp;/g, "").length === 0);
+      setSourceMode(false);
+      // defer toolbar update until render/focus
+      setTimeout(() => updateToolbarState(), 0);
+    } else {
+      // Switch to Source
+      sync(); // Ensure inputRef has latest visual content
+      if (sourceRef.current && inputRef.current) {
+        sourceRef.current.value = inputRef.current.value;
+      }
+      setSourceMode(true);
+    }
   };
 
   const saveSelection = () => {
@@ -268,12 +296,27 @@ export function RichTextEditor({ name, initialHtml = "", placeholder = "Deskrips
         <button type="button" onClick={openTable} title="Tabel" className={btnClass(dialogMode === "table")}>
           <span className="text-[10px] font-bold">T</span>
         </button>
+        <div className="h-5 w-px bg-zinc-700/60" />
+        <button type="button" onClick={toggleSource} title="Lihat Kode HTML" className={btnClass(sourceMode)}>
+          <Code className="h-3.5 w-3.5" />
+        </button>
       </div>
       <div className="relative flex-1 min-h-[400px]">
+        <textarea
+          ref={sourceRef}
+          className="h-full w-full min-h-[400px] px-3 py-3 text-sm font-mono text-gray-300 bg-black outline-none rounded-b-xl overflow-y-auto resize-none"
+          style={{ display: sourceMode ? "block" : "none" }}
+          onChange={(e) => {
+            if (inputRef.current) inputRef.current.value = e.target.value;
+            setIsEmpty(e.target.value.trim().length === 0);
+          }}
+          defaultValue={initialHtml}
+        />
         <div
           ref={editorRef}
           className="h-full min-h-[400px] px-3 py-3 text-sm text-white bg-black outline-none rounded-b-xl overflow-y-auto"
-          contentEditable
+          style={{ display: sourceMode ? "none" : "block" }}
+          contentEditable={!sourceMode}
           onKeyDown={(e) => {
             if (e.key === "Enter" && !e.shiftKey && activeHeading) {
               e.preventDefault();
