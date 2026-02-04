@@ -48,5 +48,5 @@ export default async function AdminDashboard() {
     // Keep default stats
   }
 
-  return <AdminDashboardClient enabled={enabled} stats={stats} />;
+  return <AdminDashboardClient enabled={enabled} isSuperAdmin={role === "SUPERADMIN"} stats={stats} />;
 }

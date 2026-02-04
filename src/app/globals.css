@@ -3,6 +3,7 @@
 @plugin "daisyui" {
   base: false;
 }
+@plugin "@tailwindcss/typography";
 
 @custom-variant dark (&:is(.dark *));
 

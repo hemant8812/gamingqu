@@ -73,6 +73,7 @@ function StatsCard({ title, value, icon, trend, trendUp }: StatsCardProps) {
 
 interface AdminDashboardClientProps {
     enabled: Set<string>;
+    isSuperAdmin?: boolean;
     stats?: {
         totalUsers?: number;
         totalOrders?: number;
@@ -81,7 +82,7 @@ interface AdminDashboardClientProps {
     };
 }
 
-export function AdminDashboardClient({ enabled, stats }: AdminDashboardClientProps) {
+export function AdminDashboardClient({ enabled, isSuperAdmin, stats }: AdminDashboardClientProps) {
     const menuItems = [
         { key: "users", title: "Users", description: "Manage user accounts and roles", href: "/admin/users", icon: <FiUsers className="h-6 w-6" />, color: "bg-blue-500/20 text-blue-400" },
         { key: "boosters", title: "Boosters", description: "Manage booster applications", href: "/admin/boosters", icon: <FiStar className="h-6 w-6" />, color: "bg-yellow-500/20 text-yellow-400" },
@@ -98,7 +99,9 @@ export function AdminDashboardClient({ enabled, stats }: AdminDashboardClientPro
         { key: "permissions", title: "Permissions", description: "Manage admin access rights", href: "/admin/permissions", icon: <FiShield className="h-6 w-6" />, color: "bg-red-500/20 text-red-400" },
     ];
 
-    const visibleItems = menuItems.filter(item => enabled.has(item.key) || (item.key === "services-data" && enabled.has("services")));
+    const visibleItems = isSuperAdmin
+        ? menuItems
+        : menuItems.filter(item => enabled.has(item.key) || (item.key === "services-data" && enabled.has("services")));
 
     return (
         <div className="min-h-screen bg-[#0A0E17] text-white">

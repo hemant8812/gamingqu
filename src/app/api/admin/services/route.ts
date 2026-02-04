@@ -5,6 +5,7 @@ import { db } from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
 import path from "path";
 import { promises as fs } from "fs";
+import { sanitizeHtml, sanitizePlain } from "@/lib/sanitize";
 
 function slugify(input: string) {
     return input.toLowerCase().trim().replace(/[\s_]+/g, "-").replace(/[^a-z0-9-]/g, "").replace(/-+/g, "-").replace(/^-|-$/g, "");
@@ -64,7 +65,8 @@ export async function POST(req: Request) {
         }
         const form = await req.formData();
         const name = (form.get("name") as string | null) ?? "";
-        const description = (form.get("description") as string | null) ?? "";
+        const descriptionRaw = (form.get("description") as string | null) ?? "";
+        const description = sanitizeHtml(descriptionRaw);
         const inputSlug = (form.get("slug") as string | null) ?? "";
         const gameIdStr = (form.get("gameId") as string | null) ?? "";
         const categoryIdStr = (form.get("categoryId") as string | null) || null;
@@ -102,7 +104,7 @@ export async function POST(req: Request) {
         const imageUrl = await saveFile(imageFile, slug);
         await db.service.create({
             data: {
-                name,
+                name: sanitizePlain(name),
                 slug,
                 description: description || undefined,
                 gameId,
@@ -133,7 +135,8 @@ export async function PUT(req: Request) {
         const idStr = (form.get("id") as string | null) ?? "";
         const id = Number(idStr);
         const name = (form.get("name") as string | null) ?? "";
-        const description = (form.get("description") as string | null) ?? "";
+        const descriptionRaw = (form.get("description") as string | null) ?? "";
+        const description = sanitizeHtml(descriptionRaw);
         const inputSlug = (form.get("slug") as string | null) ?? "";
         const gameIdStr = (form.get("gameId") as string | null) ?? "";
         const categoryIdStr = (form.get("categoryId") as string | null) || null;
@@ -173,7 +176,7 @@ export async function PUT(req: Request) {
         await db.service.update({
             where: { id },
             data: {
-                name,
+                name: sanitizePlain(name),
                 slug,
                 description: description || undefined,
                 gameId,

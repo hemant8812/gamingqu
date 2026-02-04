@@ -53,9 +53,9 @@ export async function generateMetadata(): Promise<Metadata> {
       images: [s?.logoUrl ?? faviconUrl],
     },
     icons: {
-      icon: faviconUrl,
-      shortcut: faviconUrl,
-      apple: faviconUrl,
+      icon: [{ url: "/favicon.ico", type: "image/x-icon" }, { url: faviconUrl }],
+      shortcut: ["/favicon.ico"],
+      apple: [faviconUrl],
     },
   };
 }
@@ -84,6 +84,7 @@ export default async function RootLayout({
   return (
     <html lang="en">
       <head>
+        <link rel="icon" href="/favicon.ico" />
         <link rel="icon" href={faviconUrl} />
         {headEmbeds.map((e) => (
           <script key={e.id} dangerouslySetInnerHTML={{ __html: `try{document.head.insertAdjacentHTML("beforeend", ${JSON.stringify(e.code)})}catch{}` }} />

@@ -4,6 +4,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ServicePanel } from "@/components/services/ServicePanel";
 import type { Metadata } from "next";
+import { sanitizePlain } from "@/lib/sanitize";
 
 export const dynamic = "force-dynamic";
 
@@ -21,7 +22,7 @@ export async function generateMetadata({ params }: { params: Params }): Promise<
     });
     if (!s) return {};
     const title = `${s.name} - ${s.game.name}`;
-    const desc = (s.description ?? "").trim() || `${s.name} for ${s.game.name}`;
+    const desc = sanitizePlain((s.description ?? "").trim()) || `${s.name} for ${s.game.name}`;
     return {
       title,
       description: desc,
