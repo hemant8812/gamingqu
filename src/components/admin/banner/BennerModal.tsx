@@ -19,6 +19,7 @@ export function BennerModal({ editing, isOpen, onClose }: { editing: Item | null
   const [preview, setPreview] = useState<string | null>(null);
   const handleClose = () => {
     setPreview(null);
+    setBusy(false);
     onClose();
   };
 
@@ -65,90 +66,92 @@ export function BennerModal({ editing, isOpen, onClose }: { editing: Item | null
 
   return (
     <dialog ref={dialogRef} className="modal" onClose={handleClose}>
-      <div className="modal-box w-11/12 max-w-lg bg-[#0F172A] border-0 text-white p-0 overflow-visible max-h-none rounded-2xl">
-        <div className="flex items-center justify-between p-5 border-b border-white/10">
+      <div className="modal-box w-11/12 max-w-lg bg-[#0F172A] border-0 text-white p-0 max-h-[90vh] overflow-hidden rounded-2xl">
+        <div className="flex items-center justify-between p-5 border-b border-white/10 sticky top-0 z-10 bg-[#0F172A]/95 backdrop-blur-sm">
           <h3 className="text-xl font-bold">{editing ? "Edit Banner" : "Add Banner"}</h3>
-          <button onClick={onClose} className="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-white/10 transition-colors">
+          <button onClick={handleClose} className="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-white/10 transition-colors">
             <X className="h-5 w-5 text-gray-400" />
           </button>
         </div>
 
-        <form onSubmit={onSubmit} method="post" encType="multipart/form-data" className="p-6 space-y-5">
-          <div>
-            <label className="block text-sm font-medium text-gray-300 mb-2">Title</label>
-            <input
-              name="title"
-              defaultValue={editing?.title ?? ""}
-              placeholder="Enter title"
-              className="w-full h-11 px-4 bg-[#0A0E17] border-0 rounded-xl text-white placeholder-gray-500 focus:ring-2 focus:ring-blue-500 focus:outline-none"
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-300 mb-2">Subtitle</label>
-            <textarea
-              name="subtitle"
-              defaultValue={editing?.subtitle ?? ""}
-              rows={3}
-              placeholder="Write subtitle"
-              className="w-full px-4 py-3 bg-[#0A0E17] border-0 rounded-xl text-white placeholder-gray-500 focus:ring-2 focus:ring-blue-500 focus:outline-none resize-none"
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-300 mb-2">Button Link</label>
-            <input
-              name="buttonLink"
-              defaultValue={editing?.buttonLink ?? ""}
-              placeholder="https://..."
-              className="w-full h-11 px-4 bg-[#0A0E17] border-0 rounded-xl text-white placeholder-gray-500 focus:ring-2 focus:ring-blue-500 focus:outline-none"
-            />
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-300 mb-2">Button Image</label>
-            <div
-              className="relative w-full h-40 overflow-hidden rounded-xl cursor-pointer bg-[#0A0E17] hover:bg-white/5 transition-colors"
-              onClick={() => document.getElementById('modal-file-input')?.click()}
-            >
-              {preview || editing?.buttonImageUrl ? (
-                <Image src={preview ?? editing?.buttonImageUrl ?? ""} alt="Preview" fill className="object-cover" unoptimized />
-              ) : (
-                <div className="absolute inset-0 flex flex-col items-center justify-center text-sm text-gray-500 gap-2">
-                  <span>Click to select image</span>
-                </div>
-              )}
+        <form onSubmit={onSubmit} method="post" encType="multipart/form-data">
+          <div className="p-6 space-y-5 overflow-y-auto" style={{ maxHeight: "calc(90vh - 132px)" }}>
+            <div>
+              <label className="block text-sm font-medium text-gray-300 mb-2">Title</label>
               <input
-                id="modal-file-input"
-                type="file"
-                name="buttonImage"
-                accept="image/*"
-                className="hidden"
-                onChange={(e) => {
-                  const f = e.currentTarget.files?.[0];
-                  if (f) {
-                    const url = URL.createObjectURL(f);
-                    setPreview(url);
-                  }
-                }}
+                name="title"
+                defaultValue={editing?.title ?? ""}
+                placeholder="Enter title"
+                className="w-full h-11 px-4 bg-[#0A0E17] border-0 rounded-xl text-white placeholder-gray-500 focus:ring-2 focus:ring-blue-500 focus:outline-none"
               />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-300 mb-2">Subtitle</label>
+              <textarea
+                name="subtitle"
+                defaultValue={editing?.subtitle ?? ""}
+                rows={3}
+                placeholder="Write subtitle"
+                className="w-full px-4 py-3 bg-[#0A0E17] border-0 rounded-xl text-white placeholder-gray-500 focus:ring-2 focus:ring-blue-500 focus:outline-none resize-none"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-300 mb-2">Button Link</label>
+              <input
+                name="buttonLink"
+                defaultValue={editing?.buttonLink ?? ""}
+                placeholder="https://..."
+                className="w-full h-11 px-4 bg-[#0A0E17] border-0 rounded-xl text-white placeholder-gray-500 focus:ring-2 focus:ring-blue-500 focus:outline-none"
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-300 mb-2">Button Image</label>
+              <div
+                className="relative w-full h-40 overflow-hidden rounded-xl cursor-pointer bg-[#0A0E17] hover:bg-white/5 transition-colors"
+                onClick={() => document.getElementById('modal-file-input')?.click()}
+              >
+                {preview || editing?.buttonImageUrl ? (
+                  <Image src={preview ?? editing?.buttonImageUrl ?? ""} alt="Preview" fill className="object-cover" unoptimized />
+                ) : (
+                  <div className="absolute inset-0 flex flex-col items-center justify-center text-sm text-gray-500 gap-2">
+                    <span>Click to select image</span>
+                  </div>
+                )}
+                <input
+                  id="modal-file-input"
+                  type="file"
+                  name="buttonImage"
+                  accept="image/*"
+                  className="hidden"
+                  onChange={(e) => {
+                    const f = e.currentTarget.files?.[0];
+                    if (f) {
+                      const url = URL.createObjectURL(f);
+                      setPreview(url);
+                    }
+                  }}
+                />
+              </div>
+            </div>
+
+            <div className="flex items-center justify-between p-4 bg-[#0A0E17] rounded-xl">
+              <span className="text-sm font-medium text-gray-300">Active Status</span>
+              <label className="relative inline-flex items-center cursor-pointer">
+                <input
+                  type="checkbox"
+                  name="isActive"
+                  className="sr-only peer"
+                  defaultChecked={editing?.isActive ?? true}
+                  value="true"
+                />
+                <div className="w-11 h-6 bg-gray-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-emerald-500"></div>
+              </label>
             </div>
           </div>
 
-          <div className="flex items-center justify-between p-4 bg-[#0A0E17] rounded-xl">
-            <span className="text-sm font-medium text-gray-300">Active Status</span>
-            <label className="relative inline-flex items-center cursor-pointer">
-              <input
-                type="checkbox"
-                name="isActive"
-                className="sr-only peer"
-                defaultChecked={editing?.isActive ?? true}
-                value="true"
-              />
-              <div className="w-11 h-6 bg-gray-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-emerald-500"></div>
-            </label>
-          </div>
-
-          <div className="flex justify-end gap-3 pt-4 border-t border-white/10">
-            <button type="button" onClick={onClose} className="h-11 px-5 bg-white/5 hover:bg-white/10 text-gray-300 font-medium rounded-xl transition-colors">
+          <div className="flex justify-end gap-3 p-4 border-t border-white/10 sticky bottom-0 z-10 bg-[#0F172A]/95 backdrop-blur-sm">
+            <button type="button" onClick={handleClose} className="h-11 px-5 bg-white/5 hover:bg-white/10 text-gray-300 font-medium rounded-xl transition-colors">
               Cancel
             </button>
             <button
