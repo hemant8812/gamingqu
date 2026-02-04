@@ -77,7 +77,7 @@ export default async function WalletPage() {
       </div>
       <div className="relative z-10 mx-auto max-w-7xl px-6 py-8">
         <div className="grid grid-cols-1 lg:grid-cols-[260px_1fr] gap-6">
-          <aside className="lg:block">
+          <aside className="space-y-6 hidden lg:block lg:sticky lg:top-8 self-start">
             <MemberSidebar active="wallet" />
           </aside>
           <main>

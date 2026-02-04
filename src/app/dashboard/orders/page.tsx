@@ -3,8 +3,9 @@ import Link from "next/link";
 import { Fragment } from "react";
 import { authOptions } from "@/auth";
 import { db } from "@/lib/prisma";
-import { ShoppingCart, CheckCircle, Clock, Shield, Eye, Search as SearchIcon } from "lucide-react";
+import { ShoppingCart, CheckCircle, Clock, Shield, Eye } from "lucide-react";
 import { MemberSidebar } from "@/components/dashboard/MemberSidebar";
+import { OrdersSearchInput } from "@/components/dashboard/OrdersSearchInput";
 
 function formatDateTimeEnglish(d: Date) {
   const months = [
@@ -184,7 +185,7 @@ export default async function MyOrdersPage({ searchParams }: { searchParams?: Pr
     const price = `$${Number.parseFloat(o.items.toString()).toFixed(2)}`;
     const title = o.service?.name ?? o.serviceSlug;
     const game = o.service?.game?.name ?? "";
-    return { id: o.code, title, game, status, percent, price, fulfillment: o.fulfillmentStatus };
+    return { id: o.code, title, game, slug: o.serviceSlug, status, percent, price, fulfillment: o.fulfillmentStatus };
   });
   let filteredRows = rows;
   if (filterUpper === "IN_PROGRESS") {
@@ -198,12 +199,20 @@ export default async function MyOrdersPage({ searchParams }: { searchParams?: Pr
   }
   if (q) {
     const ql = q.toLowerCase();
-    filteredRows = filteredRows.filter(
-      (o) =>
-        o.id.toLowerCase().includes(ql) ||
-        (o.title ?? "").toLowerCase().includes(ql) ||
-        (o.game ?? "").toLowerCase().includes(ql)
-    );
+    filteredRows = filteredRows
+      .filter(
+        (o) =>
+          o.id.toLowerCase().includes(ql) ||
+          (o.title ?? "").toLowerCase().includes(ql) ||
+          (o.game ?? "").toLowerCase().includes(ql) ||
+          (o.slug ?? "").toLowerCase().includes(ql)
+      )
+      .sort((a, b) => {
+        const ae = a.id.toLowerCase() === ql ? 1 : 0;
+        const be = b.id.toLowerCase() === ql ? 1 : 0;
+        if (ae !== be) return be - ae; // exact code match first
+        return 0;
+      });
   }
   const currentFilter = (filterUpper ?? "ALL") as "ALL" | "IN_PROGRESS" | "COMPLETED" | "CANCELED";
   const tabCls = (name: "ALL" | "IN_PROGRESS" | "COMPLETED" | "CANCELED") =>
@@ -225,7 +234,7 @@ export default async function MyOrdersPage({ searchParams }: { searchParams?: Pr
       </div>
       <div className="relative z-10 mx-auto max-w-7xl px-6 py-8">
         <div className="grid grid-cols-1 lg:grid-cols-[260px_1fr] gap-6">
-          <aside className="lg:block">
+          <aside className="space-y-6 hidden lg:block lg:sticky lg:top-8 self-start">
             <MemberSidebar active="orders" />
           </aside>
           <main>
@@ -235,18 +244,7 @@ export default async function MyOrdersPage({ searchParams }: { searchParams?: Pr
             </div>
             <div className="bg-[#0F172A] border border-white/10 rounded-2xl overflow-hidden">
               <div className="p-4 border-b border-white/10 flex items-center justify-between">
-                <form action="/dashboard/orders" method="get" className="relative w-80 max-w-full">
-                  <SearchIcon className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 h-4 w-4" />
-                  <input
-                    name="q"
-                    defaultValue={q}
-                    type="text"
-                    placeholder="Search orders..."
-                    className="w-full pl-9 pr-3 h-10 bg-[#0A0E17] border border-white/10 rounded-xl text-white placeholder-gray-500 focus:border-blue-500 focus:outline-none transition-colors"
-                  />
-                  {currentFilter !== "ALL" ? <input type="hidden" name="filter" value={currentFilter} /> : null}
-                  {orderCodeFilter ? <input type="hidden" name="order" value={orderCodeFilter} /> : null}
-                </form>
+                <OrdersSearchInput initialQ={q} currentFilter={currentFilter} orderCode={orderCodeFilter} />
                 <div className="flex items-center gap-2">
                   <Link href={hrefFor("ALL")} className={tabCls("ALL")} aria-pressed={currentFilter === "ALL"}>
                     All
