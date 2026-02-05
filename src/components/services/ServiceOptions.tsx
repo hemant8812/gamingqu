@@ -307,10 +307,12 @@ function OptionCheckboxGroup({
                 checked={!!vals[o.label]}
                 onChange={(e) => setVals((m) => ({ ...m, [o.label]: e.target.checked }))}
               />
-              <span className="font-semibold text-white">{o.label}</span>
+              <span className={`font-semibold text-white ${o.label.length > 25 ? "text-xs" : o.label.length > 20 ? "text-sm" : ""}`}>
+                {o.label}
+              </span>
             </div>
             {Number.isFinite(o.price) && o.price > 0 && (
-              <span className="font-semibold text-gray-300">+{currency}{convert(o.price).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
+              <span className="font-semibold text-gray-300 whitespace-nowrap ml-2">+{currency}{convert(o.price).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
             )}
           </label>
         ))}
@@ -363,10 +365,12 @@ function OptionSingleCheckbox({
               checked={checked}
               onChange={(e) => setChecked(e.target.checked)}
             />
-            <span className="font-semibold text-white">{title}</span>
+            <span className={`font-semibold text-white ${title.length > 25 ? "text-xs" : title.length > 20 ? "text-sm" : ""}`}>
+              {title}
+            </span>
           </div>
           {Number.isFinite(price) && price > 0 && (
-            <span className="font-semibold text-gray-300">
+            <span className="font-semibold text-gray-300 whitespace-nowrap ml-2">
               +{currency}
               {convert(priceType === "percent" ? ((currentSubtotal ?? 0) * (price / 100)) : price).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
             </span>
