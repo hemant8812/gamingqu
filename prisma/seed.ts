@@ -94,8 +94,12 @@ async function main() {
       await prisma.boosterApplication.create({
         data: {
           userId: member.id,
+          fullName: "Member Satu",
+          email: "member@gamingqu.com",
+          discord: "member#1234",
+          whatsapp: "+1234567890",
+          games: "Saya berpengalaman boosting di beberapa game FPS.",
           status: "PENDING",
-          motivation: "Saya berpengalaman boosting di beberapa game FPS.",
         },
       });
     }
