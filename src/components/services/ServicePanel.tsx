@@ -132,12 +132,15 @@ export function ServicePanel({
       </div>
       <div className="sticky bottom-6">
         <div className="bg-[#0F172A] border border-white/10 rounded-b-2xl rounded-t-none p-4 border-t-0 -mt-px shadow-none">
-          <div className="text-3xl font-black text-white tracking-tight mb-3">
-            <span className="gradient-text">
-              {computedFmt.whole}
-              {computedFmt.showDecimal && <span className="text-lg">,{computedFmt.decimal}</span>}
-            </span>
-            <span className="text-white/80 text-xl ml-2">{currency}</span>
+          <div className="text-3xl font-black text-white tracking-wide mb-3 flex items-center gap-2">
+            <span>Total</span>
+            <div className="flex items-center gap-1">
+              <span className="text-white text-3xl font-extrabold">{currency}</span>
+              <span className="text-white font-extrabold tracking-wider text-4xl">
+                {computedFmt.whole}
+                {computedFmt.showDecimal && <span className="text-2xl font-bold">,{computedFmt.decimal}</span>}
+              </span>
+            </div>
           </div>
           
 

@@ -341,31 +341,31 @@ export default function CheckoutPage() {
                     <div className="flex items-center justify-between py-1 border-b border-white/10">
                       <span className="text-sm text-gray-300">Item(s)</span>
                       <span className="text-sm font-semibold text-white">
-                        <span className="gradient-text">
+                        <span className="mr-1 text-white">{currency}</span>
+                        <span className="text-white">
                           {itemsFmt.whole}
                           {itemsFmt.showDecimal && <span>,{itemsFmt.decimal}</span>}
                         </span>
-                        <span className="ml-1 text-gray-400">{currency}</span>
                       </span>
                     </div>
                     <div className="flex items-center justify-between py-1 border-b border-white/10">
                       <span className="text-sm text-gray-300">Payment service fee</span>
                       <span className="text-sm font-semibold text-white">
-                        <span className="gradient-text">
+                        <span className="mr-1 text-white">{currency}</span>
+                        <span className="text-white">
                           {feeFmt.whole}
                           {feeFmt.showDecimal && <span>,{feeFmt.decimal}</span>}
                         </span>
-                        <span className="ml-1 text-gray-400">{currency}</span>
                       </span>
                     </div>
                     <div className="flex items-center justify-between py-1">
                       <span className="text-sm text-gray-300">Amount to pay</span>
                       <span className="text-xl font-extrabold text-white">
-                        <span className="gradient-text">
+                        <span className="mr-1 text-white">{currency}</span>
+                        <span className="text-white">
                           {amountFmt.whole}
                           {amountFmt.showDecimal && <span>,{amountFmt.decimal}</span>}
                         </span>
-                        <span className="ml-1 text-gray-400">{currency}</span>
                       </span>
                     </div>
                   </div>
