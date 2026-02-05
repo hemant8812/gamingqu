@@ -61,15 +61,6 @@ export function HomeContent() {
   ]);
   const [heroSlide, setHeroSlide] = useState(0);
   const [dir, setDir] = useState<1 | -1>(1);
-  const containerRef = useRef<HTMLDivElement>(null);
-  const [pageWidth, setPageWidth] = useState(0);
-
-  useEffect(() => {
-    const measure = () => setPageWidth(containerRef.current?.clientWidth || 0);
-    measure();
-    window.addEventListener("resize", measure);
-    return () => window.removeEventListener("resize", measure);
-  }, []);
 
   useEffect(() => {
     const load = async () => {
@@ -154,63 +145,64 @@ export function HomeContent() {
 
       <main className="mx-auto max-w-7xl px-6 py-10 relative z-10">
         {/* Hero Section */}
-        <section className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-12">
-          <div className="col-span-1 lg:col-span-3 glass-card rounded-3xl overflow-hidden relative">
-            {/* Animated gradient overlay */}
-            <div className="absolute inset-0 bg-gradient-to-r from-blue-600/30 via-indigo-600/20 to-cyan-500/30 animated-mesh z-0" />
-            <div className="absolute inset-0 bg-gradient-to-t from-[#0A0E17] via-transparent to-transparent z-[1]" />
-
-            <div ref={containerRef} className="relative z-10 overflow-hidden p-8 md:p-12">
+        <section className="mb-12 relative group">
+          <div className="relative w-full h-[500px] md:h-[480px] rounded-3xl overflow-hidden shadow-2xl border border-white/10 bg-[#0A0E17]">
+            {heroSlides.map((s, idx) => (
               <div
-                className="flex flex-nowrap transition-transform duration-700 ease-in-out gap-0"
-                style={{ transform: `translateX(-${heroSlide * pageWidth}px)` }}
+                key={idx}
+                className={`absolute inset-0 transition-opacity duration-1000 ease-in-out ${idx === heroSlide ? "opacity-100 z-10" : "opacity-0 z-0 pointer-events-none"}`}
               >
-                {heroSlides.map((s, idx) => (
-                  <div
-                    key={idx}
-                    className="shrink-0 grid grid-cols-1 md:grid-cols-[1fr_420px] items-center gap-10"
-                    style={{ minWidth: pageWidth || undefined }}
-                  >
-                    <div className="space-y-5 max-w-xl">
-                      <h1 className="text-4xl md:text-5xl font-black text-white tracking-tight leading-tight">
-                        {s.title}
-                      </h1>
-                      <p className="text-lg text-gray-400">
-                        {s.subtitle}
-                      </p>
-                      <Link
-                        href={s.href}
-                        aria-label={`Explore ${s.title}`}
-                        title={`Explore ${s.title}`}
-                        className="btn btn-gaming h-10 px-5 text-sm rounded-xl inline-flex items-center gap-2 group"
-                      >
-                        Explore {s.title}
-                        <FiArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
-                      </Link>
-                    </div>
-                    <div className="relative justify-self-end w-full md:w-[420px] aspect-[16/9] rounded-2xl overflow-hidden shadow-2xl mr-8 md:mr-18 glow-border">
-                      <Image src={s.image} alt={s.title} fill className="object-cover" unoptimized sizes="420px" />
-                      <div className="hero-stripes" />
-                      <div className="absolute inset-0 bg-gradient-to-t from-[#0A0E17]/60 to-transparent" />
-                    </div>
+                {/* Background Image with Ken Burns effect */}
+                <div className="absolute inset-0 overflow-hidden">
+                  <Image
+                    src={s.image}
+                    alt={s.title}
+                    fill
+                    className={`object-cover transition-transform duration-[10000ms] ease-linear ${idx === heroSlide ? "scale-110" : "scale-100"}`}
+                    priority={idx === 0}
+                    unoptimized
+                  />
+                </div>
+
+                {/* Gradient Overlays */}
+                <div className="absolute inset-0 bg-gradient-to-t from-[#0A0E17] via-[#0A0E17]/60 to-transparent md:hidden" />
+                <div className="absolute inset-0 hidden md:block bg-gradient-to-r from-[#0A0E17] via-[#0A0E17]/90 to-transparent" />
+
+                {/* Content */}
+                <div className="absolute inset-0 flex flex-col justify-end md:justify-center p-8 md:p-16 lg:p-20">
+                  <div className={`max-w-2xl transform transition-all duration-700 delay-300 ${idx === heroSlide ? "translate-y-0 opacity-100" : "translate-y-10 opacity-0"}`}>
+                    <span className="inline-flex items-center gap-2 py-1 px-3 rounded-full bg-blue-600/20 text-blue-400 text-sm font-bold mb-6 backdrop-blur-md border border-blue-500/30">
+                      <Flame className="h-4 w-4" />
+                      Featured
+                    </span>
+                    <h1 className="text-4xl md:text-5xl lg:text-6xl font-black text-white leading-tight mb-4 drop-shadow-2xl">
+                      {s.title}
+                    </h1>
+                    <p className="text-lg md:text-xl text-gray-300 mb-8 leading-relaxed drop-shadow-md max-w-lg">
+                      {s.subtitle}
+                    </p>
+                    <Link
+                      href={s.href}
+                      className="btn btn-gaming h-12 px-8 text-base rounded-xl inline-flex items-center gap-2 group hover:scale-105 transition-transform shadow-lg shadow-blue-600/20"
+                    >
+                      {s.cta}
+                      <FiArrowRight className="h-5 w-5 transition-transform group-hover:translate-x-1" />
+                    </Link>
                   </div>
-                ))}
+                </div>
               </div>
-              {/* Hero dots */}
-              <div className="hero-dots">
-                {heroSlides.map((_, i) => (
-                  <button
-                    key={i}
-                    type="button"
-                    aria-label={`Go to slide ${i + 1}`}
-                    onClick={() => goToSlide(i)}
-                    className="hero-dot-btn"
-                    title={`Slide ${i + 1}`}
-                  >
-                    <span className={`hero-dot ${heroSlide === i ? "hero-dot-active" : ""}`} />
-                  </button>
-                ))}
-              </div>
+            ))}
+
+            {/* Dots Navigation */}
+            <div className="absolute bottom-6 left-1/2 -translate-x-1/2 z-20 flex gap-3 p-2 rounded-full backdrop-blur-sm bg-black/20 border border-white/5">
+              {heroSlides.map((_, i) => (
+                <button
+                  key={i}
+                  onClick={() => goToSlide(i)}
+                  className={`h-2 rounded-full transition-all duration-300 ${heroSlide === i ? "w-8 bg-blue-500" : "w-2 bg-white/50 hover:bg-white"}`}
+                  aria-label={`Go to slide ${i + 1}`}
+                />
+              ))}
             </div>
           </div>
         </section>
