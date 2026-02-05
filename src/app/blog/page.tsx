@@ -86,7 +86,10 @@ export default async function BlogPage({ searchParams }: { searchParams?: Promis
         )}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {posts.map((p, idx) => (
-            <article key={p.id} className="overflow-hidden rounded-xl border border-base-300 bg-base-100 shadow transition-transform hover:-translate-y-0.5">
+            <article
+              key={p.id}
+              className="overflow-hidden rounded-xl border border-white/10 bg-[#0F172A] text-white shadow transition-transform hover:-translate-y-0.5"
+            >
               <Link href={`/blog/${p.slug}`} className="block">
                 <div className="relative w-full h-44">
                   {p.imageUrl ? (

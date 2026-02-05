@@ -10,7 +10,7 @@ export async function GET(
     const { slug } = await params;
     const game = await unstable_cache(
       async () => {
-        return await db.game.findUnique({
+        return await db.game.findFirst({
           where: { slug, isActive: true },
           select: {
             id: true,

@@ -13,6 +13,7 @@ export async function GET() {
 
     const pages = await db.page.findMany({
       orderBy: { createdAt: "desc" },
+      select: { id: true, title: true, slug: true, isActive: true, updatedAt: true },
     });
 
     return NextResponse.json(pages);

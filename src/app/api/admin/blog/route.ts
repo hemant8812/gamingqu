@@ -13,6 +13,7 @@ export async function GET() {
   try {
     const posts = await db.post.findMany({
       orderBy: { createdAt: "desc" },
+      select: { id: true, title: true, slug: true, excerpt: true, imageUrl: true, isPublished: true, createdAt: true, updatedAt: true },
     });
     return NextResponse.json(posts);
   } catch {

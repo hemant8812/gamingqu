@@ -4,7 +4,7 @@ import { db } from "@/lib/prisma";
 export async function GET(req: Request, { params }: { params: Promise<{ slug: string }> }) {
   try {
     const { slug } = await params;
-    const page = await db.page.findUnique({
+    const page = await db.page.findFirst({
       where: { slug, isActive: true },
     });
 

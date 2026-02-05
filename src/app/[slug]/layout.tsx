@@ -9,7 +9,7 @@ export async function generateMetadata({ params }: { params: Params }): Promise<
   const { slug } = await params;
   const base = getBaseUrl();
   try {
-    const game = await db.game.findUnique({
+    const game = await db.game.findFirst({
       where: { slug, isActive: true },
       select: { name: true, description: true, imageUrl: true, updatedAt: true },
     });
@@ -51,7 +51,7 @@ export default async function SlugLayout({
   const base = getBaseUrl();
   let game: { name: string; description?: string | null; imageUrl?: string | null } | null = null;
   try {
-    game = await db.game.findUnique({
+    game = await db.game.findFirst({
       where: { slug, isActive: true },
       select: { name: true, description: true, imageUrl: true },
     });

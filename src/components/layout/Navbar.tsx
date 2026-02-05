@@ -122,7 +122,7 @@ export function Navbar({ siteName = "Gamingqu", logoUrl = null, user = null }: P
       <div className="max-w-7xl mx-auto px-4 sm:px-6">
         <div className="flex items-center justify-between h-16 relative">
           {/* Left Side: Logo & Menu */}
-          <div className="flex items-center gap-4 shrink-0">
+          <div className="flex items-center gap-2 sm:gap-3 shrink-0">
             {showLogo && logoUrl ? (
               <Link href="/" className="text-xl p-0 inline-flex items-center">
                 <Image
@@ -142,7 +142,7 @@ export function Navbar({ siteName = "Gamingqu", logoUrl = null, user = null }: P
               </Link>
             )}
 
-            <div className="dropdown">
+            <div className="dropdown hidden md:block">
               <button
                 type="button"
                 className="btn btn-ghost btn-sm h-10 min-h-[2.5rem] px-3 gap-2 text-gray-300 hover:text-white border border-white/10 hover:border-white/20 bg-transparent hover:bg-white/5 rounded-xl"
@@ -309,7 +309,53 @@ export function Navbar({ siteName = "Gamingqu", logoUrl = null, user = null }: P
           </div>
 
           {/* Right Side: Icons */}
-          <div className="flex items-center gap-3 shrink-0">
+          <div className="flex items-center gap-2 sm:gap-3 shrink-0">
+            <div className="dropdown md:hidden">
+              <button
+                type="button"
+                className="btn btn-ghost h-10 min-h-[2.5rem] px-3 gap-2 text-gray-300 hover:text-white border border-white/10 hover:border-white/20 bg-transparent hover:bg-white/5 rounded-xl"
+                aria-haspopup="menu"
+                aria-label={isAdminContext ? "Open main menu" : "Select game"}
+                onMouseDown={(e) => {
+                  if (document.activeElement === e.currentTarget) {
+                    e.currentTarget.blur();
+                    e.preventDefault();
+                  }
+                }}
+              >
+                {isAdminContext ? <FiGrid className="h-5 w-5" /> : <Gamepad2 className="h-5 w-5" />}
+                <FiChevronDown className="h-4 w-4" />
+              </button>
+              <ul tabIndex={0} className="dropdown-content z-[1] menu p-2 shadow-2xl bg-[#0F172A]/95 backdrop-blur-xl border border-white/10 rounded-2xl w-56 mt-4">
+                {isAdminContext ? (
+                  <>
+                    <li><Link href="/admin" onClick={closeDropdown} className="hover:bg-white/10 rounded-xl text-gray-200"><FiGrid className="h-4 w-4 text-blue-400" /> Dashboard</Link></li>
+                    <li><Link href="/admin/users" onClick={closeDropdown} className="hover:bg-white/10 rounded-xl text-gray-200"><FiUsers className="h-4 w-4 text-blue-400" /> Users</Link></li>
+                    <li><Link href="/admin/boosters" onClick={closeDropdown} className="hover:bg-white/10 rounded-xl text-gray-200"><FiZap className="h-4 w-4 text-blue-400" /> Boosters</Link></li>
+                    <li><Link href="/admin/orders" onClick={closeDropdown} className="hover:bg-white/10 rounded-xl text-gray-200"><FiShoppingCart className="h-4 w-4 text-blue-400" /> Orders</Link></li>
+                    <li><Link href="/admin/analytics" onClick={closeDropdown} className="hover:bg-white/10 rounded-xl text-gray-200"><FiBarChart2 className="h-4 w-4 text-blue-400" /> Analytics</Link></li>
+                    <li><Link href="/admin/games" onClick={closeDropdown} className="hover:bg-white/10 rounded-xl text-gray-200"><FiPlay className="h-4 w-4 text-blue-400" /> Games</Link></li>
+                    <li><Link href="/admin/categories" onClick={closeDropdown} className="hover:bg-white/10 rounded-xl text-gray-200"><FiTag className="h-4 w-4 text-blue-400" /> Categories</Link></li>
+                    <li><Link href="/admin/services" onClick={closeDropdown} className="hover:bg-white/10 rounded-xl text-gray-200"><FiTool className="h-4 w-4 text-blue-400" /> Services</Link></li>
+                    <li><Link href="/admin/service-data" onClick={closeDropdown} className="hover:bg-white/10 rounded-xl text-gray-200"><FiBarChart2 className="h-4 w-4 text-blue-400" /> Data Service</Link></li>
+                    <li><Link href="/admin/payment-method" onClick={closeDropdown} className="hover:bg-white/10 rounded-xl text-gray-200"><FiCreditCard className="h-4 w-4 text-blue-400" /> Payment Method</Link></li>
+                    <li><Link href="/admin/blog" onClick={closeDropdown} className="hover:bg-white/10 rounded-xl text-gray-200"><FiBookOpen className="h-4 w-4 text-blue-400" /> Blog</Link></li>
+                    <li><Link href="/admin/benner" onClick={closeDropdown} className="hover:bg-white/10 rounded-xl text-gray-200"><FiImage className="h-4 w-4 text-blue-400" /> Banner</Link></li>
+                    <li><Link href="/admin/legal" onClick={closeDropdown} className="hover:bg-white/10 rounded-xl text-gray-200"><FiFileText className="h-4 w-4 text-blue-400" /> Legal Pages</Link></li>
+                    {user?.role === "SUPERADMIN" && (
+                      <li><Link href="/admin/permissions" onClick={closeDropdown} className="hover:bg-white/10 rounded-xl text-gray-200"><FiShield className="h-4 w-4 text-blue-400" /> Permissions</Link></li>
+                    )}
+                    <li><Link href="/admin/settings" onClick={closeDropdown} className="hover:bg-white/10 rounded-xl text-gray-200"><FiSettings className="h-4 w-4 text-blue-400" /> Settings</Link></li>
+                  </>
+                ) : (
+                  <>
+                    <li><Link href="/about" onClick={closeDropdown} className="hover:bg-white/10 rounded-xl text-gray-200">About us</Link></li>
+                    <li><Link href="/cashback" onClick={closeDropdown} className="hover:bg-white/10 rounded-xl text-gray-200">Cashback</Link></li>
+                    <li><Link href="/blog" onClick={closeDropdown} className="hover:bg-white/10 rounded-xl text-gray-200">Blog</Link></li>
+                  </>
+                )}
+              </ul>
+            </div>
             {/* Mobile Search Button - COMPLETELY REMOVED */}
             {/* 
             <span
@@ -331,7 +377,7 @@ export function Navbar({ siteName = "Gamingqu", logoUrl = null, user = null }: P
             <div className="dropdown dropdown-end">
               <button
                 type="button"
-                className="btn btn-ghost h-10 min-h-[2.5rem] px-3 gap-1 text-gray-400 hover:text-white border border-white/10 hover:border-white/20 bg-transparent hover:bg-white/5 rounded-xl"
+                className="btn btn-ghost h-10 min-h-[2.5rem] px-3 gap-2 text-gray-400 hover:text-white border border-white/10 hover:border-white/20 bg-transparent hover:bg-white/5 rounded-xl"
                 aria-haspopup="menu"
                 aria-label="Change currency"
                 onMouseDown={(e) => {
@@ -388,7 +434,7 @@ export function Navbar({ siteName = "Gamingqu", logoUrl = null, user = null }: P
               </Link>
             )}
 
-            <div className="dropdown dropdown-end">
+            <div className="dropdown dropdown-end hidden md:block">
               <button
                 type="button"
                 className="btn btn-ghost btn-circle h-10 w-10 min-h-[2.5rem] text-gray-400 hover:text-white border border-white/10 hover:border-white/20 bg-transparent hover:bg-white/5 rounded-xl flex items-center justify-center p-0"
