@@ -38,6 +38,16 @@ type GameData = {
     services: ServiceItem[];
 };
 
+type PageData = {
+    id: number;
+    title: string;
+    slug: string;
+    content: string | null;
+    isActive: boolean;
+    createdAt: string;
+    updatedAt: string;
+};
+
 function ServiceCard({ s, gameSlug }: { s: ServiceItem; gameSlug: string }) {
     const { symbol: currency, convert } = useCurrency();
     const conv = convert(typeof s.price === "string" ? parseFloat(s.price) : (s.price as unknown as number));
@@ -65,7 +75,7 @@ function ServiceCard({ s, gameSlug }: { s: ServiceItem; gameSlug: string }) {
                         src={s.imageUrl}
                         alt={s.name}
                         fill
-                        className="object-cover transition-transform duration-700 group-hover:scale-110"
+                        className="object-cover"
                         sizes="300px"
                         unoptimized
                     />
@@ -124,36 +134,81 @@ export default function GamePage() {
     const params = useParams();
     const slug = params.slug as string;
     const [game, setGame] = useState<GameData | null>(null);
+    const [page, setPage] = useState<PageData | null>(null);
     const [loading, setLoading] = useState(true);
     const [activeCategory, setActiveCategory] = useState<string | null>(null);
 
     useEffect(() => {
-        const fetchGame = async () => {
+        const fetchData = async () => {
+            setLoading(true);
             try {
-                const res = await fetch(`/api/games/${slug}`, { cache: "no-store" });
-                if (!res.ok) {
-                    setGame(null);
-                } else {
-                    const data = await res.json();
+                // Try to fetch game first
+                const resGame = await fetch(`/api/games/${slug}`, { cache: "no-store" });
+                if (resGame.ok) {
+                    const data = await resGame.json();
                     setGame(data);
-                    // Set first category as active by default, or "all" if no categories
                     if (data.categories?.length > 0) {
                         setActiveCategory("all");
                     }
+                    setLoading(false);
+                    return;
                 }
+
+                // If not game, try to fetch page
+                const resPage = await fetch(`/api/pages/${slug}`, { cache: "no-store" });
+                if (resPage.ok) {
+                    const data = await resPage.json();
+                    setPage(data);
+                    setLoading(false);
+                    return;
+                }
+                
+                // If neither found
+                setGame(null);
+                setPage(null);
             } catch {
                 setGame(null);
+                setPage(null);
             } finally {
                 setLoading(false);
             }
         };
-        fetchGame();
+        fetchData();
     }, [slug]);
 
     if (loading) {
         return (
             <div className="min-h-screen mesh-gradient flex items-center justify-center">
                 <div className="loading loading-spinner loading-lg text-blue-500"></div>
+            </div>
+        );
+    }
+
+    if (page) {
+        const date = new Date(page.updatedAt || page.createdAt);
+        const formattedDate = date.toLocaleDateString("en-US", { year: 'numeric', month: 'long' });
+
+        return (
+            <div className="min-h-screen bg-[#0A0E17] text-white pt-[72px] pb-20">
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 relative z-10">
+                    <div className="bg-[#0F172A]/80 backdrop-blur-md rounded-2xl p-8 md:p-12 border border-white/10 shadow-2xl">
+                        <div className="mb-6 pb-6 border-b border-white/10">
+                            <h1 className="text-2xl md:text-3xl font-bold text-white mb-2">{page.title}</h1>
+                            <p className="text-gray-400 text-sm">Last Updated: {formattedDate}</p>
+                        </div>
+                        <div className="prose prose-invert max-w-none text-left 
+                            prose-p:text-gray-400 prose-p:text-sm prose-p:leading-relaxed prose-p:mb-4
+                            prose-headings:text-white prose-headings:font-bold prose-headings:text-base prose-headings:uppercase prose-headings:tracking-wider prose-headings:mt-8 prose-headings:mb-4
+                            prose-a:text-blue-400 
+                            prose-li:text-gray-400 prose-li:text-sm prose-li:marker:text-gray-500
+                            prose-strong:text-white prose-strong:font-bold
+                            prose-ul:space-y-2 prose-ul:my-4
+                            prose-hr:border-white/10 prose-hr:my-8
+                            [&>*]:!text-left [&>*]:!mx-0 [&>div]:!mx-0" 
+                            dangerouslySetInnerHTML={{ __html: page.content || "" }} 
+                        />
+                    </div>
+                </div>
             </div>
         );
     }

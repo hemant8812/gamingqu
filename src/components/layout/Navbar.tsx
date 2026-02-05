@@ -2,31 +2,12 @@
 import { useState, useRef, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { FiSearch, FiUser, FiChevronDown, FiZap, FiPercent, FiBookOpen, FiThumbsUp, FiShield, FiMail, FiShoppingCart, FiLogOut, FiGrid, FiUsers, FiBarChart2, FiPlay, FiSettings, FiImage, FiTag, FiTool, FiClock, FiCreditCard } from "react-icons/fi";
+import { FiSearch, FiUser, FiChevronDown, FiZap, FiPercent, FiBookOpen, FiThumbsUp, FiShield, FiMail, FiShoppingCart, FiLogOut, FiGrid, FiUsers, FiBarChart2, FiPlay, FiSettings, FiImage, FiTag, FiTool, FiClock, FiCreditCard, FiFileText } from "react-icons/fi";
 import { signOut } from "next-auth/react";
 import { usePathname, useRouter } from "next/navigation";
 import { Gamepad2 } from "lucide-react";
 import { formatPrice } from "@/lib/formatPrice";
 import { useCurrency } from "@/app/providers";
-
-function GridRoundedIcon(props: React.SVGProps<SVGSVGElement>) {
-  return (
-    <svg
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      {...props}
-    >
-      <rect x="3" y="3" width="8" height="8" rx="2" />
-      <rect x="13" y="3" width="8" height="8" rx="2" />
-      <rect x="3" y="13" width="8" height="8" rx="2" />
-      <rect x="13" y="13" width="8" height="8" rx="2" />
-    </svg>
-  );
-}
 
 type Props = {
   siteName?: string;
@@ -68,23 +49,6 @@ export function Navbar({ siteName = "Gamingqu", logoUrl = null, user = null }: P
     if (elem instanceof HTMLElement) {
       elem.blur();
     }
-  };
-
-  const handleDropdownClick = (e: React.MouseEvent<HTMLButtonElement>) => {
-    const btn = e.currentTarget;
-    const active = document.activeElement;
-    
-    // If the button is already focused (menu is open), clicking it again should close it.
-    // However, the "mousedown" event happens before "focus".
-    // DaisyUI dropdown works via focus.
-    
-    // If we are clicking the button and it IS the active element, it means it's open.
-    // We want to close it by blurring.
-    if (active === btn) {
-      btn.blur();
-    } 
-    // If it's NOT the active element, the default browser behavior will focus it
-    // after this click event finishes, opening the menu.
   };
 
   useEffect(() => {
@@ -210,6 +174,7 @@ export function Navbar({ siteName = "Gamingqu", logoUrl = null, user = null }: P
                     <li><Link href="/admin/payment-method" onClick={closeDropdown} className="hover:bg-white/10 rounded-xl text-gray-200"><FiCreditCard className="h-4 w-4 text-blue-400" /> Payment Method</Link></li>
                     <li><Link href="/admin/blog" onClick={closeDropdown} className="hover:bg-white/10 rounded-xl text-gray-200"><FiBookOpen className="h-4 w-4 text-blue-400" /> Blog</Link></li>
                     <li><Link href="/admin/benner" onClick={closeDropdown} className="hover:bg-white/10 rounded-xl text-gray-200"><FiImage className="h-4 w-4 text-blue-400" /> Banner</Link></li>
+                    <li><Link href="/admin/legal" onClick={closeDropdown} className="hover:bg-white/10 rounded-xl text-gray-200"><FiFileText className="h-4 w-4 text-blue-400" /> Legal Pages</Link></li>
                     {user?.role === "SUPERADMIN" && (
                       <li><Link href="/admin/permissions" onClick={closeDropdown} className="hover:bg-white/10 rounded-xl text-gray-200"><FiShield className="h-4 w-4 text-blue-400" /> Permissions</Link></li>
                     )}
@@ -462,4 +427,3 @@ export function Navbar({ siteName = "Gamingqu", logoUrl = null, user = null }: P
     </div>
   );
 }
-

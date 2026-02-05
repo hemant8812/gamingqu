@@ -1,7 +1,7 @@
 "use client";
 import Image from "next/image";
 import { FiRefreshCw, FiArrowRight, FiZap } from "react-icons/fi";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Flame, Trophy } from "lucide-react";
@@ -226,7 +226,7 @@ export function HomeContent() {
                   src={g.imageUrl}
                   alt={g.title}
                   fill
-                  className="object-cover transition-transform duration-700 group-hover:scale-110"
+                  className="object-cover"
                   sizes="320px"
                   unoptimized
                 />
@@ -313,7 +313,7 @@ export function HomeContent() {
                       src={h.imageUrl}
                       alt={h.name}
                       fill
-                      className="object-cover transition-transform duration-700 group-hover:scale-110"
+                      className="object-cover"
                       sizes="300px"
                       unoptimized
                     />

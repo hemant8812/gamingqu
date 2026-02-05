@@ -21,12 +21,18 @@ type Props = {
   name: string;
   initialHtml?: string;
   placeholder?: string;
+  onChange?: (html: string) => void;
 };
 
-export function RichTextEditor({ name, initialHtml = "", placeholder = "Deskripsi dan format bebas" }: Props) {
+export function RichTextEditor({ name, initialHtml = "", placeholder = "Deskripsi dan format bebas", onChange }: Props) {
   const editorRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const sourceRef = useRef<HTMLTextAreaElement>(null);
+  const onChangeRef = useRef(onChange);
+
+  useEffect(() => {
+    onChangeRef.current = onChange;
+  }, [onChange]);
   const [isEmpty, setIsEmpty] = useState(() => initialHtml.replace(/<br\s*\/?>|\s|&nbsp;/g, "").length === 0);
   const [sourceMode, setSourceMode] = useState(false);
   const [dialogMode, setDialogMode] = useState<"link" | "image" | "table" | null>(null);
@@ -59,6 +65,7 @@ export function RichTextEditor({ name, initialHtml = "", placeholder = "Deskrips
     }
     setIsEmpty(html.replace(/<br\s*\/?>|\s|&nbsp;/g, "").length === 0);
     updateToolbarState();
+    if (onChangeRef.current) onChangeRef.current(html);
   };
 
   const toggleSource = () => {
@@ -75,6 +82,7 @@ export function RichTextEditor({ name, initialHtml = "", placeholder = "Deskrips
       setSourceMode(false);
       // defer toolbar update until render/focus
       setTimeout(() => updateToolbarState(), 0);
+      if (onChangeRef.current) onChangeRef.current(html);
     } else {
       // Switch to Source
       sync(); // Ensure inputRef has latest visual content
@@ -309,6 +317,7 @@ export function RichTextEditor({ name, initialHtml = "", placeholder = "Deskrips
           onChange={(e) => {
             if (inputRef.current) inputRef.current.value = e.target.value;
             setIsEmpty(e.target.value.trim().length === 0);
+            if (onChangeRef.current) onChangeRef.current(e.target.value);
           }}
           defaultValue={initialHtml}
         />
