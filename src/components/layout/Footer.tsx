@@ -56,9 +56,9 @@ export async function Footer() {
                 <div className="footer flex flex-col md:flex-row gap-10">
                     <aside className="w-full md:w-[40%]">
                         {logo ? (
-                            <Image src={logo} alt={siteName} width={150} height={50} className="h-10 w-auto mb-4" unoptimized />
+                            <Image src={logo} alt={siteName} width={150} height={50} className="h-10 w-auto mb-0" unoptimized />
                         ) : (
-                            <span className="text-3xl font-black tracking-tighter mb-2 block gradient-text">{siteName}</span>
+                            <span className="text-3xl font-black tracking-tighter mb-0 block gradient-text">{siteName}</span>
                         )}
                         <p className="text-gray-400 mt-0 leading-relaxed max-w-full text-sm">
                             {shortDesc || "Your ultimate gaming paradise. Discover the best games and gaming experiences with professional boosting services."}
@@ -106,13 +106,13 @@ export async function Footer() {
                         </nav>
                         <nav className="flex flex-col gap-2 min-w-[200px]">
                             <h6 className="font-bold text-white text-sm uppercase tracking-wider mb-2">We Accept</h6>
-                            <div className="flex flex-wrap gap-3">
-                                {pmPaypal ? <div className="bg-white/5 rounded-lg p-2 hover:bg-white/10 transition-colors"><Image src={pmPaypal} alt="PayPal" width={60} height={40} className="h-6 w-auto object-contain" unoptimized /></div> : null}
-                                {pmMc ? <div className="bg-white/5 rounded-lg p-2 hover:bg-white/10 transition-colors"><Image src={pmMc} alt="Mastercard" width={60} height={40} className="h-6 w-auto object-contain" unoptimized /></div> : null}
-                                {pmVisa ? <div className="bg-white/5 rounded-lg p-2 hover:bg-white/10 transition-colors"><Image src={pmVisa} alt="Visa" width={60} height={40} className="h-6 w-auto object-contain" unoptimized /></div> : null}
-                                {pmApplePay ? <div className="bg-white/5 rounded-lg p-2 hover:bg-white/10 transition-colors"><Image src={pmApplePay} alt="Apple Pay" width={60} height={40} className="h-6 w-auto object-contain" unoptimized /></div> : null}
-                                {pmGpay ? <div className="bg-white/5 rounded-lg p-2 hover:bg-white/10 transition-colors"><Image src={pmGpay} alt="Google Pay" width={60} height={40} className="h-6 w-auto object-contain" unoptimized /></div> : null}
-                                {pmStripe ? <div className="bg-white/5 rounded-lg p-2 hover:bg-white/10 transition-colors"><Image src={pmStripe} alt="Stripe" width={60} height={40} className="h-6 w-auto object-contain" unoptimized /></div> : null}
+                            <div className="grid grid-cols-3 gap-3">
+                                {pmPaypal ? <div className="bg-white/5 rounded-lg p-2 hover:bg-white/10 transition-colors flex items-center justify-center"><Image src={pmPaypal} alt="PayPal" width={60} height={40} className="h-6 w-auto object-contain" unoptimized /></div> : null}
+                                {pmMc ? <div className="bg-white/5 rounded-lg p-2 hover:bg-white/10 transition-colors flex items-center justify-center"><Image src={pmMc} alt="Mastercard" width={60} height={40} className="h-6 w-auto object-contain" unoptimized /></div> : null}
+                                {pmVisa ? <div className="bg-white/5 rounded-lg p-2 hover:bg-white/10 transition-colors flex items-center justify-center"><Image src={pmVisa} alt="Visa" width={60} height={40} className="h-6 w-auto object-contain" unoptimized /></div> : null}
+                                {pmApplePay ? <div className="bg-white/5 rounded-lg p-2 hover:bg-white/10 transition-colors flex items-center justify-center"><Image src={pmApplePay} alt="Apple Pay" width={60} height={40} className="h-6 w-auto object-contain" unoptimized /></div> : null}
+                                {pmGpay ? <div className="bg-white/5 rounded-lg p-2 hover:bg-white/10 transition-colors flex items-center justify-center"><Image src={pmGpay} alt="Google Pay" width={60} height={40} className="h-6 w-auto object-contain" unoptimized /></div> : null}
+                                {pmStripe ? <div className="bg-white/5 rounded-lg p-2 hover:bg-white/10 transition-colors flex items-center justify-center"><Image src={pmStripe} alt="Stripe" width={60} height={40} className="h-6 w-auto object-contain" unoptimized /></div> : null}
                             </div>
                         </nav>
                     </div>

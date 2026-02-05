@@ -344,11 +344,12 @@ export function HomeContent() {
                   {/* Price & CTA */}
                   <div className="flex items-center justify-between pt-2 border-t border-white/10">
                     <span className="font-bold text-lg text-white flex items-center">
+                      <span className="text-md mr-1 text-white">{currency}</span>
                       {(() => {
                         const converted = convert(h.price);
                         const { whole, decimal, showDecimal } = formatPrice(converted);
                         return (
-                          <span className="gradient-text">
+                          <span className="text-white">
                             {whole}
                             {showDecimal && (
                               <span className="text-xs font-bold ml-0.5">
@@ -358,7 +359,6 @@ export function HomeContent() {
                           </span>
                         );
                       })()}
-                      <span className="text-md ml-1 text-gray-400">{currency}</span>
                     </span>
                     <Link
                       href={`/${h.game.slug}/${h.slug}`}
