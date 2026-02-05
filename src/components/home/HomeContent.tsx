@@ -146,7 +146,7 @@ export function HomeContent() {
       <main className="mx-auto max-w-7xl px-6 py-10 relative z-10">
         {/* Hero Section */}
         <section className="mb-12 relative group">
-          <div className="relative w-full h-[500px] md:h-[480px] rounded-3xl overflow-hidden shadow-2xl border border-white/10 bg-[#0A0E17]">
+          <div className="relative w-full h-[400px] md:h-[420px] rounded-3xl overflow-hidden shadow-2xl border border-white/10 bg-[#0A0E17]">
             {heroSlides.map((s, idx) => (
               <div
                 key={idx}
@@ -171,11 +171,7 @@ export function HomeContent() {
                 {/* Content */}
                 <div className="absolute inset-0 flex flex-col justify-end md:justify-center p-8 md:p-16 lg:p-20">
                   <div className={`max-w-2xl transform transition-all duration-700 delay-300 ${idx === heroSlide ? "translate-y-0 opacity-100" : "translate-y-10 opacity-0"}`}>
-                    <span className="inline-flex items-center gap-2 py-1 px-3 rounded-full bg-blue-600/20 text-blue-400 text-sm font-bold mb-6 backdrop-blur-md border border-blue-500/30">
-                      <Flame className="h-4 w-4" />
-                      Featured
-                    </span>
-                    <h1 className="text-4xl md:text-5xl lg:text-6xl font-black text-white leading-tight mb-4 drop-shadow-2xl">
+                    <h1 className="text-2xl md:text-3xl lg:text-4xl font-black text-white leading-tight mb-4 drop-shadow-2xl">
                       {s.title}
                     </h1>
                     <p className="text-lg md:text-xl text-gray-300 mb-8 leading-relaxed drop-shadow-md max-w-lg">
