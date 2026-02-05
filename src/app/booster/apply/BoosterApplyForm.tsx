@@ -2,7 +2,7 @@
 "use client";
 import { useState } from "react";
 import Image from "next/image";
-import { FiUser, FiMail, FiPhone, FiCheck, FiArrowRight } from "react-icons/fi";
+import { FiUser, FiMail, FiPhone, FiArrowRight } from "react-icons/fi";
 import { SiDiscord } from "react-icons/si";
 
 interface BoosterApplyFormProps {

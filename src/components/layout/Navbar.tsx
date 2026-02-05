@@ -191,15 +191,7 @@ export function Navbar({ siteName = "Gamingqu", logoUrl = null, user = null }: P
               </ul>
             </div>
 
-            {!isAdminContext && (
-              <div className="hidden md:flex items-center gap-2 text-xs text-emerald-400 font-semibold ml-2 px-3 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/20">
-                <span className="relative flex h-2 w-2">
-                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                  <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-400"></span>
-                </span>
-                1,254 Online
-              </div>
-            )}
+            
           </div>
 
           {/* Center Search Bar (Desktop) */}
