@@ -115,6 +115,8 @@ export function ServicePanel({
     setInvalidTitles(computeMissing());
   }, [showErrors, computeMissing]);
 
+  const [isBuying, setIsBuying] = React.useState(false);
+
   return (
     <aside className="relative space-y-0">
       <Toaster position="top-center" richColors theme="dark" offset="80px" />
@@ -165,6 +167,10 @@ export function ServicePanel({
             href={`/checkout/${serviceSlug}`}
             onClick={(e) => {
               try {
+                if (isBuying) {
+                  e.preventDefault();
+                  return;
+                }
                 const missing = computeMissing();
                 if (missing.length > 0) {
                   e.preventDefault();
@@ -173,6 +179,7 @@ export function ServicePanel({
                   sonnerToast.error(`Required fields are missing: ${missing.join(", ")}`);
                   return;
                 }
+                setIsBuying(true);
                 const data = {
                   serviceSlug,
                   basePrice,
@@ -184,12 +191,20 @@ export function ServicePanel({
                   ts: Date.now(),
                 };
                 window.localStorage.setItem(`checkout:${serviceSlug}`, JSON.stringify(data));
-              } catch {}
+              } catch {
+                setIsBuying(false);
+              }
             }}
-            className="btn btn-gaming w-full h-12 mt-2 rounded-md inline-flex items-center justify-center text-base md:text-lg"
+            className={`btn btn-gaming w-full h-12 mt-2 rounded-md inline-flex items-center justify-center text-base md:text-lg group ${isBuying ? "opacity-75 cursor-wait" : ""}`}
           >
-            <ShoppingCart className="h-5 w-5 mr-2" />
-            Buy Now
+            {isBuying ? (
+              <span className="loading loading-spinner loading-md"></span>
+            ) : (
+              <>
+                <ShoppingCart className="h-5 w-5 mr-2 group-active:scale-90 transition-transform" />
+                Buy Now
+              </>
+            )}
           </Link>
           <div className="mt-2 w-full flex items-center justify-center gap-2 text-emerald-400 text-sm font-medium">
             <CheckCircle className="h-4 w-4" />
