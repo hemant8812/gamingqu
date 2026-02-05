@@ -274,6 +274,14 @@ function OptionCheckboxGroup({
   const [vals, setVals] = React.useState<Record<string, boolean>>({});
   const onExtrasRef = React.useRef(onChangeExtras);
   const onLabelsRef = React.useRef(onChangeLabels);
+
+  // Calculate the maximum label length in this group to determine uniform font size
+  const maxLabelLength = React.useMemo(() => {
+    return Math.max(...options.map(o => o.label.length), 0);
+  }, [options]);
+
+  const fontSizeClass = maxLabelLength > 25 ? "text-xs" : maxLabelLength > 20 ? "text-sm" : "";
+
   React.useEffect(() => { onExtrasRef.current = onChangeExtras; }, [onChangeExtras]);
   React.useEffect(() => { onLabelsRef.current = onChangeLabels; }, [onChangeLabels]);
   React.useEffect(() => {
@@ -307,7 +315,7 @@ function OptionCheckboxGroup({
                 checked={!!vals[o.label]}
                 onChange={(e) => setVals((m) => ({ ...m, [o.label]: e.target.checked }))}
               />
-              <span className={`font-semibold text-white ${o.label.length > 25 ? "text-xs" : o.label.length > 20 ? "text-sm" : ""}`}>
+              <span className={`font-semibold text-white ${fontSizeClass}`}>
                 {o.label}
               </span>
             </div>
