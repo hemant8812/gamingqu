@@ -4,6 +4,7 @@ import { authOptions } from "@/auth";
 import { db } from "@/lib/prisma";
 import { getBaseUrl } from "@/lib/site";
 import crypto from "crypto";
+import type { Prisma } from "@/generated/prisma/client";
 
 type SelectedOption = { title: string; values: string[] };
 type Contact = { email?: string; discord?: string; characterName?: string };
@@ -43,7 +44,7 @@ async function computeQuote(serviceSlug: string, fromLevelRaw: unknown, toLevelR
     price: typeof d.price === "number" ? d.price : parseFloat(String(d.price)),
     sortOrder: d.sortOrder,
     options: Array.isArray(d.options as unknown) ? (d.options as unknown as Array<{ label: string; price: number }>) : undefined,
-    range: d.range as { min: number; max: number; step?: number; dual?: boolean } | undefined,
+    range: d.range as { min: number; max: number; step?: number; dual?: boolean; items?: Array<{ min: number; max: number; price: number }> } | undefined,
     inputMeta: d.inputMeta as { kind: "text" | "number"; min?: number; max?: number; required?: boolean } | undefined,
   }));
   const selectedOptions: SelectedOption[] = Array.isArray(selectedOptionsRaw) ? (selectedOptionsRaw as SelectedOption[]) : [];
@@ -73,6 +74,28 @@ async function computeQuote(serviceSlug: string, fromLevelRaw: unknown, toLevelR
   let rangeAdd = 0;
   if (diff > 0) {
     for (const d of rangeDual) {
+      const items = d.range?.items;
+      if (Array.isArray(items) && from != null && to != null) {
+        const candidates = items.filter((it) => Number.isFinite(it.min) && Number.isFinite(it.max));
+        if (candidates.length > 0) {
+          let chosen = candidates[0];
+          let bestScore = Math.abs(from - chosen.min) + Math.abs(to - chosen.max);
+          for (let i = 1; i < candidates.length; i++) {
+            const s = Math.abs(from - candidates[i].min) + Math.abs(to - candidates[i].max);
+            if (s < bestScore) {
+              bestScore = s;
+              chosen = candidates[i];
+            }
+          }
+          const deltaMax = to - chosen.max;
+          const deltaMin = chosen.min - from;
+          const price = Math.max(0, Number(chosen.price) + deltaMax * 1 + deltaMin * 1);
+          if (Number.isFinite(price) && price > 0) {
+            rangeAdd += price;
+            continue;
+          }
+        }
+      }
       const p = Number(d.price);
       if (Number.isFinite(p) && p > 0) {
         if (d.priceType === "percent") {
@@ -310,7 +333,7 @@ export async function POST(req: Request) {
     if (!invoice.ok) {
       await db.payment.update({
         where: { id: payment.id },
-        data: { status: "FAILED", raw: invoice.json as any },
+        data: { status: "FAILED", raw: invoice.json as Prisma.InputJsonValue },
       });
       return NextResponse.json({ error: "Failed to create Cryptomus invoice" }, { status: 500 });
     }
@@ -321,7 +344,7 @@ export async function POST(req: Request) {
       data: {
         providerOrderId,
         approvalUrl: approveUrl || undefined,
-        raw: invoice.json as any,
+        raw: invoice.json as Prisma.InputJsonValue,
       },
     });
     return NextResponse.json({ ok: true, redirectUrl: approveUrl, orderCode: order.code });
