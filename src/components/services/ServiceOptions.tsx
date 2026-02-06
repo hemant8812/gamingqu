@@ -605,7 +605,7 @@ function RangeDual({ range, onRangeChange }: { range: NonNullable<DetailItem["ra
           aria-valuenow={from}
           tabIndex={0}
           onPointerDown={onPointerDown("from")}
-          className="absolute w-5 h-5 rounded-full bg-violet-600 border-2 border-white shadow-lg cursor-grab active:cursor-grabbing hover:scale-110 transition-transform z-10"
+          className="absolute w-5 h-5 rounded-full bg-violet-600 border-2 border-white shadow-lg cursor-grab active:cursor-grabbing hover:scale-110 transition-transform z-0"
           style={{ 
             left: `${leftPct}%`, 
             transform: 'translateX(-50%)' 
@@ -620,7 +620,7 @@ function RangeDual({ range, onRangeChange }: { range: NonNullable<DetailItem["ra
           aria-valuenow={to}
           tabIndex={0}
           onPointerDown={onPointerDown("to")}
-          className="absolute w-5 h-5 rounded-full bg-violet-600 border-2 border-white shadow-lg cursor-grab active:cursor-grabbing hover:scale-110 transition-transform z-10"
+          className="absolute w-5 h-5 rounded-full bg-violet-600 border-2 border-white shadow-lg cursor-grab active:cursor-grabbing hover:scale-110 transition-transform z-0"
           style={{ 
             left: `${rightPct}%`, 
             transform: 'translateX(-50%)' 

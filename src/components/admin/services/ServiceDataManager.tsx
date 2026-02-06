@@ -81,6 +81,54 @@ export function ServiceDataManager({ services }: { services: ServiceOption[] }) 
   const [rangeItemMin, setRangeItemMin] = React.useState<number | "">("");
   const [rangeItemMax, setRangeItemMax] = React.useState<number | "">("");
   const [rangeItemPrice, setRangeItemPrice] = React.useState<number | "">("");
+  const [editPriceIdx, setEditPriceIdx] = React.useState<number | null>(null);
+  const [editPriceVal, setEditPriceVal] = React.useState<string>("");
+  const editInputRef = React.useRef<HTMLInputElement | null>(null);
+  const openEditPrice = (idx: number, current: number) => {
+    setEditPriceIdx(idx);
+    setEditPriceVal(String(current));
+    setTimeout(() => editInputRef.current?.focus(), 0);
+  };
+  const commitEditPrice = () => {
+    if (editPriceIdx == null) return;
+    const v = Number(editPriceVal);
+    if (!Number.isFinite(v)) return;
+    const items = Array.isArray(form.range?.items) ? [...form.range!.items!] : [];
+    if (editPriceIdx < 0 || editPriceIdx >= items.length) return;
+    items[editPriceIdx] = { ...items[editPriceIdx], price: v };
+    const overallMin = items.length > 0 ? items.reduce((acc, it) => Math.min(acc, it.min), items[0].min) : (form.range?.min ?? 0);
+    const overallMax = items.length > 0 ? items.reduce((acc, it) => Math.max(acc, it.max), items[0].max) : (form.range?.max ?? 0);
+    onChange({
+      range: {
+        min: overallMin,
+        max: overallMax,
+        step: form.range?.step ?? 1,
+        dual: true,
+        items,
+      },
+    });
+    setEditPriceIdx(null);
+    setEditPriceVal("");
+  };
+  const [editOptIdx, setEditOptIdx] = React.useState<number | null>(null);
+  const [editOptVal, setEditOptVal] = React.useState<string>("");
+  const editOptRef = React.useRef<HTMLInputElement | null>(null);
+  const openEditOptionPrice = (idx: number, current: number) => {
+    setEditOptIdx(idx);
+    setEditOptVal(String(current));
+    setTimeout(() => editOptRef.current?.focus(), 0);
+  };
+  const commitEditOptionPrice = () => {
+    if (editOptIdx == null) return;
+    const v = Number(editOptVal);
+    if (!Number.isFinite(v)) return;
+    const arr = Array.isArray(form.options) ? [...form.options] : [];
+    if (editOptIdx < 0 || editOptIdx >= arr.length) return;
+    arr[editOptIdx] = { ...arr[editOptIdx], price: v };
+    onChange({ options: arr });
+    setEditOptIdx(null);
+    setEditOptVal("");
+  };
   const addRangeItem = () => {
     const mn = typeof rangeItemMin === "number" ? rangeItemMin : Number(rangeItemMin);
     const mx = typeof rangeItemMax === "number" ? rangeItemMax : Number(rangeItemMax);
@@ -448,8 +496,17 @@ export function ServiceDataManager({ services }: { services: ServiceOption[] }) 
                 ) : (
                   <div className="mt-2 flex flex-col gap-2">
                     {(form.options ?? []).map((opt, idx) => (
-                      <div key={idx} className="flex items-center justify-between rounded-xl bg-white/5 px-3 py-2">
-                        <div className="text-sm text-gray-300">{opt.label} • ${opt.price.toFixed(2)}</div>
+                      <div key={idx} className="relative flex items-center justify-between rounded-xl bg-white/5 px-3 py-2">
+                        <div className="text-sm text-gray-300 select-none">
+                          {opt.label} •{" "}
+                          <button
+                            type="button"
+                            className="underline decoration-dotted text-white hover:text-blue-300"
+                            onClick={() => openEditOptionPrice(idx, Number(opt.price))}
+                          >
+                            ${Number(opt.price).toFixed(2)}
+                          </button>
+                        </div>
                         <button
                           type="button"
                           className="btn btn-ghost btn-xs"
@@ -459,8 +516,24 @@ export function ServiceDataManager({ services }: { services: ServiceOption[] }) 
                             onChange({ options: next });
                           }}
                         >
-                          Remove
+                          <Trash2 className="h-4 w-4" />
                         </button>
+                        {editOptIdx === idx && (
+                          <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-[#0A0E17] border border-white/10 rounded-xl p-2 shadow-lg z-50 w-48">
+                            <input
+                              ref={editOptRef}
+                              type="number"
+                              className="input input-bordered w-full h-9"
+                              value={editOptVal}
+                              onChange={(e) => setEditOptVal(e.target.value)}
+                              onKeyDown={(e) => {
+                                if (e.key === "Enter") commitEditOptionPrice();
+                                if (e.key === "Escape") { setEditOptIdx(null); setEditOptVal(""); }
+                              }}
+                              onBlur={() => commitEditOptionPrice()}
+                            />
+                          </div>
+                        )}
                       </div>
                     ))}
                   </div>
@@ -568,17 +641,40 @@ export function ServiceDataManager({ services }: { services: ServiceOption[] }) 
                 <div className="mt-2 flex flex-col gap-2">
                   {Array.isArray(form.range?.items) && form.range!.items!.length > 0 ? (
                     form.range!.items!.map((it, idx) => (
-                      <div key={idx} className="flex items-center justify-between rounded-xl bg-white/5 px-3 py-2">
-                        <div className="text-sm text-gray-300">
-                          Min {it.min} • Max {it.max} • ${Number(it.price).toFixed(2)}
+                      <div key={idx} className="relative flex items-center justify-between rounded-xl bg-white/5 px-3 py-2">
+                        <div className="text-sm text-gray-300 select-none">
+                          Min {it.min} • Max {it.max} •{" "}
+                          <button
+                            type="button"
+                            className="underline decoration-dotted text-white hover:text-blue-300"
+                            onClick={() => openEditPrice(idx, Number(it.price))}
+                          >
+                            ${Number(it.price).toFixed(2)}
+                          </button>
                         </div>
                         <button
                           type="button"
                           className="btn btn-ghost btn-xs"
                           onClick={() => removeRangeItem(idx)}
                         >
-                          Remove
+                          <Trash2 className="h-4 w-4" />
                         </button>
+                        {editPriceIdx === idx && (
+                          <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-[#0A0E17] border border-white/10 rounded-xl p-2 shadow-lg z-50 w-48">
+                            <input
+                              ref={editInputRef}
+                              type="number"
+                              className="input input-bordered w-full h-9"
+                              value={editPriceVal}
+                              onChange={(e) => setEditPriceVal(e.target.value)}
+                              onKeyDown={(e) => {
+                                if (e.key === "Enter") commitEditPrice();
+                                if (e.key === "Escape") { setEditPriceIdx(null); setEditPriceVal(""); }
+                              }}
+                              onBlur={() => commitEditPrice()}
+                            />
+                          </div>
+                        )}
                       </div>
                     ))
                   ) : (
