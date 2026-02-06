@@ -66,6 +66,7 @@ export default async function DashboardPage() {
         code: true,
         serviceSlug: true,
         items: true,
+        status: true,
         fulfillmentStatus: true,
         createdAt: true,
         service: { select: { name: true, game: { select: { name: true } } } },
@@ -73,7 +74,8 @@ export default async function DashboardPage() {
       orderBy: [{ createdAt: "desc" }],
       take: 50,
     });
-    orders = list.map((o) => {
+    const paid = list.filter((o) => o.status === "PAID");
+    orders = paid.map((o) => {
       const status =
         o.fulfillmentStatus === "COMPLETED"
           ? "Completed"

@@ -3,7 +3,7 @@ import Link from "next/link";
 import { Fragment } from "react";
 import { authOptions } from "@/auth";
 import { db } from "@/lib/prisma";
-import { ShoppingCart, CheckCircle, Clock, Shield, Eye } from "lucide-react";
+import { ShoppingCart, CheckCircle, Clock, Shield, Eye, CreditCard, XCircle } from "lucide-react";
 import { MemberSidebar } from "@/components/dashboard/MemberSidebar";
 import { OrdersSearchInput } from "@/components/dashboard/OrdersSearchInput";
 
@@ -60,7 +60,13 @@ function PaymentBadge({ status }: { status: "CREATED" | "PENDING" | "PAID" | "CA
       ? "bg-red-500/20 text-red-400"
       : "bg-blue-500/20 text-blue-400";
   const Icon =
-    status === "PAID" ? CheckCircle : status === "PENDING" || status === "CREATED" ? Clock : Shield;
+    status === "PAID"
+      ? CheckCircle
+      : status === "PENDING" || status === "CREATED"
+      ? Clock
+      : status === "CANCELED"
+      ? XCircle
+      : Shield;
   const label =
     status === "PAID"
       ? "Paid"
@@ -89,7 +95,13 @@ function FulfillmentBadge({ status }: { status: "PENDING" | "ACCEPTED" | "IN_PRO
       ? "bg-red-500/20 text-red-400"
       : "bg-blue-500/20 text-blue-400";
   const Icon =
-    status === "COMPLETED" ? CheckCircle : status === "PENDING" ? Clock : Shield;
+    status === "COMPLETED"
+      ? CheckCircle
+      : status === "PENDING"
+      ? Clock
+      : status === "CANCELED"
+      ? XCircle
+      : Shield;
   const label =
     status === "COMPLETED"
       ? "Completed"
@@ -185,7 +197,7 @@ export default async function MyOrdersPage({ searchParams }: { searchParams?: Pr
     const price = `$${Number.parseFloat(o.items.toString()).toFixed(2)}`;
     const title = o.service?.name ?? o.serviceSlug;
     const game = o.service?.game?.name ?? "";
-    return { id: o.code, title, game, slug: o.serviceSlug, status, percent, price, fulfillment: o.fulfillmentStatus };
+    return { id: o.code, title, game, slug: o.serviceSlug, status, paymentStatus: o.status, percent, price, fulfillment: o.fulfillmentStatus };
   });
   let filteredRows = rows;
   if (filterUpper === "IN_PROGRESS") {
@@ -215,10 +227,17 @@ export default async function MyOrdersPage({ searchParams }: { searchParams?: Pr
       });
   }
   const currentFilter = (filterUpper ?? "ALL") as "ALL" | "IN_PROGRESS" | "COMPLETED" | "CANCELED";
-  const tabCls = (name: "ALL" | "IN_PROGRESS" | "COMPLETED" | "CANCELED") =>
-    currentFilter === name
-      ? "h-9 px-4 inline-flex items-center justify-center rounded-xl text-sm bg-gradient-to-r from-blue-600/30 to-cyan-600/30 text-white border border-white/10 shadow-lg shadow-black/20 ring-1 ring-white/10"
-      : "h-9 px-4 inline-flex items-center justify-center rounded-xl text-sm bg-white/5 text-gray-300 hover:bg-white/10 border border-white/10";
+  const tabCls = (name: "ALL" | "IN_PROGRESS" | "COMPLETED" | "CANCELED") => {
+    if (currentFilter === name) {
+      const base =
+        "h-9 px-4 inline-flex items-center justify-center gap-2 md:gap-3 rounded-xl text-sm border border-white/10 shadow-lg shadow-black/20 ring-1 text-white bg-gradient-to-r";
+      if (name === "COMPLETED") return `${base} from-emerald-600/30 to-green-600/30 ring-emerald-500/30`;
+      if (name === "IN_PROGRESS") return `${base} from-yellow-500/30 to-amber-500/30 ring-yellow-500/30`;
+      if (name === "CANCELED") return `${base} from-red-600/30 to-pink-600/30 ring-red-500/30`;
+      return `${base} from-blue-600/30 to-cyan-600/30 ring-blue-500/30`;
+    }
+    return "h-9 px-4 inline-flex items-center justify-center gap-2 md:gap-3 rounded-xl text-sm bg-white/5 text-gray-300 hover:bg-white/10 border border-white/10";
+  };
   const hrefFor = (name: "ALL" | "IN_PROGRESS" | "COMPLETED" | "CANCELED") => {
     const params = new URLSearchParams();
     if (q) params.set("q", q);
@@ -240,33 +259,40 @@ export default async function MyOrdersPage({ searchParams }: { searchParams?: Pr
           <main>
             <div className="flex items-center justify-between mb-6">
               <h1 className="text-2xl font-bold text-white">My Orders</h1>
-              <Link href="/" className="btn btn-gaming btn-sm">New Order</Link>
+              <Link href="/" className="btn btn-gaming btn-sm flex items-center gap-3" aria-label="New Order">
+                <ShoppingCart className="h-4 w-4" />
+                <span>New Order</span>
+              </Link>
             </div>
             <div className="bg-[#0F172A] border border-white/10 rounded-2xl overflow-hidden">
               <div className="p-4 border-b border-white/10 flex items-center justify-between">
                 <OrdersSearchInput initialQ={q} currentFilter={currentFilter} orderCode={orderCodeFilter} />
-                <div className="flex items-center gap-2">
-                  <Link href={hrefFor("ALL")} className={tabCls("ALL")} aria-pressed={currentFilter === "ALL"}>
-                    All
+                <div className="flex items-center gap-3">
+                  <Link href={hrefFor("ALL")} className={tabCls("ALL")} aria-pressed={currentFilter === "ALL"} aria-label="Filter All">
+                    <ShoppingCart className="h-4 w-4" />
+                    <span>All</span>
                   </Link>
-                  <Link href={hrefFor("IN_PROGRESS")} className={tabCls("IN_PROGRESS")} aria-pressed={currentFilter === "IN_PROGRESS"}>
-                    In progress
+                  <Link href={hrefFor("IN_PROGRESS")} className={tabCls("IN_PROGRESS")} aria-pressed={currentFilter === "IN_PROGRESS"} aria-label="Filter In progress">
+                    <Clock className="h-4 w-4" />
+                    <span>In progress</span>
                   </Link>
-                  <Link href={hrefFor("COMPLETED")} className={tabCls("COMPLETED")} aria-pressed={currentFilter === "COMPLETED"}>
-                    Completed
+                  <Link href={hrefFor("COMPLETED")} className={tabCls("COMPLETED")} aria-pressed={currentFilter === "COMPLETED"} aria-label="Filter Completed">
+                    <CheckCircle className="h-4 w-4" />
+                    <span>Completed</span>
                   </Link>
-                  <Link href={hrefFor("CANCELED")} className={tabCls("CANCELED")} aria-pressed={currentFilter === "CANCELED"}>
-                    Canceled
+                  <Link href={hrefFor("CANCELED")} className={tabCls("CANCELED")} aria-pressed={currentFilter === "CANCELED"} aria-label="Filter Canceled">
+                    <XCircle className="h-4 w-4" />
+                    <span>Canceled</span>
                   </Link>
                 </div>
               </div>
               <div className="px-4 py-2">
-                <div className="hidden md:grid md:grid-cols-[240px_140px_200px_120px_120px] gap-3 px-3 py-2 text-xs text-gray-400">
-                  <span>ORDER</span>
-                  <span>STATUS ORDER</span>
-                  <span>PROGRESS</span>
-                  <span>PRICE</span>
-                  <span>ACTIONS</span>
+                <div className="hidden md:grid md:grid-cols-[240px_140px_200px_120px_120px] gap-3 px-3 py-2 text-xs text-gray-400 font-semibold border-b border-white/10">
+                  <span>Order</span>
+                  <span>Payment Status</span>
+                  <span>Progress</span>
+                  <span>Price</span>
+                  <span>Actions</span>
                 </div>
                 <div className="divide-y divide-white/5">
                   {filteredRows.length === 0 ? (
@@ -274,7 +300,7 @@ export default async function MyOrdersPage({ searchParams }: { searchParams?: Pr
                       {currentFilter === "COMPLETED" ? (
                         <CheckCircle className="h-10 w-10 text-emerald-400 mb-3" />
                       ) : currentFilter === "CANCELED" ? (
-                        <Shield className="h-10 w-10 text-red-400 mb-3" />
+                        <XCircle className="h-10 w-10 text-red-400 mb-3" />
                       ) : currentFilter === "IN_PROGRESS" ? (
                         <Clock className="h-10 w-10 text-yellow-400 mb-3" />
                       ) : (
@@ -303,7 +329,7 @@ export default async function MyOrdersPage({ searchParams }: { searchParams?: Pr
                             </div>
                           </div>
                           <div>
-                            <StatusBadge status={o.status as "In Progress" | "Completed" | "Pending" | "Cancelled"} />
+                            <PaymentBadge status={o.paymentStatus as "CREATED" | "PENDING" | "PAID" | "CANCELED" | "FAILED"} />
                           </div>
                           <div>
                             {o.status === "In Progress" || o.status === "Completed" ? (
@@ -327,17 +353,30 @@ export default async function MyOrdersPage({ searchParams }: { searchParams?: Pr
                                 {selected.status === "PENDING" && (
                                   <a
                                     href={`/api/orders/pay?order=${encodeURIComponent(o.id)}`}
-                                    className="h-8 px-3 rounded-lg bg-gradient-to-r from-blue-600 to-cyan-600 text-white ring-1 ring-blue-500/30 text-sm flex items-center justify-center"
+                                    className="h-8 px-3 rounded-lg bg-gradient-to-r from-blue-600 to-cyan-600 text-white ring-1 ring-blue-500/30 text-sm flex items-center justify-center gap-2"
                                     aria-label={`Pay ${o.id}`}
                                   >
-                                    Pay
+                                    <CreditCard className="h-4 w-4" />
+                                    <span>Pay</span>
                                   </a>
                                 )}
                               </>
                             ) : (
-                              <Link href={`/dashboard/orders?order=${encodeURIComponent(o.id)}`} className="h-8 w-8 flex items-center justify-center rounded-lg bg-white/5 hover:bg-white/10 text-gray-300" aria-label={`View ${o.id}`}>
-                                <Eye className="h-4 w-4" />
-                              </Link>
+                              <>
+                                <Link href={`/dashboard/orders?order=${encodeURIComponent(o.id)}`} className="h-8 w-8 flex items-center justify-center rounded-lg bg-white/5 hover:bg-white/10 text-gray-300" aria-label={`View ${o.id}`}>
+                                  <Eye className="h-4 w-4" />
+                                </Link>
+                                {(o.paymentStatus === "PENDING" || o.paymentStatus === "CREATED") && (
+                                  <a
+                                    href={`/api/orders/pay?order=${encodeURIComponent(o.id)}`}
+                                    className="h-8 px-3 rounded-lg bg-gradient-to-r from-blue-600 to-cyan-600 text-white ring-1 ring-blue-500/30 text-sm flex items-center justify-center gap-2"
+                                    aria-label={`Pay ${o.id}`}
+                                  >
+                                    <CreditCard className="h-4 w-4" />
+                                    <span>Pay</span>
+                                  </a>
+                                )}
+                              </>
                             )}
                           </div>
                         </div>
