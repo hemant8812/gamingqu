@@ -70,7 +70,7 @@ export async function GET(req: Request) {
       where: { id: payment.orderId },
       data: { status: "PAID" },
     });
-    return NextResponse.redirect(`${baseUrl}/dashboard/orders?paid=1${orderCode ? `&order=${encodeURIComponent(orderCode)}` : ""}`);
+    return NextResponse.redirect(`${baseUrl}/checkout/success${orderCode ? `?order=${encodeURIComponent(orderCode)}` : ""}`);
   } catch {
     return NextResponse.redirect(`${baseUrl}/checkout/error?code=server_error`);
   }

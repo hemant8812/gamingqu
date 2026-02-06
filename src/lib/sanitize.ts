@@ -14,3 +14,14 @@ export function sanitizeHtml(input: string): string {
   s = s.replace(/\son\w+=(["']).*?\1/gi, "");
   return s.trim();
 }
+
+export function sanitizeSlug(input: string): string {
+  const s = String(input || "").toLowerCase().trim();
+  const m = s.match(/^[a-z0-9-]{1,100}$/);
+  return m ? s : "";
+}
+
+export function limitLen(input: string, max: number): string {
+  const s = String(input || "");
+  return s.length > max ? s.slice(0, max) : s;
+}

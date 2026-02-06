@@ -408,7 +408,14 @@ export default function CheckoutPage() {
                             window.location.href = String(json.redirectUrl);
                             return;
                           }
-                          setSubmitting(false);
+                          {
+                            const j = json as Record<string, unknown>;
+                            const code = typeof j?.error_code === "string" ? j.error_code : "paypal_create_failed";
+                            const orderCode = typeof j?.orderCode === "string" ? j.orderCode : "";
+                            const href = `/checkout/error?code=${encodeURIComponent(code)}${orderCode ? `&order=${encodeURIComponent(orderCode)}` : ""}`;
+                            window.location.href = href;
+                            return;
+                          }
                         } else if (method === "cryptomus") {
                           const res = await fetch("/api/checkout/cryptomus/create", {
                             method: "POST",
@@ -432,7 +439,14 @@ export default function CheckoutPage() {
                             window.location.href = String(json.redirectUrl);
                             return;
                           }
-                          setSubmitting(false);
+                          {
+                            const j = json as Record<string, unknown>;
+                            const code = typeof j?.error_code === "string" ? j.error_code : "cryptomus_create_failed";
+                            const orderCode = typeof j?.orderCode === "string" ? j.orderCode : "";
+                            const href = `/checkout/error?code=${encodeURIComponent(code)}${orderCode ? `&order=${encodeURIComponent(orderCode)}` : ""}`;
+                            window.location.href = href;
+                            return;
+                          }
                         }
                         const payload = {
                           ...data,

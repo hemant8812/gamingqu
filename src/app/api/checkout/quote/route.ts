@@ -1,210 +1,32 @@
 import { NextResponse } from "next/server";
-import { db } from "@/lib/prisma";
+import { sanitizeSlug } from "@/lib/sanitize";
+import { computeQuote } from "@/lib/checkoutQuote";
 
 export async function POST(req: Request) {
   try {
     const body = await req.json();
-    const serviceSlug = String(body?.serviceSlug ?? "");
-    const method = body?.method as string | undefined;
+    const serviceSlug = sanitizeSlug(String(body?.serviceSlug ?? ""));
+    const methodRaw = body?.method as string | undefined;
+    const method = sanitizeSlug(String(methodRaw ?? "")) || undefined;
     const fromLevelRaw = body?.fromLevel;
     const toLevelRaw = body?.toLevel;
-    const selectedOptions = Array.isArray(body?.selectedOptions) ? body.selectedOptions as Array<{ title: string; values: string[] }> : [];
+    const selectedOptions = Array.isArray(body?.selectedOptions) ? (body.selectedOptions as Array<{ title: string; values: string[] }>) : [];
     if (!serviceSlug) {
       return NextResponse.json({ error: "Missing serviceSlug" }, { status: 400 });
     }
-    const service = await db.service.findFirst({
-      where: { slug: serviceSlug, isActive: true },
-      select: { id: true, price: true },
-    });
-    if (!service) {
-      return NextResponse.json({ error: "Service not found" }, { status: 404 });
+    const quote = await computeQuote(serviceSlug, fromLevelRaw, toLevelRaw, selectedOptions, method);
+    if (!("ok" in quote)) {
+      return NextResponse.json(quote, { status: 400 });
     }
-    const basePrice = parseFloat(service.price.toString());
-    const detailsRaw = await db.serviceDetail.findMany({
-      where: { serviceId: service.id, isActive: true },
-      select: {
-        id: true,
-        title: true,
-        fieldName: true,
-        inputType: true,
-        displayType: true,
-        priceType: true,
-        price: true,
-        sortOrder: true,
-        options: true,
-        range: true,
-        inputMeta: true,
-      },
-      orderBy: [{ sortOrder: "asc" }, { createdAt: "desc" }],
-      take: 200,
-    });
-    const details = detailsRaw.map((d) => ({
-      id: d.id,
-      title: d.title,
-      fieldName: d.fieldName,
-      inputType: d.inputType as "select" | "radio" | "range" | "checkbox" | "input",
-      displayType: d.displayType as "number" | "text" | "dual" | "single" | null,
-      priceType: d.priceType as "fixed" | "percent",
-      price: typeof d.price === "number" ? d.price : parseFloat(String(d.price)),
-      sortOrder: d.sortOrder,
-      options: Array.isArray(d.options as unknown) ? (d.options as unknown as Array<{ label: string; price: number }>) : undefined,
-      range: d.range as { min: number; max: number; step?: number; dual?: boolean; items?: Array<{ min: number; max: number; price: number }> } | undefined,
-      inputMeta: d.inputMeta as { kind: "text" | "number"; min?: number; max?: number; required?: boolean } | undefined,
-    }));
-    const rangeDual = details.filter((d) => d.inputType === "range" && ((d.displayType === "dual") || d.range?.dual));
-    let minLevel: number | null = null;
-    let maxLevel: number | null = null;
-    for (const d of rangeDual) {
-      const mn = Number(d.range?.min ?? Number.NEGATIVE_INFINITY);
-      const mx = Number(d.range?.max ?? Number.POSITIVE_INFINITY);
-      minLevel = minLevel == null ? mn : Math.min(minLevel, mn);
-      maxLevel = maxLevel == null ? mx : Math.max(maxLevel, mx);
-    }
-    const fromLevel = Number.isFinite(fromLevelRaw) ? Number(fromLevelRaw) : null;
-    const toLevel = Number.isFinite(toLevelRaw) ? Number(toLevelRaw) : null;
-    let from = fromLevel;
-    let to = toLevel;
-    if (minLevel != null && maxLevel != null) {
-      if (from == null) from = minLevel;
-      if (to == null) to = maxLevel;
-      if (from < minLevel) from = minLevel;
-      if (from > maxLevel) from = maxLevel;
-      if (to < minLevel) to = minLevel;
-      if (to > maxLevel) to = maxLevel;
-      if (to < from) to = from;
-    }
-    const diff = from != null && to != null ? Math.max(0, to - from) : 0;
-    let rangeAdd = 0;
-    if (diff > 0) {
-      for (const d of rangeDual) {
-        const items = d.range?.items;
-        if (Array.isArray(items) && from != null && to != null) {
-          const candidates = items.filter((it) => Number.isFinite(it.min) && Number.isFinite(it.max));
-          if (candidates.length > 0) {
-            let chosen = candidates[0];
-            let bestScore = Math.abs(from - chosen.min) + Math.abs(to - chosen.max);
-            for (let i = 1; i < candidates.length; i++) {
-              const s = Math.abs(from - candidates[i].min) + Math.abs(to - candidates[i].max);
-              if (s < bestScore) {
-                bestScore = s;
-                chosen = candidates[i];
-              }
-            }
-            const deltaMax = to - chosen.max;
-            const deltaMin = chosen.min - from;
-            const price = Math.max(0, Number(chosen.price) + deltaMax * 1 + deltaMin * 1);
-            if (Number.isFinite(price) && price > 0) {
-              rangeAdd += price;
-              continue;
-            }
-          }
-        }
-        const p = Number(d.price);
-        if (Number.isFinite(p) && p > 0) {
-          if (d.priceType === "percent") {
-            rangeAdd += basePrice * (p / 100) * diff;
-          } else {
-            rangeAdd += p * diff;
-          }
-        }
-      }
-    }
-    const extras: Array<{ price: number; kind: "fixed" | "percent" }> = [];
-    const selMap = new Map<string, string[]>();
-    for (const so of selectedOptions) {
-      const t = String(so?.title ?? "").toLowerCase();
-      const values = Array.isArray(so.values) ? so.values : [];
-      selMap.set(t, values);
-    }
-    const missingReq: string[] = [];
-    for (const d of details) {
-      const req = !!d.inputMeta?.required;
-      if (!req) continue;
-      if (d.inputType === "range") continue;
-      const key = String(d.title ?? "").toLowerCase();
-      const vals = selMap.get(key) ?? [];
-      if (d.inputType === "checkbox" && Array.isArray(d.options) && d.options.length > 0) {
-        if (vals.length === 0) {
-          missingReq.push(d.title);
-        }
-      } else if (d.inputType === "select" || d.inputType === "radio" || d.inputType === "input") {
-        const v0 = vals[0] ?? "";
-        if (!v0) {
-          missingReq.push(d.title);
-        } else if (d.inputType === "input" && d.inputMeta?.kind === "number") {
-          const v = Number(v0);
-          const minOk = d.inputMeta.min == null || v >= Number(d.inputMeta.min);
-          const maxOk = d.inputMeta.max == null || v <= Number(d.inputMeta.max);
-          if (!Number.isFinite(v) || !minOk || !maxOk) {
-            missingReq.push(d.title);
-          }
-        }
-      }
-    }
-    if (missingReq.length > 0) {
-      return NextResponse.json({ error: "Required fields missing", fields: missingReq }, { status: 400 });
-    }
-    for (const so of selectedOptions) {
-      const t = String(so?.title ?? "").toLowerCase();
-      const detail = details.find((d) => String(d.title ?? "").toLowerCase() === t);
-      if (!detail || !Array.isArray(detail.options)) continue;
-      const values = Array.isArray(so.values) ? so.values : [];
-      for (const v of values) {
-        const opt = detail.options.find((o) => o.label === v);
-        if (opt && Number.isFinite(opt.price) && opt.price > 0) {
-          extras.push({ price: opt.price, kind: detail.priceType === "percent" ? "percent" : "fixed" });
-        }
-      }
-    }
-    let fixedAdd = 0;
-    let percentRate = 0;
-    for (const e of extras) {
-      if (e.kind === "fixed") fixedAdd += e.price;
-      else percentRate += e.price;
-    }
-    const subtotal = basePrice + rangeAdd + fixedAdd;
-    const percentAdd = subtotal * (percentRate / 100);
-    const totalPrice = subtotal + percentAdd;
-    let fee = 0;
-    try {
-      if (method) {
-        const pm = await db.paymentMethod.findUnique({
-          where: { slug: method },
-          select: { isActive: true, feePercent: true, feeFixed: true },
-        });
-        if (pm && pm.isActive) {
-          const pct = pm.feePercent != null ? Number.parseFloat(pm.feePercent.toString()) : 0;
-          const fix = pm.feeFixed != null ? Number.parseFloat(pm.feeFixed.toString()) : 0;
-          fee = totalPrice * (pct / 100) + fix;
-        } else {
-          if (method === "card") {
-            fee = totalPrice * 0.029 + 0.3;
-          } else if (method === "paypal") {
-            fee = totalPrice * 0.035 + 0.49;
-          } else {
-            fee = 0;
-          }
-        }
-      }
-    } catch {
-      if (method === "card") {
-        fee = totalPrice * 0.029 + 0.3;
-      } else if (method === "paypal") {
-        fee = totalPrice * 0.035 + 0.49;
-      } else {
-        fee = 0;
-      }
-    }
-    const amount = totalPrice + fee;
     return NextResponse.json({
       ok: true,
-      basePrice,
-      subtotal,
-      totalPrice,
-      items: totalPrice,
-      fee,
-      amount,
-      range: { from, to },
+      basePrice: quote.basePrice,
+      subtotal: quote.subtotal,
+      totalPrice: quote.totalPrice,
+      items: quote.items,
+      fee: quote.fee,
+      amount: quote.amount,
+      range: quote.range,
     });
   } catch {
     return NextResponse.json({ error: "Invalid request" }, { status: 400 });
