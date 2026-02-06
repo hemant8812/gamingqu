@@ -325,13 +325,13 @@ export default async function MyOrdersPage({ searchParams }: { searchParams?: Pr
                                   Close
                                 </Link>
                                 {selected.status === "PENDING" && (
-                                  <Link
+                                  <a
                                     href={`/api/orders/pay?order=${encodeURIComponent(o.id)}`}
                                     className="h-8 px-3 rounded-lg bg-gradient-to-r from-blue-600 to-cyan-600 text-white ring-1 ring-blue-500/30 text-sm flex items-center justify-center"
                                     aria-label={`Pay ${o.id}`}
                                   >
                                     Pay
-                                  </Link>
+                                  </a>
                                 )}
                               </>
                             ) : (
