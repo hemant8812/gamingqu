@@ -320,9 +320,20 @@ export default async function MyOrdersPage({ searchParams }: { searchParams?: Pr
                           <div className="text-emerald-400 font-semibold">{o.price}</div>
                           <div className="flex items-center gap-2">
                             {selected?.code === o.id ? (
-                              <Link href="/dashboard/orders" className="h-8 px-3 rounded-lg bg-white/5 hover:bg-white/10 text-gray-300 text-sm flex items-center justify-center" aria-label={`Close ${o.id}`}>
-                                Close
-                              </Link>
+                              <>
+                                <Link href="/dashboard/orders" className="h-8 px-3 rounded-lg bg-white/5 hover:bg-white/10 text-gray-300 text-sm flex items-center justify-center" aria-label={`Close ${o.id}`}>
+                                  Close
+                                </Link>
+                                {selected.status === "PENDING" && (
+                                  <Link
+                                    href={`/api/orders/pay?order=${encodeURIComponent(o.id)}`}
+                                    className="h-8 px-3 rounded-lg bg-gradient-to-r from-blue-600 to-cyan-600 text-white ring-1 ring-blue-500/30 text-sm flex items-center justify-center"
+                                    aria-label={`Pay ${o.id}`}
+                                  >
+                                    Pay
+                                  </Link>
+                                )}
+                              </>
                             ) : (
                               <Link href={`/dashboard/orders?order=${encodeURIComponent(o.id)}`} className="h-8 w-8 flex items-center justify-center rounded-lg bg-white/5 hover:bg-white/10 text-gray-300" aria-label={`View ${o.id}`}>
                                 <Eye className="h-4 w-4" />
