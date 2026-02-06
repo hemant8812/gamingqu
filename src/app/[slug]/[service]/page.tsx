@@ -149,6 +149,26 @@ export default async function ServiceDetailPage({ params }: { params: Params }) 
             max: Number(((d.range as { max?: number }).max ?? 0)),
             step: Number(((d.range as { step?: number }).step ?? 1)),
             dual: Boolean(((d.range as { dual?: boolean }).dual)),
+            items: (() => {
+              const r = d.range as { items?: unknown };
+              const list = Array.isArray(r.items) ? r.items : undefined;
+              if (!list) return undefined;
+              const filtered = list.filter(
+                (it): it is { min: unknown; max: unknown; price: unknown } =>
+                  !!it && typeof it === "object"
+              );
+              const mapped = filtered
+                .map((it) => {
+                  const obj = it as { min?: unknown; max?: unknown; price?: unknown };
+                  const mn = Number(obj.min);
+                  const mx = Number(obj.max);
+                  const pr = Number(obj.price);
+                  if (!Number.isFinite(mn) || !Number.isFinite(mx) || !Number.isFinite(pr)) return null;
+                  return { min: mn, max: mx, price: pr };
+                })
+                .filter((v): v is { min: number; max: number; price: number } => v != null);
+              return mapped.length > 0 ? mapped : undefined;
+            })()
           }
         : undefined,
     inputMeta:

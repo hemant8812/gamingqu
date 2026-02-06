@@ -18,7 +18,7 @@ type DetailItem = {
   price: number;
   sortOrder?: number;
   options?: Array<{ label: string; price: number }>;
-  range?: { min: number; max: number; step?: number; dual?: boolean };
+  range?: { min: number; max: number; step?: number; dual?: boolean; items?: Array<{ min: number; max: number; price: number }> };
   inputMeta?: { kind: "text" | "number"; min?: number; max?: number; required?: boolean };
 };
 
@@ -50,6 +50,28 @@ export function ServicePanel({
     if (diff > 0) {
       for (const d of details) {
         if (d.inputType === "range" && (d.displayType === "dual" || d.range?.dual)) {
+          const items = d.range?.items;
+          if (Array.isArray(items) && fromLevel != null && toLevel != null) {
+            const candidates = items.filter((it) => Number.isFinite(it.min) && Number.isFinite(it.max));
+            if (candidates.length > 0) {
+              let chosen = candidates[0];
+              let bestScore = Math.abs(fromLevel - chosen.min) + Math.abs(toLevel - chosen.max);
+              for (let i = 1; i < candidates.length; i++) {
+                const s = Math.abs(fromLevel - candidates[i].min) + Math.abs(toLevel - candidates[i].max);
+                if (s < bestScore) {
+                  bestScore = s;
+                  chosen = candidates[i];
+                }
+              }
+              const deltaMax = toLevel - chosen.max;
+              const deltaMin = chosen.min - fromLevel;
+              const price = Math.max(0, Number(chosen.price) + deltaMax * 1 + deltaMin * 1);
+              if (Number.isFinite(price) && price > 0) {
+                rangeAdd += price;
+                continue;
+              }
+            }
+          }
           const p = Number(d.price);
           if (Number.isFinite(p) && p > 0) {
             if (d.priceType === "percent") {
@@ -71,7 +93,7 @@ export function ServicePanel({
       if (e.kind === "percent") percentAdd += subtotal * (e.price / 100);
     }
     return { subtotal, totalPrice: subtotal + percentAdd };
-  }, [extras, basePrice, diff, details]);
+  }, [extras, basePrice, diff, details, fromLevel, toLevel]);
   const computedFmt = formatPrice(convert(totalPrice));
   const handleRangeChange = React.useCallback((from: number, to: number) => {
     setFromLevel(from);

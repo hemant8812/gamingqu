@@ -13,7 +13,7 @@ type DetailItem = {
   price: number;
   sortOrder?: number;
   options?: Array<{ label: string; price: number }>;
-  range?: { min: number; max: number; step?: number; dual?: boolean };
+  range?: { min: number; max: number; step?: number; dual?: boolean; items?: Array<{ min: number; max: number; price: number }> };
   inputMeta?: { kind: "text" | "number"; min?: number; max?: number; required?: boolean };
 };
 
@@ -416,10 +416,11 @@ function OptionInput({ title, meta, onChangeLabels, invalid }: { title: string; 
 }
 
 function RangeDual({ range, onRangeChange }: { range: NonNullable<DetailItem["range"]>; onRangeChange?: (from: number, to: number) => void }) {
-  const min = Number.isFinite(range.min) ? range.min : 0;
-  const max = Number.isFinite(range.max) ? range.max : 100;
-  // Repurpose 'step' as the initial 'from' value based on user requirement
-  // Actual step increment is fixed to 1
+  const items = Array.isArray(range.items) ? range.items : undefined;
+  const minItems = items && items.length > 0 ? items.reduce((acc, it) => Math.min(acc, it.min), items[0].min) : undefined;
+  const maxItems = items && items.length > 0 ? items.reduce((acc, it) => Math.max(acc, it.max), items[0].max) : undefined;
+  const min = Number.isFinite(range.min) ? range.min : (minItems ?? 0);
+  const max = Number.isFinite(range.max) ? range.max : (maxItems ?? 100);
   const initialFrom = (Number.isFinite(range.step) && range.step! >= min && range.step! <= max) 
     ? range.step! 
     : min;
@@ -428,7 +429,6 @@ function RangeDual({ range, onRangeChange }: { range: NonNullable<DetailItem["ra
   const [from, setFrom] = React.useState(initialFrom);
   const [to, setTo] = React.useState(max);
   
-  // Independent input state to allow empty string/typing
   const [fromInput, setFromInput] = React.useState(initialFrom.toString());
   const [toInput, setToInput] = React.useState(max.toString());
 
@@ -449,15 +449,12 @@ function RangeDual({ range, onRangeChange }: { range: NonNullable<DetailItem["ra
 
   const valueToPercent = (val: number) => ((val - min) / (max - min)) * 100;
 
-  // Use window-based events for smooth dragging even if cursor leaves the slider
   React.useEffect(() => {
     const handleMove = (e: PointerEvent) => {
       if (!dragRef.current || !ref.current) return;
       
       const rect = ref.current.getBoundingClientRect();
       let ratio = (e.clientX - rect.left) / rect.width;
-      
-      // Clamp ratio
       if (ratio < 0) ratio = 0;
       if (ratio > 1) ratio = 1;
       
@@ -490,7 +487,6 @@ function RangeDual({ range, onRangeChange }: { range: NonNullable<DetailItem["ra
 
   const onPointerDown = (which: "from" | "to") => (e: React.PointerEvent) => {
     dragRef.current = which;
-    // Prevent default to avoid text selection while dragging
     e.preventDefault();
   };
 

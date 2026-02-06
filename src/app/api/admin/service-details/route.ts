@@ -2,6 +2,7 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/auth";
 import { NextResponse } from "next/server";
 import { db } from "@/lib/prisma";
+import { Prisma } from "@/generated/prisma/client";
 
 export async function GET() {
   const session = await getServerSession(authOptions);
@@ -79,7 +80,7 @@ export async function POST(req: Request) {
       price?: number;
       sortOrder?: number;
       options?: Array<{ label: string; price: number }>;
-      range?: { min: number; max: number; step?: number; dual?: boolean };
+      range?: unknown;
       inputMeta?: { kind: "text" | "number"; min?: number; max?: number; required?: boolean };
     };
 
@@ -114,14 +115,31 @@ export async function POST(req: Request) {
           .filter((o) => !!o && typeof o.label === "string" && Number.isFinite(o.price))
           .map((o) => ({ label: o.label, price: Number(o.price) }))
       : undefined;
-    const rangeResolved = range && typeof range === "object"
-      ? {
-          min: Number.isFinite(range.min) ? Number(range.min) : 0,
-          max: Number.isFinite(range.max) ? Number(range.max) : 0,
-          step: Number.isFinite(range.step ?? 1) ? Number(range.step ?? 1) : 1,
-          dual: !!range.dual,
-        }
-      : undefined;
+    let rangeResolved: Prisma.InputJsonValue | undefined = undefined;
+    if (range && typeof range === "object") {
+      const r = range as { min?: unknown; max?: unknown; step?: unknown; dual?: unknown; items?: unknown };
+      const itemsRaw = Array.isArray(r.items) ? r.items : undefined;
+      const items = itemsRaw
+        ? itemsRaw
+            .filter((it): it is { min?: unknown; max?: unknown; price?: unknown } => !!it && typeof it === "object")
+            .map((it) => {
+              const mn = Number((it as { min?: unknown }).min);
+              const mx = Number((it as { max?: unknown }).max);
+              const pr = Number((it as { price?: unknown }).price);
+              if (!Number.isFinite(mn) || !Number.isFinite(mx) || !Number.isFinite(pr)) return null;
+              return { min: mn, max: mx, price: pr };
+            })
+            .filter((v): v is { min: number; max: number; price: number } => v != null)
+        : undefined;
+      const minFromItems = items && items.length > 0 ? items.reduce((acc, it) => Math.min(acc, it.min), items[0].min) : undefined;
+      const maxFromItems = items && items.length > 0 ? items.reduce((acc, it) => Math.max(acc, it.max), items[0].max) : undefined;
+      const minVal = Number.isFinite(Number(r.min)) ? Number(r.min) : (minFromItems ?? 0);
+      const maxVal = Number.isFinite(Number(r.max)) ? Number(r.max) : (maxFromItems ?? 0);
+      const stepCandidate = r.step != null ? Number(r.step) : 1;
+      const stepVal = Number.isFinite(stepCandidate) ? stepCandidate : 1;
+      const dualVal = inputType === "range" && (displayResolved === "dual" || Boolean(r.dual)) ? true : false;
+      rangeResolved = { min: minVal, max: maxVal, step: stepVal, dual: dualVal, ...(items ? { items } : {}) } as Prisma.InputJsonValue;
+    }
     const inputMetaResolved =
       inputMeta && typeof inputMeta === "object"
         ? {
@@ -172,7 +190,7 @@ export async function POST(req: Request) {
     return NextResponse.json({
       id: created.id,
       serviceId: created.serviceId,
-      serviceName: created.service?.name ?? "",
+      serviceName: (created as unknown as { service?: { name?: string } }).service?.name ?? "",
       title: created.title,
       fieldName: created.fieldName,
       inputType: created.inputType,
@@ -221,7 +239,7 @@ export async function PUT(req: Request) {
       price?: number;
       sortOrder?: number;
       options?: Array<{ label: string; price: number }>;
-      range?: { min: number; max: number; step?: number; dual?: boolean };
+      range?: unknown;
       inputMeta?: { kind: "text" | "number"; min?: number; max?: number; required?: boolean };
     };
 
@@ -263,14 +281,31 @@ export async function PUT(req: Request) {
           .filter((o) => !!o && typeof o.label === "string" && Number.isFinite(o.price))
           .map((o) => ({ label: o.label, price: Number(o.price) }))
       : undefined;
-    const rangeResolved = range && typeof range === "object"
-      ? {
-          min: Number.isFinite(range.min) ? Number(range.min) : 0,
-          max: Number.isFinite(range.max) ? Number(range.max) : 0,
-          step: Number.isFinite(range.step ?? 1) ? Number(range.step ?? 1) : 1,
-          dual: !!range.dual,
-        }
-      : undefined;
+    let rangeResolved: Prisma.InputJsonValue | undefined = undefined;
+    if (range && typeof range === "object") {
+      const r = range as { min?: unknown; max?: unknown; step?: unknown; dual?: unknown; items?: unknown };
+      const itemsRaw = Array.isArray(r.items) ? r.items : undefined;
+      const items = itemsRaw
+        ? itemsRaw
+            .filter((it): it is { min?: unknown; max?: unknown; price?: unknown } => !!it && typeof it === "object")
+            .map((it) => {
+              const mn = Number((it as { min?: unknown }).min);
+              const mx = Number((it as { max?: unknown }).max);
+              const pr = Number((it as { price?: unknown }).price);
+              if (!Number.isFinite(mn) || !Number.isFinite(mx) || !Number.isFinite(pr)) return null;
+              return { min: mn, max: mx, price: pr };
+            })
+            .filter((v): v is { min: number; max: number; price: number } => v != null)
+        : undefined;
+      const minFromItems = items && items.length > 0 ? items.reduce((acc, it) => Math.min(acc, it.min), items[0].min) : undefined;
+      const maxFromItems = items && items.length > 0 ? items.reduce((acc, it) => Math.max(acc, it.max), items[0].max) : undefined;
+      const minVal = Number.isFinite(Number(r.min)) ? Number(r.min) : (minFromItems ?? 0);
+      const maxVal = Number.isFinite(Number(r.max)) ? Number(r.max) : (maxFromItems ?? 0);
+      const stepCandidate = r.step != null ? Number(r.step) : 1;
+      const stepVal = Number.isFinite(stepCandidate) ? stepCandidate : 1;
+      const dualVal = inputType === "range" && (displayResolved === "dual" || Boolean(r.dual)) ? true : false;
+      rangeResolved = { min: minVal, max: maxVal, step: stepVal, dual: dualVal, ...(items ? { items } : {}) } as Prisma.InputJsonValue;
+    }
     const inputMetaResolved =
       inputMeta && typeof inputMeta === "object"
         ? {
@@ -322,7 +357,7 @@ export async function PUT(req: Request) {
     return NextResponse.json({
       id: updated.id,
       serviceId: updated.serviceId,
-      serviceName: updated.service?.name ?? "",
+      serviceName: (updated as unknown as { service?: { name?: string } }).service?.name ?? "",
       title: updated.title,
       fieldName: updated.fieldName,
       inputType: updated.inputType,

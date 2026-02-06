@@ -17,7 +17,7 @@ type DetailItem = {
   price: number;
   sortOrder?: number;
   options?: Array<{ label: string; price: number }>;
-  range?: { min: number; max: number; step?: number; dual?: boolean };
+  range?: { min: number; max: number; step?: number; dual?: boolean; items?: Array<{ min: number; max: number; price: number }> };
   inputMeta?: { kind: "text" | "number"; min?: number; max?: number; required?: boolean };
 };
 
@@ -75,6 +75,51 @@ export function ServiceDataManager({ services }: { services: ServiceOption[] }) 
     setForm((f) => ({ ...f, options: next }));
     setOptName("");
     setOptPrice("");
+  };
+
+  const isDualRange = (form.inputType === "range") && ((form.displayType === "dual") || !!form.range?.dual);
+  const [rangeItemMin, setRangeItemMin] = React.useState<number | "">("");
+  const [rangeItemMax, setRangeItemMax] = React.useState<number | "">("");
+  const [rangeItemPrice, setRangeItemPrice] = React.useState<number | "">("");
+  const addRangeItem = () => {
+    const mn = typeof rangeItemMin === "number" ? rangeItemMin : Number(rangeItemMin);
+    const mx = typeof rangeItemMax === "number" ? rangeItemMax : Number(rangeItemMax);
+    const pr = typeof rangeItemPrice === "number" ? rangeItemPrice : Number(rangeItemPrice);
+    if (!Number.isFinite(mn) || !Number.isFinite(mx) || !Number.isFinite(pr)) return;
+    const items = Array.isArray(form.range?.items) ? [...form.range!.items!] : [];
+    items.push({ min: mn, max: mx, price: pr });
+    const overallMin = items.reduce((acc, it) => Math.min(acc, it.min), Number.isFinite(form.range?.min ?? NaN) ? (form.range!.min!) : mn);
+    const overallMax = items.reduce((acc, it) => Math.max(acc, it.max), Number.isFinite(form.range?.max ?? NaN) ? (form.range!.max!) : mx);
+    setForm((f) => ({
+      ...f,
+      range: {
+        min: overallMin,
+        max: overallMax,
+        step: f.range?.step ?? 1,
+        dual: true,
+        items,
+      },
+    }));
+    setRangeItemMin("");
+    setRangeItemMax("");
+    setRangeItemPrice("");
+  };
+  const removeRangeItem = (idx: number) => {
+    const items = Array.isArray(form.range?.items) ? [...form.range!.items!] : [];
+    if (idx < 0 || idx >= items.length) return;
+    items.splice(idx, 1);
+    const overallMin = items.length > 0 ? items.reduce((acc, it) => Math.min(acc, it.min), items[0].min) : (form.range?.min ?? 0);
+    const overallMax = items.length > 0 ? items.reduce((acc, it) => Math.max(acc, it.max), items[0].max) : (form.range?.max ?? 0);
+    setForm((f) => ({
+      ...f,
+      range: {
+        min: overallMin,
+        max: overallMax,
+        step: f.range?.step ?? 1,
+        dual: true,
+        items,
+      },
+    }));
   };
 
   // Ensure displayType matches inputType rules
@@ -337,17 +382,19 @@ export function ServiceDataManager({ services }: { services: ServiceOption[] }) 
                   <option value="input">Input</option>
                 </select>
               </div>
-              <div>
-                <label className="text-xs text-gray-400 mb-1 block">Price Type</label>
-                <select
-                  className="select select-bordered w-full"
-                  value={form.priceType ?? "fixed"}
-                  onChange={(e) => onChange({ priceType: (e.target.value as DetailItem["priceType"]) })}
-                >
-                  <option value="fixed">Fixed</option>
-                  <option value="percent">Percentage</option>
-                </select>
-              </div>
+              {!isDualRange && (
+                <div>
+                  <label className="text-xs text-gray-400 mb-1 block">Price Type</label>
+                  <select
+                    className="select select-bordered w-full"
+                    value={form.priceType ?? "fixed"}
+                    onChange={(e) => onChange({ priceType: (e.target.value as DetailItem["priceType"]) })}
+                  >
+                    <option value="fixed">Fixed</option>
+                    <option value="percent">Percentage</option>
+                  </select>
+                </div>
+              )}
               <div>
                 <label className="text-xs text-gray-400 mb-1 block">Name (Field Name)</label>
                 {isOptionType ? (
@@ -356,21 +403,19 @@ export function ServiceDataManager({ services }: { services: ServiceOption[] }) 
                   <input className="input input-bordered w-full" value={form.fieldName ?? ""} onChange={(e) => onChange({ fieldName: e.target.value })} />
                 )}
               </div>
-              <div>
-                <label className="text-xs text-gray-400 mb-1 block">Price (USD)</label>
-                {isOptionType ? (
-                  <div className="flex items-end gap-2">
-                    <input type="number" className="input input-bordered w-full" placeholder="Option Price" value={optPrice} onChange={(e) => setOptPrice(e.target.value === "" ? "" : Number(e.target.value))} />
-                    <button type="button" className="btn" onClick={addOption}>Add</button>
-                  </div>
-                ) : (
-                  <input type="number" className="input input-bordered w-full" value={form.price ?? 0} onChange={(e) => onChange({ price: Number(e.target.value) || 0 })} />
-                )}
-              </div>
-              <div>
-                <label className="text-xs text-gray-400 mb-1 block">Sort Order</label>
-                <input type="number" className="input input-bordered w-full" value={form.sortOrder ?? 0} onChange={(e) => onChange({ sortOrder: Number(e.target.value) || 0 })} />
-              </div>
+              {!isDualRange && (
+                <div>
+                  <label className="text-xs text-gray-400 mb-1 block">Price (USD)</label>
+                  {isOptionType ? (
+                    <div className="flex items-end gap-2">
+                      <input type="number" className="input input-bordered w-full" placeholder="Option Price" value={optPrice} onChange={(e) => setOptPrice(e.target.value === "" ? "" : Number(e.target.value))} />
+                      <button type="button" className="btn" onClick={addOption}>Add</button>
+                    </div>
+                  ) : (
+                    <input type="number" className="input input-bordered w-full" value={form.price ?? 0} onChange={(e) => onChange({ price: Number(e.target.value) || 0 })} />
+                  )}
+                </div>
+              )}
             </div>
 
             {(form.inputType === "input" || form.inputType === "range") && (
@@ -438,6 +483,7 @@ export function ServiceDataManager({ services }: { services: ServiceOption[] }) 
                           max: form.range?.max ?? 0,
                           step: form.range?.step ?? 1,
                           dual: form.range?.dual ?? false,
+                          items: form.range?.items ?? undefined,
                         },
                       })
                     }
@@ -456,6 +502,7 @@ export function ServiceDataManager({ services }: { services: ServiceOption[] }) 
                           max: Number(e.target.value) || 0,
                           step: form.range?.step ?? 1,
                           dual: form.range?.dual ?? false,
+                          items: form.range?.items ?? undefined,
                         },
                       })
                     }
@@ -474,6 +521,7 @@ export function ServiceDataManager({ services }: { services: ServiceOption[] }) 
                           max: form.range?.max ?? 0,
                           step: Number(e.target.value) || 1,
                           dual: form.range?.dual ?? false,
+                          items: form.range?.items ?? undefined,
                         },
                       })
                     }
@@ -481,6 +529,64 @@ export function ServiceDataManager({ services }: { services: ServiceOption[] }) 
                 </div>
               </div>
             ) : null}
+
+            {isDualRange && (
+              <div className="mt-4">
+                <div className="text-xs text-gray-400 mb-2">Dual Range Prices</div>
+                <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
+                  <div>
+                    <label className="text-xs text-gray-400 mb-1 block">Min</label>
+                    <input
+                      type="number"
+                      className="input input-bordered w-full"
+                      value={rangeItemMin}
+                      onChange={(e) => setRangeItemMin(e.target.value === "" ? "" : Number(e.target.value))}
+                    />
+                  </div>
+                  <div>
+                    <label className="text-xs text-gray-400 mb-1 block">Max</label>
+                    <input
+                      type="number"
+                      className="input input-bordered w-full"
+                      value={rangeItemMax}
+                      onChange={(e) => setRangeItemMax(e.target.value === "" ? "" : Number(e.target.value))}
+                    />
+                  </div>
+                  <div>
+                    <label className="text-xs text-gray-400 mb-1 block">Price (USD)</label>
+                    <input
+                      type="number"
+                      className="input input-bordered w-full"
+                      value={rangeItemPrice}
+                      onChange={(e) => setRangeItemPrice(e.target.value === "" ? "" : Number(e.target.value))}
+                    />
+                  </div>
+                  <div className="flex items-end">
+                    <button type="button" className="btn w-full" onClick={addRangeItem}>Add</button>
+                  </div>
+                </div>
+                <div className="mt-2 flex flex-col gap-2">
+                  {Array.isArray(form.range?.items) && form.range!.items!.length > 0 ? (
+                    form.range!.items!.map((it, idx) => (
+                      <div key={idx} className="flex items-center justify-between rounded-xl bg-white/5 px-3 py-2">
+                        <div className="text-sm text-gray-300">
+                          Min {it.min} • Max {it.max} • ${Number(it.price).toFixed(2)}
+                        </div>
+                        <button
+                          type="button"
+                          className="btn btn-ghost btn-xs"
+                          onClick={() => removeRangeItem(idx)}
+                        >
+                          Remove
+                        </button>
+                      </div>
+                    ))
+                  ) : (
+                    <div className="text-sm text-gray-500">Belum ada harga range dual ditambahkan</div>
+                  )}
+                </div>
+              </div>
+            )}
 
             {form.inputType === "input" ? (
               <div className="mt-4 grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -531,21 +637,32 @@ export function ServiceDataManager({ services }: { services: ServiceOption[] }) 
                 </div>
               </div>
             ) : null}
-            <div className="mt-4">
-              <label className="text-xs text-gray-400 mb-1 block">Required</label>
-              <input
-                type="checkbox"
-                className="checkbox checkbox-bordered"
-                checked={form.inputMeta?.required ?? false}
-                onChange={(e) =>
-                  onChange({
-                    inputMeta: {
-                      ...(form.inputMeta ?? { kind: "text" }),
-                      required: e.target.checked,
-                    },
-                  })
-                }
-              />
+            <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label className="text-xs text-gray-400 mb-1 block">Sort Order</label>
+                <input
+                  type="number"
+                  className="input input-bordered w-full"
+                  value={form.sortOrder ?? 0}
+                  onChange={(e) => onChange({ sortOrder: Number(e.target.value) || 0 })}
+                />
+              </div>
+              <div>
+                <label className="text-xs text-gray-400 mb-1 block">Required</label>
+                <input
+                  type="checkbox"
+                  className="checkbox checkbox-bordered"
+                  checked={form.inputMeta?.required ?? false}
+                  onChange={(e) =>
+                    onChange({
+                      inputMeta: {
+                        ...(form.inputMeta ?? { kind: "text" }),
+                        required: e.target.checked,
+                      },
+                    })
+                  }
+                />
+              </div>
             </div>
 
               </div>
