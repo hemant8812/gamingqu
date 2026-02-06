@@ -3,6 +3,7 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/auth";
 import { db } from "@/lib/prisma";
 import { getBaseUrl } from "@/lib/site";
+import crypto from "crypto";
 
 type SelectedOption = { title: string; values: string[] };
 type Contact = { email?: string; discord?: string; characterName?: string };
@@ -137,7 +138,7 @@ async function computeQuote(serviceSlug: string, fromLevelRaw: unknown, toLevelR
   let fee = 0;
   try {
     const pm = await db.paymentMethod.findUnique({
-      where: { slug: "paypal" },
+      where: { slug: "cryptomus" },
       select: { isActive: true, feePercent: true, feeFixed: true },
     });
     if (pm && pm.isActive) {
@@ -145,10 +146,10 @@ async function computeQuote(serviceSlug: string, fromLevelRaw: unknown, toLevelR
       const fix = pm.feeFixed != null ? Number.parseFloat(pm.feeFixed.toString()) : 0;
       fee = totalPrice * (pct / 100) + fix;
     } else {
-      fee = totalPrice * 0.035 + 0.49;
+      fee = 0;
     }
   } catch {
-    fee = totalPrice * 0.035 + 0.49;
+    fee = 0;
   }
   const amount = totalPrice + fee;
   return {
@@ -163,28 +164,12 @@ async function computeQuote(serviceSlug: string, fromLevelRaw: unknown, toLevelR
   };
 }
 
-async function getPaypalAccessToken() {
-  const clientId = process.env.PAYPAL_CLIENT_ID || "";
-  const secret = process.env.PAYPAL_SECRET || "";
-  const isLive = (process.env.PAYPAL_ENV || "").toLowerCase() === "live";
-  const base = isLive ? "https://api-m.paypal.com" : "https://api-m.sandbox.paypal.com";
-  if (!clientId || !secret) {
-    throw new Error("Missing PayPal credentials");
-  }
-  const auth = Buffer.from(`${clientId}:${secret}`).toString("base64");
-  const res = await fetch(`${base}/v1/oauth2/token`, {
-    method: "POST",
-    headers: {
-      Authorization: `Basic ${auth}`,
-      "Content-Type": "application/x-www-form-urlencoded",
-    },
-    body: "grant_type=client_credentials",
-  });
-  if (!res.ok) {
-    throw new Error("Failed to obtain PayPal access token");
-  }
-  const json = await res.json();
-  return { accessToken: String(json.access_token || ""), base };
+function signCryptomus(body: unknown) {
+  const apiKey = process.env.CRYPTOMUS_PAYMENT_API_KEY || "";
+  const json = JSON.stringify(body ?? {});
+  const b64 = Buffer.from(json).toString("base64");
+  const hash = crypto.createHash("md5").update(b64 + apiKey).digest("hex");
+  return hash;
 }
 
 export async function POST(req: Request) {
@@ -196,7 +181,7 @@ export async function POST(req: Request) {
     const toLevelRaw = body?.toLevel;
     const contact: Contact = (body?.contact ?? {}) as Contact;
     const currencyRaw = String(body?.currency ?? "").toUpperCase();
-    const currencyCode = currencyRaw === "EUR" ? "EUR" : "USD";
+    const currencySelected = currencyRaw === "EUR" ? "EUR" : "USD";
     if (!serviceSlug) {
       return NextResponse.json({ error: "Missing serviceSlug" }, { status: 400 });
     }
@@ -232,7 +217,7 @@ export async function POST(req: Request) {
         eurPerUsd = r as number;
       }
     } catch {}
-    const rate = currencyCode === "EUR" ? eurPerUsd : 1;
+    const rate = currencySelected === "EUR" ? eurPerUsd : 1;
     const itemsNumUsd = Number(quote.items);
     const boosterPercent = Math.max(0, Math.min(100, 100 - webShare));
     const boosterPayUsd = itemsNumUsd * (boosterPercent / 100);
@@ -241,18 +226,22 @@ export async function POST(req: Request) {
     const amountFromUi = Number(body?.amount ?? NaN);
     const amountNum = Number.isFinite(amountFromUi) ? amountFromUi : Number(quote.amount) * rate;
     const boosterPay = boosterPayUsd * rate;
+    const itemsNumUsdFinal = itemsNumUsd;
+    const feeNumUsdFinal = Number(quote.fee);
+    const amountNumUsdFinal = Number(quote.amount);
+    const boosterPayUsdFinal = boosterPayUsd;
     const code = `ORD-${Date.now().toString().slice(-9)}-${Math.random().toString(36).slice(2, 6).toUpperCase()}`;
     const order = await db.order.create({
       data: {
         code,
         service: { connect: { id: quote.serviceId! } },
         serviceSlug,
-        methodSlug: "paypal",
+        methodSlug: "cryptomus",
         items: Number(itemsNum),
         fee: Number(feeNum),
         amount: Number(amountNum),
         boosterPay: Number(boosterPay.toFixed(2)),
-        currency: currencyCode,
+        currency: currencySelected,
         status: "PENDING",
         fulfillmentStatus: "PENDING",
         contactEmail: (contact.email ?? "").trim() || undefined,
@@ -265,56 +254,74 @@ export async function POST(req: Request) {
     const payment = await db.payment.create({
       data: {
         orderId: order.id,
-        provider: "paypal",
+        provider: "cryptomus",
         status: "APPROVAL_REQUIRED",
       },
     });
-    const { accessToken, base } = await getPaypalAccessToken();
     const baseUrl = getBaseUrl();
-    const createRes = await fetch(`${base}/v2/checkout/orders`, {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        intent: "CAPTURE",
-        purchase_units: [
-          {
-            amount: {
-              currency_code: currencyCode,
-              value: Number(amountNum).toFixed(2),
-            },
-            custom_id: order.code,
-          },
-        ],
-        application_context: {
-          brand_name: "Gamingqu",
-          user_action: "PAY_NOW",
-          return_url: `${baseUrl}/api/payments/paypal/return?order=${encodeURIComponent(order.code)}`,
-          cancel_url: `${baseUrl}/api/payments/paypal/cancel?order=${encodeURIComponent(order.code)}`,
-        },
-      }),
-    });
-    const created = await createRes.json();
-    if (!createRes.ok) {
+    const merchant = process.env.CRYPTOMUS_MERCHANT_UUID || "";
+    if (!merchant || !process.env.CRYPTOMUS_PAYMENT_API_KEY) {
       await db.payment.update({
         where: { id: payment.id },
-        data: { status: "FAILED", raw: created },
+        data: { status: "FAILED" },
       });
-      return NextResponse.json({ error: "Failed to create PayPal order" }, { status: 500 });
+      return NextResponse.json({ error: "Missing Cryptomus credentials" }, { status: 500 });
     }
-    const providerOrderId = String(created.id || "");
-    const links: Array<{ rel?: string; href?: string }> = Array.isArray((created as { links?: unknown }).links)
-      ? ((created as { links?: Array<{ rel?: string; href?: string }> }).links ?? [])
-      : [];
-    const approveUrl = links.find((l) => l.rel === "approve")?.href ?? "";
+    const attempt = async (currencyCode: "USD" | "EUR", amountValue: number) => {
+      const bodyData = {
+        amount: Number(amountValue).toFixed(2),
+        currency: currencyCode,
+        order_id: order.code,
+        url_return: `${baseUrl}/api/payments/cryptomus/return?order=${encodeURIComponent(order.code)}`,
+        url_callback: `${baseUrl}/api/payments/cryptomus/webhook`,
+        is_payment_multiple: true,
+        lifetime: 7200,
+      };
+      const sign = signCryptomus(bodyData);
+      const res = await fetch("https://api.cryptomus.com/v1/payment", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          merchant,
+          sign,
+        } as Record<string, string>,
+        body: JSON.stringify(bodyData),
+      });
+      const json = await res.json().catch(() => ({}));
+      const result = (json as { result?: unknown })?.result as { uuid?: string; url?: string } | undefined;
+      return { ok: res.ok && !!result?.url, json, result };
+    };
+    let invoice = await attempt(currencySelected, amountNum);
+    if (!invoice.ok && currencySelected === "EUR") {
+      invoice = await attempt("USD", amountNumUsdFinal);
+      if (invoice.ok) {
+        await db.order.update({
+          where: { id: order.id },
+          data: {
+            currency: "USD",
+            items: Number(itemsNumUsdFinal),
+            fee: Number(feeNumUsdFinal),
+            amount: Number(amountNumUsdFinal),
+            boosterPay: Number(boosterPayUsdFinal.toFixed(2)),
+          },
+        });
+      }
+    }
+    if (!invoice.ok) {
+      await db.payment.update({
+        where: { id: payment.id },
+        data: { status: "FAILED", raw: invoice.json as any },
+      });
+      return NextResponse.json({ error: "Failed to create Cryptomus invoice" }, { status: 500 });
+    }
+    const providerOrderId = String(invoice.result?.uuid || "");
+    const approveUrl = String(invoice.result?.url || "");
     await db.payment.update({
       where: { id: payment.id },
       data: {
         providerOrderId,
         approvalUrl: approveUrl || undefined,
-        raw: created,
+        raw: invoice.json as any,
       },
     });
     return NextResponse.json({ ok: true, redirectUrl: approveUrl, orderCode: order.code });

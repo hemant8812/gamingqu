@@ -395,6 +395,31 @@ export default function CheckoutPage() {
                               toLevel: data.toLevel,
                               selectedOptions: data.selectedOptions ?? [],
                               currency: currency === "€" ? "EUR" : "USD",
+                              amount: convert(amountRaw),
+                              contact: {
+                                email: session?.user?.email ?? email,
+                                discord,
+                                characterName,
+                              },
+                            }),
+                          });
+                          const json = await res.json().catch(() => ({}));
+                          if (res.ok && json?.redirectUrl) {
+                            window.location.href = String(json.redirectUrl);
+                            return;
+                          }
+                          setSubmitting(false);
+                        } else if (method === "cryptomus") {
+                          const res = await fetch("/api/checkout/cryptomus/create", {
+                            method: "POST",
+                            headers: { "content-type": "application/json" },
+                            body: JSON.stringify({
+                              serviceSlug: data.serviceSlug,
+                              fromLevel: data.fromLevel,
+                              toLevel: data.toLevel,
+                              selectedOptions: data.selectedOptions ?? [],
+                              currency: currency === "€" ? "EUR" : "USD",
+                              amount: convert(amountRaw),
                               contact: {
                                 email: session?.user?.email ?? email,
                                 discord,
