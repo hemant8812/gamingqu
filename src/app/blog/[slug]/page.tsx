@@ -114,7 +114,7 @@ export default async function BlogDetailPage({ params }: Props) {
         )}
         <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent" />
         <div className="absolute bottom-0 left-0 right-0 p-6 sm:p-8">
-          <div className="text-xs opacity-80">{new Date(post.createdAt).toLocaleString()}</div>
+          <div className="text-xs text-white">{new Date(post.createdAt).toLocaleString()}</div>
           <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight mt-2">{post.title}</h1>
         </div>
       </div>
@@ -125,7 +125,7 @@ export default async function BlogDetailPage({ params }: Props) {
             <p>{post.content}</p>
           </div>
         ) : post.excerpt ? (
-          <p className="opacity-80">{post.excerpt}</p>
+          <p className="text-white">{post.excerpt}</p>
         ) : null}
       </div>
 
@@ -136,7 +136,11 @@ export default async function BlogDetailPage({ params }: Props) {
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
           {related.map((p) => (
-            <Link key={p.id} href={`/blog/${p.slug}`} className="block overflow-hidden rounded-xl border border-base-300 bg-base-100 shadow hover:-translate-y-0.5 transition-transform">
+            <Link
+              key={p.id}
+              href={`/blog/${p.slug}`}
+              className="block overflow-hidden rounded-xl border border-white/10 bg-[#0F172A] text-white shadow hover:-translate-y-0.5 transition-transform"
+            >
               <div className="relative w-full h-36">
                 {p.imageUrl ? (
                   <Image src={p.imageUrl} alt={p.title} fill className="object-cover" unoptimized />
@@ -146,9 +150,9 @@ export default async function BlogDetailPage({ params }: Props) {
                 <div className="absolute inset-x-0 bottom-0 h-16 bg-gradient-to-t from-black/60 to-transparent" />
               </div>
               <div className="p-4">
-                <div className="text-xs opacity-60">{new Date(p.createdAt).toLocaleDateString()}</div>
-                <div className="font-semibold mt-1">{p.title}</div>
-                {p.excerpt && <div className="text-xs opacity-80 mt-1 line-clamp-2">{p.excerpt}</div>}
+                <div className="text-xs text-white">{new Date(p.createdAt).toLocaleDateString()}</div>
+                <div className="font-semibold mt-1 text-white">{p.title}</div>
+                {p.excerpt && <div className="text-xs text-white mt-1 line-clamp-2">{p.excerpt}</div>}
               </div>
             </Link>
           ))}
