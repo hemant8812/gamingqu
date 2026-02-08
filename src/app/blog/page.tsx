@@ -103,6 +103,7 @@ export default async function BlogPage({ searchParams }: { searchParams?: Promis
                       blurDataURL={BLUR_DATA_URL}
                       priority={idx < 3}
                       quality={70}
+                      unoptimized
                     />
                   ) : (
                     <div className="absolute inset-0 bg-gradient-to-br from-primary/20 to-base-300" />
