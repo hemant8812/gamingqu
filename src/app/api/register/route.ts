@@ -9,7 +9,11 @@ export async function POST(req: Request) {
   const body = await req.json().catch(() => ({}));
   const Schema = z.object({
     email: z.string().email().max(254),
-    password: z.string().min(8).max(128),
+    password: z
+      .string()
+      .min(8)
+      .max(128)
+      .regex(/^(?=.*[A-Za-z])(?=.*\d).+$/, "Password harus mengandung huruf dan angka"),
     username: z
       .string()
       .min(3)

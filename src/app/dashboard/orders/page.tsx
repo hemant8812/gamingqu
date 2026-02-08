@@ -31,24 +31,6 @@ function formatDateTimeEnglish(d: Date) {
   return `${day}/${month}/${year}, ${hour}:${minute}:${second}`;
 }
 
-function StatusBadge({ status }: { status: "In Progress" | "Completed" | "Pending" | "Cancelled" }) {
-  const cls =
-    status === "Completed"
-      ? "bg-emerald-500/20 text-emerald-400"
-      : status === "Pending"
-      ? "bg-yellow-500/20 text-yellow-400"
-      : status === "Cancelled"
-      ? "bg-red-500/20 text-red-400"
-      : "bg-blue-500/20 text-blue-400";
-  const Icon =
-    status === "Completed" ? CheckCircle : status === "Pending" ? Clock : status === "Cancelled" ? Shield : Shield;
-  return (
-    <span className={`inline-flex items-center gap-2 px-2.5 py-1 text-xs font-medium rounded-lg ${cls}`}>
-      <Icon className="h-4 w-4" />
-      {status}
-    </span>
-  );
-}
 
 function PaymentBadge({ status }: { status: "CREATED" | "PENDING" | "PAID" | "CANCELED" | "FAILED" }) {
   const cls =

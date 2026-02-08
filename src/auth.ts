@@ -82,7 +82,14 @@ export const authOptions: NextAuthOptions = {
       },
       authorize: async (credentials): Promise<User | null> => {
         const parsed = z
-          .object({ email: z.string().email(), password: z.string().min(6).max(128) })
+          .object({
+            email: z.string().email(),
+            password: z
+              .string()
+              .min(8)
+              .max(128)
+              .regex(/^(?=.*[A-Za-z])(?=.*\d).+$/, "Password harus mengandung huruf dan angka"),
+          })
           .safeParse(credentials);
         if (!parsed.success) return null;
         const email = normalizeEmail(parsed.data.email);

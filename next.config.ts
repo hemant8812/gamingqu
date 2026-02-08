@@ -10,6 +10,11 @@ const nextConfig: NextConfig = {
     remotePatterns: [
       { protocol: "https", hostname: "picsum.photos" },
       { protocol: "https", hostname: "gamingqu.com" },
+      { protocol: "https", hostname: "worldofwarcraft.blizzard.com" },
+      { protocol: "https", hostname: "news.blizzard.com" },
+      { protocol: "https", hostname: "assets.worldofwarcraft.blizzard.com" },
+      { protocol: "https", hostname: "bnetcmsus-a.akamaihd.net" },
+      { protocol: "https", hostname: "images.blz-contentstack.com" },
     ],
   },
   async headers() {

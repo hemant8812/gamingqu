@@ -17,8 +17,16 @@ export async function POST(req: Request) {
   const currentPassword = String(body?.get("currentPassword") ?? "");
 
   const Schema = z.object({
-    password: z.string().min(8).max(128),
-    confirmPassword: z.string().min(8).max(128),
+    password: z
+      .string()
+      .min(8)
+      .max(128)
+      .regex(/^(?=.*[A-Za-z])(?=.*\d).+$/, "Password harus mengandung huruf dan angka"),
+    confirmPassword: z
+      .string()
+      .min(8)
+      .max(128)
+      .regex(/^(?=.*[A-Za-z])(?=.*\d).+$/, "Password harus mengandung huruf dan angka"),
   });
   const parsed = Schema.safeParse({ password, confirmPassword });
   if (!parsed.success) {

@@ -8,7 +8,11 @@ import { generateRandomUserId } from "@/lib/userId";
 const RegisterSchema = z.object({
   name: z.string().min(2).max(100),
   email: z.string().email().max(254),
-  password: z.string().min(8).max(128),
+  password: z
+    .string()
+    .min(8)
+    .max(128)
+    .regex(/^(?=.*[A-Za-z])(?=.*\d).+$/, "Password harus mengandung huruf dan angka"),
 });
 
 function baseUsernameFrom(name: string, email: string): string {

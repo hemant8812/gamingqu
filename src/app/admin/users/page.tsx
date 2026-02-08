@@ -58,6 +58,9 @@ export default async function AdminUsersPage({ searchParams }: { searchParams: P
     if (!password || password.length < 8) {
       return { ok: false, message: "Password minimal 8 karakter" };
     }
+    if (!/[A-Za-z]/.test(password) || !/\d/.test(password)) {
+      return { ok: false, message: "Password harus mengandung huruf dan angka" };
+    }
     if (!username) {
       return { ok: false, message: "Username wajib diisi" };
     }

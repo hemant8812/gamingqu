@@ -41,7 +41,14 @@ function collectLinks($: cheerio.CheerioAPI, base: string) {
 async function downloadImageToPublic(imageUrl: string, base: string, nameHint: string) {
   try {
     const abs = imageUrl.startsWith("http") ? imageUrl : new URL(imageUrl, base).toString();
-    const res = await fetch(abs);
+    const res = await fetch(abs, {
+      headers: {
+        "user-agent":
+          "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121 Safari/537.36",
+        "accept": "image/avif,image/webp,image/apng,image/*,*/*;q=0.8",
+        "referer": base,
+      },
+    });
     if (!res.ok) return null;
     const ct = res.headers.get("content-type") || "";
     let ext = "jpg";
@@ -49,11 +56,13 @@ async function downloadImageToPublic(imageUrl: string, base: string, nameHint: s
     else if (ct.includes("webp")) ext = "webp";
     else if (ct.includes("jpeg")) ext = "jpg";
     else if (ct.includes("gif")) ext = "gif";
+    else if (ct.includes("avif")) ext = "avif";
     const dir = path.join(process.cwd(), "public", "uploads", "blog");
     fs.mkdirSync(dir, { recursive: true });
     const u = new URL(abs);
-    const baseName = toSlug(nameHint || path.basename(u.pathname).split(".")[0]) || "image";
-    const file = `${baseName}.${ext}`;
+    const rawBaseName = toSlug(nameHint || path.basename(u.pathname).split(".")[0]) || "image";
+    const ts = Date.now().toString().slice(-6);
+    const file = `${rawBaseName}-${ts}.${ext}`;
     const full = path.join(dir, file);
     const buf = Buffer.from(await res.arrayBuffer());
     fs.writeFileSync(full, buf);

@@ -32,6 +32,8 @@ export function ChangePasswordForm() {
             name="password"
             type="password"
             minLength={8}
+            pattern="(?=.*[A-Za-z])(?=.*\\d).{8,}"
+            title="Minimal 8 karakter, mengandung huruf dan angka"
             required
             autoComplete="new-password"
             placeholder="Enter a new strong password"
@@ -47,6 +49,8 @@ export function ChangePasswordForm() {
             name="confirmPassword"
             type="password"
             minLength={8}
+            pattern="(?=.*[A-Za-z])(?=.*\\d).{8,}"
+            title="Minimal 8 karakter, mengandung huruf dan angka"
             required
             autoComplete="new-password"
             placeholder="Re-enter your new password"
