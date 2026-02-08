@@ -84,6 +84,7 @@ export async function POST() {
       "https://news.blizzard.com/en-us/world-of-warcraft",
     ];
     let created = 0;
+    let fixed = 0;
     const seen = new Set<string>();
 
     for (const src of sources) {
@@ -114,7 +115,9 @@ export async function POST() {
           const slugExists = await db.post.findUnique({ where: { slug } });
           if (slugExists) continue;
           const ogImg = $$('meta[property="og:image"]').attr("content") || $$('meta[name="twitter:image"]').attr("content") || $$("img").first().attr("src") || "";
-          const imageUrl = ogImg ? await downloadImageToPublic(ogImg, link, slug) : null;
+          const ogAbs = ogImg ? (ogImg.startsWith("http") ? ogImg : new URL(ogImg, link).toString()) : "";
+          const downloaded = ogAbs ? await downloadImageToPublic(ogAbs, link, slug) : null;
+          const imageUrl = downloaded ?? (ogAbs || null);
           await db.post.create({
             data: {
               title,
@@ -134,7 +137,33 @@ export async function POST() {
       if (created >= 20) break;
     }
 
-    return NextResponse.json({ success: true, created });
+    // Repair pass: update posts missing imageUrl using their sourceUrl
+    try {
+      const missing = await db.post.findMany({
+        where: { imageUrl: null, sourceUrl: { not: null } },
+        orderBy: { createdAt: "desc" },
+        take: 50,
+        select: { id: true, slug: true, sourceUrl: true },
+      });
+      for (const p of missing) {
+        const link = p.sourceUrl as string;
+        try {
+          const artHtml = await fetchHtml(link);
+          const $$ = cheerio.load(artHtml);
+          const ogImg = $$('meta[property="og:image"]').attr("content") || $$('meta[name="twitter:image"]').attr("content") || $$("img").first().attr("src") || "";
+          const ogAbs = ogImg ? (ogImg.startsWith("http") ? ogImg : new URL(ogImg, link).toString()) : "";
+          if (!ogAbs) continue;
+          const downloaded = await downloadImageToPublic(ogAbs, link, p.slug);
+          const finalUrl = downloaded ?? ogAbs;
+          if (finalUrl) {
+            await db.post.update({ where: { id: p.id }, data: { imageUrl: finalUrl } });
+            fixed++;
+          }
+        } catch {}
+      }
+    } catch {}
+
+    return NextResponse.json({ success: true, created, fixed });
   } catch {
     return NextResponse.json({ error: "Import failed" }, { status: 500 });
   }
