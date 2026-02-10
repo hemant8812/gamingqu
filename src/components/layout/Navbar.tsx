@@ -29,6 +29,7 @@ type ApiServiceDTO = {
   imageUrl?: string | null;
   price?: number | string;
 };
+type MenuGame = { slug: string; name: string; iconUrl?: string | null };
 
 export function Navbar({ siteName = "Gamingqu", logoUrl = null, user = null }: Props) {
   const { symbol: currency, setSymbol: setCurrency, convert } = useCurrency();
@@ -43,6 +44,7 @@ export function Navbar({ siteName = "Gamingqu", logoUrl = null, user = null }: P
   const [searchSuggestions, setSearchSuggestions] = useState<Array<{ id: number; name: string; slug: string; gameSlug: string }>>([]);
   const [loadingSuggestions, setLoadingSuggestions] = useState<boolean>(false);
   const [popularProducts, setPopularProducts] = useState<Array<{ id: number; name: string; slug: string; gameSlug: string; imageUrl?: string | null; price?: number }>>([]);
+  const [menuGames, setMenuGames] = useState<MenuGame[]>([]);
 
   const closeDropdown = () => {
     const elem = document.activeElement;
@@ -117,6 +119,27 @@ export function Navbar({ siteName = "Gamingqu", logoUrl = null, user = null }: P
       ? popularProducts.map(({ id, name, slug, gameSlug }) => ({ id, name, slug, gameSlug }))
       : searchSuggestions;
 
+  useEffect(() => {
+    let canceled = false;
+    fetch("/api/games/simple")
+      .then((r) => r.json())
+      .then((data) => {
+        if (canceled) return;
+        const list = Array.isArray(data?.games)
+          ? data.games.map((g: { slug?: string; name?: string; iconUrl?: string | null }) => ({
+              slug: String(g.slug ?? ""),
+              name: String(g.name ?? ""),
+              iconUrl: g.iconUrl ?? null,
+            }))
+          : [];
+        setMenuGames(list);
+      })
+      .catch(() => {});
+    return () => {
+      canceled = true;
+    };
+  }, []);
+
   return (
     <div className="fixed top-0 left-0 right-0 z-50 bg-[#0A0E17]/80 backdrop-blur-xl border-b border-white/5">
       <div className="max-w-7xl mx-auto px-4 sm:px-6">
@@ -182,10 +205,28 @@ export function Navbar({ siteName = "Gamingqu", logoUrl = null, user = null }: P
                   </>
                 ) : (
                   <>
-                    <li><Link href="/games/cod" onClick={closeDropdown} className="hover:bg-white/10 rounded-xl text-gray-200">Call of Duty</Link></li>
-                    <li><Link href="/games/valorant" onClick={closeDropdown} className="hover:bg-white/10 rounded-xl text-gray-200">Valorant</Link></li>
-                    <li><Link href="/games/genshin" onClick={closeDropdown} className="hover:bg-white/10 rounded-xl text-gray-200">Genshin Impact</Link></li>
-                    <li><Link href="/games/tarkov" onClick={closeDropdown} className="hover:bg-white/10 rounded-xl text-gray-200">Escape from Tarkov</Link></li>
+                    {menuGames.length === 0 ? (
+                      <li className="text-gray-400 px-4 py-2">No games</li>
+                    ) : (
+                      menuGames.map((g) => (
+                        <li key={g.slug}>
+                          <Link
+                            href={`/${g.slug}`}
+                            onClick={closeDropdown}
+                            className="flex items-center gap-3 px-3 py-2 hover:bg-white/10 rounded-xl text-gray-200"
+                          >
+                            <span className="w-5 h-5 rounded-md overflow-hidden bg-white/10 flex items-center justify-center shrink-0">
+                              {g.iconUrl ? (
+                                <Image src={g.iconUrl} alt={g.name} width={20} height={20} className="object-cover w-full h-full" unoptimized />
+                              ) : (
+                                <span className="w-full h-full bg-gradient-to-br from-slate-700 to-slate-800" />
+                              )}
+                            </span>
+                            <span className="whitespace-normal break-words">{g.name}</span>
+                          </Link>
+                        </li>
+                      ))
+                    )}
                   </>
                 )}
               </ul>
