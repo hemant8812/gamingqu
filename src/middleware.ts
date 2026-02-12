@@ -37,7 +37,8 @@ export async function middleware(req: NextRequest) {
 
   // Enforce canonical domain/scheme in production
   const isDev = process.env.NODE_ENV !== "production";
-  const canonical = process.env.NEXT_PUBLIC_SITE_URL;
+  const canonicalRaw = process.env.NEXT_PUBLIC_SITE_URL;
+  const canonical = canonicalRaw ? canonicalRaw.trim().replace(/^`+|`+$/g, "") : undefined;
   if (!isDev && canonical) {
     try {
       const target = canonical.includes("://") ? new URL(canonical) : new URL(`https://${canonical}`);
