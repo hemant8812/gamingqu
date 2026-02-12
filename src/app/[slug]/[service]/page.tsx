@@ -5,6 +5,8 @@ import { notFound } from "next/navigation";
 import { ServicePanel } from "@/components/services/ServicePanel";
 import type { Metadata } from "next";
 import { sanitizePlain } from "@/lib/sanitize";
+import { TrustBanner } from "@/components/shared/TrustBanner";
+import { getWebsiteSettingCore } from "@/lib/settings";
 
 type Params = Promise<{ slug?: string | string[]; service?: string | string[] }>;
 
@@ -40,6 +42,10 @@ export default async function ServiceDetailPage({ params }: { params: Params }) 
   if (!gameSlug || !serviceSlug) {
     notFound();
   }
+
+  const setting = await getWebsiteSettingCore();
+  const brandName = setting?.siteName ?? "Gamingqu";
+  const bannerLogoUrl = setting?.faviconUrl ?? setting?.logoUrl ?? "/icons/logo.png";
 
   const service = await db.service.findFirst({
     where: { slug: serviceSlug, isActive: true, game: { slug: gameSlug, isActive: true } },
@@ -239,6 +245,9 @@ export default async function ServiceDetailPage({ params }: { params: Params }) 
                 dangerouslySetInnerHTML={{ __html: service.description }}
               />
             )}
+            <div className="mt-8">
+              <TrustBanner brandName={brandName} logoUrl={bannerLogoUrl} />
+            </div>
           </section>
 
           <ServicePanel details={detailsForClient} serviceSlug={service.slug} basePrice={basePrice} />

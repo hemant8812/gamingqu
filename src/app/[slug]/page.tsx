@@ -8,6 +8,7 @@ import { Zap, Tag, ShoppingBag } from "lucide-react";
 import { formatPrice } from "@/lib/formatPrice";
 import { stripHtml } from "@/lib/text";
 import { useCurrency } from "@/app/providers";
+import { TrustBanner } from "@/components/shared/TrustBanner";
 
 type ServiceItem = {
     id: string;
@@ -137,6 +138,8 @@ export default function GamePage() {
     const [page, setPage] = useState<PageData | null>(null);
     const [loading, setLoading] = useState(true);
     const [activeCategory, setActiveCategory] = useState<string | null>(null);
+    const [brandName, setBrandName] = useState<string>("Gamingqu");
+    const [bannerLogoUrl, setBannerLogoUrl] = useState<string>("/icons/logo.png");
 
     useEffect(() => {
         const fetchData = async () => {
@@ -175,6 +178,23 @@ export default function GamePage() {
         };
         fetchData();
     }, [slug]);
+
+    useEffect(() => {
+        (async () => {
+            try {
+                const res = await fetch("/api/admin/settings");
+                if (res.ok) {
+                    const data = await res.json();
+                    const site = data?.website ?? {};
+                    const name: string = site?.siteName ?? "Gamingqu";
+                    const favicon: string | null = site?.faviconUrl ?? null;
+                    const logo: string | null = site?.logoUrl ?? null;
+                    setBrandName(name);
+                    setBannerLogoUrl(String(favicon || logo || "/icons/logo.png"));
+                }
+            } catch {}
+        })();
+    }, []);
 
     if (loading) {
         return (
@@ -343,6 +363,9 @@ export default function GamePage() {
                         ))}
                     </section>
                 )}
+                <div className="mt-10">
+                    <TrustBanner brandName={brandName} logoUrl={bannerLogoUrl} />
+                </div>
             </main>
         </div>
     );
