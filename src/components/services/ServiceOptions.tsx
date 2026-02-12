@@ -637,31 +637,33 @@ function RangeDual({ range, onRangeChange }: { range: NonNullable<DetailItem["ra
   );
 }
 
-function RangeSingle({ range, title }: { range: NonNullable<DetailItem["range"]>; title: string }) {
+function RangeSingle({ range, title, fieldName, id, onSingleChange }: { range: NonNullable<DetailItem["range"]>; title: string; fieldName?: string; id: number; onSingleChange?: (id: number, val: number) => void }) {
   const min = Number.isFinite(range.min) ? range.min : 0;
   const max = Number.isFinite(range.max) ? range.max : 100;
-  // Repurpose 'step' as initial value
-  const initialVal = (Number.isFinite(range.step) && range.step! >= min && range.step! <= max) 
-    ? range.step! 
-    : min;
-  const step = 1;
+  const initialVal = min;
+  const step = (() => {
+    const s = Number(range.step);
+    if (Number.isFinite(s) && s >= 1000) return s;
+    return 1000;
+  })();
 
   const [val, setVal] = React.useState(initialVal);
+  React.useEffect(() => {
+    if (onSingleChange) onSingleChange(id, val);
+  }, [id, val, onSingleChange]);
   const ticks: number[] = React.useMemo(() => {
-    const arr: number[] = [];
-    const inc = 10;
-    let v = min;
-    while (v <= max) {
-      arr.push(v);
-      v += inc;
-    }
-    if (arr[arr.length - 1] !== max) arr.push(max);
-    return arr;
-  }, [min, max]);
+    const span = max - min;
+    const midRaw = min + span / 2;
+    const mid = Math.min(
+      max,
+      Math.max(min, Math.round((midRaw - min) / step) * step + min)
+    );
+    return [min, mid, max];
+  }, [min, max, step]);
   return (
     <div className="space-y-3">
-      <div className="rounded-xl bg-white/5 p-3 w-fit">
-        <div className="text-[11px] text-gray-400">{title}</div>
+      <div className="rounded-xl bg-white/5 p-3 w-full text-center">
+        <div className="text-[11px] text-gray-400">{fieldName ?? title}</div>
         <div className="text-xl font-bold text-white">{val}</div>
       </div>
       <input
@@ -689,6 +691,7 @@ export function ServiceOptions({
   currentSubtotal,
   onSelectionLabelsChange,
   invalidTitles,
+  onSingleRangeChange,
 }: {
   details: DetailItem[];
   onRangeChange?: (from: number, to: number) => void;
@@ -696,6 +699,7 @@ export function ServiceOptions({
   currentSubtotal?: number;
   onSelectionLabelsChange?: (items: Array<{ title: string; values: string[] }>) => void;
   invalidTitles?: string[];
+  onSingleRangeChange?: (id: number, val: number) => void;
 }) {
   const ordered = Array.isArray(details) ? [...details].sort((a, b) => (a.sortOrder ?? 0) - (b.sortOrder ?? 0)) : [];
   const extrasByItemRef = React.useRef<Map<number, Array<{ price: number; kind: "fixed" | "percent" }>>>(new Map());
@@ -730,7 +734,7 @@ export function ServiceOptions({
                   onRangeChange={d.title.toLowerCase().includes("level") ? onRangeChange : undefined} 
                 />
               ) : (
-                <RangeSingle range={d.range} title={d.title} />
+                <RangeSingle range={d.range} title={d.title} fieldName={d.fieldName} id={d.id} onSingleChange={onSingleRangeChange} />
               )}
             </div>
           );

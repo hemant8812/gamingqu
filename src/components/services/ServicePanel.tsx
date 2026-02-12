@@ -38,6 +38,7 @@ export function ServicePanel({
   const [selectedOptions, setSelectedOptions] = React.useState<Array<{ title: string; values: string[] }>>([]);
   const [invalidTitles, setInvalidTitles] = React.useState<string[]>([]);
   const [showErrors, setShowErrors] = React.useState(false);
+  const [singleRangeVals, setSingleRangeVals] = React.useState<Record<number, number>>({});
   const diff = fromLevel != null && toLevel != null ? Math.max(0, toLevel - fromLevel) : 0;
   const isDualActive = diff > 0;
   const isSpecial =
@@ -83,6 +84,23 @@ export function ServicePanel({
         }
       }
     }
+    for (const d of details) {
+      if (d.inputType === "range" && !(d.displayType === "dual" || d.range?.dual)) {
+        const val = singleRangeVals[d.id];
+        const stepRaw = Number(d.range?.step);
+        const step = Number.isFinite(stepRaw) && stepRaw >= 1000 ? stepRaw : 1000;
+        if (!Number.isFinite(val) || val <= 0) continue;
+        const units = val / step;
+        const p = Number(d.price);
+        if (Number.isFinite(p) && p > 0) {
+          if (d.priceType === "percent") {
+            rangeAdd += basePrice * (p / 100) * units;
+          } else {
+            rangeAdd += p * units;
+          }
+        }
+      }
+    }
     let fixedAdd = 0;
     let percentAdd = 0;
     for (const e of extras) {
@@ -93,11 +111,14 @@ export function ServicePanel({
       if (e.kind === "percent") percentAdd += subtotal * (e.price / 100);
     }
     return { subtotal, totalPrice: subtotal + percentAdd };
-  }, [extras, basePrice, diff, details, fromLevel, toLevel]);
+  }, [extras, basePrice, diff, details, fromLevel, toLevel, singleRangeVals]);
   const computedFmt = formatPrice(convert(totalPrice));
   const handleRangeChange = React.useCallback((from: number, to: number) => {
     setFromLevel(from);
     setToLevel(to);
+  }, []);
+  const handleSingleRangeChange = React.useCallback((id: number, val: number) => {
+    setSingleRangeVals((m) => ({ ...m, [id]: val }));
   }, []);
   const handleSelectionsChange = React.useCallback((s: Array<{ price: number; kind: "fixed" | "percent" }>) => {
     setExtras(s);
@@ -151,6 +172,7 @@ export function ServicePanel({
             currentSubtotal={subtotal}
             onSelectionLabelsChange={handleSelectionLabelsChange}
             invalidTitles={invalidTitles}
+            onSingleRangeChange={handleSingleRangeChange}
           />
         </div>
       </div>
