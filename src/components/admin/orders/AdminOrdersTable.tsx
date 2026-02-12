@@ -1,8 +1,12 @@
 "use client";
+import Link from "next/link";
 import { useMemo, useState } from "react";
 import { FiSearch, FiDownload } from "react-icons/fi";
-import { CheckCircle, Clock, Shield } from "lucide-react";
+import { Eye, Shield } from "lucide-react";
 import { useCallback } from "react";
+import { PaymentBadge, FulfillmentBadge } from "@/components/shared/StatusBadge";
+import { PaginationNumbers } from "@/components/shared/PaginationNumbers";
+import { formatDateTimeEnglish } from "@/lib/datetime";
 
 type OrderItem = {
   code: string;
@@ -21,89 +25,7 @@ type OrderItem = {
   createdAt: string | Date;
 };
 
-function PaymentBadge({ status }: { status: "CREATED" | "PENDING" | "PAID" | "CANCELED" | "FAILED" }) {
-  const cls =
-    status === "PAID"
-      ? "bg-emerald-500/20 text-emerald-400"
-      : status === "PENDING" || status === "CREATED"
-      ? "bg-yellow-500/20 text-yellow-400"
-      : status === "CANCELED" || status === "FAILED"
-      ? "bg-red-500/20 text-red-400"
-      : "bg-blue-500/20 text-blue-400";
-  const Icon =
-    status === "PAID" ? CheckCircle : status === "PENDING" || status === "CREATED" ? Clock : Shield;
-  const label =
-    status === "PAID"
-      ? "Paid"
-      : status === "PENDING"
-      ? "Pending"
-      : status === "CREATED"
-      ? "Created"
-      : status === "CANCELED"
-      ? "Canceled"
-      : "Failed";
-  return (
-    <span className={`inline-flex items-center gap-2 px-2.5 py-1 text-xs font-medium rounded-lg ${cls}`}>
-      <Icon className="h-4 w-4" />
-      {label}
-    </span>
-  );
-}
-
-function FulfillmentBadge({ status }: { status: "PENDING" | "ACCEPTED" | "IN_PROGRESS" | "COMPLETED" | "CANCELED" }) {
-  const cls =
-    status === "COMPLETED"
-      ? "bg-emerald-500/20 text-emerald-400"
-      : status === "PENDING"
-      ? "bg-yellow-500/20 text-yellow-400"
-      : status === "CANCELED"
-      ? "bg-red-500/20 text-red-400"
-      : "bg-blue-500/20 text-blue-400";
-  const Icon =
-    status === "COMPLETED" ? CheckCircle : status === "PENDING" ? Clock : Shield;
-  const label =
-    status === "COMPLETED"
-      ? "Completed"
-      : status === "PENDING"
-      ? "Pending"
-      : status === "ACCEPTED"
-      ? "Accepted"
-      : status === "IN_PROGRESS"
-      ? "In Progress"
-      : "Canceled";
-  return (
-    <span className={`inline-flex items-center gap-2 px-2.5 py-1 text-xs font-medium rounded-lg ${cls}`}>
-      <Icon className="h-4 w-4" />
-      {label}
-    </span>
-  );
-}
-
-function formatDateTimeEnglish(d: Date) {
-  const months = [
-    "January",
-    "February",
-    "March",
-    "April",
-    "May",
-    "June",
-    "July",
-    "August",
-    "September",
-    "October",
-    "November",
-    "December",
-  ];
-  const day = String(d.getDate()).padStart(2, "0");
-  const month = months[d.getMonth()];
-  const year = d.getFullYear();
-  const hour = d.getHours();
-  const minute = String(d.getMinutes()).padStart(2, "0");
-  const second = String(d.getSeconds()).padStart(2, "0");
-  return `${day}/${month}/${year}, ${hour}:${minute}:${second}`;
-}
-
-export function AdminOrdersTable({ orders }: { orders: OrderItem[] }) {
+export function AdminOrdersTable({ orders, page = 1, totalPages = 1 }: { orders: OrderItem[]; page?: number; totalPages?: number }) {
   const [q, setQ] = useState("");
 
   const filtered = useMemo(() => {
@@ -156,7 +78,10 @@ export function AdminOrdersTable({ orders }: { orders: OrderItem[] }) {
       </div>
       <div className="bg-[#0F172A] border border-white/10 rounded-2xl overflow-hidden">
         <div className="p-6 border-b border-white/10">
-          <h3 className="text-lg font-bold text-white">Recent Orders</h3>
+          <div className="flex items-center justify-between">
+            <h3 className="text-lg font-bold text-white">Recent Orders</h3>
+            {totalPages > 1 && <PaginationNumbers page={page} totalPages={totalPages} basePath={"/admin/orders"} />}
+          </div>
         </div>
         {filtered.length === 0 ? (
           <div className="p-16 flex flex-col items-center justify-center text-gray-500">
@@ -219,9 +144,20 @@ export function AdminOrdersTable({ orders }: { orders: OrderItem[] }) {
                       <div className="text-sm text-white">{o.characterName ?? "-"}</div>
                     </div>
                   </div>
+                  <div className="mt-3 flex items-center justify-end">
+                    <Link
+                      href={`/admin/orders?order=${encodeURIComponent(o.code)}`}
+                      className="inline-flex items-center gap-2 h-9 px-3 rounded-lg bg-white/5 hover:bg-white/10 text-sm text-gray-200"
+                      aria-label={`Lihat detail ${o.code}`}
+                    >
+                      <Eye className="h-4 w-4" />
+                      <span>Lihat Detail</span>
+                    </Link>
+                  </div>
                 </div>
               ))}
             </div>
+            {totalPages > 1 && <div className="mt-6"><PaginationNumbers page={page} totalPages={totalPages} basePath={"/admin/orders"} /></div>}
           </div>
         )}
       </div>
