@@ -147,7 +147,7 @@ export function Navbar({ siteName = "Gamingqu", logoUrl = null, user = null }: P
           {/* Left Side: Logo & Menu */}
           <div className="flex items-center gap-2 sm:gap-3 shrink-0">
             {showLogo && logoUrl ? (
-              <Link href="/" className="text-xl p-0 inline-flex items-center">
+              <Link href="/" className="text-xl p-0 inline-flex items-center" aria-label="Go to homepage">
                 <Image
                   src={logoUrl}
                   alt={siteName}
@@ -160,7 +160,7 @@ export function Navbar({ siteName = "Gamingqu", logoUrl = null, user = null }: P
                 />
               </Link>
             ) : (
-              <Link href="/" className="text-xl p-0 font-bold inline-flex items-center gradient-text">
+              <Link href="/" className="text-xl p-0 font-bold inline-flex items-center gradient-text" aria-label="Go to homepage">
                 {siteName}
               </Link>
             )}

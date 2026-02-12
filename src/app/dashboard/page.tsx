@@ -230,8 +230,8 @@ export default async function DashboardPage() {
               <section className="bg-[#0F172A] border border-white/10 rounded-2xl overflow-hidden ring-1 ring-white/5">
                 <div className="p-6 border-b border-white/10 flex items-center justify-between">
                   <h3 className="text-lg font-bold text-white">Active Orders</h3>
-                  <Link href="/dashboard/orders" className="flex items-center gap-2 text-sm text-blue-400 hover:text-blue-300" aria-label="View all">
-                    View All <ChevronRight className="h-4 w-4" />
+                  <Link href="/dashboard/orders" className="flex items-center gap-2 text-sm text-blue-400 hover:text-blue-300" aria-label="View all orders">
+                    View All Orders <ChevronRight className="h-4 w-4" />
                   </Link>
                 </div>
                 <div className="p-4 md:p-6 space-y-3 max-h-96 overflow-y-auto pr-1">

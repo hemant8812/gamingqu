@@ -81,15 +81,22 @@ export async function middleware(req: NextRequest) {
     "base-uri 'self'",
     "frame-ancestors 'none'",
     "form-action 'self'",
+    "object-src 'none'",
+    "upgrade-insecure-requests",
     "img-src 'self' data: blob: https: https://*.tawk.to https://*.crisp.chat https://*.googleapis.com https://*.gstatic.com",
     "style-src 'self' 'unsafe-inline' https://client.crisp.chat https://fonts.googleapis.com https://*.tawk.to",
     "font-src 'self' data: https://client.crisp.chat https://fonts.gstatic.com https://*.tawk.to",
+    "frame-src 'self' https://*.tawk.to https://embed.tawk.to https://*.crisp.chat",
     `connect-src 'self' https: wss:`,
-    `script-src 'self' 'nonce-${nonce}'${isDev ? " 'unsafe-eval' 'unsafe-inline'" : ""} https://static.cloudflareinsights.com https://www.googletagmanager.com https://client.crisp.chat https://embed.tawk.to https://*.tawk.to https://www.googleadservices.com https://googleads.g.doubleclick.net https://www.google.com https://adservice.google.com https://cdn.jsdelivr.net`,
+    `script-src 'self' 'nonce-${nonce}' 'strict-dynamic' 'unsafe-inline'${isDev ? " 'unsafe-eval'" : ""} https://static.cloudflareinsights.com https://www.googletagmanager.com https://client.crisp.chat https://embed.tawk.to https://*.tawk.to https://www.googleadservices.com https://googleads.g.doubleclick.net https://www.google.com https://adservice.google.com https://cdn.jsdelivr.net`,
   ].join("; ");
 
   res.headers.set("Content-Security-Policy", csp);
   res.headers.set("x-nonce", nonce);
+  if (!isDev) {
+    res.headers.set("Strict-Transport-Security", "max-age=31536000; includeSubDomains; preload");
+    res.headers.set("Content-Security-Policy-Report-Only", "require-trusted-types-for 'script'");
+  }
 
   return res;
 }

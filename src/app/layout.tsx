@@ -69,6 +69,7 @@ export default async function RootLayout({
   const s = await getWebsiteSettingCore();
   const embeds = await getEmbeds();
   const nonce = (await headers()).get("x-nonce") || "";
+  const baseUrl = getBaseUrl();
   
   const siteName = s?.siteName ?? "Gamingqu";
   const faviconUrl = s?.faviconUrl ?? "/icons/logo.png";
@@ -78,6 +79,46 @@ export default async function RootLayout({
       <head>
         <link rel="icon" href="/favicon.ico" />
         <link rel="icon" href={faviconUrl} />
+        <script
+          nonce={nonce}
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "WebSite",
+              url: baseUrl,
+              name: siteName,
+              potentialAction: {
+                "@type": "SearchAction",
+                target: `${baseUrl}/search?q={search_term_string}`,
+                "query-input": "required name=search_term_string",
+              },
+            }),
+          }}
+        />
+        <script
+          nonce={nonce}
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "Organization",
+              url: baseUrl,
+              name: siteName,
+              logo: logoUrl ?? faviconUrl,
+              contactPoint: [
+                s?.contactEmail || s?.contactPhone
+                  ? {
+                      "@type": "ContactPoint",
+                      contactType: "customer support",
+                      email: s?.contactEmail ?? undefined,
+                      telephone: s?.contactPhone ?? undefined,
+                    }
+                  : undefined,
+              ].filter(Boolean),
+            }),
+          }}
+        />
       </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}

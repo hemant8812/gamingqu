@@ -49,6 +49,7 @@ export default async function ServiceDetailPage({ params }: { params: Params }) 
   const setting = await getWebsiteSettingCore();
   const brandName = setting?.siteName ?? "Gamingqu";
   const bannerLogoUrl = setting?.faviconUrl ?? setting?.logoUrl ?? "/icons/logo.png";
+  const base = getBaseUrl();
 
   const service = await db.service.findFirst({
     where: { slug: serviceSlug, isActive: true, game: { slug: gameSlug, isActive: true } },
@@ -248,6 +249,43 @@ export default async function ServiceDetailPage({ params }: { params: Params }) 
                 dangerouslySetInnerHTML={{ __html: service.description }}
               />
             )}
+            <script
+              type="application/ld+json"
+              dangerouslySetInnerHTML={{
+                __html: JSON.stringify({
+                  "@context": "https://schema.org",
+                  "@type": "Product",
+                  name: service.name,
+                  description: sanitizePlain(service.description ?? ""),
+                  image: service.imageUrl ?? service.game.imageUrl ?? undefined,
+                  brand: { "@type": "Brand", name: brandName },
+                  sku: service.slug,
+                  category: service.game.name,
+                  url: `${base}/${service.game.slug}/${service.slug}`,
+                  offers: {
+                    "@type": "Offer",
+                    price: basePrice,
+                    priceCurrency: "USD",
+                    availability: "https://schema.org/InStock",
+                    url: `${base}/${service.game.slug}/${service.slug}`,
+                  },
+                }),
+              }}
+            />
+            <script
+              type="application/ld+json"
+              dangerouslySetInnerHTML={{
+                __html: JSON.stringify({
+                  "@context": "https://schema.org",
+                  "@type": "BreadcrumbList",
+                  itemListElement: [
+                    { "@type": "ListItem", position: 1, name: "Home", item: `${base}/` },
+                    { "@type": "ListItem", position: 2, name: service.game.name, item: `${base}/${service.game.slug}` },
+                    { "@type": "ListItem", position: 3, name: service.name, item: `${base}/${service.game.slug}/${service.slug}` },
+                  ],
+                }),
+              }}
+            />
             <div className="mt-8">
               <TrustBanner brandName={brandName} logoUrl={bannerLogoUrl} />
             </div>
