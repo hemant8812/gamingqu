@@ -18,6 +18,14 @@ type GameItem = {
   isHotOffer?: boolean;
 };
 
+type HeroSlide = {
+  subtitle: string;
+  title: string;
+  href: string;
+  cta: string;
+  image?: string;
+};
+
 type HotService = {
   id: string;
   name: string;
@@ -36,29 +44,7 @@ export function HomeContent() {
   const [hotServices, setHotServices] = useState<HotService[]>([]);
   const [hotLoading, setHotLoading] = useState(false);
   const { symbol: currency, convert } = useCurrency();
-  const [heroSlides, setHeroSlides] = useState([
-    {
-      subtitle: "Boost your game — and your wallet",
-      title: "What boosts you, makes you",
-      href: "/cashback",
-      cta: "Read more",
-      image: "https://picsum.photos/seed/cashback/960/540",
-    },
-    {
-      subtitle: "Today's best prices",
-      title: "Weekly Offers",
-      href: "/offers",
-      cta: "Read more",
-      image: "https://picsum.photos/seed/offers/960/540",
-    },
-    {
-      subtitle: "Top picks for you",
-      title: "Hot Right Now",
-      href: "/hot",
-      cta: "Read more",
-      image: "https://picsum.photos/seed/hot/960/540",
-    },
-  ]);
+  const [heroSlides, setHeroSlides] = useState<HeroSlide[]>([]);
   const [heroSlide, setHeroSlide] = useState(0);
   const [dir, setDir] = useState<1 | -1>(1);
 
@@ -79,12 +65,12 @@ export function HomeContent() {
         }
         const bannerData = await bannerRes.json().catch(() => null);
         if (bannerData?.banners && Array.isArray(bannerData.banners) && bannerData.banners.length > 0) {
-          const slides = bannerData.banners.slice(0, 10).map((b: { subtitle?: string; title?: string; buttonLink?: string; buttonImageUrl?: string }, idx: number) => ({
+          const slides = bannerData.banners.slice(0, 10).map((b: { subtitle?: string; title?: string; buttonLink?: string; buttonImageUrl?: string }) => ({
             subtitle: b.subtitle || "",
             title: b.title || "",
             href: b.buttonLink || "/",
             cta: "Read more",
-            image: (b.buttonImageUrl && typeof b.buttonImageUrl === "string" ? b.buttonImageUrl : `https://picsum.photos/seed/benner-${idx}/960/540`),
+            image: (b.buttonImageUrl && typeof b.buttonImageUrl === "string" ? b.buttonImageUrl : undefined),
           }));
           setHeroSlides(slides);
           setHeroSlide(0);
@@ -147,59 +133,73 @@ export function HomeContent() {
         {/* Hero Section */}
         <section className="mb-12 relative group">
           <div className="relative w-full h-[400px] md:h-[420px] rounded-3xl overflow-hidden shadow-2xl border border-white/10 bg-[#0A0E17]">
-            {heroSlides.map((s, idx) => (
-              <div
-                key={idx}
-                className={`absolute inset-0 transition-opacity duration-1000 ease-in-out ${idx === heroSlide ? "opacity-100 z-10" : "opacity-0 z-0 pointer-events-none"}`}
-              >
-                {/* Background Image with Ken Burns effect */}
-                <div className="absolute inset-0 overflow-hidden">
-                  <Image
-                    src={s.image}
-                    alt={s.title}
-                    fill
-                    className={`object-cover transition-transform duration-[10000ms] ease-linear ${idx === heroSlide ? "scale-110" : "scale-100"}`}
-                    priority={idx === 0}
-                    unoptimized
-                  />
-                </div>
-
-                {/* Gradient Overlays */}
+            {heroSlides.length === 0 ? (
+              <>
+                <div className="absolute inset-0 bg-gradient-to-br from-slate-800 to-slate-900 animate-pulse" />
                 <div className="absolute inset-0 bg-gradient-to-t from-[#0A0E17] via-[#0A0E17]/60 to-transparent md:hidden" />
                 <div className="absolute inset-0 hidden md:block bg-gradient-to-r from-[#0A0E17] via-[#0A0E17]/90 to-transparent" />
-
-                {/* Content */}
                 <div className="absolute inset-0 flex flex-col justify-end md:justify-center p-8 md:p-16 lg:p-20">
-                  <div className={`max-w-2xl transform transition-all duration-700 delay-300 ${idx === heroSlide ? "translate-y-0 opacity-100" : "translate-y-10 opacity-0"}`}>
-                    <h1 className="text-2xl md:text-3xl lg:text-4xl font-black text-white leading-tight mb-4 drop-shadow-2xl">
-                      {s.title}
-                    </h1>
-                    <p className="text-lg md:text-xl text-gray-300 mb-8 leading-relaxed drop-shadow-md max-w-lg">
-                      {s.subtitle}
-                    </p>
-                    <Link
-                      href={s.href}
-                      className="btn btn-gaming h-12 px-8 text-base rounded-xl inline-flex items-center gap-2 group hover:scale-105 transition-transform shadow-lg shadow-blue-600/20"
-                    >
-                      {s.cta}
-                      <FiArrowRight className="h-5 w-5 transition-transform group-hover:translate-x-1" />
-                    </Link>
+                  <div className="max-w-2xl">
+                    <div className="h-8 md:h-10 w-3/4 bg-white/10 rounded-lg mb-4" />
+                    <div className="h-5 md:h-6 w-1/2 bg-white/10 rounded-lg mb-6" />
+                    <div className="h-12 w-40 bg-white/10 rounded-xl" />
                   </div>
                 </div>
-              </div>
-            ))}
-
-            {/* Dots Navigation */}
-            <div className="absolute bottom-6 left-1/2 -translate-x-1/2 z-20 flex gap-3 p-2 rounded-full backdrop-blur-sm bg-black/20 border border-white/5">
-              {heroSlides.map((_, i) => (
-                <button
-                  key={i}
-                  onClick={() => goToSlide(i)}
-                  className={`h-2 rounded-full transition-all duration-300 ${heroSlide === i ? "w-8 bg-blue-500" : "w-2 bg-white/50 hover:bg-white"}`}
-                  aria-label={`Go to slide ${i + 1}`}
-                />
-              ))}
-            </div>
+              </>
+            ) : (
+              <>
+                {heroSlides.map((s, idx) => (
+                  <div
+                    key={idx}
+                    className={`absolute inset-0 transition-opacity duration-1000 ease-in-out ${idx === heroSlide ? "opacity-100 z-10" : "opacity-0 z-0 pointer-events-none"}`}
+                  >
+                    <div className="absolute inset-0 overflow-hidden">
+                      {s.image ? (
+                        <Image
+                          src={s.image}
+                          alt={s.title}
+                          fill
+                          className={`object-cover transition-transform duration-[10000ms] ease-linear ${idx === heroSlide ? "scale-110" : "scale-100"}`}
+                          priority={idx === 0}
+                          unoptimized
+                        />
+                      ) : (
+                        <div className="absolute inset-0 bg-gradient-to-br from-blue-900/50 to-cyan-900/50" />
+                      )}
+                    </div>
+                    <div className="absolute inset-0 bg-gradient-to-t from-[#0A0E17] via-[#0A0E17]/60 to-transparent md:hidden" />
+                    <div className="absolute inset-0 hidden md:block bg-gradient-to-r from-[#0A0E17] via-[#0A0E17]/90 to-transparent" />
+                    <div className="absolute inset-0 flex flex-col justify-end md:justify-center p-8 md:p-16 lg:p-20">
+                      <div className={`max-w-2xl transform transition-all duration-700 delay-300 ${idx === heroSlide ? "translate-y-0 opacity-100" : "translate-y-10 opacity-0"}`}>
+                        <h1 className="text-2xl md:text-3xl lg:text-4xl font-black text-white leading-tight mb-4 drop-shadow-2xl">
+                          {s.title}
+                        </h1>
+                        <p className="text-lg md:text-xl text-gray-300 mb-8 leading-relaxed drop-shadow-md max-w-lg">
+                          {s.subtitle}
+                        </p>
+                        <Link
+                          href={s.href}
+                          className="btn btn-gaming h-12 px-8 text-base rounded-xl inline-flex items-center gap-2 group hover:scale-105 transition-transform shadow-lg shadow-blue-600/20"
+                        >
+                          {s.cta}
+                          <FiArrowRight className="h-5 w-5 transition-transform group-hover:translate-x-1" />
+                        </Link>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+                <div className="absolute bottom-6 left-1/2 -translate-x-1/2 z-20 flex gap-3 p-2 rounded-full backdrop-blur-sm bg-black/20 border border-white/5">
+                  {heroSlides.map((_, i) => (
+                    <button
+                      key={i}
+                      onClick={() => goToSlide(i)}
+                      className={`h-2 rounded-full transition-all duration-300 ${heroSlide === i ? "w-8 bg-blue-500" : "w-2 bg-white/50 hover:bg-white"}`}
+                      aria-label={`Go to slide ${i + 1}`}
+                    />
+                  ))}
+                </div>
+              </>
+            )}
           </div>
         </section>
 
