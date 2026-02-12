@@ -40,11 +40,14 @@ export async function middleware(req: NextRequest) {
   const canonical = process.env.NEXT_PUBLIC_SITE_URL;
   if (!isDev && canonical) {
     try {
-      const target = new URL(canonical);
-      if (url.host !== target.host || url.protocol !== target.protocol) {
+      const target = canonical.includes("://") ? new URL(canonical) : new URL(`https://${canonical}`);
+      const targetHostname = target.hostname;
+      const targetProtocol = target.protocol;
+      if (url.hostname !== targetHostname || url.protocol !== targetProtocol) {
         const redirectUrl = new URL(url.toString());
-        redirectUrl.protocol = target.protocol;
-        redirectUrl.host = target.host;
+        redirectUrl.protocol = targetProtocol;
+        redirectUrl.hostname = targetHostname;
+        redirectUrl.port = "";
         return NextResponse.redirect(redirectUrl, { status: 308 });
       }
     } catch {
