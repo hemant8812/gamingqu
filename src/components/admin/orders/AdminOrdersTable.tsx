@@ -6,7 +6,7 @@ import { Eye, Shield } from "lucide-react";
 import { useCallback } from "react";
 import { PaymentBadge, FulfillmentBadge } from "@/components/shared/StatusBadge";
 import { PaginationNumbers } from "@/components/shared/PaginationNumbers";
-import { formatDateTimeEnglish } from "@/lib/datetime";
+import { formatDateTimeID } from "@/lib/datetime";
 
 type OrderItem = {
   code: string;
@@ -107,7 +107,7 @@ export function AdminOrdersTable({ orders, page = 1, totalPages = 1 }: { orders:
                     <div>
                       <div className="text-xs text-gray-400">{o.code}</div>
                       <div className="text-[11px] text-gray-500 uppercase tracking-wide mt-1">Created</div>
-                      <div className="text-xs text-white">{formatDateTimeEnglish(new Date(o.createdAt))}</div>
+                      <div className="text-xs text-white">{formatDateTimeID(new Date(o.createdAt))}</div>
                     </div>
                     <div>
                       <div className="text-sm text-white">{o.user?.username ?? "-"}</div>

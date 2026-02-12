@@ -11,7 +11,7 @@ import { PageToast } from "@/components/shared/PageToast";
 import { parseToast } from "@/lib/page-utils";
 import { SubmitButton } from "@/components/shared/SubmitButton";
 import { PaymentBadge, FulfillmentBadge } from "@/components/shared/StatusBadge";
-import { formatDateTimeEnglish } from "@/lib/datetime";
+import { formatDateTimeID } from "@/lib/datetime";
 
  
 
@@ -171,7 +171,7 @@ export default async function AdminOrdersPage({ searchParams }: { searchParams?:
               <div className="w-full">
                 <div className="flex items-center gap-4">
                   <div className="text-sm text-gray-400">Order</div>
-                  <div className="text-xs text-gray-500">{formatDateTimeEnglish(new Date(selected.createdAt))}</div>
+                  <div className="text-xs text-gray-500">{formatDateTimeID(new Date(selected.createdAt))}</div>
                 </div>
                 <div className="text-xl font-bold text-white">{selected.code}</div>
               </div>
