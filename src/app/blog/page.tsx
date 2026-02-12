@@ -5,17 +5,21 @@ import type { Metadata } from "next";
 import { getBaseUrl } from "@/lib/site";
 
 const BLUR_DATA_URL = "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==";
-
-export async function generateMetadata(): Promise<Metadata> {
+export async function generateMetadata({ searchParams }: { searchParams?: Promise<Record<string, string | string[] | undefined>> }): Promise<Metadata> {
   const base = getBaseUrl();
+  const sp = searchParams ? await searchParams : {};
+  const pageParam = sp?.page;
+  const pageRaw = typeof pageParam === "string" ? parseInt(pageParam, 10) : 1;
+  const page = Number.isFinite(pageRaw) && pageRaw > 0 ? pageRaw : 1;
+  const canonical = page > 1 ? `${base}/blog?page=${page}` : `${base}/blog`;
   return {
     title: "Blog",
     description: "Latest articles from our team and official sources.",
-    alternates: { canonical: `${base}/blog` },
+    alternates: { canonical },
     openGraph: {
       title: "Blog",
       description: "Latest articles from our team and official sources.",
-      url: `${base}/blog`,
+      url: canonical,
       type: "website",
     },
     twitter: {

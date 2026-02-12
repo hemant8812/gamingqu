@@ -35,6 +35,23 @@ function generateNonce(): string {
 export async function middleware(req: NextRequest) {
   const url = req.nextUrl;
 
+  // Enforce canonical domain/scheme in production
+  const isDev = process.env.NODE_ENV !== "production";
+  const canonical = process.env.NEXT_PUBLIC_SITE_URL;
+  if (!isDev && canonical) {
+    try {
+      const target = new URL(canonical);
+      if (url.host !== target.host || url.protocol !== target.protocol) {
+        const redirectUrl = new URL(url.toString());
+        redirectUrl.protocol = target.protocol;
+        redirectUrl.host = target.host;
+        return NextResponse.redirect(redirectUrl, { status: 308 });
+      }
+    } catch {
+      /* ignore invalid canonical */
+    }
+  }
+
   if (
     req.method === "POST" &&
     (url.pathname.startsWith("/api/auth/") || url.pathname === "/api/register" || url.pathname.startsWith("/api/auth/register"))
@@ -56,7 +73,6 @@ export async function middleware(req: NextRequest) {
     },
   });
 
-  const isDev = process.env.NODE_ENV !== "production";
   const csp = [
     "default-src 'self'",
     "base-uri 'self'",

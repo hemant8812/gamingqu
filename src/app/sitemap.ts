@@ -12,6 +12,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${base}/contact`, lastModified: new Date(), changeFrequency: "monthly", priority: 0.5 },
   ];
   let posts: MetadataRoute.Sitemap = [];
+  let games: MetadataRoute.Sitemap = [];
+  let services: MetadataRoute.Sitemap = [];
   try {
     const items = await db.post.findMany({
       where: { isPublished: true },
@@ -26,5 +28,33 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       priority: 0.8,
     }));
   } catch {}
-  return [...staticRoutes, ...posts];
+  try {
+    const gs = await db.game.findMany({
+      where: { isActive: true },
+      select: { slug: true, updatedAt: true },
+      orderBy: { updatedAt: "desc" },
+      take: 1000,
+    });
+    games = gs.map((g) => ({
+      url: `${base}/${g.slug}`,
+      lastModified: g.updatedAt,
+      changeFrequency: "weekly",
+      priority: 0.7,
+    }));
+  } catch {}
+  try {
+    const ss = await db.service.findMany({
+      where: { isActive: true, game: { isActive: true } },
+      select: { slug: true, updatedAt: true, game: { select: { slug: true } } },
+      orderBy: { updatedAt: "desc" },
+      take: 5000,
+    });
+    services = ss.map((s) => ({
+      url: `${base}/${s.game.slug}/${s.slug}`,
+      lastModified: s.updatedAt,
+      changeFrequency: "weekly",
+      priority: 0.6,
+    }));
+  } catch {}
+  return [...staticRoutes, ...games, ...services, ...posts];
 }

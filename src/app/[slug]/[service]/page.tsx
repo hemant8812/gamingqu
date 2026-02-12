@@ -5,6 +5,7 @@ import { notFound } from "next/navigation";
 import { ServicePanel } from "@/components/services/ServicePanel";
 import type { Metadata } from "next";
 import { sanitizePlain } from "@/lib/sanitize";
+import { getBaseUrl } from "@/lib/site";
 import { TrustBanner } from "@/components/shared/TrustBanner";
 import { getWebsiteSettingCore } from "@/lib/settings";
 
@@ -15,6 +16,7 @@ export async function generateMetadata({ params }: { params: Params }): Promise<
   const gameSlug = Array.isArray(p.slug) ? p.slug[0] : p.slug || "";
   const serviceSlug = Array.isArray(p.service) ? p.service[0] : p.service || "";
   if (!gameSlug || !serviceSlug) return {};
+  const base = getBaseUrl();
   try {
     const s = await db.service.findFirst({
       where: { slug: serviceSlug, isActive: true, game: { slug: gameSlug, isActive: true } },
@@ -26,6 +28,7 @@ export async function generateMetadata({ params }: { params: Params }): Promise<
     return {
       title,
       description: desc,
+      alternates: { canonical: `${base}/${s.game.slug}/${serviceSlug}` },
       openGraph: { title, description: desc },
       twitter: { card: "summary_large_image", title, description: desc },
       robots: { index: true, follow: true },
