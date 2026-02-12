@@ -43,10 +43,9 @@ export async function middleware(req: NextRequest) {
     try {
       const target = canonical.includes("://") ? new URL(canonical) : new URL(`https://${canonical}`);
       const targetHostname = target.hostname;
-      const targetProtocol = target.protocol;
-      if (url.hostname !== targetHostname || url.protocol !== targetProtocol) {
+      const forwardedHost = (req.headers.get("x-forwarded-host") || req.headers.get("host") || url.hostname).split(",")[0].trim();
+      if (forwardedHost !== targetHostname) {
         const redirectUrl = new URL(url.toString());
-        redirectUrl.protocol = targetProtocol;
         redirectUrl.hostname = targetHostname;
         redirectUrl.port = "";
         return NextResponse.redirect(redirectUrl, { status: 308 });
