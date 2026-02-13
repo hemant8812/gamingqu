@@ -51,7 +51,7 @@ export function CategoryList({ categories }: { categories: CategoryItem[] }) {
         >
           <div className="w-10 h-10 rounded-lg bg-white/5 overflow-hidden flex items-center justify-center shrink-0">
             {c.game.iconUrl ? (
-              <Image src={c.game.iconUrl} alt={c.game.name} width={40} height={40} className="object-cover w-full h-full" />
+              <Image src={c.game.iconUrl} alt={c.game.name} width={40} height={40} className="object-cover w-full h-full" unoptimized />
             ) : (
               <div className="text-[10px] text-gray-500">No icon</div>
             )}
