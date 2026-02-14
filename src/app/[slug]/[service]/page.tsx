@@ -8,6 +8,7 @@ import { sanitizePlain } from "@/lib/sanitize";
 import { getBaseUrl } from "@/lib/site";
 import { TrustBanner } from "@/components/shared/TrustBanner";
 import { getWebsiteSettingCore } from "@/lib/settings";
+import { headers } from "next/headers";
 
 type Params = Promise<{ slug?: string | string[]; service?: string | string[] }>;
 
@@ -50,6 +51,7 @@ export default async function ServiceDetailPage({ params }: { params: Params }) 
   const brandName = setting?.siteName ?? "Gamingqu";
   const bannerLogoUrl = setting?.faviconUrl ?? setting?.logoUrl ?? "/icons/logo.png";
   const base = getBaseUrl();
+  const nonce = (await headers()).get("x-nonce") || "";
 
   const service = await db.service.findFirst({
     where: { slug: serviceSlug, isActive: true, game: { slug: gameSlug, isActive: true } },
@@ -250,6 +252,7 @@ export default async function ServiceDetailPage({ params }: { params: Params }) 
               />
             )}
             <script
+              nonce={nonce}
               type="application/ld+json"
               dangerouslySetInnerHTML={{
                 __html: JSON.stringify({
@@ -273,6 +276,7 @@ export default async function ServiceDetailPage({ params }: { params: Params }) 
               }}
             />
             <script
+              nonce={nonce}
               type="application/ld+json"
               dangerouslySetInnerHTML={{
                 __html: JSON.stringify({

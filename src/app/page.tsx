@@ -2,6 +2,7 @@ import { HomeContent } from "@/components/home/HomeContent";
 import type { Metadata } from "next";
 import { getWebsiteSettingCore, getFooterSettings } from "@/lib/settings";
 import { getBaseUrl } from "@/lib/site";
+import { headers } from "next/headers";
 
 export async function generateMetadata(): Promise<Metadata> {
   const s = await getWebsiteSettingCore();
@@ -37,6 +38,7 @@ export default async function Home() {
   const s = await getWebsiteSettingCore();
   const f = await getFooterSettings();
   const base = getBaseUrl();
+  const nonce = (await headers()).get("x-nonce") || "";
   const title = s?.siteName ?? "Gamingqu";
   const favicon = s?.faviconUrl ?? "/icons/logo.png";
   const logo = s?.logoUrl ?? favicon;
@@ -87,10 +89,12 @@ export default async function Home() {
   return (
     <>
       <script
+        nonce={nonce}
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteLd) }}
       />
       <script
+        nonce={nonce}
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(orgLd) }}
       />

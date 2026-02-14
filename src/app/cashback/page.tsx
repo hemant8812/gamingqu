@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { getBaseUrl } from "@/lib/site";
 import Link from "next/link";
 import { FiPercent, FiShield, FiClock, FiGift } from "react-icons/fi";
+import { headers } from "next/headers";
 export async function generateMetadata(): Promise<Metadata> {
   const base = getBaseUrl();
   const title = "Cashback";
@@ -26,6 +27,7 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 export default async function CashbackPage() {
   const base = getBaseUrl();
+  const nonce = (await headers()).get("x-nonce") || "";
   const breadcrumbLd = {
     "@context": "https://schema.org",
     "@type": "BreadcrumbList",
@@ -48,8 +50,8 @@ export default async function CashbackPage() {
         <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-cyan-500/10 rounded-full blur-3xl" />
       </div>
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 pt-10 pb-10">
-        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbLd) }} />
-        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(webPageLd) }} />
+        <script nonce={nonce} type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbLd) }} />
+        <script nonce={nonce} type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(webPageLd) }} />
         <div className="mb-6">
           <div className="flex items-center justify-between gap-4">
             <h1 className="text-4xl font-extrabold tracking-tight">Cashback</h1>

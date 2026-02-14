@@ -3,6 +3,7 @@ import Image from "next/image";
 import Link from "next/link";
 import type { Metadata } from "next";
 import { getBaseUrl } from "@/lib/site";
+import { headers } from "next/headers";
 
 const BLUR_DATA_URL = "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==";
 export async function generateMetadata({ searchParams }: { searchParams?: Promise<Record<string, string | string[] | undefined>> }): Promise<Metadata> {
@@ -35,6 +36,7 @@ export default async function BlogPage({ searchParams }: { searchParams?: Promis
   const pageParam = sp?.page;
   const pageRaw = typeof pageParam === "string" ? parseInt(pageParam, 10) : 1;
   const page = Number.isFinite(pageRaw) && pageRaw > 0 ? pageRaw : 1;
+  const nonce = (await headers()).get("x-nonce") || "";
   const take = 12;
   const total = await db.post.count({ where: { isPublished: true } });
   const totalPages = Math.max(1, Math.ceil(total / take));
@@ -74,10 +76,12 @@ export default async function BlogPage({ searchParams }: { searchParams?: Promis
       </div>
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 pt-10 pb-10">
         <script
+          nonce={nonce}
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbLd) }}
         />
         <script
+          nonce={nonce}
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(itemListLd) }}
         />

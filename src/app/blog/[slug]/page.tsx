@@ -5,6 +5,7 @@ import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { getBaseUrl } from "@/lib/site";
 import { getWebsiteSettingCore } from "@/lib/settings";
+import { headers } from "next/headers";
 
 type Props = { params: Promise<{ slug?: string | string[] }> };
 
@@ -62,6 +63,7 @@ export default async function BlogDetailPage({ params }: Props) {
 
   const s = await getWebsiteSettingCore();
   const base = getBaseUrl();
+  const nonce = (await headers()).get("x-nonce") || "";
   return (
     <div className="min-h-screen bg-[#0A0E17] text-white">
       <div className="fixed inset-0 pointer-events-none">
@@ -71,6 +73,7 @@ export default async function BlogDetailPage({ params }: Props) {
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 pt-16 pb-14">
       {(() => null)()}
       <script
+        nonce={nonce}
         type="application/ld+json"
         dangerouslySetInnerHTML={{
           __html: JSON.stringify({
@@ -93,6 +96,7 @@ export default async function BlogDetailPage({ params }: Props) {
         }}
       />
       <script
+        nonce={nonce}
         type="application/ld+json"
         dangerouslySetInnerHTML={{
           __html: JSON.stringify({

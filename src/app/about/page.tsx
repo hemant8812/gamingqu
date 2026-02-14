@@ -3,6 +3,7 @@ import Link from "next/link";
 import { getBaseUrl } from "@/lib/site";
 import { getWebsiteSettingCore } from "@/lib/settings";
 import { FiShield, FiZap, FiUsers, FiTrendingUp, FiThumbsUp, FiMail, FiEye, FiHeadphones, FiSliders } from "react-icons/fi";
+import { headers } from "next/headers";
 
 export async function generateMetadata(): Promise<Metadata> {
   const base = getBaseUrl();
@@ -33,6 +34,7 @@ export async function generateMetadata(): Promise<Metadata> {
 export default async function AboutPage() {
   const base = getBaseUrl();
   const s = await getWebsiteSettingCore();
+  const nonce = (await headers()).get("x-nonce") || "";
   const siteName = s?.siteName ?? "Gamingqu";
   const tagline = s?.tagline ?? "Professional Game Boosting Services";
   const breadcrumbLd = {
@@ -57,8 +59,8 @@ export default async function AboutPage() {
         <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-cyan-500/10 rounded-full blur-3xl" />
       </div>
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 pt-10 pb-12">
-        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbLd) }} />
-        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(webPageLd) }} />
+        <script nonce={nonce} type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbLd) }} />
+        <script nonce={nonce} type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(webPageLd) }} />
         <div className="mb-8">
           <div className="flex items-center justify-between gap-4">
             <div className="flex items-center gap-3">

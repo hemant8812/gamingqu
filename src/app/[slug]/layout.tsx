@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { db } from "@/lib/prisma";
 import { getBaseUrl } from "@/lib/site";
 import React from "react";
+import { headers } from "next/headers";
 
 type Params = Promise<{ slug: string }>;
 
@@ -49,6 +50,7 @@ export default async function SlugLayout({
 }) {
   const { slug } = await params;
   const base = getBaseUrl();
+  const nonce = (await headers()).get("x-nonce") || "";
   let game: { name: string; description?: string | null; imageUrl?: string | null } | null = null;
   try {
     game = await db.game.findFirst({
@@ -82,10 +84,12 @@ export default async function SlugLayout({
   return (
     <>
       <script
+        nonce={nonce}
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(videoGameLd) }}
       />
       <script
+        nonce={nonce}
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbLd) }}
       />
