@@ -78,7 +78,12 @@ export function HomeContent() {
         }
         const hotData = await hotRes.json().catch(() => null);
         if (hotData?.services && Array.isArray(hotData.services)) {
-          setHotServices(hotData.services);
+          const arr = [...hotData.services];
+          for (let i = arr.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [arr[i], arr[j]] = [arr[j], arr[i]];
+          }
+          setHotServices(arr.slice(0, 5));
         }
       } catch { }
     };
@@ -91,7 +96,12 @@ export function HomeContent() {
       const res = await fetch("/api/services/hot", { cache: "no-store" });
       const data = await res.json();
       if (data?.services && Array.isArray(data.services)) {
-        setHotServices(data.services);
+        const arr = [...data.services];
+        for (let i = arr.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [arr[i], arr[j]] = [arr[j], arr[i]];
+        }
+        setHotServices(arr.slice(0, 5));
       }
     } catch { }
     setHotLoading(false);
