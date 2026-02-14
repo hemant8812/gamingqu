@@ -88,8 +88,8 @@ export async function middleware(req: NextRequest) {
     "font-src 'self' data: https://client.crisp.chat https://fonts.gstatic.com https://*.tawk.to",
     "frame-src 'self' https://*.tawk.to https://embed.tawk.to https://*.crisp.chat",
     `connect-src 'self' https: wss:`,
-    "script-src-elem 'self' https://static.cloudflareinsights.com https://www.googletagmanager.com https://client.crisp.chat https://embed.tawk.to https://*.tawk.to https://www.googleadservices.com https://googleads.g.doubleclick.net https://www.google.com https://adservice.google.com https://cdn.jsdelivr.net",
-    `script-src 'self' 'nonce-${nonce}' 'strict-dynamic' 'unsafe-inline'${isDev ? " 'unsafe-eval'" : ""} https://static.cloudflareinsights.com https://www.googletagmanager.com https://client.crisp.chat https://embed.tawk.to https://*.tawk.to https://www.googleadservices.com https://googleads.g.doubleclick.net https://www.google.com https://adservice.google.com https://cdn.jsdelivr.net`,
+    `script-src-elem 'self' 'nonce-${nonce}' 'strict-dynamic' https://static.cloudflareinsights.com https://www.googletagmanager.com https://client.crisp.chat https://embed.tawk.to https://*.tawk.to https://www.googleadservices.com https://googleads.g.doubleclick.net https://www.google.com https://adservice.google.com https://cdn.jsdelivr.net`,
+    `script-src 'self' 'nonce-${nonce}' 'strict-dynamic'${isDev ? " 'unsafe-inline' 'unsafe-eval'" : ""} https://static.cloudflareinsights.com https://www.googletagmanager.com https://client.crisp.chat https://embed.tawk.to https://*.tawk.to https://www.googleadservices.com https://googleads.g.doubleclick.net https://www.google.com https://adservice.google.com https://cdn.jsdelivr.net`,
   ].join("; ");
 
   res.headers.set("Content-Security-Policy", csp);
