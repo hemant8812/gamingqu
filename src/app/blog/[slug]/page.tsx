@@ -49,7 +49,7 @@ export default async function BlogDetailPage({ params }: Props) {
   if (!slugParam) return notFound();
   const post = await db.post.findUnique({
     where: { slug: slugParam },
-    select: { id: true, title: true, slug: true, excerpt: true, content: true, imageUrl: true, sourceUrl: true, createdAt: true },
+    select: { id: true, title: true, slug: true, excerpt: true, content: true, imageUrl: true, sourceUrl: true, createdAt: true, updatedAt: true },
   });
   if (!post) return notFound();
 
@@ -78,10 +78,10 @@ export default async function BlogDetailPage({ params }: Props) {
         dangerouslySetInnerHTML={{
           __html: JSON.stringify({
             "@context": "https://schema.org",
-            "@type": "Article",
+            "@type": "BlogPosting",
             headline: post.title,
             datePublished: new Date(post.createdAt).toISOString(),
-            dateModified: new Date(post.createdAt).toISOString(),
+            dateModified: new Date(post.updatedAt ?? post.createdAt).toISOString(),
             image: post.imageUrl ? [post.imageUrl] : undefined,
             mainEntityOfPage: `${base}/blog/${post.slug}`,
             author: { "@type": "Organization", name: s?.siteName ?? "Gamingqu" },
@@ -89,9 +89,10 @@ export default async function BlogDetailPage({ params }: Props) {
               "@type": "Organization",
               name: s?.siteName ?? "Gamingqu",
               url: base,
-              logo: s?.logoUrl ?? "/icons/logo.png",
+              logo: { "@type": "ImageObject", url: s?.logoUrl ?? "/icons/logo.png" },
             },
             description: post.excerpt ?? post.title,
+            articleBody: post.content ?? post.excerpt ?? post.title,
           }),
         }}
       />

@@ -2,6 +2,8 @@ import type { MetadataRoute } from "next";
 import { db } from "@/lib/prisma";
 import { getBaseUrl } from "@/lib/site";
 
+export const dynamic = "force-dynamic";
+
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const base = getBaseUrl();
   const staticRoutes: MetadataRoute.Sitemap = [
@@ -10,6 +12,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${base}/cashback`, lastModified: new Date(), changeFrequency: "monthly", priority: 0.5 },
     { url: `${base}/about`, lastModified: new Date(), changeFrequency: "monthly", priority: 0.5 },
     { url: `${base}/contact`, lastModified: new Date(), changeFrequency: "monthly", priority: 0.5 },
+    { url: `${base}/work-with-us`, lastModified: new Date(), changeFrequency: "monthly", priority: 0.5 },
+    { url: `${base}/trust-safety`, lastModified: new Date(), changeFrequency: "monthly", priority: 0.5 },
   ];
   let posts: MetadataRoute.Sitemap = [];
   let games: MetadataRoute.Sitemap = [];
