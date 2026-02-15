@@ -77,11 +77,13 @@ export default async function BlogPage({ searchParams }: { searchParams?: Promis
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 pt-10 pb-10">
         <script
           nonce={nonce}
+          suppressHydrationWarning
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbLd) }}
         />
         <script
           nonce={nonce}
+          suppressHydrationWarning
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(itemListLd) }}
         />

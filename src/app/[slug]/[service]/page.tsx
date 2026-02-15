@@ -253,6 +253,7 @@ export default async function ServiceDetailPage({ params }: { params: Params }) 
             )}
             <script
               nonce={nonce}
+              suppressHydrationWarning
               type="application/ld+json"
               dangerouslySetInnerHTML={{
                 __html: JSON.stringify({
@@ -277,6 +278,7 @@ export default async function ServiceDetailPage({ params }: { params: Params }) 
             />
             <script
               nonce={nonce}
+              suppressHydrationWarning
               type="application/ld+json"
               dangerouslySetInnerHTML={{
                 __html: JSON.stringify({

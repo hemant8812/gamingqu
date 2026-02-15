@@ -66,7 +66,9 @@ export async function middleware(req: NextRequest) {
     }
   }
 
-  const nonce = generateNonce();
+  const nonceCookieName = "__csp_nonce";
+  const nonceCookieExisting = isDev ? req.cookies.get(nonceCookieName)?.value : undefined;
+  const nonce = isDev ? (nonceCookieExisting || generateNonce()) : generateNonce();
   const requestHeaders = new Headers(req.headers);
   requestHeaders.set("x-nonce", nonce);
 
@@ -75,6 +77,15 @@ export async function middleware(req: NextRequest) {
       headers: requestHeaders,
     },
   });
+
+  if (isDev && !nonceCookieExisting) {
+    res.cookies.set(nonceCookieName, nonce, {
+      httpOnly: true,
+      sameSite: "lax",
+      path: "/",
+      maxAge: 60,
+    });
+  }
 
   const csp = [
     "default-src 'self'",

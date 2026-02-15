@@ -74,6 +74,7 @@ export default async function BlogDetailPage({ params }: Props) {
       {(() => null)()}
       <script
         nonce={nonce}
+        suppressHydrationWarning
         type="application/ld+json"
         dangerouslySetInnerHTML={{
           __html: JSON.stringify({
@@ -98,6 +99,7 @@ export default async function BlogDetailPage({ params }: Props) {
       />
       <script
         nonce={nonce}
+        suppressHydrationWarning
         type="application/ld+json"
         dangerouslySetInnerHTML={{
           __html: JSON.stringify({

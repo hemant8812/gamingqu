@@ -465,7 +465,15 @@ export function Navbar({ siteName = "Gamingqu", logoUrl = null, user = null }: P
                   {user.role === "MEMBER" && (
                     <li><Link href="/dashboard" onClick={closeDropdown} className="w-full hover:bg-white/10 rounded-xl text-gray-200"><FiGrid className="h-4 w-4 text-blue-400" /> Dashboard</Link></li>
                   )}
-                  <li><Link href="/dashboard/orders" onClick={closeDropdown} className="w-full hover:bg-white/10 rounded-xl text-gray-200"><FiShoppingCart className="h-4 w-4 text-blue-400" /> My orders</Link></li>
+                  {user.role === "BOOSTER" && (
+                    <li><Link href="/booster" onClick={closeDropdown} className="w-full hover:bg-white/10 rounded-xl text-gray-200"><FiGrid className="h-4 w-4 text-blue-400" /> Booster Panel</Link></li>
+                  )}
+                  {user.role === "MEMBER" && (
+                    <li><Link href="/dashboard/orders" onClick={closeDropdown} className="w-full hover:bg-white/10 rounded-xl text-gray-200"><FiShoppingCart className="h-4 w-4 text-blue-400" /> My orders</Link></li>
+                  )}
+                  {user.role === "BOOSTER" && (
+                    <li><Link href="/booster/jobs" onClick={closeDropdown} className="w-full hover:bg-white/10 rounded-xl text-gray-200"><FiShoppingCart className="h-4 w-4 text-blue-400" /> Jobs</Link></li>
+                  )}
                   <li><button onClick={() => signOut({ callbackUrl: "/" })} className="w-full hover:bg-red-500/20 rounded-xl text-red-400"><FiLogOut className="h-4 w-4" /> Logout</button></li>
                 </ul>
               </div>

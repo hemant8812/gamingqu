@@ -15,7 +15,7 @@ export default function LoginPage() {
   const router = useRouter();
   useEffect(() => {
     if (status === "authenticated") {
-      router.replace("/");
+      router.replace("/post-login");
     }
   }, [status, router]);
   const [email, setEmail] = useState<string>(() => (typeof window !== "undefined" ? localStorage.getItem("rememberEmail") ?? "" : ""));
@@ -62,7 +62,7 @@ export default function LoginPage() {
       setError("Incorrect email or password");
       return;
     }
-    window.location.href = "/";
+    window.location.href = "/post-login";
   };
 
   return (
@@ -231,7 +231,7 @@ export default function LoginPage() {
             <div className="grid grid-cols-2 gap-4">
               <button
                 type="button"
-                onClick={() => signIn("google", { callbackUrl: "/" })}
+                onClick={() => signIn("google", { callbackUrl: "/post-login" })}
                 className="btn glass-light border-white/10 hover:border-white/20 hover:bg-white/10 text-white h-12 rounded-xl normal-case font-medium transition-all"
               >
                 <FcGoogle size={22} className="mr-2" />
@@ -239,7 +239,7 @@ export default function LoginPage() {
               </button>
               <button
                 type="button"
-                onClick={() => signIn("discord", { callbackUrl: "/" })}
+                onClick={() => signIn("discord", { callbackUrl: "/post-login" })}
                 className="btn bg-[#5865F2] hover:bg-[#4752c4] text-white border-none h-12 rounded-xl normal-case font-medium transition-all hover:shadow-[0_0_20px_rgba(88,101,242,0.4)]"
               >
                 <SiDiscord size={22} className="mr-2" />
