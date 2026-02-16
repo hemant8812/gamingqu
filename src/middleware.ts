@@ -36,7 +36,8 @@ export async function middleware(req: NextRequest) {
   const url = req.nextUrl;
 
   if (req.method === "GET" && (url.pathname === "/api/auth/providers" || url.pathname.startsWith("/api/auth/providers/"))) {
-    return new NextResponse("Not Found", { status: 404 });
+    const redirectUrl = new URL("/", req.url);
+    return NextResponse.redirect(redirectUrl, { status: 302 });
   }
 
   // Enforce canonical domain/scheme in production

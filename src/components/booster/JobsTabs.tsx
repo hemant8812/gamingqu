@@ -62,7 +62,12 @@ export function JobsTabs({ available, active }: { available: AvailableJob[]; act
         {isAvailable ? (
           <div className="space-y-2">
             {available.length === 0 ? (
-              <div className="px-6 py-12 text-center text-gray-400">No available jobs</div>
+              <div className="px-6 py-12 text-center">
+                <div className="mb-4 text-gray-400 flex items-center justify-center">
+                  <Briefcase className="h-10 w-10" />
+                </div>
+                <div className="text-lg font-bold text-gray-200">No available jobs</div>
+              </div>
             ) : (
               <div className="max-h-96 overflow-y-auto pr-1">
                 {pageItems.map((job) => {
@@ -155,7 +160,12 @@ export function JobsTabs({ available, active }: { available: AvailableJob[]; act
         ) : isActive ? (
           <div className="space-y-3">
             {active.length === 0 ? (
-              <div className="px-6 py-12 text-center text-gray-400">No active jobs</div>
+              <div className="px-6 py-12 text-center">
+                <div className="mb-4 text-gray-400 flex items-center justify-center">
+                  <Activity className="h-10 w-10" />
+                </div>
+                <div className="text-lg font-bold text-gray-200">No active jobs</div>
+              </div>
             ) : (
               <div className="max-h-96 overflow-y-auto pr-1">
                 {active.map((job) => (
@@ -179,7 +189,12 @@ export function JobsTabs({ available, active }: { available: AvailableJob[]; act
             )}
           </div>
         ) : (
-          <div className="px-6 py-12 text-center text-gray-400">No completed jobs yet</div>
+          <div className="px-6 py-12 text-center">
+            <div className="mb-4 text-gray-400 flex items-center justify-center">
+              <CheckCircle className="h-10 w-10" />
+            </div>
+            <div className="text-lg font-bold text-gray-200">No completed jobs yet</div>
+          </div>
         )}
         {selected && (
           <div className="fixed inset-0 z-50 flex items-center justify-center p-4 overflow-y-auto">
