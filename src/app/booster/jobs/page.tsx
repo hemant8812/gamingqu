@@ -50,7 +50,7 @@ export default async function BoosterJobsPage() {
   let availableJobs: Array<{ id: string; title: string; game: string; price: string; createdAt: string; payload?: string }> = [];
   try {
     const list = await db.order.findMany({
-      where: { fulfillmentStatus: "PENDING" },
+      where: { status: "PAID", fulfillmentStatus: "PENDING" },
       select: {
         code: true,
         items: true,
