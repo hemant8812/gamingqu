@@ -35,10 +35,7 @@ function generateNonce(): string {
 export async function middleware(req: NextRequest) {
   const url = req.nextUrl;
 
-  if (req.method === "GET" && (url.pathname === "/api/auth/providers" || url.pathname.startsWith("/api/auth/providers/"))) {
-    const redirectUrl = new URL("/", req.url);
-    return NextResponse.redirect(redirectUrl, { status: 302 });
-  }
+  // Allow NextAuth providers endpoint; required by signIn("google") on client
 
   // Enforce canonical domain/scheme in production
   const isDev = process.env.NODE_ENV !== "production";

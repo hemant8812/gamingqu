@@ -75,6 +75,28 @@ const customAdapter: Adapter = {
   },
 };
 
+// Resolve provider credentials with backward-compatible ENV names
+const GOOGLE_ID =
+  process.env.GOOGLE_CLIENT_ID ||
+  process.env.GOOGLE_ID ||
+  process.env.AUTH_GOOGLE_ID ||
+  "";
+const GOOGLE_SECRET =
+  process.env.GOOGLE_CLIENT_SECRET ||
+  process.env.GOOGLE_SECRET ||
+  process.env.AUTH_GOOGLE_SECRET ||
+  "";
+const DISCORD_ID =
+  process.env.DISCORD_CLIENT_ID ||
+  process.env.DISCORD_ID ||
+  process.env.AUTH_DISCORD_ID ||
+  "";
+const DISCORD_SECRET =
+  process.env.DISCORD_CLIENT_SECRET ||
+  process.env.DISCORD_SECRET ||
+  process.env.AUTH_DISCORD_SECRET ||
+  "";
+
 const baseAuthOptions: NextAuthOptions = {
   adapter: customAdapter,
   session: { strategy: "jwt", maxAge: SESSION_MAX_AGE },
@@ -132,19 +154,19 @@ const baseAuthOptions: NextAuthOptions = {
         return u;
       },
     }),
-    ...(process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET
+    ...(GOOGLE_ID && GOOGLE_SECRET
       ? [
           Google({
-            clientId: process.env.GOOGLE_CLIENT_ID!,
-            clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
+            clientId: GOOGLE_ID!,
+            clientSecret: GOOGLE_SECRET!,
           }),
         ]
       : []),
-    ...(process.env.DISCORD_CLIENT_ID && process.env.DISCORD_CLIENT_SECRET
+    ...(DISCORD_ID && DISCORD_SECRET
       ? [
           Discord({
-            clientId: process.env.DISCORD_CLIENT_ID!,
-            clientSecret: process.env.DISCORD_CLIENT_SECRET!,
+            clientId: DISCORD_ID!,
+            clientSecret: DISCORD_SECRET!,
           }),
         ]
       : []),
@@ -215,7 +237,7 @@ const baseAuthOptions: NextAuthOptions = {
       } catch {}
     },
   },
-  pages: { signIn: "/login" },
+  pages: { signIn: "/login", error: "/auth/error" },
   secret: AUTH_SECRET,
 };
 
