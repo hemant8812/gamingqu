@@ -112,7 +112,10 @@ export async function middleware(req: NextRequest) {
   res.headers.set("x-nonce", nonce);
   if (!isDev) {
     res.headers.set("Strict-Transport-Security", "max-age=31536000; includeSubDomains; preload");
-    res.headers.set("Content-Security-Policy-Report-Only", "require-trusted-types-for 'script'");
+    const ttReportOnly = (process.env.NEXT_PUBLIC_TT_REPORT_ONLY || process.env.TT_REPORT_ONLY || "").trim() === "1";
+    if (ttReportOnly) {
+      res.headers.set("Content-Security-Policy-Report-Only", "require-trusted-types-for 'script'");
+    }
   }
 
   return res;
