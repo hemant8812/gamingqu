@@ -145,6 +145,26 @@ const baseAuthOptions: NextAuthOptions = {
       : []),
   ],
   callbacks: {
+    signIn: async (args) => {
+      const { user, account } = args as unknown as {
+        user: Partial<User> & { id?: string };
+        account?: { provider?: string };
+        profile?: { email?: string | null };
+      };
+      try {
+        if (account?.provider === "google") {
+          const e = normalizeEmail((user?.email as string | undefined) ?? ((args as unknown as { profile?: { email?: string | null } })?.profile?.email ?? ""));
+          if (!e) return false;
+          const existing = await db.user.findUnique({ where: { email: e }, select: { id: true } });
+          if (existing) {
+            (user as unknown as Record<string, unknown>).id = existing.id;
+          }
+        }
+      } catch {
+        // fall through; let NextAuth handle the rest
+      }
+      return true;
+    },
     jwt: async ({ token, user }) => {
       if (user) {
         const u = user as User & { username?: string | null; id: string };
