@@ -68,6 +68,11 @@ const customAdapter: Adapter = {
     });
     return created as AdapterUser;
   },
+  getUserByEmail: async (email) => {
+    return db.user.findUnique({
+      where: { email: normalizeEmail(email) },
+    }) as Promise<AdapterUser | null>;
+  },
 };
 
 const baseAuthOptions: NextAuthOptions = {
@@ -155,10 +160,6 @@ const baseAuthOptions: NextAuthOptions = {
         if (account?.provider === "google") {
           const e = normalizeEmail((user?.email as string | undefined) ?? ((args as unknown as { profile?: { email?: string | null } })?.profile?.email ?? ""));
           if (!e) return false;
-          const existing = await db.user.findUnique({ where: { email: e }, select: { id: true } });
-          if (existing) {
-            (user as unknown as Record<string, unknown>).id = existing.id;
-          }
         }
       } catch {
         // fall through; let NextAuth handle the rest
