@@ -175,7 +175,18 @@ const baseAuthOptions: NextAuthOptions = {
     signIn: async (args) => {
       const { user, account } = args as unknown as {
         user: Partial<User> & { id?: string };
-        account?: { provider?: string };
+        account?: {
+          provider?: string;
+          providerAccountId?: string;
+          type?: string;
+          access_token?: string | null;
+          refresh_token?: string | null;
+          expires_at?: number | null;
+          token_type?: string | null;
+          id_token?: string | null;
+          scope?: string | null;
+          session_state?: string | null;
+        };
         profile?: { email?: string | null };
       };
       try {
@@ -191,6 +202,39 @@ const baseAuthOptions: NextAuthOptions = {
           });
           if (existing) {
             (user as unknown as Record<string, unknown>).id = existing.id;
+            if (account?.providerAccountId && account.provider) {
+              await db.account.upsert({
+                where: {
+                  provider_providerAccountId: {
+                    provider: account.provider,
+                    providerAccountId: account.providerAccountId,
+                  },
+                },
+                update: {
+                  userId: existing.id,
+                  access_token: account.access_token ?? undefined,
+                  refresh_token: account.refresh_token ?? undefined,
+                  expires_at: account.expires_at ?? undefined,
+                  token_type: account.token_type ?? undefined,
+                  id_token: account.id_token ?? undefined,
+                  scope: account.scope ?? undefined,
+                  session_state: account.session_state ?? undefined,
+                },
+                create: {
+                  userId: existing.id,
+                  type: account.type ?? "oauth",
+                  provider: account.provider,
+                  providerAccountId: account.providerAccountId,
+                  access_token: account.access_token ?? undefined,
+                  refresh_token: account.refresh_token ?? undefined,
+                  expires_at: account.expires_at ?? undefined,
+                  token_type: account.token_type ?? undefined,
+                  id_token: account.id_token ?? undefined,
+                  scope: account.scope ?? undefined,
+                  session_state: account.session_state ?? undefined,
+                },
+              });
+            }
           }
         }
       } catch {
