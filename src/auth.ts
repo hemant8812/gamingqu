@@ -179,9 +179,19 @@ const baseAuthOptions: NextAuthOptions = {
         profile?: { email?: string | null };
       };
       try {
-        if (account?.provider === "google") {
-          const e = normalizeEmail((user?.email as string | undefined) ?? ((args as unknown as { profile?: { email?: string | null } })?.profile?.email ?? ""));
+        if (account?.provider === "google" || account?.provider === "discord") {
+          const e = normalizeEmail(
+            (user?.email as string | undefined) ??
+              ((args as unknown as { profile?: { email?: string | null } })?.profile?.email ?? "")
+          );
           if (!e) return false;
+          const existing = await db.user.findUnique({
+            where: { email: e },
+            select: { id: true },
+          });
+          if (existing) {
+            (user as unknown as Record<string, unknown>).id = existing.id;
+          }
         }
       } catch {
         // fall through; let NextAuth handle the rest
