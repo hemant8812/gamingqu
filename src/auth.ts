@@ -70,7 +70,7 @@ const customAdapter: Adapter = {
   },
 };
 
-export const authOptions: NextAuthOptions = {
+const baseAuthOptions: NextAuthOptions = {
   adapter: customAdapter,
   session: { strategy: "jwt", maxAge: SESSION_MAX_AGE },
   providers: [
@@ -197,3 +197,5 @@ export const authOptions: NextAuthOptions = {
   pages: { signIn: "/login" },
   secret: AUTH_SECRET,
 };
+
+export const authOptions = { ...baseAuthOptions, allowDangerousEmailAccountLinking: true } as unknown as NextAuthOptions;
