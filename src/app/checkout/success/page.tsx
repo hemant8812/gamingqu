@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { Check } from "lucide-react";
 import { db } from "@/lib/prisma";
+import { headers } from "next/headers";
 
 export const metadata: Metadata = {
   title: "Payment Successful",
@@ -23,6 +24,8 @@ export default async function PaymentSuccessPage({ searchParams }: { searchParam
   let createdAtText: string | null = null;
   let timeText: string | null = null;
   let statusText: "Completed" | "Pending" | "Cancelled" | "In Progress" | null = null;
+  let amountRaw: number | null = null;
+  let currencyCode: string | null = null;
   if (order) {
     try {
       const rec = await db.order.findUnique({
@@ -32,6 +35,8 @@ export default async function PaymentSuccessPage({ searchParams }: { searchParam
       if (rec) {
         const symbol = rec.currency === "EUR" ? "€" : "$";
         totalText = `${symbol}${Number.parseFloat(rec.amount.toString()).toFixed(2)}`;
+        amountRaw = Number.parseFloat(rec.amount.toString());
+        currencyCode = rec.currency ?? "USD";
         methodText = rec.methodSlug ? rec.methodSlug.charAt(0).toUpperCase() + rec.methodSlug.slice(1) : null;
         const dt = new Date(rec.createdAt as unknown as string);
         createdAtText = new Intl.DateTimeFormat("en-US", { month: "short", day: "2-digit", year: "numeric" }).format(dt);
@@ -47,6 +52,7 @@ export default async function PaymentSuccessPage({ searchParams }: { searchParam
       }
     } catch {}
   }
+  const nonce = (await headers()).get("x-nonce") || "";
 
   return (
     <div className="min-h-screen mesh-gradient text-base-content">
@@ -175,6 +181,29 @@ export default async function PaymentSuccessPage({ searchParams }: { searchParam
           100%{ opacity:0; transform:translateY(120vh) translateX(80px) rotate(360deg) }
         }
       `}</style>
+      <script
+        nonce={nonce}
+        dangerouslySetInnerHTML={{
+          __html: `
+            (function(){
+              try {
+                var params = {
+                  value: ${amountRaw != null ? JSON.stringify(amountRaw) : "null"},
+                  currency: ${JSON.stringify(currencyCode ?? "USD")},
+                  transaction_id: ${JSON.stringify(order || "")}
+                };
+                if (typeof window !== "undefined") {
+                  if (typeof window.gtag === "function") {
+                    window.gtag('event', 'conversion_event_purchase', params);
+                  } else if (Array.isArray(window.dataLayer)) {
+                    window.dataLayer.push(Object.assign({ event: 'conversion_event_purchase' }, params));
+                  }
+                }
+              } catch {}
+            })();
+          `,
+        }}
+      />
     </div>
   );
 }
