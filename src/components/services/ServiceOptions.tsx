@@ -421,23 +421,24 @@ function RangeDual({ range, onRangeChange }: { range: NonNullable<DetailItem["ra
   const maxItems = items && items.length > 0 ? items.reduce((acc, it) => Math.max(acc, it.max), items[0].max) : undefined;
   const min = Number.isFinite(range.min) ? range.min : (minItems ?? 0);
   const max = Number.isFinite(range.max) ? range.max : (maxItems ?? 100);
-  const initialFrom = (Number.isFinite(range.step) && range.step! >= min && range.step! <= max) 
-    ? range.step! 
-    : min;
-  const step = 1;
+  const stepRaw = Number(range.step);
+  const step = (Number.isFinite(stepRaw) && min >= 1000 && stepRaw >= 1) ? stepRaw : 1;
+  const initialFrom = min;
+  const initialToDefault = min + (min >= 1000 ? step : 1);
+  const initialTo = Math.min(initialToDefault, max);
   
   const [from, setFrom] = React.useState(initialFrom);
-  const [to, setTo] = React.useState(max);
+  const [to, setTo] = React.useState(initialTo);
   
   const [fromInput, setFromInput] = React.useState(initialFrom.toString());
-  const [toInput, setToInput] = React.useState(max.toString());
+  const [toInput, setToInput] = React.useState(initialTo.toString());
 
   const ref = React.useRef<HTMLDivElement | null>(null);
   const dragRef = React.useRef<"from" | "to" | null>(null);
 
   const ticks: number[] = React.useMemo(() => {
     const arr: number[] = [];
-    const inc = 10;
+    const inc = min >= 1000 ? Math.max(step, 100) : 10;
     let v = min;
     while (v <= max) {
       arr.push(v);
@@ -445,7 +446,7 @@ function RangeDual({ range, onRangeChange }: { range: NonNullable<DetailItem["ra
     }
     if (arr[arr.length - 1] !== max) arr.push(max);
     return arr;
-  }, [min, max]);
+  }, [min, max, step]);
 
   const valueToPercent = (val: number) => ((val - min) / (max - min)) * 100;
 
@@ -531,7 +532,9 @@ function RangeDual({ range, onRangeChange }: { range: NonNullable<DetailItem["ra
       
       if (val < min) val = min;
       if (val > to) val = to;
-      
+      if (min >= 1000 && step > 1) {
+        val = Math.round((val - min) / step) * step + min;
+      }
       setFrom(val);
       setFromInput(val.toString());
     } else {
@@ -540,7 +543,9 @@ function RangeDual({ range, onRangeChange }: { range: NonNullable<DetailItem["ra
       
       if (val > max) val = max;
       if (val < from) val = from;
-      
+      if (min >= 1000 && step > 1) {
+        val = Math.round((val - min) / step) * step + min;
+      }
       setTo(val);
       setToInput(val.toString());
     }

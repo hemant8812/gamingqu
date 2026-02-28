@@ -75,10 +75,15 @@ export function ServicePanel({
           }
           const p = Number(d.price);
           if (Number.isFinite(p) && p > 0) {
+            const minRaw = Number(d.range?.min);
+            const stepRaw = Number(d.range?.step);
+            const minVal = Number.isFinite(minRaw) ? minRaw : 0;
+            const step = (Number.isFinite(stepRaw) && minVal >= 1000 && stepRaw >= 1) ? stepRaw : 1;
+            const units = step > 1 ? (diff / step) : diff;
             if (d.priceType === "percent") {
-              rangeAdd += basePrice * (p / 100) * diff;
+              rangeAdd += basePrice * (p / 100) * units;
             } else {
-              rangeAdd += p * diff;
+              rangeAdd += p * units;
             }
           }
         }
