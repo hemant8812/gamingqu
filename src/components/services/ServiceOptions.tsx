@@ -733,10 +733,7 @@ export function ServiceOptions({
             <div key={d.id} className="space-y-1">
               <div className="text-white font-semibold">{d.title}</div>
               {dual ? (
-                <RangeDual 
-                  range={d.range} 
-                  onRangeChange={d.title.toLowerCase().includes("level") ? onRangeChange : undefined} 
-                />
+                <RangeDual range={d.range} onRangeChange={onRangeChange} />
               ) : (
                 <RangeSingle range={d.range} title={d.title} fieldName={d.fieldName} id={d.id} onSingleChange={onSingleRangeChange} />
               )}
