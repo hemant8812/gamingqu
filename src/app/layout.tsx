@@ -75,7 +75,7 @@ export default async function RootLayout({
   const faviconUrl = s?.faviconUrl ?? "/icons/logo.png";
   const logoUrl = s?.logoUrl ?? null;
   return (
-    <html lang="en">
+    <html lang="en" className="dark" data-theme="dark">
       <head>
         <link rel="icon" href="/favicon.ico" />
         <link rel="icon" href={faviconUrl} />
