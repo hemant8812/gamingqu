@@ -423,9 +423,8 @@ function RangeDual({ range, onRangeChange }: { range: NonNullable<DetailItem["ra
   const max = Number.isFinite(range.max) ? range.max : (maxItems ?? 100);
   const stepRaw = Number(range.step);
   const step = (Number.isFinite(stepRaw) && min >= 1000 && stepRaw >= 1) ? stepRaw : 1;
-  const initialFrom = min;
-  const initialToDefault = min + (min >= 1000 ? step : 1);
-  const initialTo = Math.min(initialToDefault, max);
+  const initialFrom = (min < 1000 && Number.isFinite(stepRaw) && stepRaw >= min && stepRaw <= max) ? stepRaw : min;
+  const initialTo = (min < 1000) ? max : Math.min(min + step, max);
   
   const [from, setFrom] = React.useState(initialFrom);
   const [to, setTo] = React.useState(initialTo);
