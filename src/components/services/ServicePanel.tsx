@@ -3,7 +3,7 @@
 import React from "react";
 import Link from "next/link";
 import { ServiceOptions } from "./ServiceOptions";
-import { Clock, Timer, ShoppingCart, CheckCircle } from "lucide-react";
+import { Clock, Timer, CheckCircle } from "lucide-react";
 import { formatPrice } from "@/lib/formatPrice";
 import { useCurrency } from "@/app/providers";
 import { Toaster, toast as sonnerToast } from "sonner";
@@ -244,14 +244,29 @@ export function ServicePanel({
                 setIsBuying(false);
               }
             }}
-            className={`btn btn-gaming w-full h-12 mt-2 rounded-md inline-flex items-center justify-center text-base md:text-lg group ${isBuying ? "opacity-75 cursor-wait" : ""}`}
+            className={`btn btn-gaming btn-buynow w-full h-12 mt-2 rounded-md inline-flex items-center justify-center text-base md:text-lg group ${isBuying ? "opacity-75 cursor-wait" : ""}`}
           >
             {isBuying ? (
               <span className="loading loading-spinner loading-md"></span>
             ) : (
               <>
-                <ShoppingCart className="h-5 w-5 mr-2 group-active:scale-90 transition-transform" />
-                Buy Now
+                <div className="svg-wrapper-1">
+                  <div className="svg-wrapper">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      viewBox="0 0 24 24"
+                      width="24"
+                      height="24"
+                    >
+                      <path fill="none" d="M0 0h24v24H0z"></path>
+                      <path
+                        fill="currentColor"
+                        d="M1.946 9.315c-.522-.174-.527-.455.01-.634l19.087-6.362c.529-.176.832.12.684.638l-5.454 19.086c-.15.529-.455.547-.679.045L12 14l6-8-8 6-8.054-2.685z"
+                      ></path>
+                    </svg>
+                  </div>
+                </div>
+                <span>Buy Now</span>
               </>
             )}
           </Link>

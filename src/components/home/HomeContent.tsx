@@ -1,6 +1,6 @@
 "use client";
 import Image from "next/image";
-import { FiRefreshCw, FiArrowRight, FiZap } from "react-icons/fi";
+import { FiRefreshCw, FiZap } from "react-icons/fi";
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -189,10 +189,23 @@ export function HomeContent() {
                         </p>
                         <Link
                           href={s.href}
-                          className="btn btn-gaming h-12 px-8 text-base rounded-xl inline-flex items-center gap-2 group hover:scale-105 transition-transform shadow-lg shadow-blue-600/20"
+                          className="btn btn-gaming btn-banner h-12 px-8 text-base rounded-xl inline-flex items-center gap-2 hover:scale-105 transition-transform shadow-lg shadow-blue-600/20"
                         >
-                          {s.cta}
-                          <FiArrowRight className="h-5 w-5 transition-transform group-hover:translate-x-1" />
+                          <span>{s.cta}</span>
+                          <div className="icon" aria-hidden="true">
+                            <svg
+                              height="24"
+                              width="24"
+                              viewBox="0 0 24 24"
+                              xmlns="http://www.w3.org/2000/svg"
+                            >
+                              <path d="M0 0h24v24H0z" fill="none"></path>
+                              <path
+                                d="M16.172 11l-5.364-5.364 1.414-1.414L20 12l-7.778 7.778-1.414-1.414L16.172 13H4v-2z"
+                                fill="currentColor"
+                              ></path>
+                            </svg>
+                          </div>
                         </Link>
                       </div>
                     </div>
@@ -373,9 +386,9 @@ export function HomeContent() {
                     <Link
                       href={`/${h.game.slug}/${h.slug}`}
                       onClick={(e) => e.stopPropagation()}
-                      className="btn btn-gaming btn-sm px-4 h-9 rounded-xl text-xs font-bold"
+                      className="btn btn-gaming btn-buynow btn-sm px-4 h-9 rounded-md inline-flex items-center justify-center text-xs font-bold"
                     >
-                      Buy now
+                      <span>Buy Now</span>
                     </Link>
                   </div>
                 </div>
