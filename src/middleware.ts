@@ -99,7 +99,7 @@ export async function middleware(req: NextRequest) {
     "img-src 'self' data: blob: https: https://*.tawk.to https://*.crisp.chat https://*.googleapis.com https://*.gstatic.com",
     "style-src 'self' 'unsafe-inline' https://client.crisp.chat https://fonts.googleapis.com https://*.tawk.to",
     "font-src 'self' data: https://client.crisp.chat https://fonts.gstatic.com https://*.tawk.to",
-    "frame-src 'self' https://*.tawk.to https://embed.tawk.to https://*.crisp.chat",
+    "frame-src 'self' https://*.tawk.to https://embed.tawk.to https://*.crisp.chat https://www.googletagmanager.com",
     `connect-src 'self' https: wss:`,
     `script-src-elem 'self' 'nonce-${nonce}' https://static.cloudflareinsights.com https://www.googletagmanager.com https://client.crisp.chat https://embed.tawk.to https://*.tawk.to https://www.googleadservices.com https://googleads.g.doubleclick.net https://www.google.com https://adservice.google.com https://cdn.jsdelivr.net`,
     `script-src 'self' 'nonce-${nonce}' 'strict-dynamic'${isDev ? " 'unsafe-inline' 'unsafe-eval'" : ""} https://static.cloudflareinsights.com https://www.googletagmanager.com https://client.crisp.chat https://embed.tawk.to https://*.tawk.to https://www.googleadservices.com https://googleads.g.doubleclick.net https://www.google.com https://adservice.google.com https://cdn.jsdelivr.net`,
