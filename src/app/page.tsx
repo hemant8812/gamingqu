@@ -14,11 +14,24 @@ export async function generateMetadata(): Promise<Metadata> {
 
   return {
     title: fullTitle,
-    description: tagline,
+    description: `${tagline} • WoW Boost & TBC Classic: leveling, gold farming, heroic dungeon, arena 2v2, boosting cepat & aman.`,
+    keywords: [
+      "wow tbc classic boost",
+      "tbc anniversary leveling boost",
+      "wow tbc gold farming service",
+      "tbc heroic dungeon boost",
+      "wow tbc arena boost 2v2",
+      "burning crusade classic boosting",
+      "WoW TBC Classic Boosting Services | Fast & Safe Boost",
+      "tbc leveling guide",
+      "tbc gold farm",
+      "tbc heroic dungeon guide",
+      "tbc arena guide",
+    ],
     alternates: { canonical: `${base}/` },
     openGraph: {
       title: fullTitle,
-      description: tagline,
+      description: `${tagline} • WoW Boost & TBC Classic services`,
       url: `${base}/`,
       siteName: siteName,
       type: "website",
@@ -27,7 +40,7 @@ export async function generateMetadata(): Promise<Metadata> {
     twitter: {
       card: "summary_large_image",
       title: fullTitle,
-      description: tagline,
+      description: `${tagline} • WoW Boost & TBC Classic services`,
       images: [s?.logoUrl ?? favicon],
     },
     robots: { index: true, follow: true },

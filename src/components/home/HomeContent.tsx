@@ -4,7 +4,7 @@ import { FiRefreshCw, FiZap } from "react-icons/fi";
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Flame, Trophy } from "lucide-react";
+import { Flame, Trophy, Star, Shield, Users } from "lucide-react";
 import { formatPrice } from "@/lib/formatPrice";
 import { useCurrency } from "@/app/providers";
 
@@ -226,6 +226,62 @@ export function HomeContent() {
           </div>
         </section>
 
+        
+
+        <section aria-label="WoW TBC Classic SEO Hub" className="sr-only">
+          <div className="bg-[#0F172A] border border-white/10 rounded-2xl p-5">
+            <div className="flex items-center gap-3 mb-3">
+              <Trophy className="h-5 w-5 text-blue-400" />
+              <h2 className="text-lg font-bold text-white">WoW TBC Classic Boosting Services</h2>
+            </div>
+            <p className="text-gray-300 text-sm mb-4">
+              Cari layanan WoW TBC Classic boost yang cepat & aman: leveling, gold farming,
+              heroic dungeon, arena 2v2, hingga paket Burning Crusade Classic boosting.
+              Layanan kami fokus pada kecepatan, keamanan, dan hasil yang terukur.
+            </p>
+            <div className="sr-only">
+              {[
+                "wow tbc classic boost",
+                "tbc anniversary leveling boost",
+                "wow tbc gold farming service",
+                "tbc heroic dungeon boost",
+                "wow tbc arena boost 2v2",
+                "burning crusade classic boosting",
+                "WoW TBC Classic Boosting Services | Fast & Safe Boost",
+              ].map((k) => (
+                <span
+                  key={k}
+                  className="px-3 py-1 rounded-full text-xs font-semibold"
+                >
+                  {k}
+                </span>
+              ))}
+            </div>
+            <div className="sr-only">
+              <div>
+                <div>Contoh artikel yang bisa dibuat</div>
+                <ul>
+                  <li>Best Gold Farming TBC Classic 2026</li>
+                  <li>Fastest Leveling Guide WoW TBC</li>
+                  <li>How to Unlock Heroic Dungeons TBC</li>
+                  <li>Best Arena Comp TBC Classic</li>
+                  <li>How to Farm Badges of Justice</li>
+                </ul>
+              </div>
+              <div>
+                <div>Target keyword</div>
+                <div>
+                  {["tbc leveling guide", "tbc gold farm", "tbc heroic dungeon guide", "tbc arena guide"].map((t) => (
+                    <span key={t}>{t}</span>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+        
+        
+
         {/* Section Title */}
         <div className="flex items-center gap-4 mb-8">
           <div className="flex items-center gap-3">
@@ -277,6 +333,7 @@ export function HomeContent() {
             </Link>
           ))}
         </section>
+        
 
         {/* View All Button */}
         {(moreCount - Math.min(games.length, 12) > 0) && (
@@ -394,6 +451,46 @@ export function HomeContent() {
                 </div>
               </div>
             ))}
+          </div>
+        </section>
+        <section className="mt-12">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div className="group glass-light border border-white/10 rounded-2xl p-4 flex items-center gap-3 transition-all duration-300 hover:border-blue-400/40 hover:shadow-[0_0_24px_-6px_rgba(59,130,246,0.4)]">
+              <div className="w-10 h-10 aspect-square rounded-full shrink-0 bg-gradient-to-br from-blue-500/20 to-cyan-500/20 inline-flex items-center justify-center text-blue-400 ring-1 ring-blue-500/30 transition-transform duration-300 group-hover:scale-110 group-hover:ring-blue-400">
+                <Trophy className="h-5 w-5" />
+              </div>
+              <div>
+                <div className="text-white font-bold text-sm font-serif transition-colors group-hover:text-blue-300">2000+ Boost Orders Completed</div>
+                <div className="text-gray-400 text-xs">Consistent order execution</div>
+              </div>
+            </div>
+            <div className="group glass-light border border-white/10 rounded-2xl p-4 flex items-center gap-3 transition-all duration-300 hover:border-blue-400/40 hover:shadow-[0_0_24px_-6px_rgba(59,130,246,0.4)]">
+              <div className="w-10 h-10 aspect-square rounded-full shrink-0 bg-gradient-to-br from-blue-500/20 to-cyan-500/20 inline-flex items-center justify-center text-blue-400 ring-1 ring-blue-500/30 transition-transform duration-300 group-hover:scale-110 group-hover:ring-blue-400">
+                <Star className="h-5 w-5" />
+              </div>
+              <div>
+                <div className="text-white font-bold text-sm font-serif transition-colors group-hover:text-blue-300">4.9/5 Customer Rating</div>
+                <div className="text-gray-400 text-xs">Customer satisfaction first</div>
+              </div>
+            </div>
+            <div className="group glass-light border border-white/10 rounded-2xl p-4 flex items-center gap-3 transition-all duration-300 hover:border-blue-400/40 hover:shadow-[0_0_24px_-6px_rgba(59,130,246,0.4)]">
+              <div className="w-10 h-10 aspect-square rounded-full shrink-0 bg-gradient-to-br from-blue-500/20 to-cyan-500/20 inline-flex items-center justify-center text-blue-400 ring-1 ring-blue-500/30 transition-transform duration-300 group-hover:scale-110 group-hover:ring-blue-400">
+                <Shield className="h-5 w-5" />
+              </div>
+              <div>
+                <div className="text-white font-bold text-sm font-serif transition-colors group-hover:text-blue-300">Secure Payment (PayPal / Stripe)</div>
+                <div className="text-gray-400 text-xs">Secure and trusted payment methods</div>
+              </div>
+            </div>
+            <div className="group glass-light border border-white/10 rounded-2xl p-4 flex items-center gap-3 transition-all duration-300 hover:border-blue-400/40 hover:shadow-[0_0_24px_-6px_rgba(59,130,246,0.4)]">
+              <div className="w-10 h-10 aspect-square rounded-full shrink-0 bg-gradient-to-br from-blue-500/20 to-cyan-500/20 inline-flex items-center justify-center text-blue-400 ring-1 ring-blue-500/30 transition-transform duration-300 group-hover:scale-110 group-hover:ring-blue-400">
+                <Users className="h-5 w-5" />
+              </div>
+              <div>
+                <div className="text-white font-bold text-sm font-serif transition-colors group-hover:text-blue-300">Professional Boosters</div>
+                <div className="text-gray-400 text-xs">Experienced & verified booster team</div>
+              </div>
+            </div>
           </div>
         </section>
       </main>
