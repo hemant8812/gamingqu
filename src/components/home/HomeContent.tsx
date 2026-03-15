@@ -460,7 +460,7 @@ export function HomeContent() {
                 <Trophy className="h-5 w-5" />
               </div>
               <div>
-                <div className="text-white font-bold text-sm font-serif transition-colors group-hover:text-blue-300">2000+ Boost Orders Completed</div>
+                <div className="text-white font-bold text-sm transition-colors group-hover:text-blue-300">2000+ Boost Orders Completed</div>
                 <div className="text-gray-400 text-xs">Consistent order execution</div>
               </div>
             </div>
@@ -469,7 +469,7 @@ export function HomeContent() {
                 <Star className="h-5 w-5" />
               </div>
               <div>
-                <div className="text-white font-bold text-sm font-serif transition-colors group-hover:text-blue-300">4.9/5 Customer Rating</div>
+                <div className="text-white font-bold text-sm transition-colors group-hover:text-blue-300">4.9/5 Customer Rating</div>
                 <div className="text-gray-400 text-xs">Customer satisfaction first</div>
               </div>
             </div>
@@ -478,7 +478,7 @@ export function HomeContent() {
                 <Shield className="h-5 w-5" />
               </div>
               <div>
-                <div className="text-white font-bold text-sm font-serif transition-colors group-hover:text-blue-300">Secure Payment (PayPal / Stripe)</div>
+                <div className="text-white font-bold text-sm transition-colors group-hover:text-blue-300">Secure Payment (PayPal / Stripe)</div>
                 <div className="text-gray-400 text-xs">Secure and trusted payment methods</div>
               </div>
             </div>
@@ -487,7 +487,7 @@ export function HomeContent() {
                 <Users className="h-5 w-5" />
               </div>
               <div>
-                <div className="text-white font-bold text-sm font-serif transition-colors group-hover:text-blue-300">Professional Boosters</div>
+                <div className="text-white font-bold text-sm transition-colors group-hover:text-blue-300">Professional Boosters</div>
                 <div className="text-gray-400 text-xs">Experienced & verified booster team</div>
               </div>
             </div>
