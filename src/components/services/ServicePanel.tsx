@@ -3,7 +3,7 @@
 import React from "react";
 import Link from "next/link";
 import { ServiceOptions } from "./ServiceOptions";
-import { Clock, Timer, CheckCircle } from "lucide-react";
+import { Clock, CheckCircle } from "lucide-react";
 import { formatPrice } from "@/lib/formatPrice";
 import { useCurrency } from "@/app/providers";
 import { Toaster, toast as sonnerToast } from "sonner";
@@ -41,11 +41,6 @@ export function ServicePanel({
   const [singleRangeVals, setSingleRangeVals] = React.useState<Record<number, number>>({});
   const diff = fromLevel != null && toLevel != null ? Math.max(0, toLevel - fromLevel) : 0;
   const isDualActive = diff > 0;
-  const isSpecial =
-    (fromLevel === 50 && toLevel === 60) ||
-    (fromLevel === 50 && toLevel === 70) ||
-    (fromLevel === 60 && toLevel === 70);
-  const days = isSpecial ? 6 : Math.ceil(diff / 5);
   const { subtotal, totalPrice } = React.useMemo(() => {
     let rangeAdd = 0;
     if (diff > 0) {
@@ -200,14 +195,6 @@ export function ServicePanel({
               <div className="flex items-center gap-2 text-sm text-gray-300">
                 <Clock className="h-4 w-4 text-gray-400" />
                 <span>30 minutes average start time</span>
-              </div>
-            )}
-            {isDualActive && (
-              <div className="flex items-center gap-2 text-sm text-gray-300">
-                <Timer className="h-4 w-4 text-gray-400" />
-                <span>
-                  {days} {days === 1 ? "day" : "days"} order completion
-                </span>
               </div>
             )}
           </div>
