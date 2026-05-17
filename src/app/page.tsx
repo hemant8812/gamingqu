@@ -7,111 +7,107 @@ import { headers } from "next/headers";
 export async function generateMetadata(): Promise<Metadata> {
   const s = await getWebsiteSettingCore();
   const base = getBaseUrl();
-  const favicon = s?.faviconUrl ?? "/icons/logo.png";
   const siteName = s?.siteName ?? "Gamingqu";
-  const tagline = s?.tagline ?? "Layanan Boosting Game Profesional";
-  const fullTitle = `${siteName}${tagline ? ` - ${tagline}` : ""}`;
+  const tagline = s?.tagline ?? "Professional Game Boosting Services";
+  const ogImage = s?.logoUrl ?? s?.faviconUrl ?? "/icons/logo.png";
+  const title = `${siteName} - ${tagline}`;
+  const description =
+    `${tagline}. Safe, fast, and professional game boosting for top games — leveling, raids, dungeons, ranked, gold farming, and more.`;
 
   return {
-    title: fullTitle,
-    description: `${tagline} • WoW Boost & TBC Classic: leveling, gold farming, heroic dungeon, arena 2v2, boosting cepat & aman.`,
+    title,
+    description,
     keywords: [
-      "wow tbc classic boost",
-      "tbc anniversary leveling boost",
-      "wow tbc gold farming service",
-      "tbc heroic dungeon boost",
-      "wow tbc arena boost 2v2",
-      "burning crusade classic boosting",
-      "WoW TBC Classic Boosting Services | Fast & Safe Boost",
-      "tbc leveling guide",
-      "tbc gold farm",
-      "tbc heroic dungeon guide",
-      "tbc arena guide",
+      "game boosting",
+      "professional boosting service",
+      "wow boost",
+      "leveling boost",
+      "ranked boost",
+      "gold farming service",
+      "dungeon boost",
+      "raid carry",
+      "arena boost",
+      siteName.toLowerCase(),
     ],
-    alternates: { canonical: `${base}/` },
+    alternates: { canonical: "/" },
     openGraph: {
-      title: fullTitle,
-      description: `${tagline} • WoW Boost & TBC Classic services`,
-      url: `${base}/`,
-      siteName: siteName,
       type: "website",
-      images: [{ url: s?.logoUrl ?? favicon }],
+      url: base,
+      siteName,
+      title,
+      description,
+      images: [{ url: ogImage, width: 1200, height: 630, alt: siteName }],
     },
     twitter: {
       card: "summary_large_image",
-      title: fullTitle,
-      description: `${tagline} • WoW Boost & TBC Classic services`,
-      images: [s?.logoUrl ?? favicon],
+      title,
+      description,
+      images: [ogImage],
     },
-    robots: { index: true, follow: true },
   };
 }
 
 export default async function Home() {
-  const s = await getWebsiteSettingCore();
-  const f = await getFooterSettings();
+  const [s, f, hdrs] = await Promise.all([
+    getWebsiteSettingCore(),
+    getFooterSettings(),
+    headers(),
+  ]);
   const base = getBaseUrl();
-  const nonce = (await headers()).get("x-nonce") || "";
-  const title = s?.siteName ?? "Gamingqu";
-  const favicon = s?.faviconUrl ?? "/icons/logo.png";
-  const logo = s?.logoUrl ?? favicon;
-  const contactEmail = (s?.contactEmail ?? "").trim();
-  const contactPhone = (s?.contactPhone ?? "").trim();
-  const legalAddress = (f?.legalAddress ?? "").trim();
-  const sms = [f?.smTelegramUrl, f?.smYoutubeUrl, f?.smDiscordUrl, f?.smFacebookUrl]
+  const nonce = hdrs.get("x-nonce") || "";
+  const siteName = s?.siteName ?? "Gamingqu";
+  const tagline = s?.tagline ?? "Professional Game Boosting Services";
+  const logo = s?.logoUrl ?? s?.faviconUrl ?? "/icons/logo.png";
+
+  const sameAs = [f?.smTelegramUrl, f?.smYoutubeUrl, f?.smDiscordUrl, f?.smFacebookUrl]
     .map((x) => (x ?? "").trim())
     .filter((x) => x.length > 0);
-  const hasContact = !!contactEmail || !!contactPhone;
-  const websiteLd = {
+
+  const webPageLd: Record<string, unknown> = {
     "@context": "https://schema.org",
-    "@type": "WebSite",
-    name: title,
+    "@type": "WebPage",
+    "@id": `${base}/#webpage`,
     url: `${base}/`,
-    potentialAction: {
-      "@type": "SearchAction",
-      target: `${base}/search?q={search_term_string}`,
-      "query-input": "required name=search_term_string",
-    },
+    name: `${siteName} - ${tagline}`,
+    description: tagline,
+    isPartOf: { "@id": `${base}/#website` },
+    about: { "@id": `${base}/#organization` },
+    inLanguage: "en",
   };
-  const orgLd: Record<string, unknown> = {
+
+  const profServiceLd: Record<string, unknown> = {
     "@context": "https://schema.org",
-    "@type": "Organization",
-    name: title,
+    "@type": "ProfessionalService",
+    "@id": `${base}/#service`,
+    name: siteName,
     url: `${base}/`,
-    logo,
+    image: logo,
+    description: tagline,
+    priceRange: "$$",
   };
-  if (hasContact) {
-    orgLd.contactPoint = [
-      {
-        "@type": "ContactPoint",
-        email: contactEmail || undefined,
-        telephone: contactPhone || undefined,
-        contactType: "customer support",
-      },
-    ];
-  }
-  if (legalAddress) {
-    (orgLd as { address?: unknown }).address = {
-      "@type": "PostalAddress",
-      streetAddress: legalAddress,
+  if (sameAs.length > 0) profServiceLd.sameAs = sameAs;
+  if (s?.contactEmail || s?.contactPhone) {
+    profServiceLd.contactPoint = {
+      "@type": "ContactPoint",
+      contactType: "customer support",
+      ...(s?.contactEmail ? { email: s.contactEmail } : {}),
+      ...(s?.contactPhone ? { telephone: s.contactPhone } : {}),
     };
   }
-  if (sms.length > 0) {
-    (orgLd as { sameAs?: string[] }).sameAs = sms;
-  }
+
   return (
     <>
       <script
         nonce={nonce}
         suppressHydrationWarning
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteLd) }}
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(webPageLd) }}
       />
       <script
         nonce={nonce}
         suppressHydrationWarning
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(orgLd) }}
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(profServiceLd) }}
       />
       <HomeContent />
     </>

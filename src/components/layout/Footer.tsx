@@ -28,17 +28,17 @@ export async function Footer() {
     const logo = ws?.logoUrl ?? null;
     const siteName = ws?.siteName || "Gamingqu";
 
-    const navs: Array<{ title?: string | null; url?: string | null; fallback: string }> = [
-        { title: s?.navHomeTitle, url: s?.navHomeUrl, fallback: "Home" },
-        { title: s?.navAboutTitle, url: s?.navAboutUrl, fallback: "About Us" },
-        { title: s?.navFaqTitle, url: s?.navFaqUrl, fallback: "FAQ" },
-        { title: s?.navBoosterTitle, url: s?.navBoosterUrl, fallback: "Become a Booster" },
+    const navs: Array<{ title: string; url: string }> = [
+        { title: s?.navHomeTitle?.trim() || "Home", url: s?.navHomeUrl?.trim() || "/" },
+        { title: s?.navAboutTitle?.trim() || "About Us", url: s?.navAboutUrl?.trim() || "/about" },
+        { title: s?.navFaqTitle?.trim() || "Blog", url: s?.navFaqUrl?.trim() || "/blog" },
+        { title: s?.navBoosterTitle?.trim() || "Become a Booster", url: s?.navBoosterUrl?.trim() || "/work-with-us" },
     ];
-    const legals: Array<{ title?: string | null; url?: string | null; fallback: string }> = [
-        { title: s?.legal1Title, url: s?.legal1Url, fallback: "Terms and Conditions" },
-        { title: s?.legal2Title, url: s?.legal2Url, fallback: "Privacy Policy" },
-        { title: s?.legal3Title, url: s?.legal3Url, fallback: "Refund Policy" },
-        { title: s?.legal4Title, url: s?.legal4Url, fallback: "Cookie Policy" },
+    const legals: Array<{ title: string; url: string }> = [
+        { title: s?.legal1Title?.trim() || "Terms and Conditions", url: s?.legal1Url?.trim() || "/terms" },
+        { title: s?.legal2Title?.trim() || "Privacy Policy", url: s?.legal2Url?.trim() || "/privacy" },
+        { title: s?.legal3Title?.trim() || "Refund Policy", url: s?.legal3Url?.trim() || "/refund" },
+        { title: s?.legal4Title?.trim() || "Cookie Policy", url: s?.legal4Url?.trim() || "/cookies" },
     ];
 
     if (!active) return null;
@@ -65,22 +65,22 @@ export async function Footer() {
                         </p>
                         <div className="flex gap-3 mt-6">
                             {smTelegram && (
-                                <a href={smTelegram} aria-label="Telegram" className="w-10 h-10 flex items-center justify-center rounded-xl glass-light text-gray-400 hover:text-cyan-400 hover:bg-white/10 transition-all">
+                                <a href={smTelegram} target="_blank" rel="noopener noreferrer" aria-label="Telegram" className="w-10 h-10 flex items-center justify-center rounded-xl glass-light text-gray-400 hover:text-cyan-400 hover:bg-white/10 transition-all">
                                     <FaTelegramPlane size={18} />
                                 </a>
                             )}
                             {smYoutube && (
-                                <a href={smYoutube} aria-label="YouTube" className="w-10 h-10 flex items-center justify-center rounded-xl glass-light text-gray-400 hover:text-red-500 hover:bg-white/10 transition-all">
+                                <a href={smYoutube} target="_blank" rel="noopener noreferrer" aria-label="YouTube" className="w-10 h-10 flex items-center justify-center rounded-xl glass-light text-gray-400 hover:text-red-500 hover:bg-white/10 transition-all">
                                     <FaYoutube size={18} />
                                 </a>
                             )}
                             {smDiscord && (
-                                <a href={smDiscord} aria-label="Discord" className="w-10 h-10 flex items-center justify-center rounded-xl glass-light text-gray-400 hover:text-indigo-400 hover:bg-white/10 transition-all">
+                                <a href={smDiscord} target="_blank" rel="noopener noreferrer" aria-label="Discord" className="w-10 h-10 flex items-center justify-center rounded-xl glass-light text-gray-400 hover:text-indigo-400 hover:bg-white/10 transition-all">
                                     <FaDiscord size={18} />
                                 </a>
                             )}
                             {smFacebook && (
-                                <a href={smFacebook} aria-label="Facebook" className="w-10 h-10 flex items-center justify-center rounded-xl glass-light text-gray-400 hover:text-blue-500 hover:bg-white/10 transition-all">
+                                <a href={smFacebook} target="_blank" rel="noopener noreferrer" aria-label="Facebook" className="w-10 h-10 flex items-center justify-center rounded-xl glass-light text-gray-400 hover:text-blue-500 hover:bg-white/10 transition-all">
                                     <FaFacebookF size={18} />
                                 </a>
                             )}
@@ -91,16 +91,16 @@ export async function Footer() {
                         <nav className="flex flex-col gap-2 min-w-[150px]">
                             <div className="font-bold text-white text-sm uppercase tracking-wider mb-2">{siteName}</div>
                             {navs.map((n, i) => (
-                                <Link key={i} href={n.url || "#"} className="text-gray-400 hover:text-blue-400 transition-colors text-sm">
-                                    {n.title || n.fallback}
+                                <Link key={i} href={n.url} className="text-gray-400 hover:text-blue-400 transition-colors text-sm">
+                                    {n.title}
                                 </Link>
                             ))}
                         </nav>
                         <nav className="flex flex-col gap-2 min-w-[150px]">
                             <h6 className="font-bold text-white text-sm uppercase tracking-wider mb-2">Legal</h6>
                             {legals.map((l, i) => (
-                                <Link key={i} href={l.url || "#"} className="text-gray-400 hover:text-cyan-400 transition-colors text-sm">
-                                    {l.title || l.fallback}
+                                <Link key={i} href={l.url} className="text-gray-400 hover:text-cyan-400 transition-colors text-sm">
+                                    {l.title}
                                 </Link>
                             ))}
                         </nav>
