@@ -9,6 +9,7 @@ import { formatPrice } from "@/lib/formatPrice";
 import { stripHtml } from "@/lib/text";
 import { useCurrency } from "@/app/providers";
 import { TrustBanner } from "@/components/shared/TrustBanner";
+import { SITE_DEFAULTS } from "@/lib/constants";
 
 type ServiceItem = {
     id: string;
@@ -138,8 +139,8 @@ export default function GamePage() {
     const [page, setPage] = useState<PageData | null>(null);
     const [loading, setLoading] = useState(true);
     const [activeCategory, setActiveCategory] = useState<string | null>(null);
-    const [brandName, setBrandName] = useState<string>("Gamingqu");
-    const [bannerLogoUrl, setBannerLogoUrl] = useState<string>("/icons/logo.png");
+    const [brandName, setBrandName] = useState<string>(SITE_DEFAULTS.name);
+    const [bannerLogoUrl, setBannerLogoUrl] = useState<string>(SITE_DEFAULTS.logo);
 
     useEffect(() => {
         const fetchData = async () => {
@@ -186,11 +187,11 @@ export default function GamePage() {
                 if (res.ok) {
                     const data = await res.json();
                     const site = data?.website ?? {};
-                    const name: string = site?.siteName ?? "Gamingqu";
+                    const name: string = site?.siteName ?? SITE_DEFAULTS.name;
                     const favicon: string | null = site?.faviconUrl ?? null;
                     const logo: string | null = site?.logoUrl ?? null;
                     setBrandName(name);
-                    setBannerLogoUrl(String(favicon || logo || "/icons/logo.png"));
+                    setBannerLogoUrl(String(favicon || logo || SITE_DEFAULTS.logo));
                 }
             } catch {}
         })();

@@ -1,45 +1,33 @@
 import type { Metadata } from "next";
-import { getBaseUrl } from "@/lib/site";
-import { getWebsiteSettingCore } from "@/lib/settings";
-import { headers } from "next/headers";
+import { getSiteMeta, breadcrumbLd } from "@/lib/seo";
+import { JsonLd } from "@/components/shared/JsonLd";
+
+const PATH = "/cookies";
+const PAGE_NAME = "Cookie Policy";
 
 export async function generateMetadata(): Promise<Metadata> {
-  const s = await getWebsiteSettingCore();
-  const siteName = s?.siteName ?? "Gamingqu";
-  const title = "Cookie Policy";
+  const { base, siteName } = await getSiteMeta();
   const description = `How ${siteName} uses cookies and similar technologies.`;
   return {
-    title,
+    title: PAGE_NAME,
     description,
-    alternates: { canonical: "/cookies" },
-    openGraph: { title, description, url: `${getBaseUrl()}/cookies`, type: "article" },
-    twitter: { card: "summary_large_image", title, description },
+    alternates: { canonical: PATH },
+    openGraph: { title: PAGE_NAME, description, url: `${base}${PATH}`, type: "article" },
+    twitter: { card: "summary_large_image", title: PAGE_NAME, description },
   };
 }
 
 export default async function CookiePolicyPage() {
-  const s = await getWebsiteSettingCore();
-  const base = getBaseUrl();
-  const siteName = s?.siteName ?? "Gamingqu";
-  const nonce = (await headers()).get("x-nonce") || "";
+  const { base, siteName } = await getSiteMeta();
   const updated = new Date().toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" });
-
-  const breadcrumbLd = {
-    "@context": "https://schema.org",
-    "@type": "BreadcrumbList",
-    itemListElement: [
-      { "@type": "ListItem", position: 1, name: "Home", item: `${base}/` },
-      { "@type": "ListItem", position: 2, name: "Cookie Policy", item: `${base}/cookies` },
-    ],
-  };
 
   return (
     <>
-      <script
-        nonce={nonce}
-        suppressHydrationWarning
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbLd) }}
+      <JsonLd
+        data={breadcrumbLd([
+          { name: "Home", url: `${base}/` },
+          { name: PAGE_NAME, url: `${base}${PATH}` },
+        ])}
       />
       <h1>Cookie Policy</h1>
       <p className="text-sm opacity-70">Last updated: {updated}</p>

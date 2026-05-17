@@ -1,10 +1,11 @@
 "use client";
 import Image from "next/image";
 import { Shield, BadgePercent, Star, Headphones } from "lucide-react";
+import { SITE_DEFAULTS } from "@/lib/constants";
 
 export function TrustBanner({
-  brandName = "Gamingqu",
-  logoUrl = "/icons/logo.png",
+  brandName = SITE_DEFAULTS.name,
+  logoUrl = SITE_DEFAULTS.logo,
 }: {
   brandName?: string;
   logoUrl?: string;

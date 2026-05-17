@@ -3,32 +3,23 @@ import Image from "next/image";
 import Link from "next/link";
 import type { Metadata } from "next";
 import { getBaseUrl } from "@/lib/site";
-import { headers } from "next/headers";
+import { breadcrumbLd } from "@/lib/seo";
+import { JsonLd } from "@/components/shared/JsonLd";
 
 const BLUR_DATA_URL = "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==";
 export async function generateMetadata({ searchParams }: { searchParams?: Promise<Record<string, string | string[] | undefined>> }): Promise<Metadata> {
-  const base = getBaseUrl();
   const sp = searchParams ? await searchParams : {};
   const pageParam = sp?.page;
   const pageRaw = typeof pageParam === "string" ? parseInt(pageParam, 10) : 1;
   const page = Number.isFinite(pageRaw) && pageRaw > 0 ? pageRaw : 1;
-  const canonical = page > 1 ? `${base}/blog?page=${page}` : `${base}/blog`;
+  const canonical = page > 1 ? `/blog?page=${page}` : "/blog";
+  const description = "Latest articles from our team and official sources.";
   return {
     title: "Blog",
-    description: "Latest articles from our team and official sources.",
+    description,
     alternates: { canonical },
-    openGraph: {
-      title: "Blog",
-      description: "Latest articles from our team and official sources.",
-      url: canonical,
-      type: "website",
-    },
-    twitter: {
-      card: "summary_large_image",
-      title: "Blog",
-      description: "Latest articles from our team and official sources.",
-    },
-    robots: { index: true, follow: true },
+    openGraph: { title: "Blog", description, url: canonical, type: "website" },
+    twitter: { card: "summary_large_image", title: "Blog", description },
   };
 }
 export default async function BlogPage({ searchParams }: { searchParams?: Promise<Record<string, string | string[] | undefined>> }) {
@@ -36,7 +27,6 @@ export default async function BlogPage({ searchParams }: { searchParams?: Promis
   const pageParam = sp?.page;
   const pageRaw = typeof pageParam === "string" ? parseInt(pageParam, 10) : 1;
   const page = Number.isFinite(pageRaw) && pageRaw > 0 ? pageRaw : 1;
-  const nonce = (await headers()).get("x-nonce") || "";
   const take = 12;
   const total = await db.post.count({ where: { isPublished: true } });
   const totalPages = Math.max(1, Math.ceil(total / take));
@@ -49,14 +39,10 @@ export default async function BlogPage({ searchParams }: { searchParams?: Promis
     select: { id: true, title: true, slug: true, excerpt: true, imageUrl: true, createdAt: true, sourceUrl: true },
   });
   const base = getBaseUrl();
-  const breadcrumbLd = {
-    "@context": "https://schema.org",
-    "@type": "BreadcrumbList",
-    itemListElement: [
-      { "@type": "ListItem", position: 1, name: "Home", item: `${base}/` },
-      { "@type": "ListItem", position: 2, name: "Blog", item: `${base}/blog` },
-    ],
-  };
+  const breadcrumb = breadcrumbLd([
+    { name: "Home", url: `${base}/` },
+    { name: "Blog", url: `${base}/blog` },
+  ]);
   const itemListLd = {
     "@context": "https://schema.org",
     "@type": "ItemList",
@@ -75,18 +61,7 @@ export default async function BlogPage({ searchParams }: { searchParams?: Promis
         <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-cyan-500/10 rounded-full blur-3xl" />
       </div>
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 pt-10 pb-10">
-        <script
-          nonce={nonce}
-          suppressHydrationWarning
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbLd) }}
-        />
-        <script
-          nonce={nonce}
-          suppressHydrationWarning
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(itemListLd) }}
-        />
+        <JsonLd data={[breadcrumb, itemListLd]} />
         <div className="mb-6">
           <h1 className="text-4xl font-extrabold tracking-tight">Blog</h1>
           <p className="text-base opacity-70 mt-2">Latest articles from our team and official sources.</p>

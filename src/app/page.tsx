@@ -1,18 +1,13 @@
 import { HomeContent } from "@/components/home/HomeContent";
 import type { Metadata } from "next";
-import { getWebsiteSettingCore, getFooterSettings } from "@/lib/settings";
-import { getBaseUrl } from "@/lib/site";
-import { headers } from "next/headers";
+import { getFooterSettings } from "@/lib/settings";
+import { getSiteMeta } from "@/lib/seo";
+import { JsonLd } from "@/components/shared/JsonLd";
 
 export async function generateMetadata(): Promise<Metadata> {
-  const s = await getWebsiteSettingCore();
-  const base = getBaseUrl();
-  const siteName = s?.siteName ?? "Gamingqu";
-  const tagline = s?.tagline ?? "Professional Game Boosting Services";
-  const ogImage = s?.logoUrl ?? s?.faviconUrl ?? "/icons/logo.png";
+  const { base, siteName, tagline, logo } = await getSiteMeta();
   const title = `${siteName} - ${tagline}`;
-  const description =
-    `${tagline}. Safe, fast, and professional game boosting for top games — leveling, raids, dungeons, ranked, gold farming, and more.`;
+  const description = `${tagline}. Safe, fast, and professional game boosting for top games — leveling, raids, dungeons, ranked, gold farming, and more.`;
 
   return {
     title,
@@ -36,34 +31,26 @@ export async function generateMetadata(): Promise<Metadata> {
       siteName,
       title,
       description,
-      images: [{ url: ogImage, width: 1200, height: 630, alt: siteName }],
+      images: [{ url: logo, width: 1200, height: 630, alt: siteName }],
     },
     twitter: {
       card: "summary_large_image",
       title,
       description,
-      images: [ogImage],
+      images: [logo],
     },
   };
 }
 
 export default async function Home() {
-  const [s, f, hdrs] = await Promise.all([
-    getWebsiteSettingCore(),
-    getFooterSettings(),
-    headers(),
-  ]);
-  const base = getBaseUrl();
-  const nonce = hdrs.get("x-nonce") || "";
-  const siteName = s?.siteName ?? "Gamingqu";
-  const tagline = s?.tagline ?? "Professional Game Boosting Services";
-  const logo = s?.logoUrl ?? s?.faviconUrl ?? "/icons/logo.png";
+  const [meta, f] = await Promise.all([getSiteMeta(), getFooterSettings()]);
+  const { base, siteName, tagline, logo, contactEmail, contactPhone } = meta;
 
   const sameAs = [f?.smTelegramUrl, f?.smYoutubeUrl, f?.smDiscordUrl, f?.smFacebookUrl]
     .map((x) => (x ?? "").trim())
     .filter((x) => x.length > 0);
 
-  const webPageLd: Record<string, unknown> = {
+  const webPageLd = {
     "@context": "https://schema.org",
     "@type": "WebPage",
     "@id": `${base}/#webpage`,
@@ -86,29 +73,18 @@ export default async function Home() {
     priceRange: "$$",
   };
   if (sameAs.length > 0) profServiceLd.sameAs = sameAs;
-  if (s?.contactEmail || s?.contactPhone) {
+  if (contactEmail || contactPhone) {
     profServiceLd.contactPoint = {
       "@type": "ContactPoint",
       contactType: "customer support",
-      ...(s?.contactEmail ? { email: s.contactEmail } : {}),
-      ...(s?.contactPhone ? { telephone: s.contactPhone } : {}),
+      ...(contactEmail ? { email: contactEmail } : {}),
+      ...(contactPhone ? { telephone: contactPhone } : {}),
     };
   }
 
   return (
     <>
-      <script
-        nonce={nonce}
-        suppressHydrationWarning
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(webPageLd) }}
-      />
-      <script
-        nonce={nonce}
-        suppressHydrationWarning
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(profServiceLd) }}
-      />
+      <JsonLd data={[webPageLd, profServiceLd]} />
       <HomeContent />
     </>
   );

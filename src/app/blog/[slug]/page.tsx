@@ -3,9 +3,8 @@ import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
-import { getBaseUrl } from "@/lib/site";
-import { getWebsiteSettingCore } from "@/lib/settings";
-import { headers } from "next/headers";
+import { getSiteMeta, breadcrumbLd } from "@/lib/seo";
+import { JsonLd } from "@/components/shared/JsonLd";
 
 type Props = { params: Promise<{ slug?: string | string[] }> };
 
@@ -13,20 +12,21 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const p = await params;
   const slugParam = Array.isArray(p?.slug) ? p!.slug[0] : p?.slug;
   if (!slugParam) return {};
-  const base = getBaseUrl();
+  const { base } = await getSiteMeta();
   try {
     const post = await db.post.findUnique({
       where: { slug: slugParam },
       select: { title: true, excerpt: true, imageUrl: true, updatedAt: true },
     });
     if (!post) return {};
+    const description = post.excerpt ?? post.title;
     return {
       title: post.title,
-      description: post.excerpt ?? post.title,
-      alternates: { canonical: `${base}/blog/${slugParam}` },
+      description,
+      alternates: { canonical: `/blog/${slugParam}` },
       openGraph: {
         title: post.title,
-        description: post.excerpt ?? post.title,
+        description,
         url: `${base}/blog/${slugParam}`,
         type: "article",
         images: post.imageUrl ? [{ url: post.imageUrl }] : undefined,
@@ -34,10 +34,9 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       twitter: {
         card: "summary_large_image",
         title: post.title,
-        description: post.excerpt ?? post.title,
+        description,
         images: post.imageUrl ? [post.imageUrl] : undefined,
       },
-      robots: { index: true, follow: true },
     };
   } catch {
     return {};
@@ -61,9 +60,7 @@ export default async function BlogDetailPage({ params }: Props) {
   });
   const related = others.slice(0, 4);
 
-  const s = await getWebsiteSettingCore();
-  const base = getBaseUrl();
-  const nonce = (await headers()).get("x-nonce") || "";
+  const { base, siteName, logo } = await getSiteMeta();
   return (
     <div className="min-h-screen bg-[#0A0E17] text-white">
       <div className="fixed inset-0 pointer-events-none">
@@ -71,13 +68,9 @@ export default async function BlogDetailPage({ params }: Props) {
         <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-cyan-500/10 rounded-full blur-3xl" />
       </div>
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 pt-16 pb-14">
-      {(() => null)()}
-      <script
-        nonce={nonce}
-        suppressHydrationWarning
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{
-          __html: JSON.stringify({
+      <JsonLd
+        data={[
+          {
             "@context": "https://schema.org",
             "@type": "BlogPosting",
             headline: post.title,
@@ -85,33 +78,22 @@ export default async function BlogDetailPage({ params }: Props) {
             dateModified: new Date(post.updatedAt ?? post.createdAt).toISOString(),
             image: post.imageUrl ? [post.imageUrl] : undefined,
             mainEntityOfPage: `${base}/blog/${post.slug}`,
-            author: { "@type": "Organization", name: s?.siteName ?? "Gamingqu" },
+            author: { "@type": "Organization", name: siteName },
             publisher: {
               "@type": "Organization",
-              name: s?.siteName ?? "Gamingqu",
+              name: siteName,
               url: base,
-              logo: { "@type": "ImageObject", url: s?.logoUrl ?? "/icons/logo.png" },
+              logo: { "@type": "ImageObject", url: logo },
             },
             description: post.excerpt ?? post.title,
             articleBody: post.content ?? post.excerpt ?? post.title,
-          }),
-        }}
-      />
-      <script
-        nonce={nonce}
-        suppressHydrationWarning
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{
-          __html: JSON.stringify({
-            "@context": "https://schema.org",
-            "@type": "BreadcrumbList",
-            itemListElement: [
-              { "@type": "ListItem", position: 1, name: "Home", item: `${getBaseUrl()}/` },
-              { "@type": "ListItem", position: 2, name: "Blog", item: `${getBaseUrl()}/blog` },
-              { "@type": "ListItem", position: 3, name: post.title, item: `${getBaseUrl()}/blog/${post.slug}` },
-            ],
-          }),
-        }}
+          },
+          breadcrumbLd([
+            { name: "Home", url: `${base}/` },
+            { name: "Blog", url: `${base}/blog` },
+            { name: post.title, url: `${base}/blog/${post.slug}` },
+          ]),
+        ]}
       />
       <div className="relative w-full h-72 overflow-hidden rounded-2xl mb-8">
         {post.imageUrl ? (

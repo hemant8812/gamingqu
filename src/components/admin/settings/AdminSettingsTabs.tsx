@@ -6,6 +6,7 @@ import { FooterSettingsForm } from "@/components/admin/settings/FooterSettingsFo
 import { EmbedSettings } from "@/components/admin/settings/EmbedSettings";
 import { SeoSettingsForm } from "@/components/admin/settings/SeoSettingsForm";
 import { CurrencySettingsForm } from "@/components/admin/settings/CurrencySettingsForm";
+import { SITE_DEFAULTS } from "@/lib/constants";
 
 type SettingCore = {
     siteName?: string | null;
@@ -130,7 +131,7 @@ export function AdminSettingsTabs({ initialTab, setting, footer }: Props) {
             <div>
                 {activeTab === "general" && (
                     <SettingsForm initial={{
-                        siteName: setting?.siteName ?? "Gamingqu",
+                        siteName: setting?.siteName ?? SITE_DEFAULTS.name,
                         tagline: setting?.tagline ?? "",
                         logoUrl: setting?.logoUrl ?? null,
                         faviconUrl: setting?.faviconUrl ?? null,
@@ -207,7 +208,7 @@ export function AdminSettingsTabs({ initialTab, setting, footer }: Props) {
                 )}
                 {activeTab === "seo" && (
                     <SeoSettingsForm initial={{
-                        siteName: setting?.siteName ?? "Gamingqu",
+                        siteName: setting?.siteName ?? SITE_DEFAULTS.name,
                         tagline: setting?.tagline ?? "",
                         contactEmail: setting?.contactEmail ?? "",
                         contactPhone: setting?.contactPhone ?? "",

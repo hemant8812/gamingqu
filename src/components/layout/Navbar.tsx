@@ -8,6 +8,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { Gamepad2 } from "lucide-react";
 import { formatPrice } from "@/lib/formatPrice";
 import { useCurrency } from "@/app/providers";
+import { SITE_DEFAULTS } from "@/lib/constants";
 
 type Props = {
   siteName?: string;
@@ -31,7 +32,7 @@ type ApiServiceDTO = {
 };
 type MenuGame = { slug: string; name: string; iconUrl?: string | null };
 
-export function Navbar({ siteName = "Gamingqu", logoUrl = null, user = null }: Props) {
+export function Navbar({ siteName = SITE_DEFAULTS.name, logoUrl = null, user = null }: Props) {
   const { symbol: currency, setSymbol: setCurrency, convert } = useCurrency();
   const [showLogo, setShowLogo] = useState<boolean>(!!logoUrl);
   const pathname = usePathname();

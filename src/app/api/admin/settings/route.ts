@@ -6,6 +6,7 @@ import { revalidatePath } from "next/cache";
 import path from "path";
 import { promises as fs } from "fs";
 import { getFooterSettings } from "@/lib/settings";
+import { SITE_DEFAULTS } from "@/lib/constants";
 
 async function saveBrandFile(file: File | null, kind: "logo" | "favicon"): Promise<string | undefined> {
   if (!file || file.size === 0) return undefined;
@@ -53,7 +54,7 @@ export async function GET() {
     const s = await db.websiteSetting.findUnique({ where: { id: "singleton" } });
     const f = await getFooterSettings();
     return NextResponse.json({
-      website: s ?? { id: "singleton", siteName: "Gamingqu" },
+      website: s ?? { id: "singleton", siteName: SITE_DEFAULTS.name },
       footer: f ?? { id: "singleton" },
     });
   } catch {
@@ -106,7 +107,7 @@ export async function POST(req: Request) {
       },
       create: {
         id: "singleton",
-        siteName: siteName || "Gamingqu",
+        siteName: siteName || SITE_DEFAULTS.name,
         tagline: tagline || undefined,
         contactEmail: contactEmail || undefined,
         contactPhone: contactPhone || undefined,

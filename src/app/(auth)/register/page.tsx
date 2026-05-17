@@ -9,6 +9,7 @@ import { FcGoogle } from "react-icons/fc";
 import { SiDiscord } from "react-icons/si";
 import { Users, Star } from "lucide-react";
 import { PageToast } from "@/components/shared/PageToast";
+import { SITE_DEFAULTS } from "@/lib/constants";
 
 export default function RegisterPage() {
   const { status } = useSession();
@@ -93,7 +94,7 @@ export default function RegisterPage() {
           {/* Top - Logo */}
           <div className="relative z-10 flex justify-end">
             <Link href="/" className="inline-block">
-              <Image src="/icons/logo.png" alt="Gamingqu" width={140} height={40} className="object-contain" />
+              <Image src="/icons/logo.png" alt={SITE_DEFAULTS.name} width={140} height={40} className="object-contain" />
             </Link>
           </div>
 

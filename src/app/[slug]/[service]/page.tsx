@@ -5,10 +5,9 @@ import { notFound } from "next/navigation";
 import { ServicePanel } from "@/components/services/ServicePanel";
 import type { Metadata } from "next";
 import { sanitizePlain } from "@/lib/sanitize";
-import { getBaseUrl } from "@/lib/site";
 import { TrustBanner } from "@/components/shared/TrustBanner";
-import { getWebsiteSettingCore } from "@/lib/settings";
-import { headers } from "next/headers";
+import { getSiteMeta, breadcrumbLd } from "@/lib/seo";
+import { JsonLd } from "@/components/shared/JsonLd";
 
 type Params = Promise<{ slug?: string | string[]; service?: string | string[] }>;
 
@@ -17,7 +16,7 @@ export async function generateMetadata({ params }: { params: Params }): Promise<
   const gameSlug = Array.isArray(p.slug) ? p.slug[0] : p.slug || "";
   const serviceSlug = Array.isArray(p.service) ? p.service[0] : p.service || "";
   if (!gameSlug || !serviceSlug) return {};
-  const base = getBaseUrl();
+  const { base } = await getSiteMeta();
   try {
     const s = await db.service.findFirst({
       where: { slug: serviceSlug, isActive: true, game: { slug: gameSlug, isActive: true } },
@@ -29,10 +28,9 @@ export async function generateMetadata({ params }: { params: Params }): Promise<
     return {
       title,
       description: desc,
-      alternates: { canonical: `${base}/${s.game.slug}/${serviceSlug}` },
-      openGraph: { title, description: desc },
+      alternates: { canonical: `/${s.game.slug}/${serviceSlug}` },
+      openGraph: { title, description: desc, url: `${base}/${s.game.slug}/${serviceSlug}`, type: "website" },
       twitter: { card: "summary_large_image", title, description: desc },
-      robots: { index: true, follow: true },
     };
   } catch {
     return {};
@@ -47,11 +45,9 @@ export default async function ServiceDetailPage({ params }: { params: Params }) 
     notFound();
   }
 
-  const setting = await getWebsiteSettingCore();
-  const brandName = setting?.siteName ?? "Gamingqu";
-  const bannerLogoUrl = setting?.faviconUrl ?? setting?.logoUrl ?? "/icons/logo.png";
-  const base = getBaseUrl();
-  const nonce = (await headers()).get("x-nonce") || "";
+  const { base, siteName, favicon, logoUrl } = await getSiteMeta();
+  const brandName = siteName;
+  const bannerLogoUrl = favicon || logoUrl || "/icons/logo.png";
 
   const service = await db.service.findFirst({
     where: { slug: serviceSlug, isActive: true, game: { slug: gameSlug, isActive: true } },
@@ -251,12 +247,9 @@ export default async function ServiceDetailPage({ params }: { params: Params }) 
                 dangerouslySetInnerHTML={{ __html: service.description }}
               />
             )}
-            <script
-              nonce={nonce}
-              suppressHydrationWarning
-              type="application/ld+json"
-              dangerouslySetInnerHTML={{
-                __html: JSON.stringify({
+            <JsonLd
+              data={[
+                {
                   "@context": "https://schema.org",
                   "@type": "Product",
                   name: service.name,
@@ -273,24 +266,13 @@ export default async function ServiceDetailPage({ params }: { params: Params }) 
                     availability: "https://schema.org/InStock",
                     url: `${base}/${service.game.slug}/${service.slug}`,
                   },
-                }),
-              }}
-            />
-            <script
-              nonce={nonce}
-              suppressHydrationWarning
-              type="application/ld+json"
-              dangerouslySetInnerHTML={{
-                __html: JSON.stringify({
-                  "@context": "https://schema.org",
-                  "@type": "BreadcrumbList",
-                  itemListElement: [
-                    { "@type": "ListItem", position: 1, name: "Home", item: `${base}/` },
-                    { "@type": "ListItem", position: 2, name: service.game.name, item: `${base}/${service.game.slug}` },
-                    { "@type": "ListItem", position: 3, name: service.name, item: `${base}/${service.game.slug}/${service.slug}` },
-                  ],
-                }),
-              }}
+                },
+                breadcrumbLd([
+                  { name: "Home", url: `${base}/` },
+                  { name: service.game.name, url: `${base}/${service.game.slug}` },
+                  { name: service.name, url: `${base}/${service.game.slug}/${service.slug}` },
+                ]),
+              ]}
             />
             <div className="mt-8">
               <TrustBanner brandName={brandName} logoUrl={bannerLogoUrl} />

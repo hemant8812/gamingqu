@@ -1,6 +1,7 @@
 import type { MetadataRoute } from "next";
 import { db } from "@/lib/prisma";
 import { getBaseUrl } from "@/lib/site";
+import { RESERVED_SLUGS } from "@/lib/seo";
 
 export const dynamic = "force-dynamic";
 
@@ -87,32 +88,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.7,
   }));
 
-  // CMS pages — exclude reserved slugs that are handled by other routes
-  const reserved = new Set([
-    "blog",
-    "about",
-    "contact",
-    "cashback",
-    "work-with-us",
-    "trust-safety",
-    "terms",
-    "privacy",
-    "refund",
-    "cookies",
-    "admin",
-    "super-admin",
-    "api",
-    "dashboard",
-    "booster",
-    "checkout",
-    "login",
-    "register",
-    "forgot",
-    "post-login",
-    "auth",
-  ]);
   const pageEntries: MetadataRoute.Sitemap = pages
-    .filter((pg) => !reserved.has(pg.slug))
+    .filter((pg) => !RESERVED_SLUGS.has(pg.slug))
     .map((pg) => ({
       url: `${base}/${pg.slug}`,
       lastModified: pg.updatedAt,

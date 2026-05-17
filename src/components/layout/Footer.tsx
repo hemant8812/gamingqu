@@ -1,11 +1,11 @@
 import Image from "next/image";
 import Link from "next/link";
 import { FaTelegramPlane, FaYoutube, FaDiscord, FaFacebookF } from "react-icons/fa";
-import { getFooterSettings, getWebsiteSettingCore } from "@/lib/settings";
+import { getFooterSettings } from "@/lib/settings";
+import { getSiteMeta } from "@/lib/seo";
 
 export async function Footer() {
-    const s = await getFooterSettings();
-    const ws = await getWebsiteSettingCore();
+    const [s, ws] = await Promise.all([getFooterSettings(), getSiteMeta()]);
     const active = s?.isActive ?? true;
     const disclaimer = (s?.disclaimer ?? "").trim();
     const shortDesc = (s?.shortDescription ?? "").trim();
@@ -25,8 +25,8 @@ export async function Footer() {
     const pmApplePay = (s?.pmApplePayUrl ?? "").trim();
     const pmPaypal = (s?.pmPaypalUrl ?? "").trim();
     const pmStripe = (s?.pmStripeUrl ?? "").trim();
-    const logo = ws?.logoUrl ?? null;
-    const siteName = ws?.siteName || "Gamingqu";
+    const logo = ws.logoUrl;
+    const siteName = ws.siteName;
 
     const navs: Array<{ title: string; url: string }> = [
         { title: s?.navHomeTitle?.trim() || "Home", url: s?.navHomeUrl?.trim() || "/" },

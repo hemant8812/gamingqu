@@ -1,46 +1,33 @@
 import type { Metadata } from "next";
-import { getBaseUrl } from "@/lib/site";
-import { getWebsiteSettingCore } from "@/lib/settings";
-import { headers } from "next/headers";
+import { getSiteMeta, breadcrumbLd } from "@/lib/seo";
+import { JsonLd } from "@/components/shared/JsonLd";
+
+const PATH = "/refund";
+const PAGE_NAME = "Refund Policy";
 
 export async function generateMetadata(): Promise<Metadata> {
-  const s = await getWebsiteSettingCore();
-  const siteName = s?.siteName ?? "Gamingqu";
-  const title = "Refund Policy";
+  const { base, siteName } = await getSiteMeta();
   const description = `${siteName} refund policy and how to request a refund.`;
   return {
-    title,
+    title: PAGE_NAME,
     description,
-    alternates: { canonical: "/refund" },
-    openGraph: { title, description, url: `${getBaseUrl()}/refund`, type: "article" },
-    twitter: { card: "summary_large_image", title, description },
+    alternates: { canonical: PATH },
+    openGraph: { title: PAGE_NAME, description, url: `${base}${PATH}`, type: "article" },
+    twitter: { card: "summary_large_image", title: PAGE_NAME, description },
   };
 }
 
 export default async function RefundPage() {
-  const s = await getWebsiteSettingCore();
-  const base = getBaseUrl();
-  const siteName = s?.siteName ?? "Gamingqu";
-  const contactEmail = (s?.contactEmail ?? "").trim();
-  const nonce = (await headers()).get("x-nonce") || "";
+  const { base, siteName, contactEmail } = await getSiteMeta();
   const updated = new Date().toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" });
-
-  const breadcrumbLd = {
-    "@context": "https://schema.org",
-    "@type": "BreadcrumbList",
-    itemListElement: [
-      { "@type": "ListItem", position: 1, name: "Home", item: `${base}/` },
-      { "@type": "ListItem", position: 2, name: "Refund Policy", item: `${base}/refund` },
-    ],
-  };
 
   return (
     <>
-      <script
-        nonce={nonce}
-        suppressHydrationWarning
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbLd) }}
+      <JsonLd
+        data={breadcrumbLd([
+          { name: "Home", url: `${base}/` },
+          { name: PAGE_NAME, url: `${base}${PATH}` },
+        ])}
       />
       <h1>Refund Policy</h1>
       <p className="text-sm opacity-70">Last updated: {updated}</p>

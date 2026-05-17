@@ -1,56 +1,29 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { getBaseUrl } from "@/lib/site";
-import { getWebsiteSettingCore } from "@/lib/settings";
 import { FiThumbsUp, FiShield, FiClock, FiAward, FiUsers, FiArrowRight } from "react-icons/fi";
-import { headers } from "next/headers";
+import { getSiteMeta, breadcrumbLd, webPageLd } from "@/lib/seo";
+import { JsonLd } from "@/components/shared/JsonLd";
+
+const PATH = "/work-with-us";
+const PAGE_NAME = "Work With Us";
 
 export async function generateMetadata(): Promise<Metadata> {
-  const base = getBaseUrl();
-  const s = await getWebsiteSettingCore();
-  const siteName = s?.siteName ?? "Gamingqu";
-  const title = "Work With Us";
-  const description = "Join as a professional booster at " + siteName + ".";
+  const { base, siteName } = await getSiteMeta();
+  const description = `Join as a professional booster at ${siteName}.`;
   return {
-    title,
+    title: PAGE_NAME,
     description,
-    alternates: { canonical: `${base}/work-with-us` },
-    openGraph: {
-      title,
-      description,
-      url: `${base}/work-with-us`,
-      siteName,
-      type: "website",
-    },
-    twitter: {
-      card: "summary_large_image",
-      title,
-      description,
-    },
-    robots: { index: true, follow: true },
+    alternates: { canonical: PATH },
+    openGraph: { title: PAGE_NAME, description, url: `${base}${PATH}`, siteName, type: "website" },
+    twitter: { card: "summary_large_image", title: PAGE_NAME, description },
   };
 }
 
 export default async function WorkWithUsPage() {
-  const base = getBaseUrl();
-  const s = await getWebsiteSettingCore();
-  const nonce = (await headers()).get("x-nonce") || "";
-  const siteName = s?.siteName ?? "Gamingqu";
-  const breadcrumbLd = {
-    "@context": "https://schema.org",
-    "@type": "BreadcrumbList",
-    itemListElement: [
-      { "@type": "ListItem", position: 1, name: "Home", item: `${base}/` },
-      { "@type": "ListItem", position: 2, name: "Work With Us", item: `${base}/work-with-us` },
-    ],
-  };
-  const webPageLd = {
-    "@context": "https://schema.org",
-    "@type": "WebPage",
-    name: "Work With Us",
-    url: `${base}/work-with-us`,
-    description: "Join as a professional booster at " + siteName + ".",
-  };
+  const { base, siteName } = await getSiteMeta();
+  const url = `${base}${PATH}`;
+  const description = `Join as a professional booster at ${siteName}.`;
+
   return (
     <div className="min-h-screen bg-[#0A0E17] text-white">
       <div className="fixed inset-0 pointer-events-none">
@@ -58,8 +31,15 @@ export default async function WorkWithUsPage() {
         <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-cyan-500/10 rounded-full blur-3xl" />
       </div>
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 pt-10 pb-12">
-        <script nonce={nonce} suppressHydrationWarning type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbLd) }} />
-        <script nonce={nonce} suppressHydrationWarning type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(webPageLd) }} />
+        <JsonLd
+          data={[
+            breadcrumbLd([
+              { name: "Home", url: `${base}/` },
+              { name: PAGE_NAME, url },
+            ]),
+            webPageLd({ name: PAGE_NAME, url, description, base }),
+          ]}
+        />
         <div className="mb-8">
           <div className="flex items-center justify-between gap-4">
             <h1 className="text-4xl font-extrabold tracking-tight">Work With Us</h1>

@@ -1,57 +1,27 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { getBaseUrl } from "@/lib/site";
-import { getWebsiteSettingCore } from "@/lib/settings";
 import { FiShield, FiZap, FiUsers, FiTrendingUp, FiThumbsUp, FiMail, FiEye, FiHeadphones, FiSliders } from "react-icons/fi";
-import { headers } from "next/headers";
+import { getSiteMeta, breadcrumbLd, webPageLd } from "@/lib/seo";
+import { JsonLd } from "@/components/shared/JsonLd";
+
+const PATH = "/about";
+const PAGE_NAME = "About Us";
 
 export async function generateMetadata(): Promise<Metadata> {
-  const base = getBaseUrl();
-  const s = await getWebsiteSettingCore();
-  const siteName = s?.siteName ?? "Gamingqu";
-  const title = "About Us";
-  const description = s?.tagline ?? "Professional Game Boosting Services";
+  const { base, siteName, tagline } = await getSiteMeta();
   return {
-    title,
-    description,
-    alternates: { canonical: `${base}/about` },
-    openGraph: {
-      title,
-      description,
-      url: `${base}/about`,
-      siteName,
-      type: "website",
-    },
-    twitter: {
-      card: "summary_large_image",
-      title,
-      description,
-    },
-    robots: { index: true, follow: true },
+    title: PAGE_NAME,
+    description: tagline,
+    alternates: { canonical: PATH },
+    openGraph: { title: PAGE_NAME, description: tagline, url: `${base}${PATH}`, siteName, type: "website" },
+    twitter: { card: "summary_large_image", title: PAGE_NAME, description: tagline },
   };
 }
 
 export default async function AboutPage() {
-  const base = getBaseUrl();
-  const s = await getWebsiteSettingCore();
-  const nonce = (await headers()).get("x-nonce") || "";
-  const siteName = s?.siteName ?? "Gamingqu";
-  const tagline = s?.tagline ?? "Professional Game Boosting Services";
-  const breadcrumbLd = {
-    "@context": "https://schema.org",
-    "@type": "BreadcrumbList",
-    itemListElement: [
-      { "@type": "ListItem", position: 1, name: "Home", item: `${base}/` },
-      { "@type": "ListItem", position: 2, name: "About Us", item: `${base}/about` },
-    ],
-  };
-  const webPageLd = {
-    "@context": "https://schema.org",
-    "@type": "WebPage",
-    name: "About Us",
-    url: `${base}/about`,
-    description: tagline,
-  };
+  const { base, siteName, tagline } = await getSiteMeta();
+  const url = `${base}${PATH}`;
+
   return (
     <div className="min-h-screen bg-[#0A0E17] text-white">
       <div className="fixed inset-0 pointer-events-none">
@@ -59,8 +29,15 @@ export default async function AboutPage() {
         <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-cyan-500/10 rounded-full blur-3xl" />
       </div>
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 pt-10 pb-12">
-        <script nonce={nonce} suppressHydrationWarning type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbLd) }} />
-        <script nonce={nonce} suppressHydrationWarning type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(webPageLd) }} />
+        <JsonLd
+          data={[
+            breadcrumbLd([
+              { name: "Home", url: `${base}/` },
+              { name: PAGE_NAME, url },
+            ]),
+            webPageLd({ name: PAGE_NAME, url, description: tagline, base }),
+          ]}
+        />
         <div className="mb-8">
           <div className="flex items-center justify-between gap-4">
             <div className="flex items-center gap-3">

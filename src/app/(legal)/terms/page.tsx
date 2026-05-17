@@ -1,46 +1,33 @@
 import type { Metadata } from "next";
-import { getBaseUrl } from "@/lib/site";
-import { getWebsiteSettingCore } from "@/lib/settings";
-import { headers } from "next/headers";
+import { getSiteMeta, breadcrumbLd } from "@/lib/seo";
+import { JsonLd } from "@/components/shared/JsonLd";
+
+const PATH = "/terms";
+const PAGE_NAME = "Terms of Service";
 
 export async function generateMetadata(): Promise<Metadata> {
-  const s = await getWebsiteSettingCore();
-  const siteName = s?.siteName ?? "Gamingqu";
-  const title = "Terms of Service";
+  const { base, siteName } = await getSiteMeta();
   const description = `Terms and conditions for using ${siteName} services.`;
   return {
-    title,
+    title: PAGE_NAME,
     description,
-    alternates: { canonical: "/terms" },
-    openGraph: { title, description, url: `${getBaseUrl()}/terms`, type: "article" },
-    twitter: { card: "summary_large_image", title, description },
+    alternates: { canonical: PATH },
+    openGraph: { title: PAGE_NAME, description, url: `${base}${PATH}`, type: "article" },
+    twitter: { card: "summary_large_image", title: PAGE_NAME, description },
   };
 }
 
 export default async function TermsPage() {
-  const s = await getWebsiteSettingCore();
-  const base = getBaseUrl();
-  const siteName = s?.siteName ?? "Gamingqu";
-  const contactEmail = (s?.contactEmail ?? "").trim();
-  const nonce = (await headers()).get("x-nonce") || "";
+  const { base, siteName, contactEmail } = await getSiteMeta();
   const updated = new Date().toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" });
-
-  const breadcrumbLd = {
-    "@context": "https://schema.org",
-    "@type": "BreadcrumbList",
-    itemListElement: [
-      { "@type": "ListItem", position: 1, name: "Home", item: `${base}/` },
-      { "@type": "ListItem", position: 2, name: "Terms of Service", item: `${base}/terms` },
-    ],
-  };
 
   return (
     <>
-      <script
-        nonce={nonce}
-        suppressHydrationWarning
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbLd) }}
+      <JsonLd
+        data={breadcrumbLd([
+          { name: "Home", url: `${base}/` },
+          { name: PAGE_NAME, url: `${base}${PATH}` },
+        ])}
       />
       <h1>Terms of Service</h1>
       <p className="text-sm opacity-70">Last updated: {updated}</p>

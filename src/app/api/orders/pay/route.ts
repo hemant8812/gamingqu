@@ -3,6 +3,7 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/auth";
 import { db } from "@/lib/prisma";
 import { getBaseUrl } from "@/lib/site";
+import { SITE_DEFAULTS } from "@/lib/constants";
 import crypto from "crypto";
 import type { Prisma } from "@/generated/prisma/client";
 import { limitLen } from "@/lib/sanitize";
@@ -109,7 +110,7 @@ export async function GET(req: Request) {
             },
           ],
           application_context: {
-            brand_name: "Gamingqu",
+            brand_name: SITE_DEFAULTS.name,
             user_action: "PAY_NOW",
             return_url: `${baseUrl}/api/payments/paypal/return?order=${encodeURIComponent(order.code)}`,
             cancel_url: `${baseUrl}/api/payments/paypal/cancel?order=${encodeURIComponent(order.code)}`,

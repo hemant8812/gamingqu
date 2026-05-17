@@ -2,34 +2,11 @@ import type { Metadata } from "next";
 import { db } from "@/lib/prisma";
 import { getBaseUrl } from "@/lib/site";
 import { sanitizePlain } from "@/lib/sanitize";
-import { headers } from "next/headers";
+import { RESERVED_SLUGS, breadcrumbLd } from "@/lib/seo";
+import { JsonLd } from "@/components/shared/JsonLd";
 import React from "react";
 
 type Params = Promise<{ slug: string }>;
-
-const RESERVED_SLUGS = new Set([
-  "blog",
-  "about",
-  "contact",
-  "cashback",
-  "work-with-us",
-  "trust-safety",
-  "terms",
-  "privacy",
-  "refund",
-  "cookies",
-  "admin",
-  "super-admin",
-  "api",
-  "dashboard",
-  "booster",
-  "checkout",
-  "login",
-  "register",
-  "forgot",
-  "post-login",
-  "auth",
-]);
 
 export async function generateMetadata({ params }: { params: Params }): Promise<Metadata> {
   const { slug } = await params;
@@ -43,14 +20,13 @@ export async function generateMetadata({ params }: { params: Params }): Promise<
       select: { name: true, description: true, imageUrl: true },
     });
     if (game) {
-      const title = game.name;
       const desc = sanitizePlain((game.description ?? "").trim()) || `${game.name} boosting services`;
       return {
-        title,
+        title: game.name,
         description: desc,
-        alternates: { canonical: `${base}/${slug}` },
+        alternates: { canonical: `/${slug}` },
         openGraph: {
-          title,
+          title: game.name,
           description: desc,
           url: `${base}/${slug}`,
           type: "website",
@@ -58,7 +34,7 @@ export async function generateMetadata({ params }: { params: Params }): Promise<
         },
         twitter: {
           card: "summary_large_image",
-          title,
+          title: game.name,
           description: desc,
           images: game.imageUrl ? [game.imageUrl] : undefined,
         },
@@ -73,14 +49,13 @@ export async function generateMetadata({ params }: { params: Params }): Promise<
       select: { title: true, content: true },
     });
     if (page) {
-      const title = page.title;
       const desc = sanitizePlain((page.content ?? "").trim()).slice(0, 160) || page.title;
       return {
-        title,
+        title: page.title,
         description: desc,
-        alternates: { canonical: `${base}/${slug}` },
-        openGraph: { title, description: desc, url: `${base}/${slug}`, type: "article" },
-        twitter: { card: "summary_large_image", title, description: desc },
+        alternates: { canonical: `/${slug}` },
+        openGraph: { title: page.title, description: desc, url: `${base}/${slug}`, type: "article" },
+        twitter: { card: "summary_large_image", title: page.title, description: desc },
       };
     }
   } catch {}
@@ -100,8 +75,8 @@ export default async function SlugLayout({
     return <>{children}</>;
   }
   const base = getBaseUrl();
-  const nonce = (await headers()).get("x-nonce") || "";
 
+  // Game branch
   let game: { name: string; description?: string | null; imageUrl?: string | null } | null = null;
   try {
     game = await db.game.findFirst({
@@ -111,44 +86,32 @@ export default async function SlugLayout({
   } catch {}
 
   if (game) {
-    const title = game.name;
-    const desc = sanitizePlain((game.description ?? "").trim()) || title;
+    const desc = sanitizePlain((game.description ?? "").trim()) || game.name;
     const videoGameLd: Record<string, unknown> = {
       "@context": "https://schema.org",
       "@type": "VideoGame",
-      name: title,
+      name: game.name,
       url: `${base}/${slug}`,
       description: desc,
     };
     if (game.imageUrl) videoGameLd.image = game.imageUrl;
-    const breadcrumbLd = {
-      "@context": "https://schema.org",
-      "@type": "BreadcrumbList",
-      itemListElement: [
-        { "@type": "ListItem", position: 1, name: "Home", item: `${base}/` },
-        { "@type": "ListItem", position: 2, name: title, item: `${base}/${slug}` },
-      ],
-    };
     return (
       <>
-        <script
-          nonce={nonce}
-          suppressHydrationWarning
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(videoGameLd) }}
-        />
-        <script
-          nonce={nonce}
-          suppressHydrationWarning
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbLd) }}
+        <JsonLd
+          data={[
+            videoGameLd,
+            breadcrumbLd([
+              { name: "Home", url: `${base}/` },
+              { name: game.name, url: `${base}/${slug}` },
+            ]),
+          ]}
         />
         {children}
       </>
     );
   }
 
-  // Fallback breadcrumb for CMS pages
+  // CMS Page branch
   let pageTitle: string | null = null;
   try {
     const page = await db.page.findFirst({
@@ -159,21 +122,13 @@ export default async function SlugLayout({
   } catch {}
 
   if (pageTitle) {
-    const breadcrumbLd = {
-      "@context": "https://schema.org",
-      "@type": "BreadcrumbList",
-      itemListElement: [
-        { "@type": "ListItem", position: 1, name: "Home", item: `${base}/` },
-        { "@type": "ListItem", position: 2, name: pageTitle, item: `${base}/${slug}` },
-      ],
-    };
     return (
       <>
-        <script
-          nonce={nonce}
-          suppressHydrationWarning
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbLd) }}
+        <JsonLd
+          data={breadcrumbLd([
+            { name: "Home", url: `${base}/` },
+            { name: pageTitle, url: `${base}/${slug}` },
+          ])}
         />
         {children}
       </>

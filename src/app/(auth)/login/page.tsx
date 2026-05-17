@@ -9,6 +9,7 @@ import { FiArrowRight, FiMail, FiLock, FiShield } from "react-icons/fi";
 import { SiDiscord } from "react-icons/si";
 import { Sparkles, Zap } from "lucide-react";
 import { PageToast } from "@/components/shared/PageToast";
+import { SITE_DEFAULTS } from "@/lib/constants";
 
 export default function LoginPage() {
   const { status } = useSession();
@@ -85,7 +86,7 @@ export default function LoginPage() {
           {/* Top - Logo */}
           <div className="relative z-10">
             <Link href="/" className="inline-block">
-              <Image src="/icons/logo.png" alt="Gamingqu" width={140} height={40} className="object-contain" />
+              <Image src="/icons/logo.png" alt={SITE_DEFAULTS.name} width={140} height={40} className="object-contain" />
             </Link>
           </div>
 

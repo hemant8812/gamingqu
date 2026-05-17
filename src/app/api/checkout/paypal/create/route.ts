@@ -5,6 +5,7 @@ import { db } from "@/lib/prisma";
 import { getBaseUrl } from "@/lib/site";
 import { sanitizeSlug, normalizeEmail, sanitizePlain, limitLen } from "@/lib/sanitize";
 import { computeQuote } from "@/lib/checkoutQuote";
+import { SITE_DEFAULTS } from "@/lib/constants";
 
 type SelectedOption = { title: string; values: string[] };
 type Contact = { email?: string; discord?: string; characterName?: string };
@@ -136,7 +137,7 @@ export async function POST(req: Request) {
           },
         ],
         application_context: {
-          brand_name: "Gamingqu",
+          brand_name: SITE_DEFAULTS.name,
           user_action: "PAY_NOW",
           return_url: `${baseUrl}/api/payments/paypal/return?order=${encodeURIComponent(order.code)}`,
           cancel_url: `${baseUrl}/api/payments/paypal/cancel?order=${encodeURIComponent(order.code)}`,
