@@ -89,6 +89,30 @@ export async function middleware(req: NextRequest) {
     });
   }
 
+  // ── Content-Security-Policy ───────────────────────────────
+  // Trusted host allowlist for analytics, ads, and chat widgets.
+  // Browsers that honor 'strict-dynamic' will ignore the host list and
+  // 'unsafe-inline'; both are kept for legacy browser fallback.
+  const scriptHosts = [
+    "https://static.cloudflareinsights.com",
+    "https://*.googletagmanager.com",
+    "https://www.googletagmanager.com",
+    "https://*.google-analytics.com",
+    "https://www.google-analytics.com",
+    "https://ssl.google-analytics.com",
+    "https://client.crisp.chat",
+    "https://embed.tawk.to",
+    "https://*.tawk.to",
+    "https://www.googleadservices.com",
+    "https://googleads.g.doubleclick.net",
+    "https://www.google.com",
+    "https://adservice.google.com",
+    "https://*.doubleclick.net",
+    "https://cdn.jsdelivr.net",
+  ].join(" ");
+
+  const devExtras = isDev ? " 'unsafe-inline' 'unsafe-eval'" : "";
+
   const csp = [
     "default-src 'self'",
     "base-uri 'self'",
@@ -96,13 +120,15 @@ export async function middleware(req: NextRequest) {
     "form-action 'self'",
     "object-src 'none'",
     "upgrade-insecure-requests",
-    "img-src 'self' data: blob: https: https://*.tawk.to https://*.crisp.chat https://*.googleapis.com https://*.gstatic.com",
+    "img-src 'self' data: blob: https:",
     "style-src 'self' 'unsafe-inline' https://client.crisp.chat https://fonts.googleapis.com https://*.tawk.to",
+    "style-src-elem 'self' 'unsafe-inline' https://client.crisp.chat https://fonts.googleapis.com https://*.tawk.to",
     "font-src 'self' data: https://client.crisp.chat https://fonts.gstatic.com https://*.tawk.to",
-    "frame-src 'self' https://*.tawk.to https://embed.tawk.to https://*.crisp.chat https://www.googletagmanager.com",
-    `connect-src 'self' https: wss:`,
-    `script-src-elem 'self' 'nonce-${nonce}' https://static.cloudflareinsights.com https://www.googletagmanager.com https://client.crisp.chat https://embed.tawk.to https://*.tawk.to https://www.googleadservices.com https://googleads.g.doubleclick.net https://www.google.com https://adservice.google.com https://cdn.jsdelivr.net`,
-    `script-src 'self' 'nonce-${nonce}' 'strict-dynamic'${isDev ? " 'unsafe-inline' 'unsafe-eval'" : ""} https://static.cloudflareinsights.com https://www.googletagmanager.com https://client.crisp.chat https://embed.tawk.to https://*.tawk.to https://www.googleadservices.com https://googleads.g.doubleclick.net https://www.google.com https://adservice.google.com https://cdn.jsdelivr.net`,
+    "frame-src 'self' https://*.tawk.to https://embed.tawk.to https://*.crisp.chat https://www.googletagmanager.com https://td.doubleclick.net https://*.doubleclick.net",
+    "connect-src 'self' https: wss:",
+    `script-src-elem 'self' 'nonce-${nonce}' 'strict-dynamic'${devExtras} ${scriptHosts}`,
+    `script-src 'self' 'nonce-${nonce}' 'strict-dynamic'${devExtras} ${scriptHosts}`,
+    "worker-src 'self' blob:",
   ].join("; ");
 
   res.headers.set("Content-Security-Policy", csp);
