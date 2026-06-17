@@ -33,15 +33,15 @@ export default function RegisterPage() {
     e.preventDefault();
     setError(null);
     if (!username.trim()) {
-      setError("Username wajib diisi");
+      setError("Username is required");
       setToastType("error");
-      setToastMessage("Registrasi gagal: Username wajib diisi");
+      setToastMessage("Registration failed: Username is required");
       return;
     }
     if (password !== confirm) {
       setError("Passwords do not match");
       setToastType("error");
-      setToastMessage("Registrasi gagal: Password tidak sama");
+      setToastMessage("Registration failed: Passwords do not match");
       return;
     }
     setLoading(true);
@@ -60,11 +60,11 @@ export default function RegisterPage() {
       if (!res.ok) {
         setError(data?.error ?? "Registration failed");
         setToastType("error");
-        setToastMessage(`Registrasi gagal: ${data?.error ?? "Terjadi kesalahan"}`);
+        setToastMessage(`Registration failed: ${data?.error ?? "An error occurred"}`);
         return;
       }
       setToastType("success");
-      setToastMessage("Registrasi berhasil, silakan login");
+      setToastMessage("Registration successful, please login");
       setTimeout(() => {
         window.location.href = "/login";
       }, 1200);

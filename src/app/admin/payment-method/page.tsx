@@ -27,12 +27,12 @@ export default async function AdminPaymentMethodPage({ searchParams }: { searchP
   const { value: toast, type: toastType } = parseToast(sp);
   const toastMessage = toast
     ? toast === "updated"
-      ? "Data berhasil diupdate"
+      ? "Data updated successfully"
       : toast === "deleted"
-        ? "Data berhasil dihapus"
+        ? "Data deleted successfully"
         : toast === "error"
-          ? "Gagal menyimpan data"
-          : "Data berhasil disimpan"
+          ? "Failed to save data"
+          : "Data saved successfully"
     : undefined;
   const list = await db.paymentMethod.findMany({
     orderBy: [{ sortOrder: "asc" }, { createdAt: "desc" }],

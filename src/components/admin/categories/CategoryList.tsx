@@ -1,7 +1,7 @@
 "use client";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { Pencil, Trash2, AlertTriangle, X } from "lucide-react";
+import { Pencil, Trash2, AlertTriangle, X, GripVertical } from "lucide-react";
 import { useState, useRef, useEffect } from "react";
 
 type CategoryItem = {
@@ -14,9 +14,16 @@ type CategoryItem = {
 
 export function CategoryList({ categories }: { categories: CategoryItem[] }) {
   const router = useRouter();
+  const [items, setItems] = useState<CategoryItem[]>(categories);
   const [isConfirmOpen, setIsConfirmOpen] = useState(false);
   const [deleteId, setDeleteId] = useState<number | null>(null);
+  const dragStartIdx = useRef<number | null>(null);
   const dialogRef = useRef<HTMLDialogElement>(null);
+
+  useEffect(() => {
+    setItems(categories);
+  }, [categories]);
+
   useEffect(() => {
     if (isConfirmOpen) {
       dialogRef.current?.showModal();
@@ -24,10 +31,48 @@ export function CategoryList({ categories }: { categories: CategoryItem[] }) {
       dialogRef.current?.close();
     }
   }, [isConfirmOpen]);
+
+  const handleDragStart = (e: React.DragEvent, index: number) => {
+    dragStartIdx.current = index;
+    e.dataTransfer.effectAllowed = "move";
+  };
+
+  const handleDragOver = (e: React.DragEvent, index: number) => {
+    e.preventDefault();
+    if (dragStartIdx.current === null || dragStartIdx.current === index) return;
+
+    const newItems = [...items];
+    const draggedItem = newItems[dragStartIdx.current];
+    newItems.splice(dragStartIdx.current, 1);
+    newItems.splice(index, 0, draggedItem);
+
+    dragStartIdx.current = index;
+    setItems(newItems);
+  };
+
+  const handleDragEnd = async () => {
+    dragStartIdx.current = null;
+
+    try {
+      const ids = items.map((item) => item.id);
+      const res = await fetch("/api/admin/categories/reorder", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ ids }),
+      });
+      if (res.ok) {
+        router.refresh();
+      }
+    } catch (err) {
+      console.error("Failed to save reordered categories:", err);
+    }
+  };
+
   const openConfirm = (id: number) => {
     setDeleteId(id);
     setIsConfirmOpen(true);
   };
+
   const confirmDelete = async () => {
     if (!deleteId) return;
     const fd = new FormData();
@@ -41,14 +86,32 @@ export function CategoryList({ categories }: { categories: CategoryItem[] }) {
   return (
     <>
     <div className="space-y-3">
-      {categories.length === 0 && (
+      {items.length === 0 && (
         <div className="text-gray-500 text-center py-12">No categories found</div>
       )}
-      {categories.map((c) => (
+      {items.map((c, index) => (
         <div
           key={c.id}
-          className="flex items-center gap-4 p-3 bg-[#0A0E17] hover:bg-white/5 rounded-xl transition-colors"
+          draggable={true}
+          onDragStart={(e) => handleDragStart(e, index)}
+          onDragOver={(e) => handleDragOver(e, index)}
+          onDragEnd={handleDragEnd}
+          className={`flex items-center gap-4 p-3 bg-[#0A0E17] hover:bg-white/5 rounded-xl transition-all duration-200 border border-transparent select-none ${
+            dragStartIdx.current === index ? "opacity-40 scale-[0.98] border-blue-500/30" : "opacity-100"
+          }`}
         >
+          {/* Drag Handle */}
+          <div
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+            }}
+            className="cursor-grab active:cursor-grabbing p-1.5 hover:bg-white/10 rounded-lg text-gray-500 hover:text-gray-300 transition-colors shrink-0"
+            title="Drag to reorder"
+          >
+            <GripVertical className="h-4.5 w-4.5" />
+          </div>
+
           <div className="w-10 h-10 rounded-lg bg-white/5 overflow-hidden flex items-center justify-center shrink-0">
             {c.game.iconUrl ? (
               <Image src={c.game.iconUrl} alt={c.game.name} width={40} height={40} className="object-cover w-full h-full" unoptimized />

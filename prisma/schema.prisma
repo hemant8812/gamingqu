@@ -178,6 +178,7 @@ model Game {
   description String?  @db.Text
   isHotOffer  Boolean  @default(false)
   isActive    Boolean  @default(true)
+  sortOrder   Int      @default(9999)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
   categories  Category[]
@@ -192,6 +193,7 @@ model Category {
   slug      String   @unique
   gameId    Int
   isActive  Boolean  @default(true)
+  sortOrder Int      @default(9999)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 

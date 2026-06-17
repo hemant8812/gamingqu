@@ -678,7 +678,7 @@ export function ServiceDataManager({ services }: { services: ServiceOption[] }) 
                       </div>
                     ))
                   ) : (
-                    <div className="text-sm text-gray-500">Belum ada harga range dual ditambahkan</div>
+                    <div className="text-sm text-gray-500">No dual range prices added yet</div>
                   )}
                 </div>
               </div>

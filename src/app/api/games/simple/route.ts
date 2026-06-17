@@ -20,7 +20,11 @@ const getSimpleGamesCached = unstable_cache(
 
 export async function GET() {
   try {
-    const games = await getSimpleGamesCached();
+    const games = await db.game.findMany({
+      where: { isActive: true },
+      orderBy: { name: "asc" },
+      select: { slug: true, name: true, iconUrl: true },
+    });
     return NextResponse.json({ games });
   } catch {
     return NextResponse.json({ error: "Server error" }, { status: 500 });

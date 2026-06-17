@@ -24,21 +24,21 @@ export function CategoryForm({ games }: { games: GameOption[] }) {
       <div className="card-body p-6 space-y-4">
         <div className="form-control">
             <label htmlFor="name" className="label">
-                <span className="label-text font-semibold">Nama Kategori</span>
+                <span className="label-text font-semibold">Category Name</span>
             </label>
             <input
             id="name"
             name="name"
             type="text"
             required
-            placeholder="Contoh: Rank Boost"
+            placeholder="e.g. Rank Boost"
             className="input input-bordered w-full"
             />
             <AutoSlugField nameInputId="name" name="slug" label="Slug" />
         </div>
         <div className="form-control">
             <label htmlFor="gameId" className="label">
-                <span className="label-text font-semibold">Nama Game</span>
+                <span className="label-text font-semibold">Game Name</span>
             </label>
             <select
             id="gameId"
@@ -47,7 +47,7 @@ export function CategoryForm({ games }: { games: GameOption[] }) {
             className="select select-bordered w-full"
             defaultValue=""
             >
-            <option value="" disabled>Pilih Game</option>
+            <option value="" disabled>Select Game</option>
             {games.map((g) => (
                 <option key={g.id} value={g.id}>{g.name}</option>
             ))}
@@ -60,7 +60,7 @@ export function CategoryForm({ games }: { games: GameOption[] }) {
             className="btn btn-primary gap-2"
             >
             <SaveIcon className="h-4 w-4" />
-            <span>Simpan</span>
+            <span>Save</span>
             </button>
         </div>
       </div>

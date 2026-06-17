@@ -148,10 +148,10 @@ export function AdminOrdersTable({ orders, page = 1, totalPages = 1 }: { orders:
                     <Link
                       href={`/admin/orders?order=${encodeURIComponent(o.code)}`}
                       className="inline-flex items-center gap-2 h-9 px-3 rounded-lg bg-white/5 hover:bg-white/10 text-sm text-gray-200"
-                      aria-label={`Lihat detail ${o.code}`}
+                      aria-label={`View details for ${o.code}`}
                     >
                       <Eye className="h-4 w-4" />
-                      <span>Lihat Detail</span>
+                      <span>View Details</span>
                     </Link>
                   </div>
                 </div>

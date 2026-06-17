@@ -20,7 +20,7 @@ export default async function AdminBennerPage({ searchParams }: { searchParams?:
   }
   const sp = searchParams ? await searchParams : {};
   const { value: toast, type: toastType } = parseToast(sp);
-  const toastMessage = toast ? (toast === "error" ? "Gagal menyimpan benner" : "Benner berhasil disimpan") : undefined;
+  const toastMessage = toast ? (toast === "error" ? "Failed to save banner" : "Banner saved successfully") : undefined;
   const items = await db.banner.findMany({
     select: { id: true, title: true, subtitle: true, buttonLink: true, buttonImageUrl: true, order: true, isActive: true },
     orderBy: [{ order: "asc" }, { createdAt: "asc" }],

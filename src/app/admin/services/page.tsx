@@ -68,12 +68,12 @@ export default async function AdminServicesPage({ searchParams }: { searchParams
   const { value: toast, type: toastType } = parseToast(sp);
   const toastMessage = toast
     ? toast === "updated"
-      ? "Layanan berhasil diupdate"
+      ? "Service updated successfully"
       : toast === "deleted"
-        ? "Layanan berhasil dihapus"
+        ? "Service deleted successfully"
         : toast === "error"
-          ? "Gagal menyimpan layanan"
-          : "Layanan berhasil disimpan"
+          ? "Failed to save service"
+          : "Service saved successfully"
     : undefined;
   const q = normalizeQuery(sp, "q", 64);
   const games = await getSimpleGames();

@@ -1,6 +1,7 @@
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/auth";
 import { db } from "@/lib/prisma";
+import { OrderStatus, OrderFulfillmentStatus } from "@/generated/prisma/client";
 import { AdminOrdersTable } from "@/components/admin/orders/AdminOrdersTable";
 import Link from "next/link";
 import { X } from "lucide-react";
@@ -87,6 +88,10 @@ export default async function AdminOrdersPage({ searchParams }: { searchParams?:
       ? "Booster Pay updated successfully"
       : toast === "canceled"
       ? "Payment canceled"
+      : toast === "status_changed"
+      ? "Order status updated successfully"
+      : toast === "fulfillment_changed"
+      ? "Fulfillment status updated successfully"
       : toast === "error"
       ? "Operation failed"
       : undefined;
@@ -147,6 +152,44 @@ export default async function AdminOrdersPage({ searchParams }: { searchParams?:
     }
     revalidatePath("/admin/orders");
     redirect(`/admin/orders?order=${encodeURIComponent(code)}&toast=bp_changed`);
+  }
+
+  async function changeOrderStatusAction(formData: FormData) {
+    "use server";
+    const code = String(formData.get("code") || "");
+    const status = String(formData.get("status") || "") as OrderStatus;
+    if (!code || !status) return;
+    try {
+      const order = await db.order.findUnique({ where: { code }, select: { id: true } });
+      if (!order) return;
+      await db.order.update({ where: { id: order.id }, data: { status } });
+      if (status === "PAID") {
+        await db.payment.updateMany({
+          where: { orderId: order.id },
+          data: { status: "CAPTURED" },
+        });
+      }
+    } catch {
+      /* ignore */
+    }
+    revalidatePath("/admin/orders");
+    redirect(`/admin/orders?order=${encodeURIComponent(code)}&toast=status_changed`);
+  }
+
+  async function changeFulfillmentStatusAction(formData: FormData) {
+    "use server";
+    const code = String(formData.get("code") || "");
+    const fulfillmentStatus = String(formData.get("fulfillmentStatus") || "") as OrderFulfillmentStatus;
+    if (!code || !fulfillmentStatus) return;
+    try {
+      const order = await db.order.findUnique({ where: { code }, select: { id: true } });
+      if (!order) return;
+      await db.order.update({ where: { id: order.id }, data: { fulfillmentStatus } });
+    } catch {
+      /* ignore */
+    }
+    revalidatePath("/admin/orders");
+    redirect(`/admin/orders?order=${encodeURIComponent(code)}&toast=fulfillment_changed`);
   }
 
   return (
@@ -265,28 +308,69 @@ export default async function AdminOrdersPage({ searchParams }: { searchParams?:
                     );
                   })()}
                 </div>
-                <div className="md:col-span-2 rounded-xl bg-[#0A0E17] border border-white/10 p-4 space-y-3">
-                    {selected.status === "PENDING" && (
-                      <form action={cancelPaymentAction} className="space-y-2">
+                <div className="md:col-span-2 rounded-xl bg-[#0A0E17] border border-white/10 p-4 space-y-4">
+                  {/* Change Payment Status */}
+                  <form action={changeOrderStatusAction} className="space-y-2">
+                    <input type="hidden" name="code" value={selected.code} />
+                    <div className="text-xs text-gray-500 font-bold">Payment Status</div>
+                    <select
+                      name="status"
+                      defaultValue={selected.status}
+                      className="w-full h-9 px-2 rounded-lg bg-[#0F172A] border border-white/10 text-white text-sm"
+                    >
+                      <option value="CREATED">CREATED</option>
+                      <option value="PENDING">PENDING</option>
+                      <option value="PAID">PAID</option>
+                      <option value="CANCELED">CANCELED</option>
+                      <option value="FAILED">FAILED</option>
+                    </select>
+                    <SubmitButton className="w-full h-9 rounded-lg bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold" pendingClassName="opacity-75 cursor-wait">
+                      Update Status
+                    </SubmitButton>
+                  </form>
+
+                  {/* Change Fulfillment Status */}
+                  <form action={changeFulfillmentStatusAction} className="space-y-2">
+                    <input type="hidden" name="code" value={selected.code} />
+                    <div className="text-xs text-gray-500 font-bold">Fulfillment Status</div>
+                    <select
+                      name="fulfillmentStatus"
+                      defaultValue={selected.fulfillmentStatus}
+                      className="w-full h-9 px-2 rounded-lg bg-[#0F172A] border border-white/10 text-white text-sm"
+                    >
+                      <option value="PENDING">PENDING</option>
+                      <option value="ACCEPTED">ACCEPTED</option>
+                      <option value="IN_PROGRESS">IN_PROGRESS</option>
+                      <option value="COMPLETED">COMPLETED</option>
+                      <option value="CANCELED">CANCELED</option>
+                    </select>
+                    <SubmitButton className="w-full h-9 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-semibold" pendingClassName="opacity-75 cursor-wait">
+                      Update Fulfillment
+                    </SubmitButton>
+                  </form>
+
+                  {selected.status === "PENDING" && (
+                    <form action={cancelPaymentAction} className="space-y-2">
                       <input type="hidden" name="code" value={selected.code} />
-                        <SubmitButton className="w-full h-9 rounded-lg bg-red-600 hover:bg-red-700 text-white text-sm font-semibold" pendingClassName="opacity-75 cursor-wait">
-                          Cancel Payment
-                        </SubmitButton>
+                      <SubmitButton className="w-full h-9 rounded-lg bg-red-600 hover:bg-red-700 text-white text-sm font-semibold" pendingClassName="opacity-75 cursor-wait">
+                        Cancel Payment
+                      </SubmitButton>
                     </form>
                   )}
-                    <form action={changeBoosterPayAction} className="space-y-2">
+
+                  <form action={changeBoosterPayAction} className="space-y-2">
                     <input type="hidden" name="code" value={selected.code} />
-                    <div className="text-xs text-gray-500">Change Booster Pay</div>
+                    <div className="text-xs text-gray-500 font-bold">Change Booster Pay</div>
                     <input
                       type="number"
                       name="boosterPay"
                       defaultValue={Number.parseFloat(String(selected.boosterPay))}
                       step="0.01"
-                      className="w-full h-9 px-3 rounded-lg bg-[#0F172A] border border-white/10 text-white"
+                      className="w-full h-9 px-3 rounded-lg bg-[#0F172A] border border-white/10 text-white text-sm"
                     />
-                      <SubmitButton className="w-full h-9 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-semibold" pendingClassName="opacity-75 cursor-wait">
-                        Change Booster Pay
-                      </SubmitButton>
+                    <SubmitButton className="w-full h-9 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-semibold" pendingClassName="opacity-75 cursor-wait">
+                      Change Booster Pay
+                    </SubmitButton>
                   </form>
                 </div>
               </div>

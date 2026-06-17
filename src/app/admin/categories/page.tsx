@@ -18,7 +18,7 @@ async function getCategories(q?: string) {
           ],
         }
         : undefined,
-      orderBy: [{ createdAt: "desc" }],
+      orderBy: [{ sortOrder: "asc" }, { createdAt: "desc" }],
       take: 50,
       select: {
         id: true,
@@ -53,12 +53,12 @@ export default async function AdminCategoriesPage({ searchParams }: { searchPara
   const { value: toast, type: toastType } = parseToast(sp);
   const toastMessage = toast
     ? toast === "updated"
-      ? "Kategori berhasil diupdate"
+      ? "Category updated successfully"
       : toast === "deleted"
-        ? "Kategori berhasil dihapus"
+        ? "Category deleted successfully"
         : toast === "error"
-          ? "Gagal menyimpan kategori"
-          : "Kategori berhasil disimpan"
+          ? "Failed to save category"
+          : "Category saved successfully"
     : undefined;
 
   const games = await getSimpleGames();

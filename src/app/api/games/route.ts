@@ -12,7 +12,7 @@ const getHomeGamesCached = unstable_cache(
     const [items, total] = await Promise.all([
       db.game.findMany({
         where: { isActive: true },
-        orderBy: { createdAt: "desc" },
+        orderBy: [{ sortOrder: "asc" }, { createdAt: "desc" }],
         take: 12,
         select: {
           id: true,
@@ -22,6 +22,7 @@ const getHomeGamesCached = unstable_cache(
           imageUrl: true,
           iconUrl: true,
           isHotOffer: true,
+          sortOrder: true,
         },
       }),
       db.game.count({ where: { isActive: true } }),
@@ -44,8 +45,10 @@ export async function GET() {
   try {
     const { items, total } = await getHomeGamesCached();
     return NextResponse.json({ items, total });
-  } catch {
-    return NextResponse.json({ error: "Server error" }, { status: 500 });
+  } catch (err: any) {
+    console.error("API Games Error details:", err);
+    return NextResponse.json({ error: "Server error", details: err?.message || err }, { status: 500 });
   }
 }
+
 

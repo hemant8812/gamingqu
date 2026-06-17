@@ -15,6 +15,7 @@ type Editing = {
   description?: string | null;
   isHotOffer: boolean;
   isActive: boolean;
+  sortOrder: number;
 } | null;
 
 export function GameModal({ editing }: { editing: Editing }) {
@@ -86,18 +87,20 @@ export function GameModal({ editing }: { editing: Editing }) {
 
         <form onSubmit={onSubmit} method="post" encType="multipart/form-data" className="p-6 space-y-5">
           <div>
-            <label htmlFor="name" className="block text-sm font-medium text-gray-300 mb-2">Game Name</label>
-            <input
-              id="name"
-              name="name"
-              type="text"
-              required
-              placeholder="e.g. World of Warcraft"
-              className="w-full h-11 px-4 bg-[#0A0E17] border-0 rounded-xl text-white placeholder-gray-500 focus:ring-2 focus:ring-blue-500 focus:outline-none"
-              defaultValue={editing?.name ?? ""}
-            />
-            <AutoSlugField nameInputId="name" name="slug" label="Slug" initialValue={editing?.slug ?? ""} />
-            {editing && <input type="hidden" name="id" defaultValue={String(editing.id)} />}
+            <div>
+              <label htmlFor="name" className="block text-sm font-medium text-gray-300 mb-2">Game Name</label>
+              <input
+                id="name"
+                name="name"
+                type="text"
+                required
+                placeholder="e.g. World of Warcraft"
+                className="w-full h-11 px-4 bg-[#0A0E17] border-0 rounded-xl text-white placeholder-gray-500 focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                defaultValue={editing?.name ?? ""}
+              />
+              <AutoSlugField nameInputId="name" name="slug" label="Slug" initialValue={editing?.slug ?? ""} />
+              {editing && <input type="hidden" name="id" defaultValue={String(editing.id)} />}
+            </div>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

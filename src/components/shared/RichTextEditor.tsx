@@ -24,7 +24,7 @@ type Props = {
   onChange?: (html: string) => void;
 };
 
-export function RichTextEditor({ name, initialHtml = "", placeholder = "Deskripsi dan format bebas", onChange }: Props) {
+export function RichTextEditor({ name, initialHtml = "", placeholder = "Enter description and format here", onChange }: Props) {
   const editorRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const sourceRef = useRef<HTMLTextAreaElement>(null);
@@ -305,7 +305,7 @@ export function RichTextEditor({ name, initialHtml = "", placeholder = "Deskrips
           <span className="text-[10px] font-bold">T</span>
         </button>
         <div className="h-5 w-px bg-zinc-700/60" />
-        <button type="button" onClick={toggleSource} title="Lihat Kode HTML" className={btnClass(sourceMode)}>
+        <button type="button" onClick={toggleSource} title="View HTML Source" className={btnClass(sourceMode)}>
           <Code className="h-3.5 w-3.5" />
         </button>
       </div>
@@ -351,7 +351,7 @@ export function RichTextEditor({ name, initialHtml = "", placeholder = "Deskrips
         <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/60">
         <div className="w-11/12 max-w-sm bg-[#0F172A] border border-white/10 text-white rounded-2xl shadow-lg">
             <div className="flex items-center justify-between p-5 border-b border-white/10">
-              <div className="text-sm font-semibold">{dialogMode === "image" ? "Masukkan URL Gambar" : dialogMode === "table" ? "Sisipkan Tabel" : "Masukkan URL"}</div>
+              <div className="text-sm font-semibold">{dialogMode === "image" ? "Insert Image URL" : dialogMode === "table" ? "Insert Table" : "Insert URL"}</div>
               <button type="button" onClick={cancelDialog} className="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-white/10 transition-colors">
                 <span className="text-gray-400">×</span>
               </button>
@@ -361,7 +361,7 @@ export function RichTextEditor({ name, initialHtml = "", placeholder = "Deskrips
                 <>
                   <div className="grid grid-cols-2 gap-4">
                     <div>
-                      <div className="text-xs mb-1">Jumlah Baris</div>
+                      <div className="text-xs mb-1">Rows</div>
                       <input
                         type="number"
                         min={1}
@@ -372,7 +372,7 @@ export function RichTextEditor({ name, initialHtml = "", placeholder = "Deskrips
                       />
                     </div>
                     <div>
-                      <div className="text-xs mb-1">Jumlah Kolom</div>
+                      <div className="text-xs mb-1">Columns</div>
                       <input
                         type="number"
                         min={1}
@@ -385,14 +385,14 @@ export function RichTextEditor({ name, initialHtml = "", placeholder = "Deskrips
                   </div>
                   <label className="flex items-center gap-2">
                     <input type="checkbox" checked={tableHeader} onChange={(e) => setTableHeader(e.target.checked)} />
-                    <span className="text-sm">Gunakan header</span>
+                    <span className="text-sm">Use table header</span>
                   </label>
                 </>
               ) : (
                 <>
                   <input
                     type="text"
-                    placeholder={dialogMode === "image" ? "https://contoh.com/gambar.jpg" : "https://contoh.com"}
+                    placeholder={dialogMode === "image" ? "https://example.com/image.jpg" : "https://example.com"}
                     className="w-full h-11 px-4 bg-[#0A0E17] border-0 rounded-xl text-white placeholder-gray-500 focus:ring-2 focus:ring-blue-500 focus:outline-none"
                     value={dialogValue}
                     onChange={(e) => setDialogValue(e.target.value)}
@@ -401,7 +401,7 @@ export function RichTextEditor({ name, initialHtml = "", placeholder = "Deskrips
               )}
               <div className="flex justify-end gap-3 pt-2">
                 <button type="button" onClick={cancelDialog} className="h-10 px-4 bg-white/5 hover:bg-white/10 text-gray-300 font-medium rounded-xl transition-colors">
-                  Batal
+                  Cancel
                 </button>
                 <button
                   type="button"
@@ -409,7 +409,7 @@ export function RichTextEditor({ name, initialHtml = "", placeholder = "Deskrips
                   className="h-10 px-4 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-xl transition-colors disabled:opacity-50"
                   disabled={dialogMode !== "table" ? !dialogValue : false}
                 >
-                  Sisipkan
+                  Insert
                 </button>
               </div>
             </div>

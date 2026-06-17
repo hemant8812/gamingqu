@@ -40,6 +40,14 @@ export async function POST(req: Request) {
     const inputSlug = (form.get("slug") as string | null) ?? "";
     const isHotOffer = form.get("isHotOffer") === "on";
     const isActive = form.get("isActive") === "on";
+    const sortOrderVal = form.get("sortOrder");
+    let sortOrder = 9999;
+    if (sortOrderVal !== null) {
+      const parsed = Number(sortOrderVal);
+      if (!isNaN(parsed) && parsed > 0) {
+        sortOrder = parsed;
+      }
+    }
     const imageFile = form.get("image") as File | null;
     const iconFile = form.get("icon") as File | null;
     if (!name.trim()) {
@@ -71,6 +79,7 @@ export async function POST(req: Request) {
         iconUrl,
         isHotOffer,
         isActive,
+        sortOrder,
       },
     });
     revalidateTag("games", { expire: 0 });
@@ -100,9 +109,19 @@ export async function PUT(req: Request) {
     if (!Number.isFinite(id) || id <= 0) {
       return NextResponse.json({ error: "Invalid id" }, { status: 400 });
     }
-    const current = await db.game.findUnique({ where: { id }, select: { id: true, name: true, slug: true, imageUrl: true, iconUrl: true } });
+    const current = await db.game.findUnique({ where: { id }, select: { id: true, name: true, slug: true, imageUrl: true, iconUrl: true, sortOrder: true } });
     if (!current) {
       return NextResponse.json({ error: "Not found" }, { status: 404 });
+    }
+    const sortOrderVal = form.get("sortOrder");
+    let sortOrder = current.sortOrder;
+    if (sortOrderVal !== null) {
+      const parsed = Number(sortOrderVal);
+      if (!isNaN(parsed) && parsed > 0) {
+        sortOrder = parsed;
+      } else {
+        sortOrder = 9999;
+      }
     }
     const MAX_UPLOAD = 10 * 1024 * 1024;
     if ((imageFile && imageFile.size > MAX_UPLOAD) || (iconFile && iconFile.size > MAX_UPLOAD)) {
@@ -131,6 +150,7 @@ export async function PUT(req: Request) {
         iconUrl: iconUrl ?? current.iconUrl,
         isHotOffer,
         isActive,
+        sortOrder,
       },
     });
     revalidateTag("games", { expire: 0 });

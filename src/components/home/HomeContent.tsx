@@ -7,6 +7,8 @@ import { useRouter } from "next/navigation";
 import { Flame, Trophy, Star, Shield, Users } from "lucide-react";
 import { formatPrice } from "@/lib/formatPrice";
 import { useCurrency } from "@/app/providers";
+import { HowItWorks } from "./HowItWorks";
+
 
 type GameItem = {
   slug: string;
@@ -347,6 +349,8 @@ export function HomeContent() {
             </Link>
           </div>
         )}
+
+        <HowItWorks />
 
         {/* Hot Deals Section */}
         <section className="mt-12">

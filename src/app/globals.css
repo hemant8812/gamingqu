@@ -605,3 +605,24 @@ body {
     opacity: 1;
   }
 }
+
+/* ============================================
+   HOW IT WORKS INTERACTIVE STEPPER ANIMATIONS
+   ============================================ */
+@keyframes progress-fill {
+  from {
+    width: 0%;
+  }
+  to {
+    width: 100%;
+  }
+}
+
+.animate-progress-fill {
+  animation: progress-fill 6000ms linear infinite;
+}
+
+.animation-paused {
+  animation-play-state: paused !important;
+}
+

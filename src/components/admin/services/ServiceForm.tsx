@@ -61,21 +61,21 @@ export function ServiceForm({ games, categories, editing }: { games: GameOption[
     >
       <div className="card-body p-6">
         <div className="flex items-center justify-between cursor-pointer select-none mb-4" onClick={() => setIsOpen(!isOpen)}>
-            <h3 className="card-title text-lg">{editing ? "Edit Layanan" : "Tambah Layanan"}</h3>
+            <h3 className="card-title text-lg">{editing ? "Edit Service" : "Add Service"}</h3>
             {isOpen ? <ChevronUp className="h-5 w-5 opacity-50" /> : <ChevronDown className="h-5 w-5 opacity-50" />}
         </div>
         <div className={isOpen ? "space-y-4" : "hidden"}>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="form-control">
                 <label htmlFor="name" className="label">
-                    <span className="label-text font-semibold">Nama Layanan</span>
+                    <span className="label-text font-semibold">Service Name</span>
                 </label>
                 <input
                 id="name"
                 name="name"
                 type="text"
                 required
-                placeholder="Contoh: Rank Boost PvP"
+                placeholder="e.g. Rank Boost PvP"
                 className="input input-bordered w-full"
                 defaultValue={editing?.name ?? ""}
                 />
@@ -84,19 +84,19 @@ export function ServiceForm({ games, categories, editing }: { games: GameOption[
             </div>
             {editing && <input type="hidden" name="id" defaultValue={editing.id} />}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <GameSelect games={games} name="gameId" label="Nama Game" onChange={setSelectedGame} initialValue={editing?.gameId} />
-            <CategorySelect categories={categories} name="categoryId" label="Nama Kategori (opsional)" gameId={selectedGame} initialValue={editing?.categoryId ?? null} />
+            <GameSelect games={games} name="gameId" label="Game Name" onChange={setSelectedGame} initialValue={editing?.gameId} />
+            <CategorySelect categories={categories} name="categoryId" label="Category Name (optional)" gameId={selectedGame} initialValue={editing?.categoryId ?? null} />
             </div>
             <div className="form-control">
             <label className="label">
-                <span className="label-text font-semibold">Deskripsi</span>
+                <span className="label-text font-semibold">Description</span>
             </label>
             <div className="mt-1">
-                <RichTextEditor name="description" placeholder="Deskripsi layanan" initialHtml={editing?.description ?? ""} />
+                <RichTextEditor name="description" placeholder="Service description" initialHtml={editing?.description ?? ""} />
             </div>
             </div>
             <div>
-            <ImageUploadField id="image" name="image" label="Gambar" previewHeight={160} initialUrl={editing?.imageUrl ?? null} />
+            <ImageUploadField id="image" name="image" label="Image" previewHeight={160} initialUrl={editing?.imageUrl ?? null} />
             </div>
             <div className="form-control">
             <label className="label">
@@ -123,7 +123,7 @@ export function ServiceForm({ games, categories, editing }: { games: GameOption[
                     className="btn btn-sm btn-ghost gap-2"
                 >
                     <Plus className="h-4 w-4" />
-                    <span>Tambah Feature</span>
+                    <span>Add Feature</span>
                 </button>
                 )}
             </div>
@@ -165,7 +165,7 @@ export function ServiceForm({ games, categories, editing }: { games: GameOption[
                 disabled={busy}
             >
                 <SaveIcon className="h-4 w-4" />
-                <span>{editing ? "Update Layanan" : "Simpan Layanan"}</span>
+                <span>{editing ? "Update Service" : "Save Service"}</span>
             </button>
             </div>
         </div>

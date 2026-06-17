@@ -25,10 +25,10 @@ export default async function AdminUsersPage({ searchParams }: { searchParams: P
   const { value: toast, type: toastType } = parseToast(sp);
   const toastMessage = toast
     ? toast === "updated"
-      ? "Data berhasil diupdate"
+      ? "Data updated successfully"
       : toast === "deleted"
-        ? "Data berhasil dihapus"
-        : "Data berhasil disimpan"
+        ? "Data deleted successfully"
+        : "Data saved successfully"
     : undefined;
   const pageStr = getParamStr(sp, "page") ?? "1";
   const pageNum = parseInt(pageStr, 10);
@@ -53,24 +53,24 @@ export default async function AdminUsersPage({ searchParams }: { searchParams: P
     const passwordHash = password ? await hash(password, 10) : undefined;
     const isSuspended = suspendedRaw === "on";
     if (!email) {
-      return { ok: false, message: "Email wajib diisi" };
+      return { ok: false, message: "Email is required" };
     }
     if (!password || password.length < 8) {
-      return { ok: false, message: "Password minimal 8 karakter" };
+      return { ok: false, message: "Password must be at least 8 characters" };
     }
     if (!/[A-Za-z]/.test(password) || !/\d/.test(password)) {
-      return { ok: false, message: "Password harus mengandung huruf dan angka" };
+      return { ok: false, message: "Password must contain both letters and numbers" };
     }
     if (!username) {
-      return { ok: false, message: "Username wajib diisi" };
+      return { ok: false, message: "Username is required" };
     }
     const exists = await db.user.findUnique({ where: { email } });
     if (exists) {
-      return { ok: false, message: "Email sudah terdaftar" };
+      return { ok: false, message: "Email is already registered" };
     }
     const existsUsername = await db.user.findUnique({ where: { username } });
     if (existsUsername) {
-      return { ok: false, message: "Username sudah terpakai" };
+      return { ok: false, message: "Username is already in use" };
     }
     try {
       const customId = await generateRandomUserId("G", 4);
@@ -96,7 +96,7 @@ export default async function AdminUsersPage({ searchParams }: { searchParams: P
       if (isRedirect) {
         throw e;
       }
-      return { ok: false, message: "Terjadi kesalahan saat menyimpan" };
+      return { ok: false, message: "An error occurred while saving" };
     }
   }
   async function updateUser(formData: FormData) {
@@ -109,19 +109,19 @@ export default async function AdminUsersPage({ searchParams }: { searchParams: P
     const suspendedRaw = (formData.get("isSuspended") as string | null) ?? null;
     const resolvedRole: Role = resolveRole(roleInput);
     const isSuspended = suspendedRaw === "on";
-    if (!id) return { ok: false, message: "ID tidak ditemukan" };
+    if (!id) return { ok: false, message: "ID not found" };
     if (email) {
       const existingEmail = await db.user.findUnique({ where: { email } });
       if (existingEmail && existingEmail.id !== id) {
-        return { ok: false, message: "Email sudah terpakai" };
+        return { ok: false, message: "Email is already in use" };
       }
     }
     if (!username) {
-      return { ok: false, message: "Username wajib diisi" };
+      return { ok: false, message: "Username is required" };
     }
     const existingUsername = await db.user.findUnique({ where: { username } });
     if (existingUsername && existingUsername.id !== id) {
-      return { ok: false, message: "Username sudah terpakai" };
+      return { ok: false, message: "Username is already in use" };
     }
     try {
       const prev: { isSuspended: boolean } | null = await db.user.findUnique({
@@ -152,7 +152,7 @@ export default async function AdminUsersPage({ searchParams }: { searchParams: P
       if (isRedirect) {
         throw e;
       }
-      return { ok: false, message: "Gagal menyimpan perubahan" };
+      return { ok: false, message: "Failed to save changes" };
     }
   }
   async function deleteUser(formData: FormData) {

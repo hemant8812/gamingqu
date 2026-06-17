@@ -44,3 +44,7 @@ next-env.d.ts
 
 # public uploads (dynamic content)
 /public/uploads
+
+# large archives
+*.zip
+*.tar.gz

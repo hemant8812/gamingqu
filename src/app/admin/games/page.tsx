@@ -8,7 +8,7 @@ import { normalizeQuery, parseToast } from "@/lib/page-utils";
 async function getGames(q?: string) {
   try {
     const list = await db.game.findMany({
-      orderBy: { createdAt: "desc" },
+      orderBy: [{ sortOrder: "asc" }, { createdAt: "desc" }],
       take: 30,
       where: q
         ? {
@@ -29,10 +29,12 @@ async function getGames(q?: string) {
         iconUrl: true,
         isHotOffer: true,
         isActive: true,
+        sortOrder: true,
       },
     });
     return list;
-  } catch {
+  } catch (err) {
+    console.error("Error in getGames:", err);
     return [];
   }
 }
@@ -57,25 +59,26 @@ export default async function AdminGamesPage({ searchParams }: { searchParams: P
   const editIdStr = typeof editParam === "string" ? editParam : Array.isArray(editParam) ? editParam[0] ?? null : null;
   const editId = editIdStr != null ? Number(editIdStr) : null;
   let editing = null as null | {
-    id: number; name: string; slug: string; imageUrl: string | null; iconUrl: string | null; description: string | null; isHotOffer: boolean; isActive: boolean;
+    id: number; name: string; slug: string; imageUrl: string | null; iconUrl: string | null; description: string | null; isHotOffer: boolean; isActive: boolean; sortOrder: number;
   };
   if (editId && Number.isFinite(editId)) {
     try {
       editing = await db.game.findUnique({
         where: { id: editId },
-        select: { id: true, name: true, slug: true, imageUrl: true, iconUrl: true, description: true, isHotOffer: true, isActive: true },
+        select: { id: true, name: true, slug: true, imageUrl: true, iconUrl: true, description: true, isHotOffer: true, isActive: true, sortOrder: true },
       });
-    } catch {
+    } catch (err) {
+      console.error("Error in getEditingGame:", err);
       editing = null;
     }
   }
   const { value: toast, type: toastType } = parseToast(sp);
   const toastMessage = toast
     ? toast === "updated"
-      ? "Data berhasil diupdate"
+      ? "Data updated successfully"
       : toast === "error"
-        ? "Terjadi kesalahan saat menyimpan data"
-        : "Data berhasil disimpan"
+        ? "An error occurred while saving data"
+        : "Data saved successfully"
     : undefined;
 
   return (

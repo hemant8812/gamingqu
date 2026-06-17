@@ -12,6 +12,7 @@ type Game = {
   iconUrl: string | null;
   isActive: boolean;
   isHotOffer: boolean;
+  sortOrder: number;
 };
 
 type Editing = {
@@ -23,6 +24,7 @@ type Editing = {
   description?: string | null;
   isHotOffer: boolean;
   isActive: boolean;
+  sortOrder: number;
 } | null;
 
 export function GameManager({ games, editing }: { games: Game[], editing: Editing }) {
@@ -32,7 +34,7 @@ export function GameManager({ games, editing }: { games: Game[], editing: Editin
          <div>
              <h1 className="text-3xl font-bold">Manage Games</h1>
              <p className="mt-2 text-sm opacity-70">
-                Tambah data game: nama, slug otomatis, upload gambar & icon, deskripsi, Hot Offer, status aktif.
+                Add game data: name, auto slug, upload image & icon, description, Hot Offer, active status.
             </p>
          </div>
          <Link href="/admin/games?create=true" className="h-10 px-4 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-xl flex items-center gap-2 transition-colors">

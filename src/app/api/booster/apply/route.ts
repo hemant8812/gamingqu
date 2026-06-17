@@ -41,6 +41,23 @@ export async function POST(req: Request) {
     }
   }
 
+  // Check if an application already exists with the same email or whatsapp number
+  const duplicate = await db.boosterApplication.findFirst({
+    where: {
+      OR: [
+        { email: sanitizePlain(email) },
+        { whatsapp: sanitizePlain(whatsapp) },
+      ],
+    },
+    select: { id: true },
+  });
+
+  if (duplicate) {
+    return NextResponse.json({
+      error: "You have already applied! Our team will contact you if needed. Please ensure all your contact details are correct. If you need to change your details or apply again, please use a different email address."
+    }, { status: 409 });
+  }
+
   if (resolvedUserId) {
     const existing = await db.boosterApplication.findFirst({
       where: { userId: resolvedUserId },

@@ -20,7 +20,7 @@ export default async function AdminSettingsPage({ searchParams }: { searchParams
   }
   const sp = searchParams ? await searchParams : {};
   const { value: toast, type: toastType } = parseToast(sp);
-  const toastMessage = toast ? (toast === "error" ? "Terjadi kesalahan saat menyimpan pengaturan" : "Pengaturan berhasil disimpan") : undefined;
+  const toastMessage = toast ? (toast === "error" ? "An error occurred while saving settings" : "Settings saved successfully") : undefined;
   const tabParam = sp?.tab;
   const tab = typeof tabParam === "string" ? tabParam : Array.isArray(tabParam) ? tabParam[0] ?? undefined : undefined;
   const setting = await getWebsiteSettingCore();

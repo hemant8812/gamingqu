@@ -15,6 +15,7 @@ type Editing = {
   description?: string | null;
   isHotOffer: boolean;
   isActive: boolean;
+  sortOrder: number;
 } | null;
 
 export function GameForm({ editing }: { editing: Editing }) {
@@ -45,37 +46,39 @@ export function GameForm({ editing }: { editing: Editing }) {
   return (
     <form onSubmit={onSubmit} method="post" encType="multipart/form-data" className="card bg-base-100 shadow-xl border border-base-200">
       <div className="card-body p-6 space-y-4">
-        <h3 className="card-title text-lg">{editing ? "Edit Game" : "Tambah Game"}</h3>
-        <div className="form-control">
-            <label htmlFor="name" className="label">
-                <span className="label-text font-semibold">Nama Game</span>
-            </label>
-            <input
-            id="name"
-            name="name"
-            type="text"
-            required
-            placeholder="Contoh: World of Warcraft"
-            className="input input-bordered w-full"
-            defaultValue={editing?.name ?? ""}
-            />
-            <AutoSlugField nameInputId="name" name="slug" label="Slug" initialValue={editing?.slug ?? ""} />
-            {editing && <input type="hidden" name="id" defaultValue={editing.id} />}
+        <h3 className="card-title text-lg">{editing ? "Edit Game" : "Add Game"}</h3>
+        <div>
+            <div className="form-control">
+                <label htmlFor="name" className="label">
+                    <span className="label-text font-semibold">Game Name</span>
+                </label>
+                <input
+                id="name"
+                name="name"
+                type="text"
+                required
+                placeholder="e.g. World of Warcraft"
+                className="input input-bordered w-full"
+                defaultValue={editing?.name ?? ""}
+                />
+                <AutoSlugField nameInputId="name" name="slug" label="Slug" initialValue={editing?.slug ?? ""} />
+                {editing && <input type="hidden" name="id" defaultValue={editing.id} />}
+            </div>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <ImageUploadField id="image" name="image" label="Gambar" previewHeight={160} initialUrl={editing?.imageUrl ?? null} />
+            <ImageUploadField id="image" name="image" label="Image" previewHeight={160} initialUrl={editing?.imageUrl ?? null} />
             <ImageUploadField id="icon" name="icon" label="Icon" previewHeight={160} initialUrl={editing?.iconUrl ?? null} />
         </div>
         <div className="form-control">
             <label className="label">
-                <span className="label-text font-semibold">Deskripsi</span>
+                <span className="label-text font-semibold">Description</span>
             </label>
             <div className="mt-1">
-            <RichTextEditor name="description" placeholder="Deskripsi dan format bebas" initialHtml={editing?.description ?? ""} />
+            <RichTextEditor name="description" placeholder="Free description and formatting" initialHtml={editing?.description ?? ""} />
             </div>
             <div className="label">
                 <span className="label-text-alt opacity-70">
-                    Gunakan toolbar di atas untuk Bold, Link, garis baru, dan menyisipkan gambar via URL.
+                    Use the toolbar above for Bold, Link, line breaks, and inserting images via URL.
                 </span>
             </div>
         </div>
@@ -94,7 +97,7 @@ export function GameForm({ editing }: { editing: Editing }) {
             </div>
             <div className="form-control">
                 <label className="label cursor-pointer gap-2">
-                    <span className="label-text font-semibold">Aktif</span>
+                    <span className="label-text font-semibold">Active</span>
                     <input 
                         id="isActive" 
                         name="isActive" 
@@ -113,7 +116,7 @@ export function GameForm({ editing }: { editing: Editing }) {
             >
             {busy && <span className="loading loading-spinner loading-sm"></span>}
             <SaveIcon className="h-4 w-4" />
-            <span>{editing ? "Update Data" : "Simpan Game"}</span>
+            <span>{editing ? "Update Game" : "Save Game"}</span>
             </button>
         </div>
       </div>
