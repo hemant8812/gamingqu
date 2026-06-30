@@ -9,7 +9,9 @@ const nextConfig: NextConfig = {
   },
   images: {
     formats: ["image/avif", "image/webp"],
-    minimumCacheTTL: 60,
+    deviceSizes: [640, 750, 828, 1080, 1200],
+    imageSizes: [16, 32, 64, 128, 256],
+    minimumCacheTTL: 2592000,
     remotePatterns: [
       { protocol: "https", hostname: "picsum.photos" },
       { protocol: "https", hostname: "gamingqu.com" },
@@ -27,7 +29,7 @@ const nextConfig: NextConfig = {
       { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
       { key: "Permissions-Policy", value: "camera=(), microphone=(), geolocation=()" },
       { key: "Cross-Origin-Opener-Policy", value: "same-origin" },
-      { key: "Cross-Origin-Resource-Policy", value: "same-origin" },
+      { key: "Cross-Origin-Resource-Policy", value: "cross-origin" },
       { key: "Strict-Transport-Security", value: "max-age=31536000; includeSubDomains; preload" },
     ];
     return [

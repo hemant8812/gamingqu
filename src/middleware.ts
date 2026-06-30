@@ -126,8 +126,8 @@ export async function middleware(req: NextRequest) {
     "font-src 'self' data: https://client.crisp.chat https://fonts.gstatic.com https://*.tawk.to",
     "frame-src 'self' https://*.tawk.to https://embed.tawk.to https://*.crisp.chat https://www.googletagmanager.com https://td.doubleclick.net https://*.doubleclick.net",
     "connect-src 'self' https: wss:",
-    `script-src-elem 'self' 'nonce-${nonce}' 'strict-dynamic'${devExtras} ${scriptHosts}`,
-    `script-src 'self' 'nonce-${nonce}' 'strict-dynamic'${devExtras} ${scriptHosts}`,
+    `script-src-elem 'self' 'unsafe-inline' 'unsafe-eval' ${scriptHosts}`,
+    `script-src 'self' 'unsafe-inline' 'unsafe-eval' ${scriptHosts}`,
     "worker-src 'self' blob:",
   ].join("; ");
 

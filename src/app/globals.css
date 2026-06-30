@@ -626,3 +626,11 @@ body {
   animation-play-state: paused !important;
 }
 
+/* Fix CLS - reserve space for images */
+img {
+  width: 100%;
+  height: auto;
+  aspect-ratio: attr(width) / attr(height);
+}
+
+
