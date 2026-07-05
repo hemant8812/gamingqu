@@ -95,7 +95,7 @@ function OptionSelect({
           </svg>
         </div>
         {open && (
-          <div className="absolute z-50 w-full mt-1 bg-[#1e293b] border border-white/10 rounded-xl shadow-lg overflow-hidden max-h-60 overflow-y-auto">
+          <div className="absolute z-50 w-full mt-1 bg-[#1e293b] border border-white/10 rounded-xl shadow-lg overflow-hidden max-h-80 overflow-y-auto">
             <div
               className="px-4 py-2.5 text-gray-400 cursor-pointer hover:bg-blue-600 hover:text-white transition-colors"
               onClick={() => {
