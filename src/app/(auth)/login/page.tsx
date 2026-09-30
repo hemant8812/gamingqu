@@ -100,7 +100,7 @@ export default function LoginPage() {
               <span className="gradient-text">Level Up</span> Your Gaming Experience
             </h2>
             <p className="text-gray-300 text-base leading-relaxed">
-              Join thousands of gamers who trust Gamingqu for their boosting needs. Safe, fast, and reliable.
+              Join thousands of gamers who trust {SITE_DEFAULTS.name} for their boosting needs. Safe, fast, and reliable.
             </p>
 
             {/* Trust badges */}

@@ -53,7 +53,7 @@ export function SeoSettingsForm({ initial }: { initial: Initial }) {
           <div className="space-y-3">
             <div>
               <label htmlFor="siteName" className="block text-xs font-medium text-gray-300 mb-1">Site Name (Title)</label>
-              <input id="siteName" name="siteName" type="text" className={input} placeholder="e.g. Gamingqu" defaultValue={initial.siteName ?? ""} />
+              <input id="siteName" name="siteName" type="text" className={input} placeholder="e.g. ArcaneBoost" defaultValue={initial.siteName ?? ""} />
             </div>
             <div>
               <label htmlFor="tagline" className="block text-xs font-medium text-gray-300 mb-1">Tagline (Description)</label>
@@ -69,7 +69,7 @@ export function SeoSettingsForm({ initial }: { initial: Initial }) {
           <div className="space-y-3">
             <div>
               <label htmlFor="contactEmail" className="block text-xs font-medium text-gray-300 mb-1">Contact Email</label>
-              <input id="contactEmail" name="contactEmail" type="email" className={input} placeholder="e.g. contact@gamingqu.com" defaultValue={initial.contactEmail ?? ""} />
+              <input id="contactEmail" name="contactEmail" type="email" className={input} placeholder="e.g. contact@arcaneboost.com" defaultValue={initial.contactEmail ?? ""} />
             </div>
             <div>
               <label htmlFor="contactPhone" className="block text-xs font-medium text-gray-300 mb-1">Phone Number</label>

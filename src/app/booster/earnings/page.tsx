@@ -8,7 +8,7 @@ import { db } from "@/lib/prisma";
 import { EarningsTabs } from "@/components/booster/EarningsTabs";
 
 export const metadata = {
-  title: "Booster Earnings | GamingQu",
+  title: "Booster Earnings",
 };
 
 export default async function BoosterEarningsPage() {

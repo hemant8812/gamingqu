@@ -6,7 +6,7 @@ import { BoosterSidebar } from "@/components/dashboard/BoosterSidebar";
 import { BadgeCheck, Briefcase, CheckCircle, ChevronRight, DollarSign, LayoutDashboard, MessageSquare, Settings, Star, Timer, User } from "lucide-react";
 
 export const metadata = {
-  title: "Booster Dashboard | GamingQu",
+  title: "Booster Dashboard",
 };
 
 export default async function BoosterDashboardPage() {

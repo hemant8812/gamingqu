@@ -131,7 +131,7 @@ export function FooterSettingsForm({ initial }: { initial: Initial }) {
           {activeTab === "footer1" && (
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
               <div className="bg-slate-800/30 border border-slate-700/50 rounded-xl p-4">
-                <label className="block text-sm font-semibold text-white mb-3">Gamingqu Links</label>
+                <label className="block text-sm font-semibold text-white mb-3">Site Links</label>
                 <div className="grid grid-cols-2 gap-2 text-[11px] text-gray-400 mb-2">
                   <span>Title</span>
                   <span>URL</span>
@@ -265,7 +265,7 @@ export function FooterSettingsForm({ initial }: { initial: Initial }) {
                     name="footerCopyright"
                     type="text"
                     className={inputClassName}
-                    placeholder="e.g. © Gamingqu 2018-2026. All rights reserved."
+                    placeholder="e.g. © ArcaneBoost 2018-2026. All rights reserved."
                     defaultValue={initial.copyright ?? ""}
                   />
                 </div>

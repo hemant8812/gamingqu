@@ -3,7 +3,7 @@ import { db } from "@/lib/prisma";
 import BoosterApplyForm from "./BoosterApplyForm";
 
 export const metadata = {
-  title: "Apply as Booster | GamingQu",
+  title: "Apply as Booster",
 };
 
 export default async function BoosterApplyPage() {

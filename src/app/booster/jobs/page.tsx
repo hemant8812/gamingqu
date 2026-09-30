@@ -8,7 +8,7 @@ import { JobsTabs } from "@/components/booster/JobsTabs";
 import { db } from "@/lib/prisma";
 
 export const metadata = {
-  title: "Booster Jobs | GamingQu",
+  title: "Booster Jobs",
 };
 
 export default async function BoosterJobsPage() {

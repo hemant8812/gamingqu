@@ -6,7 +6,7 @@ import { BoosterSidebar } from "@/components/dashboard/BoosterSidebar";
 import { SettingsClient } from "@/components/dashboard/SettingsClient";
 
 export const metadata = {
-  title: "Booster Settings | GamingQu",
+  title: "Booster Settings",
 };
 
 export default async function BoosterSettingsPage() {

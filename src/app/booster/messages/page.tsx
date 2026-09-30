@@ -6,7 +6,7 @@ import { BoosterSidebar } from "@/components/dashboard/BoosterSidebar";
 import { MessageSquare } from "lucide-react";
 
 export const metadata = {
-  title: "Booster Messages | GamingQu",
+  title: "Booster Messages",
 };
 
 export default async function BoosterMessagesPage() {

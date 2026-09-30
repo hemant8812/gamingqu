@@ -41,7 +41,7 @@ export default function BoosterApplyForm({ heroImage }: BoosterApplyFormProps) {
       if (res.ok) {
         setStatus({
           type: 'success',
-          message: "You will be contacted shortly by the Booster Acceptance team. Please prepare your ID card as it will be requested by the Gamingqu team for requirements."
+          message: "You will be contacted shortly by the Booster Acceptance team. Please prepare your ID card as our team will ask for it during review."
         });
         // Reset form
         setFormData({ fullName: "", email: "", discord: "", whatsapp: "", games: "" });

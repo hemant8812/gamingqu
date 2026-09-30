@@ -11,7 +11,7 @@ import { UpdateProfileDetailsForm } from "@/components/dashboard/UpdateProfileDe
 import { AvatarUpload } from "@/components/dashboard/AvatarUpload";
 
 export const metadata = {
-  title: "Booster Profile | GamingQu",
+  title: "Booster Profile",
 };
 
 function formatDateTimeEnglish(d: Date) {

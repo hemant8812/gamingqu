@@ -1,9 +1,11 @@
 import { NextResponse } from "next/server";
 import { db } from "@/lib/prisma";
 import { getBaseUrl } from "@/lib/site";
+import { getSiteMeta } from "@/lib/seo";
 
 export async function GET() {
   const base = getBaseUrl();
+  const { siteName } = await getSiteMeta();
   try {
     const items = await db.post.findMany({
       where: { isPublished: true },
@@ -28,7 +30,7 @@ export async function GET() {
     const xml = `<?xml version="1.0" encoding="UTF-8"?>
 <rss version="2.0">
   <channel>
-    <title>Gamingqu Blog</title>
+    <title>${escapeXml(siteName)} Blog</title>
     <link>${base}/blog</link>
     <description>Latest blog posts</description>
     ${rssItems}

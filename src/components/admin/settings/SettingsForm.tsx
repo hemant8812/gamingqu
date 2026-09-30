@@ -54,7 +54,7 @@ export function SettingsForm({ initial }: { initial: Initial }) {
             name="siteName"
             type="text"
             required
-            placeholder="e.g. Gamingqu"
+            placeholder="e.g. ArcaneBoost"
             className={inputClassName}
             defaultValue={initial.siteName ?? ""}
           />
@@ -78,7 +78,7 @@ export function SettingsForm({ initial }: { initial: Initial }) {
             id="contactEmail"
             name="contactEmail"
             type="email"
-            placeholder="e.g. contact@gamingqu.com"
+            placeholder="e.g. contact@arcaneboost.com"
             className={inputClassName}
             defaultValue={initial.contactEmail ?? ""}
           />
