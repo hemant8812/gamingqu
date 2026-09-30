@@ -1,17 +1,16 @@
 import { getServerSession } from "next-auth";
 import { revalidatePath } from "next/cache";
 import { authOptions } from "@/auth";
+import { db } from "@/lib/prisma";
 
-const baseUrl =
-  process.env.NEXTAUTH_URL ||
-  (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : "http://localhost:3000");
-
+// Read straight from the database: a server-side fetch to /api/admin/permissions
+// carries no session cookie, so the API answered 403 and every toggle showed "off".
 async function getPermissions() {
-  const res = await fetch(`${baseUrl}/api/admin/permissions`, {
-    cache: "no-store",
-  });
-  if (!res.ok) return [];
-  return (await res.json()) as { id: string; key: string; label: string; enabled: boolean }[];
+  try {
+    return await db.adminPermission.findMany({ orderBy: { key: "asc" } });
+  } catch {
+    return [];
+  }
 }
 
 export default async function AdminPermissionsPage() {
@@ -29,14 +28,18 @@ export default async function AdminPermissionsPage() {
   }
   const list = await getPermissions();
 
-  async function togglePermission(key: string, enabled: boolean) {
+  async function togglePermission(key: string, label: string, enabled: boolean) {
     "use server";
-    await fetch(`${baseUrl}/api/admin/permissions`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ key, enabled }),
+    // Server actions are callable directly, so check the role here too.
+    const current = await getServerSession(authOptions);
+    if (current?.user?.role !== "SUPERADMIN") return;
+    await db.adminPermission.upsert({
+      where: { key },
+      update: { enabled },
+      create: { key, label, enabled },
     });
     revalidatePath("/admin/permissions");
+    revalidatePath("/admin", "layout");
   }
 
   const knownPanels = [
@@ -77,7 +80,7 @@ export default async function AdminPermissionsPage() {
             return (
               <form
                 key={p.key}
-                action={togglePermission.bind(null, p.key, !enabled)}
+                action={togglePermission.bind(null, p.key, p.label, !enabled)}
                 className="bg-ink-800 border border-white/10 rounded-2xl p-5 flex items-center justify-between hover:border-brand-500/30 transition-colors"
               >
                 <div>
