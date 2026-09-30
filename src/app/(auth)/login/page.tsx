@@ -72,16 +72,16 @@ export default function LoginPage() {
       <div className="particles" />
 
       {/* Animated gradient orbs */}
-      <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-blue-600/20 rounded-full blur-3xl animate-pulse" />
-      <div className="absolute bottom-1/4 right-1/4 w-80 h-80 bg-cyan-500/20 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }} />
+      <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-brand-600/20 rounded-full blur-3xl animate-pulse" />
+      <div className="absolute bottom-1/4 right-1/4 w-80 h-80 bg-accent-500/20 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }} />
 
       <div className="w-full max-w-6xl grid grid-cols-1 lg:grid-cols-2 glass-card rounded-3xl shadow-2xl overflow-hidden border border-white/10 relative z-10">
         {/* Left Side - Image/Branding */}
         <div className="hidden lg:flex flex-col relative p-8 justify-between overflow-hidden">
           {/* Background image with overlay */}
           <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1542751371-adc38448a05e?q=80&w=2070&auto=format&fit=crop')] bg-cover bg-center opacity-30" />
-          <div className="absolute inset-0 bg-gradient-to-br from-blue-900/80 via-indigo-900/60 to-cyan-900/80" />
-          <div className="absolute inset-0 bg-gradient-to-t from-[#0A0E17] via-transparent to-transparent" />
+          <div className="absolute inset-0 bg-gradient-to-br from-brand-900/80 via-brand-900/60 to-accent-900/80" />
+          <div className="absolute inset-0 bg-gradient-to-t from-ink-900 via-transparent to-transparent" />
 
           {/* Top - Logo */}
           <div className="relative z-10">
@@ -92,7 +92,7 @@ export default function LoginPage() {
 
           {/* Middle - Content */}
           <div className="relative z-10 max-w-md">
-            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full glass-light text-sm text-blue-300 font-medium mb-6">
+            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full glass-light text-sm text-brand-300 font-medium mb-6">
               <Sparkles className="h-4 w-4" />
               Premium Gaming Services
             </div>
@@ -109,7 +109,7 @@ export default function LoginPage() {
                 <FiShield className="h-5 w-5" />
                 <span>100% Secure</span>
               </div>
-              <div className="flex items-center gap-2 text-cyan-400 text-sm">
+              <div className="flex items-center gap-2 text-accent-400 text-sm">
                 <Zap className="h-5 w-5" />
                 <span>Fast Delivery</span>
               </div>
@@ -118,7 +118,7 @@ export default function LoginPage() {
 
           {/* Bottom - Progress dots */}
           <div className="relative z-10 flex gap-2">
-            <div className="h-1 w-12 rounded-full bg-gradient-to-r from-blue-500 to-cyan-500" />
+            <div className="h-1 w-12 rounded-full bg-gradient-to-r from-brand-500 to-accent-500" />
             <div className="h-1 w-4 bg-white/20 rounded-full" />
             <div className="h-1 w-4 bg-white/20 rounded-full" />
           </div>
@@ -143,7 +143,7 @@ export default function LoginPage() {
                   <label className="label text-sm font-medium text-gray-300 mb-1">Email Address</label>
                   <div className="relative group">
                     <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none z-10">
-                      <FiMail className="h-5 w-5 text-gray-500 group-focus-within:text-blue-400 transition-colors" />
+                      <FiMail className="h-5 w-5 text-gray-500 group-focus-within:text-brand-400 transition-colors" />
                     </div>
                     <input
                       id="email"
@@ -151,7 +151,7 @@ export default function LoginPage() {
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
                       placeholder="Enter your email"
-                      className="input w-full pl-11 h-12 bg-[#0A0E17] border-2 border-white/10 focus:border-blue-500 focus:ring-0 text-white placeholder-gray-500 rounded-xl transition-all duration-300 focus:shadow-[0_0_20px_rgba(139,92,246,0.2)]"
+                      className="input w-full pl-11 h-12 bg-ink-900 border-2 border-white/10 focus:border-brand-500 focus:ring-0 text-white placeholder-gray-500 rounded-xl transition-all duration-300 focus:shadow-[0_0_20px_rgba(139,92,246,0.2)]"
                       required
                       autoComplete="email"
                     />
@@ -163,7 +163,7 @@ export default function LoginPage() {
                   <label className="label text-sm font-medium text-gray-300 mb-1">Password</label>
                   <div className="relative group">
                     <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none z-10">
-                      <FiLock className="h-5 w-5 text-gray-500 group-focus-within:text-blue-400 transition-colors" />
+                      <FiLock className="h-5 w-5 text-gray-500 group-focus-within:text-brand-400 transition-colors" />
                     </div>
                     <input
                       id="password"
@@ -171,7 +171,7 @@ export default function LoginPage() {
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
                       placeholder="Enter your password"
-                      className="input w-full pl-11 h-12 bg-[#0A0E17] border-2 border-white/10 focus:border-blue-500 focus:ring-0 text-white placeholder-gray-500 rounded-xl transition-all duration-300 focus:shadow-[0_0_20px_rgba(139,92,246,0.2)]"
+                      className="input w-full pl-11 h-12 bg-ink-900 border-2 border-white/10 focus:border-brand-500 focus:ring-0 text-white placeholder-gray-500 rounded-xl transition-all duration-300 focus:shadow-[0_0_20px_rgba(139,92,246,0.2)]"
                       required
                       autoComplete="current-password"
                     />
@@ -199,11 +199,11 @@ export default function LoginPage() {
                     type="checkbox"
                     checked={remember}
                     onChange={(e) => setRemember(e.target.checked)}
-                    className="checkbox checkbox-sm border-2 border-gray-600 checked:border-blue-500 checked:bg-blue-500 rounded-md"
+                    className="checkbox checkbox-sm border-2 border-gray-600 checked:border-brand-500 checked:bg-brand-500 rounded-md"
                   />
                   <span className="text-sm text-gray-400 group-hover:text-gray-300 transition-colors">Remember me</span>
                 </label>
-                <Link href="/forgot" className="text-sm text-blue-400 hover:text-blue-300 font-medium transition-colors">
+                <Link href="/forgot" className="text-sm text-brand-400 hover:text-brand-300 font-medium transition-colors">
                   Forgot password?
                 </Link>
               </div>
@@ -251,7 +251,7 @@ export default function LoginPage() {
             {/* Sign Up Link */}
             <p className="text-center text-gray-400 text-sm">
               Don&apos;t have an account?{" "}
-              <Link href="/register" className="text-blue-400 hover:text-blue-300 font-bold transition-colors">
+              <Link href="/register" className="text-brand-400 hover:text-brand-300 font-bold transition-colors">
                 Sign Up Now
               </Link>
             </p>

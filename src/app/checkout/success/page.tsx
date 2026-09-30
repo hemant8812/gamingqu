@@ -98,7 +98,7 @@ export default async function PaymentSuccessPage({ searchParams }: { searchParam
               <h1 className="mt-4 text-3xl md:text-4xl font-black text-white tracking-tight text-center lg:text-left">{title}</h1>
               <p className="mt-2 text-base md:text-lg text-gray-300 text-center lg:text-left">{desc}</p>
               <div className="mt-6">
-                <div className="relative overflow-hidden rounded-2xl border border-emerald-500/25 bg-[#0F172A]/70 p-5 text-center amount-gradient">
+                <div className="relative overflow-hidden rounded-2xl border border-emerald-500/25 bg-ink-800/70 p-5 text-center amount-gradient">
                   <div className="text-xs uppercase tracking-wider text-gray-400 font-bold">Amount Paid</div>
                   <div className="mt-2 font-black text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-teal-300 text-4xl md:text-5xl">
                     {totalText ?? "-"}

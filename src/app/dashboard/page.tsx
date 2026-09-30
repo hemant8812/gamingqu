@@ -12,7 +12,7 @@ export default async function DashboardPage() {
   const isMember = role === "MEMBER";
   if (!session?.user) {
     return (
-      <div className="min-h-screen bg-[#0A0E17] flex items-center justify-center">
+      <div className="min-h-screen bg-ink-900 flex items-center justify-center">
         <div className="text-center">
           <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-white/5 mb-4">
             <FiLock className="h-7 w-7 text-gray-400" />
@@ -26,7 +26,7 @@ export default async function DashboardPage() {
   }
   if (!isMember) {
     return (
-      <div className="min-h-screen bg-[#0A0E17] flex items-center justify-center">
+      <div className="min-h-screen bg-ink-900 flex items-center justify-center">
         <div className="text-center">
           <h1 className="text-3xl font-bold text-white mb-2">Access Denied</h1>
           <p className="text-gray-400">This page is available for members only.</p>
@@ -103,14 +103,14 @@ export default async function DashboardPage() {
     orders = [];
   }
   return (
-    <div className="min-h-screen bg-[#0A0E17] text-white">
+    <div className="min-h-screen bg-ink-900 text-white">
       <div className="fixed inset-0 pointer-events-none">
-        <div className="absolute top-0 left-1/4 w-96 h-96 bg-blue-600/10 rounded-full blur-3xl" />
-        <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-cyan-500/10 rounded-full blur-3xl" />
+        <div className="absolute top-0 left-1/4 w-96 h-96 bg-brand-600/10 rounded-full blur-3xl" />
+        <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-accent-500/10 rounded-full blur-3xl" />
       </div>
       <div className="relative z-10 mx-auto max-w-7xl px-6 py-8">
         <div className="lg:hidden mb-4">
-          <details className="rounded-2xl border border-white/10 bg-[#0F172A]">
+          <details className="rounded-2xl border border-white/10 bg-ink-800">
             <summary className="flex items-center justify-between px-4 py-3 cursor-pointer">
               <span className="flex items-center gap-3 text-white">
                 <Home className="h-4 w-4" />
@@ -177,7 +177,7 @@ export default async function DashboardPage() {
           </details>
         </div>
         <div className="grid grid-cols-1 lg:grid-cols-[260px_1fr] gap-6">
-          <aside className="space-y-6 hidden lg:block lg:sticky lg:top-8 self-start">
+          <aside className="space-y-6 hidden lg:block lg:sticky lg:top-20 self-start">
             <MemberSidebar active="overview" />
           </aside>
           <main>
@@ -194,7 +194,7 @@ export default async function DashboardPage() {
                   <p className="text-sm text-gray-400 mb-1">Active Orders</p>
                   <p className="text-3xl font-bold text-white">{stats.active}</p>
                 </div>
-                <div className="w-12 h-12 rounded-xl bg-blue-500/20 flex items-center justify-center text-blue-400 ring-1 ring-blue-500/20">
+                <div className="w-12 h-12 rounded-xl bg-brand-500/20 flex items-center justify-center text-brand-400 ring-1 ring-brand-500/20">
                   <Activity className="h-6 w-6" />
                 </div>
               </div>
@@ -227,21 +227,21 @@ export default async function DashboardPage() {
               </div>
             </div>
             <div className="space-y-6">
-              <section className="bg-[#0F172A] border border-white/10 rounded-2xl overflow-hidden ring-1 ring-white/5">
+              <section className="bg-ink-800 border border-white/10 rounded-2xl overflow-hidden ring-1 ring-white/5">
                 <div className="p-6 border-b border-white/10 flex items-center justify-between">
                   <h3 className="text-lg font-bold text-white">Active Orders</h3>
-                  <Link href="/dashboard/orders" className="flex items-center gap-2 text-sm text-blue-400 hover:text-blue-300" aria-label="View all orders">
+                  <Link href="/dashboard/orders" className="flex items-center gap-2 text-sm text-brand-400 hover:text-brand-300" aria-label="View all orders">
                     View All Orders <ChevronRight className="h-4 w-4" />
                   </Link>
                 </div>
                 <div className="p-4 md:p-6 space-y-3 max-h-96 overflow-y-auto pr-1">
                   {orders.length === 0 ? (
-                    <div className="rounded-2xl border border-white/10 bg-[#0A0E17] p-6 text-center text-gray-400">
+                    <div className="rounded-2xl border border-white/10 bg-ink-900 p-6 text-center text-gray-400">
                       No active orders
                     </div>
                   ) : (
                     orders.map((o) => (
-                      <div key={o.id} className="rounded-2xl border border-white/10 bg-[#0A0E17] p-3 md:p-4 transition-colors hover:bg-white/[0.04]">
+                      <div key={o.id} className="rounded-2xl border border-white/10 bg-ink-900 p-3 md:p-4 transition-colors hover:bg-white/[0.04]">
                         <div className="flex items-start justify-between gap-2 mb-2">
                           <div className="min-w-0">
                             <div className="text-sm font-semibold text-white truncate">{o.title}</div>
@@ -251,7 +251,7 @@ export default async function DashboardPage() {
                             <span className={`inline-flex items-center gap-2 px-2 py-0.5 text-[11px] font-medium rounded-xl ring-1 ring-white/10 ${
                               o.status === "Completed" ? "bg-emerald-500/20 text-emerald-400" :
                               o.status === "Pending" ? "bg-yellow-500/20 text-yellow-400" :
-                              "bg-blue-500/20 text-blue-400"
+                              "bg-brand-500/20 text-brand-400"
                             }`}>
                               {o.status === "Completed" ? <CheckCircle className="h-4 w-4" /> : o.status === "Pending" ? <Clock className="h-4 w-4" /> : <Shield className="h-4 w-4" />}
                               {o.status}
@@ -264,7 +264,7 @@ export default async function DashboardPage() {
                         </div>
                         <div className="space-y-1">
                           <div className="h-1 rounded-full bg-white/10 overflow-hidden ring-1 ring-white/10">
-                            <div className="h-full bg-gradient-to-r from-blue-500 to-cyan-500" style={{ width: `${o.percent}%` }} />
+                            <div className="h-full bg-gradient-to-r from-brand-500 to-accent-500" style={{ width: `${o.percent}%` }} />
                           </div>
                           <div className="flex items-center justify-between text-[11px] text-gray-400">
                             <span>Progress</span>

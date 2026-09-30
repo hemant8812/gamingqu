@@ -12,13 +12,13 @@ export function UpdateProfileDetailsForm({ initialName, initialEmail }: { initia
   const nameValid = useMemo(() => name.trim().length >= 2, [name]);
   const emailCls =
     email.length === 0
-      ? "border border-white/10 hover:border-white/20 focus:border-blue-500"
+      ? "border border-white/10 hover:border-white/20 focus:border-brand-500"
       : emailValid
       ? "border border-emerald-500/60 hover:border-emerald-400 focus:border-emerald-400"
       : "border border-red-500/60 hover:border-red-400 focus:border-red-400";
   const nameCls =
     name.length === 0
-      ? "border border-white/10 hover:border-white/20 focus:border-blue-500"
+      ? "border border-white/10 hover:border-white/20 focus:border-brand-500"
       : nameValid
       ? "border border-emerald-500/60 hover:border-emerald-400 focus:border-emerald-400"
       : "border border-red-500/60 hover:border-red-400 focus:border-red-400";
@@ -34,7 +34,7 @@ export function UpdateProfileDetailsForm({ initialName, initialEmail }: { initia
             required
             minLength={2}
             placeholder="Enter your full name"
-            className={`mt-1 w-full h-11 bg-[#0A0E17] rounded-xl text-white placeholder-gray-500 focus:outline-none px-3 ${nameCls}`}
+            className={`mt-1 w-full h-11 bg-ink-900 rounded-xl text-white placeholder-gray-500 focus:outline-none px-3 ${nameCls}`}
             value={name}
             onChange={(e) => setName(e.target.value)}
           />
@@ -47,7 +47,7 @@ export function UpdateProfileDetailsForm({ initialName, initialEmail }: { initia
             type="email"
             required
             placeholder="Enter your email address"
-            className={`mt-1 w-full h-11 bg-[#0A0E17] rounded-xl text-white placeholder-gray-500 focus:outline-none px-3 ${emailCls}`}
+            className={`mt-1 w-full h-11 bg-ink-900 rounded-xl text-white placeholder-gray-500 focus:outline-none px-3 ${emailCls}`}
             value={email}
             onChange={(e) => setEmail(e.target.value)}
           />

@@ -40,7 +40,7 @@ function PaymentBadge({ status }: { status: "CREATED" | "PENDING" | "PAID" | "CA
       ? "bg-yellow-500/20 text-yellow-400"
       : status === "CANCELED" || status === "FAILED"
       ? "bg-red-500/20 text-red-400"
-      : "bg-blue-500/20 text-blue-400";
+      : "bg-brand-500/20 text-brand-400";
   const Icon =
     status === "PAID"
       ? CheckCircle
@@ -75,7 +75,7 @@ function FulfillmentBadge({ status }: { status: "PENDING" | "ACCEPTED" | "IN_PRO
       ? "bg-yellow-500/20 text-yellow-400"
       : status === "CANCELED"
       ? "bg-red-500/20 text-red-400"
-      : "bg-blue-500/20 text-blue-400";
+      : "bg-brand-500/20 text-brand-400";
   const Icon =
     status === "COMPLETED"
       ? CheckCircle
@@ -108,7 +108,7 @@ export default async function MyOrdersPage({ searchParams }: { searchParams?: Pr
   const isMember = role === "MEMBER";
   if (!session?.user) {
     return (
-      <div className="min-h-screen bg-[#0A0E17] flex items-center justify-center">
+      <div className="min-h-screen bg-ink-900 flex items-center justify-center">
         <div className="text-center">
           <h1 className="text-3xl font-bold text-white mb-2">Sign in required</h1>
           <p className="text-gray-400 mb-4">Please sign in to view your orders.</p>
@@ -119,7 +119,7 @@ export default async function MyOrdersPage({ searchParams }: { searchParams?: Pr
   }
   if (!isMember) {
     return (
-      <div className="min-h-screen bg-[#0A0E17] flex items-center justify-center">
+      <div className="min-h-screen bg-ink-900 flex items-center justify-center">
         <div className="text-center">
           <h1 className="text-3xl font-bold text-white mb-2">Access Denied</h1>
           <p className="text-gray-400">This page is available for members only.</p>
@@ -216,7 +216,7 @@ export default async function MyOrdersPage({ searchParams }: { searchParams?: Pr
       if (name === "COMPLETED") return `${base} from-emerald-600/30 to-green-600/30 ring-emerald-500/30`;
       if (name === "IN_PROGRESS") return `${base} from-yellow-500/30 to-amber-500/30 ring-yellow-500/30`;
       if (name === "CANCELED") return `${base} from-red-600/30 to-pink-600/30 ring-red-500/30`;
-      return `${base} from-blue-600/30 to-cyan-600/30 ring-blue-500/30`;
+      return `${base} from-brand-600/30 to-accent-600/30 ring-brand-500/30`;
     }
     return "h-9 px-4 inline-flex items-center justify-center gap-2 md:gap-3 rounded-xl text-sm bg-white/5 text-gray-300 hover:bg-white/10 border border-white/10";
   };
@@ -228,14 +228,14 @@ export default async function MyOrdersPage({ searchParams }: { searchParams?: Pr
     return `/dashboard/orders?${params.toString()}`;
   };
   return (
-    <div className="min-h-screen bg-[#0A0E17] text-white">
+    <div className="min-h-screen bg-ink-900 text-white">
       <div className="fixed inset-0 pointer-events-none">
-        <div className="absolute top-0 left-1/4 w-96 h-96 bg-blue-600/10 rounded-full blur-3xl" />
-        <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-cyan-500/10 rounded-full blur-3xl" />
+        <div className="absolute top-0 left-1/4 w-96 h-96 bg-brand-600/10 rounded-full blur-3xl" />
+        <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-accent-500/10 rounded-full blur-3xl" />
       </div>
       <div className="relative z-10 mx-auto max-w-7xl px-6 py-8">
         <div className="grid grid-cols-1 lg:grid-cols-[260px_1fr] gap-6">
-          <aside className="space-y-6 hidden lg:block lg:sticky lg:top-8 self-start">
+          <aside className="space-y-6 hidden lg:block lg:sticky lg:top-20 self-start">
             <MemberSidebar active="orders" />
           </aside>
           <main>
@@ -246,7 +246,7 @@ export default async function MyOrdersPage({ searchParams }: { searchParams?: Pr
                 <span>New Order</span>
               </Link>
             </div>
-            <div className="bg-[#0F172A] border border-white/10 rounded-2xl overflow-hidden">
+            <div className="bg-ink-800 border border-white/10 rounded-2xl overflow-hidden">
               <div className="p-4 border-b border-white/10 flex items-center justify-between">
                 <OrdersSearchInput initialQ={q} currentFilter={currentFilter} orderCode={orderCodeFilter} />
                 <div className="flex items-center gap-3">
@@ -286,7 +286,7 @@ export default async function MyOrdersPage({ searchParams }: { searchParams?: Pr
                       ) : currentFilter === "IN_PROGRESS" ? (
                         <Clock className="h-10 w-10 text-yellow-400 mb-3" />
                       ) : (
-                        <ShoppingCart className="h-10 w-10 text-blue-400 mb-3" />
+                        <ShoppingCart className="h-10 w-10 text-brand-400 mb-3" />
                       )}
                       <div className="text-sm text-gray-400">
                         {currentFilter === "COMPLETED"
@@ -317,7 +317,7 @@ export default async function MyOrdersPage({ searchParams }: { searchParams?: Pr
                             {o.status === "In Progress" || o.status === "Completed" ? (
                               <>
                                 <div className="h-2 rounded-full bg-white/10 overflow-hidden">
-                                  <div className="h-full bg-gradient-to-r from-blue-500 to-cyan-500" style={{ width: `${o.percent}%` }} />
+                                  <div className="h-full bg-gradient-to-r from-brand-500 to-accent-500" style={{ width: `${o.percent}%` }} />
                                 </div>
                                 <div className="text-xs text-gray-400 mt-1">{o.percent}%</div>
                               </>
@@ -335,7 +335,7 @@ export default async function MyOrdersPage({ searchParams }: { searchParams?: Pr
                                 {selected.status === "PENDING" && (
                                   <a
                                     href={`/api/orders/pay?order=${encodeURIComponent(o.id)}`}
-                                    className="h-8 px-3 rounded-lg bg-gradient-to-r from-blue-600 to-cyan-600 text-white ring-1 ring-blue-500/30 text-sm flex items-center justify-center gap-2"
+                                    className="h-8 px-3 rounded-lg bg-gradient-to-r from-brand-600 to-accent-600 text-white ring-1 ring-brand-500/30 text-sm flex items-center justify-center gap-2"
                                     aria-label={`Pay ${o.id}`}
                                   >
                                     <CreditCard className="h-4 w-4" />
@@ -351,7 +351,7 @@ export default async function MyOrdersPage({ searchParams }: { searchParams?: Pr
                                 {(o.paymentStatus === "PENDING" || o.paymentStatus === "CREATED") && (
                                   <a
                                     href={`/api/orders/pay?order=${encodeURIComponent(o.id)}`}
-                                    className="h-8 px-3 rounded-lg bg-gradient-to-r from-blue-600 to-cyan-600 text-white ring-1 ring-blue-500/30 text-sm flex items-center justify-center gap-2"
+                                    className="h-8 px-3 rounded-lg bg-gradient-to-r from-brand-600 to-accent-600 text-white ring-1 ring-brand-500/30 text-sm flex items-center justify-center gap-2"
                                     aria-label={`Pay ${o.id}`}
                                   >
                                     <CreditCard className="h-4 w-4" />
@@ -363,7 +363,7 @@ export default async function MyOrdersPage({ searchParams }: { searchParams?: Pr
                           </div>
                         </div>
                         {selected?.code === o.id && (
-                          <div className="mt-3 rounded-2xl border border-white/10 bg-[#0F172A] p-4">
+                          <div className="mt-3 rounded-2xl border border-white/10 bg-ink-800 p-4">
                             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                               <div className="space-y-2">
                                 <div className="space-y-1">
@@ -409,7 +409,7 @@ export default async function MyOrdersPage({ searchParams }: { searchParams?: Pr
                                   <div className="text-sm text-white">{formatDateTimeEnglish(new Date(selected.createdAt))}</div>
                                 </div>
                               </div>
-                              <div className="rounded-xl bg-[#0A0E17] border border-white/10 p-4">
+                              <div className="rounded-xl bg-ink-900 border border-white/10 p-4">
                                 {(() => {
                                   const p = selected.payload as unknown as {
                                     range?: { from?: number; to?: number };

@@ -163,7 +163,7 @@ export function ServicePanel({
   return (
     <aside className="relative space-y-0">
       <Toaster position="top-center" richColors theme="dark" offset="80px" />
-      <div className="bg-[#0F172A] border border-white/10 rounded-t-2xl rounded-b-none p-6 border-b-0 shadow-none overflow-hidden">
+      <div className="bg-ink-800 border border-white/10 rounded-t-2xl rounded-b-none p-6 border-b-0 shadow-none overflow-hidden">
         <div className="space-y-6">
           <ServiceOptions
             details={details}
@@ -177,7 +177,7 @@ export function ServicePanel({
         </div>
       </div>
       <div className="sticky bottom-6 z-20">
-        <div className="bg-[#0F172A] border border-white/10 rounded-b-2xl rounded-t-none p-4 border-t-0 -mt-px shadow-none relative">
+        <div className="bg-ink-800 border border-white/10 rounded-b-2xl rounded-t-none p-4 border-t-0 -mt-px shadow-none relative">
           <div className="text-3xl font-black text-white tracking-wide mb-3 flex items-center gap-2">
             <span>Total</span>
             <div className="flex items-center gap-1">

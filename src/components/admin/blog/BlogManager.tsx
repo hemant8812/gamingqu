@@ -199,7 +199,7 @@ export function BlogManager({ posts, sources, page, totalPages }: { posts: Post[
     return (
         <div className="space-y-8">
             {/* Scraper Control Panel */}
-            <div className="bg-[#0F172A] border border-white/10 rounded-2xl overflow-hidden">
+            <div className="bg-ink-800 border border-white/10 rounded-2xl overflow-hidden">
                 <div className="p-5">
                     <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-4">
                         <h2 className="text-lg font-bold text-white">Auto-Scraper Sources</h2>
@@ -214,7 +214,7 @@ export function BlogManager({ posts, sources, page, totalPages }: { posts: Post[
                             <button
                                 onClick={handleScrape}
                                 disabled={isScraping || sources.length === 0}
-                                className="h-9 px-3 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg flex items-center gap-2 transition-colors disabled:opacity-50"
+                                className="h-9 px-3 bg-brand-600 hover:bg-brand-700 text-white text-sm font-medium rounded-lg flex items-center gap-2 transition-colors disabled:opacity-50"
                             >
                                 <RefreshCw className={`h-4 w-4 ${isScraping ? "animate-spin" : ""}`} />
                                 {isScraping ? "Scraping..." : "Run Scraper"}
@@ -280,10 +280,10 @@ export function BlogManager({ posts, sources, page, totalPages }: { posts: Post[
             </div>
 
             {/* Blog Posts Management */}
-            <div className="bg-[#0F172A] border border-white/10 rounded-2xl overflow-hidden">
+            <div className="bg-ink-800 border border-white/10 rounded-2xl overflow-hidden">
                 <div className="p-5 border-b border-white/10 flex items-center justify-between">
                     <h2 className="text-lg font-bold text-white">Blog Posts</h2>
-                    <button onClick={() => { setEditingPost(null); setIsPostModalOpen(true); }} className="h-10 px-4 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-xl flex items-center gap-2 transition-colors">
+                    <button onClick={() => { setEditingPost(null); setIsPostModalOpen(true); }} className="h-10 px-4 bg-brand-600 hover:bg-brand-700 text-white text-sm font-medium rounded-xl flex items-center gap-2 transition-colors">
                         <Plus className="h-4 w-4" /> Create Post
                     </button>
                 </div>
@@ -307,7 +307,7 @@ export function BlogManager({ posts, sources, page, totalPages }: { posts: Post[
                                     </td>
                                     <td className="py-3 px-4">
                                         {post.sourceUrl ? (
-                                            <a href={post.sourceUrl} target="_blank" className="flex items-center gap-1 text-xs text-blue-400 hover:underline">
+                                            <a href={post.sourceUrl} target="_blank" className="flex items-center gap-1 text-xs text-brand-400 hover:underline">
                                                 <Globe className="h-3 w-3" /> Auto-Scraped
                                             </a>
                                         ) : (
@@ -365,14 +365,14 @@ export function BlogManager({ posts, sources, page, totalPages }: { posts: Post[
 
             {/* Source Modal */}
             <dialog ref={sourceDialogRef} className="modal">
-                <div className="modal-box bg-[#0F172A] border-0 text-white rounded-2xl">
+                <div className="modal-box bg-ink-800 border-0 text-white rounded-2xl">
                     <h3 className="font-bold text-lg">Add Scraper Source</h3>
                     <p className="py-2 text-sm text-gray-400">Enter a valid RSS feed URL or website URL</p>
                     <form onSubmit={handleAddSource} className="mt-4 space-y-4">
-                        <input name="url" type="url" placeholder="https://..." required className="w-full h-11 px-4 bg-[#0A0E17] border-0 rounded-xl text-white placeholder-gray-500 focus:ring-2 focus:ring-blue-500 focus:outline-none" defaultValue={editingSource?.url ?? ""} />
+                        <input name="url" type="url" placeholder="https://..." required className="w-full h-11 px-4 bg-ink-900 border-0 rounded-xl text-white placeholder-gray-500 focus:ring-2 focus:ring-brand-500 focus:outline-none" defaultValue={editingSource?.url ?? ""} />
                         <div>
                             <label className="block text-sm font-medium text-gray-300 mb-2">Scrape Interval</label>
-                            <select name="interval" className="w-full h-11 px-4 bg-[#0A0E17] border-0 rounded-xl text-white focus:ring-2 focus:ring-blue-500 focus:outline-none appearance-none cursor-pointer" defaultValue={editingSource ? String(editingSource.scrapeInterval) : "60"}>
+                            <select name="interval" className="w-full h-11 px-4 bg-ink-900 border-0 rounded-xl text-white focus:ring-2 focus:ring-brand-500 focus:outline-none appearance-none cursor-pointer" defaultValue={editingSource ? String(editingSource.scrapeInterval) : "60"}>
                                 <option value="30">Every 30 minutes</option>
                                 <option value="60">Every 1 hour</option>
                                 <option value="180">Every 3 hours</option>
@@ -384,7 +384,7 @@ export function BlogManager({ posts, sources, page, totalPages }: { posts: Post[
 
                         <div className="flex justify-end gap-3 pt-4 border-t border-white/10">
                             <button type="button" onClick={() => setIsSourceModalOpen(false)} className="h-10 px-4 bg-white/5 hover:bg-white/10 text-gray-300 font-medium rounded-xl transition-colors">Cancel</button>
-                            <button type="submit" className="h-10 px-4 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-xl transition-colors disabled:opacity-50" disabled={busy}>Add Source</button>
+                            <button type="submit" className="h-10 px-4 bg-brand-600 hover:bg-brand-700 text-white font-medium rounded-xl transition-colors disabled:opacity-50" disabled={busy}>Add Source</button>
                         </div>
                     </form>
                 </div>
@@ -395,9 +395,9 @@ export function BlogManager({ posts, sources, page, totalPages }: { posts: Post[
 
             {/* Post Modal */}
             <dialog ref={postDialogRef} className="modal">
-                <div className="modal-box w-11/12 max-w-5xl h-[90vh] overflow-hidden flex flex-col p-0 bg-[#0F172A] rounded-2xl border-0">
+                <div className="modal-box w-11/12 max-w-5xl h-[90vh] overflow-hidden flex flex-col p-0 bg-ink-800 rounded-2xl border-0">
                     {/* Header */}
-                    <div className="flex justify-between items-center px-6 py-4 border-b border-white/10 sticky top-0 z-20 bg-[#0F172A]">
+                    <div className="flex justify-between items-center px-6 py-4 border-b border-white/10 sticky top-0 z-20 bg-ink-800">
                         <div>
                             <h3 className="font-bold text-2xl text-white">{editingPost ? "Edit Post" : "New Post"}</h3>
                             <p className="text-sm text-gray-400 mt-1">
@@ -427,7 +427,7 @@ export function BlogManager({ posts, sources, page, totalPages }: { posts: Post[
                                             type="text"
                                             defaultValue={editingPost?.title}
                                             required
-                                            className="w-full h-12 px-4 bg-[#0A0E17] border-0 rounded-xl text-white text-lg placeholder-gray-500 focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                                            className="w-full h-12 px-4 bg-ink-900 border-0 rounded-xl text-white text-lg placeholder-gray-500 focus:ring-2 focus:ring-brand-500 focus:outline-none"
                                             placeholder="Enter an engaging title..."
                                         />
                                     </div>
@@ -448,7 +448,7 @@ export function BlogManager({ posts, sources, page, totalPages }: { posts: Post[
 
                                 {/* Right Column */}
                                 <div className="space-y-6">
-                                    <div className="bg-[#0A0E17] rounded-xl p-4 space-y-4">
+                                    <div className="bg-ink-900 rounded-xl p-4 space-y-4">
                                         <h4 className="font-semibold text-sm uppercase tracking-wider text-gray-400">Publishing</h4>
 
                                         <div className="flex items-center justify-between">
@@ -468,16 +468,16 @@ export function BlogManager({ posts, sources, page, totalPages }: { posts: Post[
                                         </span>
                                     </div>
 
-                                    <div className="bg-[#0A0E17] rounded-xl p-4 space-y-4">
+                                    <div className="bg-ink-900 rounded-xl p-4 space-y-4">
                                         <h4 className="font-semibold text-sm uppercase tracking-wider text-gray-400">Featured Image</h4>
                                         <ImageUploadField id="post-image" name="imageUrl" label="" initialUrl={editingPost?.imageUrl} />
                                     </div>
 
-                                    <div className="bg-[#0A0E17] rounded-xl p-4 space-y-4">
+                                    <div className="bg-ink-900 rounded-xl p-4 space-y-4">
                                         <h4 className="font-semibold text-sm uppercase tracking-wider text-gray-400">Excerpt</h4>
                                         <textarea
                                             name="excerpt"
-                                            className="w-full px-4 py-3 bg-[#0F172A] border-0 rounded-xl text-sm text-white placeholder-gray-500 focus:ring-2 focus:ring-blue-500 focus:outline-none resize-none h-32"
+                                            className="w-full px-4 py-3 bg-ink-800 border-0 rounded-xl text-sm text-white placeholder-gray-500 focus:ring-2 focus:ring-brand-500 focus:outline-none resize-none h-32"
                                             defaultValue={editingPost?.excerpt ?? ""}
                                             placeholder="Write a short summary..."
                                         />
@@ -488,7 +488,7 @@ export function BlogManager({ posts, sources, page, totalPages }: { posts: Post[
                     </div>
 
                     {/* Footer */}
-                    <div className="p-4 border-t border-white/10 flex justify-end gap-3 bg-[#0F172A]">
+                    <div className="p-4 border-t border-white/10 flex justify-end gap-3 bg-ink-800">
                         <button
                             type="button"
                             onClick={() => setIsPostModalOpen(false)}
@@ -499,7 +499,7 @@ export function BlogManager({ posts, sources, page, totalPages }: { posts: Post[
                         <button
                             type="submit"
                             form="post-form"
-                            className="h-11 px-5 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-xl flex items-center gap-2 transition-colors disabled:opacity-50"
+                            className="h-11 px-5 bg-brand-600 hover:bg-brand-700 text-white font-medium rounded-xl flex items-center gap-2 transition-colors disabled:opacity-50"
                             disabled={busy}
                         >
                             {busy ? <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></span> : <Save className="h-4 w-4" />}
@@ -512,7 +512,7 @@ export function BlogManager({ posts, sources, page, totalPages }: { posts: Post[
                 </form>
             </dialog>
             <dialog ref={confirmDialogRef} className="modal">
-                <div className="modal-box bg-[#0F172A] border-0 text-white rounded-2xl">
+                <div className="modal-box bg-ink-800 border-0 text-white rounded-2xl">
                     <div className="flex flex-col items-center text-center gap-2 mb-4">
                         <AlertTriangle className="h-10 w-10 text-yellow-400" />
                         <h3 className="font-bold text-xl">Confirm Deletion</h3>

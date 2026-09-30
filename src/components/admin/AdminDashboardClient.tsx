@@ -19,7 +19,7 @@ function AdminCard({ title, description, href, icon, color, stats }: AdminCardPr
     return (
         <Link
             href={href}
-            className="group bg-[#0F172A] border border-white/10 rounded-2xl p-6 hover:border-blue-500/50 transition-all duration-300 hover:shadow-[0_0_30px_-5px_rgba(59,130,246,0.3)] flex flex-col"
+            className="group bg-ink-800 border border-white/10 rounded-2xl p-6 hover:border-brand-500/50 transition-all duration-300 hover:shadow-[0_0_30px_-5px_rgba(124,92,255,0.3)] flex flex-col"
         >
             <div className="flex items-start justify-between mb-4">
                 <div className={`w-12 h-12 rounded-xl flex items-center justify-center ${color}`}>
@@ -29,11 +29,11 @@ function AdminCard({ title, description, href, icon, color, stats }: AdminCardPr
                     <span className="text-2xl font-bold text-white">{stats}</span>
                 )}
             </div>
-            <h3 className="text-lg font-bold text-white mb-1 group-hover:text-blue-400 transition-colors">
+            <h3 className="text-lg font-bold text-white mb-1 group-hover:text-brand-400 transition-colors">
                 {title}
             </h3>
             <p className="text-sm text-gray-400 mb-4 flex-grow">{description}</p>
-            <div className="flex items-center text-blue-400 text-sm font-medium">
+            <div className="flex items-center text-brand-400 text-sm font-medium">
                 <span>Manage</span>
                 <FiArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
             </div>
@@ -51,7 +51,7 @@ interface StatsCardProps {
 
 function StatsCard({ title, value, icon, trend, trendUp }: StatsCardProps) {
     return (
-        <div className="bg-[#0F172A] border border-white/10 rounded-2xl p-5">
+        <div className="bg-ink-800 border border-white/10 rounded-2xl p-5">
             <div className="flex items-center justify-between">
                 <div>
                     <p className="text-sm text-gray-400 mb-1">{title}</p>
@@ -63,7 +63,7 @@ function StatsCard({ title, value, icon, trend, trendUp }: StatsCardProps) {
                         </p>
                     )}
                 </div>
-                <div className="w-12 h-12 rounded-xl bg-blue-500/20 flex items-center justify-center text-blue-400">
+                <div className="w-12 h-12 rounded-xl bg-brand-500/20 flex items-center justify-center text-brand-400">
                     {icon}
                 </div>
             </div>
@@ -90,16 +90,16 @@ interface AdminDashboardClientProps {
 
 export function AdminDashboardClient({ enabled, isSuperAdmin, stats }: AdminDashboardClientProps) {
     const menuItems = [
-        { key: "users", title: "Users", description: "Manage user accounts and roles", href: "/admin/users", icon: <FiUsers className="h-6 w-6" />, color: "bg-blue-500/20 text-blue-400" },
+        { key: "users", title: "Users", description: "Manage user accounts and roles", href: "/admin/users", icon: <FiUsers className="h-6 w-6" />, color: "bg-brand-500/20 text-brand-400" },
         { key: "boosters", title: "Boosters", description: "Manage booster applications", href: "/admin/boosters", icon: <FiStar className="h-6 w-6" />, color: "bg-yellow-500/20 text-yellow-400" },
         { key: "orders", title: "Orders", description: "View and manage orders", href: "/admin/orders", icon: <FiShoppingCart className="h-6 w-6" />, color: "bg-emerald-500/20 text-emerald-400" },
         { key: "analytics", title: "Analytics", description: "Sales and performance stats", href: "/admin/analytics", icon: <FiBarChart2 className="h-6 w-6" />, color: "bg-purple-500/20 text-purple-400" },
-        { key: "games", title: "Games", description: "Manage game catalog", href: "/admin/games", icon: <FiGrid className="h-6 w-6" />, color: "bg-cyan-500/20 text-cyan-400" },
+        { key: "games", title: "Games", description: "Manage game catalog", href: "/admin/games", icon: <FiGrid className="h-6 w-6" />, color: "bg-accent-500/20 text-accent-400" },
         { key: "categories", title: "Categories", description: "Organize game categories", href: "/admin/categories", icon: <FiLayers className="h-6 w-6" />, color: "bg-pink-500/20 text-pink-400" },
         { key: "services", title: "Services", description: "Manage boosting services", href: "/admin/services", icon: <FiSettings className="h-6 w-6" />, color: "bg-orange-500/20 text-orange-400" },
         { key: "services-data", title: "Data Service", description: "View service data", href: "/admin/service-data", icon: <FiSettings className="h-6 w-6" />, color: "bg-orange-500/20 text-orange-400" },
-        { key: "payment-method", title: "Payment Method", description: "Manage payment methods and fees", href: "/admin/payment-method", icon: <FiCreditCard className="h-6 w-6" />, color: "bg-blue-500/20 text-blue-400" },
-        { key: "blog", title: "Blog", description: "Write and publish articles", href: "/admin/blog", icon: <FiFileText className="h-6 w-6" />, color: "bg-indigo-500/20 text-indigo-400" },
+        { key: "payment-method", title: "Payment Method", description: "Manage payment methods and fees", href: "/admin/payment-method", icon: <FiCreditCard className="h-6 w-6" />, color: "bg-brand-500/20 text-brand-400" },
+        { key: "blog", title: "Blog", description: "Write and publish articles", href: "/admin/blog", icon: <FiFileText className="h-6 w-6" />, color: "bg-brand-500/20 text-brand-400" },
         { key: "benner", title: "Banners", description: "Manage promotional banners", href: "/admin/benner", icon: <FiImage className="h-6 w-6" />, color: "bg-rose-500/20 text-rose-400" },
         { key: "settings", title: "Settings", description: "Configure website settings", href: "/admin/settings", icon: <FiSettings className="h-6 w-6" />, color: "bg-slate-500/20 text-slate-400" },
         { key: "permissions", title: "Permissions", description: "Manage admin access rights", href: "/admin/permissions", icon: <FiShield className="h-6 w-6" />, color: "bg-red-500/20 text-red-400" },
@@ -110,11 +110,11 @@ export function AdminDashboardClient({ enabled, isSuperAdmin, stats }: AdminDash
         : menuItems.filter(item => enabled.has(item.key) || (item.key === "services-data" && enabled.has("services")));
 
     return (
-        <div className="min-h-screen bg-[#0A0E17] text-white">
+        <div className="min-h-screen bg-ink-900 text-white">
             {/* Background effects */}
             <div className="fixed inset-0 pointer-events-none">
-                <div className="absolute top-0 left-1/4 w-96 h-96 bg-blue-600/10 rounded-full blur-3xl" />
-                <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-cyan-500/10 rounded-full blur-3xl" />
+                <div className="absolute top-0 left-1/4 w-96 h-96 bg-brand-600/10 rounded-full blur-3xl" />
+                <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-accent-500/10 rounded-full blur-3xl" />
             </div>
 
             <div className="relative z-10 mx-auto max-w-7xl px-6 py-8">
@@ -171,7 +171,7 @@ export function AdminDashboardClient({ enabled, isSuperAdmin, stats }: AdminDash
                 </div>
 
                 {visibleItems.length === 0 && (
-                    <div className="text-center py-16 bg-[#0F172A] rounded-2xl border border-white/10">
+                    <div className="text-center py-16 bg-ink-800 rounded-2xl border border-white/10">
                         <FiShield className="h-16 w-16 mx-auto text-gray-600 mb-4" />
                         <h3 className="text-xl font-bold text-white mb-2">No Access</h3>
                         <p className="text-gray-400">You don&apos;t have permission to access any admin panels.</p>

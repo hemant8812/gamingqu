@@ -268,14 +268,14 @@ export function ServiceDataManager({ services }: { services: ServiceOption[] }) 
     reset();
   };
   return (
-    <div className="bg-[#0F172A] border border-white/10 rounded-2xl p-6">
+    <div className="bg-ink-800 border border-white/10 rounded-2xl p-6">
       <div className="flex items-center justify-between mb-4">
         <h2 className="text-lg font-bold">Service Details</h2>
         <button onClick={() => { setEditingId(null); reset(); setOpen(true); }} className="btn btn-gaming btn-sm rounded-xl">Add Detail</button>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-[280px_1fr] gap-4">
-        <div className="rounded-2xl bg-[#0A0E17] border border-white/10 overflow-hidden">
+        <div className="rounded-2xl bg-ink-900 border border-white/10 overflow-hidden">
           <div className="px-4 py-3 text-xs text-gray-400">Services</div>
           <div className="divide-y divide-white/10">
             {services.map((s) => (
@@ -283,14 +283,14 @@ export function ServiceDataManager({ services }: { services: ServiceOption[] }) 
                 key={s.id}
                 type="button"
                 onClick={() => setSelectedSid(s.id)}
-                className={`w-full px-4 py-3 text-left ${selectedSid === s.id ? "bg-blue-600/20 text-white" : "text-gray-300 hover:bg-white/5"}`}
+                className={`w-full px-4 py-3 text-left ${selectedSid === s.id ? "bg-brand-600/20 text-white" : "text-gray-300 hover:bg-white/5"}`}
               >
                 {s.name}
               </button>
             ))}
           </div>
         </div>
-        <div className="rounded-2xl bg-[#0A0E17] border border-white/10 overflow-hidden">
+        <div className="rounded-2xl bg-ink-900 border border-white/10 overflow-hidden">
           {selectedSid == null ? (
             <div className="p-6 text-gray-500">Select a service to view details</div>
           ) : (
@@ -361,7 +361,7 @@ export function ServiceDataManager({ services }: { services: ServiceOption[] }) 
       </div>
 
       <dialog ref={confirmDialogRef} className="modal">
-        <div className="modal-box bg-[#0F172A] border-0 text-white rounded-2xl">
+        <div className="modal-box bg-ink-800 border-0 text-white rounded-2xl">
           <div className="flex flex-col items-center text-center gap-2 mb-4">
             <AlertTriangle className="h-10 w-10 text-yellow-400" />
             <h3 className="font-bold text-xl">Delete Detail</h3>
@@ -394,7 +394,7 @@ export function ServiceDataManager({ services }: { services: ServiceOption[] }) 
       {open && (
         <div className="fixed inset-0 z-[60] flex items-center justify-center">
           <div className="absolute inset-0 bg-black/40" onClick={closeModal} />
-          <div className="relative w-full max-w-2xl bg-[#0F172A] border border-white/10 rounded-2xl">
+          <div className="relative w-full max-w-2xl bg-ink-800 border border-white/10 rounded-2xl">
             <div className="flex flex-col max-h-[80vh]">
               <div className="px-6 pt-6 pb-4 text-xl font-bold">{editingId ? "Edit Service Detail" : "Add New Service Detail"}</div>
               <div className="px-6 overflow-y-auto">
@@ -501,7 +501,7 @@ export function ServiceDataManager({ services }: { services: ServiceOption[] }) 
                           {opt.label} •{" "}
                           <button
                             type="button"
-                            className="underline decoration-dotted text-white hover:text-blue-300"
+                            className="underline decoration-dotted text-white hover:text-brand-300"
                             onClick={() => openEditOptionPrice(idx, Number(opt.price))}
                           >
                             ${Number(opt.price).toFixed(2)}
@@ -519,7 +519,7 @@ export function ServiceDataManager({ services }: { services: ServiceOption[] }) 
                           <Trash2 className="h-4 w-4" />
                         </button>
                         {editOptIdx === idx && (
-                          <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-[#0A0E17] border border-white/10 rounded-xl p-2 shadow-lg z-50 w-48">
+                          <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-ink-900 border border-white/10 rounded-xl p-2 shadow-lg z-50 w-48">
                             <input
                               ref={editOptRef}
                               type="number"
@@ -646,7 +646,7 @@ export function ServiceDataManager({ services }: { services: ServiceOption[] }) 
                           Min {it.min} • Max {it.max} •{" "}
                           <button
                             type="button"
-                            className="underline decoration-dotted text-white hover:text-blue-300"
+                            className="underline decoration-dotted text-white hover:text-brand-300"
                             onClick={() => openEditPrice(idx, Number(it.price))}
                           >
                             ${Number(it.price).toFixed(2)}
@@ -660,7 +660,7 @@ export function ServiceDataManager({ services }: { services: ServiceOption[] }) 
                           <Trash2 className="h-4 w-4" />
                         </button>
                         {editPriceIdx === idx && (
-                          <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-[#0A0E17] border border-white/10 rounded-xl p-2 shadow-lg z-50 w-48">
+                          <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-ink-900 border border-white/10 rounded-xl p-2 shadow-lg z-50 w-48">
                             <input
                               ref={editInputRef}
                               type="number"

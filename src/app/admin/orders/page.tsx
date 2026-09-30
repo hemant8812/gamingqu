@@ -21,7 +21,7 @@ export default async function AdminOrdersPage({ searchParams }: { searchParams?:
   const role = session?.user?.role;
   if (role !== "ADMIN" && role !== "SUPERADMIN") {
     return (
-      <div className="min-h-screen bg-[#0A0E17] flex items-center justify-center">
+      <div className="min-h-screen bg-ink-900 flex items-center justify-center">
         <div className="text-center">
           <h1 className="text-3xl font-bold text-white mb-2">Access Denied</h1>
           <p className="text-gray-400">You don&apos;t have permission to access this page.</p>
@@ -193,11 +193,11 @@ export default async function AdminOrdersPage({ searchParams }: { searchParams?:
   }
 
   return (
-    <div className="min-h-screen bg-[#0A0E17] text-white">
+    <div className="min-h-screen bg-ink-900 text-white">
       {/* Background effects */}
       <div className="fixed inset-0 pointer-events-none">
-        <div className="absolute top-0 left-1/4 w-96 h-96 bg-blue-600/10 rounded-full blur-3xl" />
-        <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-cyan-500/10 rounded-full blur-3xl" />
+        <div className="absolute top-0 left-1/4 w-96 h-96 bg-brand-600/10 rounded-full blur-3xl" />
+        <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-accent-500/10 rounded-full blur-3xl" />
       </div>
 
       <div className="relative z-10 mx-auto max-w-7xl px-6 py-8">
@@ -209,7 +209,7 @@ export default async function AdminOrdersPage({ searchParams }: { searchParams?:
         <PageToast message={toastMessage} type={toastType} />
 
         {selected && (
-          <div className="mb-6 rounded-2xl border border-white/10 bg-[#0F172A] overflow-hidden">
+          <div className="mb-6 rounded-2xl border border-white/10 bg-ink-800 overflow-hidden">
             <div className="p-6 border-b border-white/10 flex items-center justify-between">
               <div className="w-full">
                 <div className="flex items-center gap-4">
@@ -227,7 +227,7 @@ export default async function AdminOrdersPage({ searchParams }: { searchParams?:
               </Link>
             </div>
             <div className="p-6 space-y-6">
-              <div className="rounded-xl bg-[#0A0E17] border border-white/10 p-4">
+              <div className="rounded-xl bg-ink-900 border border-white/10 p-4">
                 <div className="grid grid-cols-1 md:grid-cols-12 gap-x-8 gap-y-6 items-start">
                   <div className="space-y-2 min-w-0 md:col-span-2">
                     <div className="text-xs text-gray-500">User</div>
@@ -257,7 +257,7 @@ export default async function AdminOrdersPage({ searchParams }: { searchParams?:
                       </div>
                       <div className="text-right">
                         <div className="text-xs text-gray-500">Booster Pay</div>
-                        <div className="text-sm text-indigo-400 font-semibold">
+                        <div className="text-sm text-brand-400 font-semibold">
                           {selected.currency === "USD" ? "$" : ""}{Number.parseFloat(String(selected.boosterPay)).toFixed(2)}
                         </div>
                       </div>
@@ -275,7 +275,7 @@ export default async function AdminOrdersPage({ searchParams }: { searchParams?:
                 </div>
               </div>
               <div className="grid grid-cols-1 md:grid-cols-10 gap-6">
-                <div className="md:col-span-8 rounded-xl bg-[#0A0E17] border border-white/10 p-4">
+                <div className="md:col-span-8 rounded-xl bg-ink-900 border border-white/10 p-4">
                   {(() => {
                     const p = selected.payload as unknown as {
                       range?: { from?: number; to?: number };
@@ -308,7 +308,7 @@ export default async function AdminOrdersPage({ searchParams }: { searchParams?:
                     );
                   })()}
                 </div>
-                <div className="md:col-span-2 rounded-xl bg-[#0A0E17] border border-white/10 p-4 space-y-4">
+                <div className="md:col-span-2 rounded-xl bg-ink-900 border border-white/10 p-4 space-y-4">
                   {/* Change Payment Status */}
                   <form action={changeOrderStatusAction} className="space-y-2">
                     <input type="hidden" name="code" value={selected.code} />
@@ -316,7 +316,7 @@ export default async function AdminOrdersPage({ searchParams }: { searchParams?:
                     <select
                       name="status"
                       defaultValue={selected.status}
-                      className="w-full h-9 px-2 rounded-lg bg-[#0F172A] border border-white/10 text-white text-sm"
+                      className="w-full h-9 px-2 rounded-lg bg-ink-800 border border-white/10 text-white text-sm"
                     >
                       <option value="CREATED">CREATED</option>
                       <option value="PENDING">PENDING</option>
@@ -324,7 +324,7 @@ export default async function AdminOrdersPage({ searchParams }: { searchParams?:
                       <option value="CANCELED">CANCELED</option>
                       <option value="FAILED">FAILED</option>
                     </select>
-                    <SubmitButton className="w-full h-9 rounded-lg bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold" pendingClassName="opacity-75 cursor-wait">
+                    <SubmitButton className="w-full h-9 rounded-lg bg-brand-600 hover:bg-brand-700 text-white text-sm font-semibold" pendingClassName="opacity-75 cursor-wait">
                       Update Status
                     </SubmitButton>
                   </form>
@@ -336,7 +336,7 @@ export default async function AdminOrdersPage({ searchParams }: { searchParams?:
                     <select
                       name="fulfillmentStatus"
                       defaultValue={selected.fulfillmentStatus}
-                      className="w-full h-9 px-2 rounded-lg bg-[#0F172A] border border-white/10 text-white text-sm"
+                      className="w-full h-9 px-2 rounded-lg bg-ink-800 border border-white/10 text-white text-sm"
                     >
                       <option value="PENDING">PENDING</option>
                       <option value="ACCEPTED">ACCEPTED</option>
@@ -366,9 +366,9 @@ export default async function AdminOrdersPage({ searchParams }: { searchParams?:
                       name="boosterPay"
                       defaultValue={Number.parseFloat(String(selected.boosterPay))}
                       step="0.01"
-                      className="w-full h-9 px-3 rounded-lg bg-[#0F172A] border border-white/10 text-white text-sm"
+                      className="w-full h-9 px-3 rounded-lg bg-ink-800 border border-white/10 text-white text-sm"
                     />
-                    <SubmitButton className="w-full h-9 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-semibold" pendingClassName="opacity-75 cursor-wait">
+                    <SubmitButton className="w-full h-9 rounded-lg bg-brand-600 hover:bg-brand-700 text-white text-sm font-semibold" pendingClassName="opacity-75 cursor-wait">
                       Change Booster Pay
                     </SubmitButton>
                   </form>

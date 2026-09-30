@@ -37,13 +37,13 @@ export function EarningsTabs({ availableBalance, withdrawals, credits, walletCur
   const isWithdrawals = tab === "withdrawals";
   const isIncoming = tab === "incoming";
   return (
-    <div className="bg-[#0F172A] border border-white/10 rounded-2xl overflow-hidden ring-1 ring-white/5 w-full">
+    <div className="bg-ink-800 border border-white/10 rounded-2xl overflow-hidden ring-1 ring-white/5 w-full">
       <div className="px-4 md:px-6">
         <div className="flex items-center justify-center gap-6 py-4 border-b border-white/10">
           <button
             type="button"
             onClick={() => setTab("withdraw")}
-            className={["px-4 py-2 text-sm font-semibold cursor-pointer border-b-2", isWithdraw ? "text-white border-blue-500" : "text-gray-400 border-transparent hover:text-white"].join(" ")}
+            className={["px-4 py-2 text-sm font-semibold cursor-pointer border-b-2", isWithdraw ? "text-white border-brand-500" : "text-gray-400 border-transparent hover:text-white"].join(" ")}
           >
             <span className="inline-flex items-center gap-2">
               <ArrowDownRight className="h-4 w-4" />
@@ -53,7 +53,7 @@ export function EarningsTabs({ availableBalance, withdrawals, credits, walletCur
           <button
             type="button"
             onClick={() => setTab("withdrawals")}
-            className={["px-4 py-2 text-sm font-semibold cursor-pointer border-b-2", isWithdrawals ? "text-white border-blue-500" : "text-gray-400 border-transparent hover:text-white"].join(" ")}
+            className={["px-4 py-2 text-sm font-semibold cursor-pointer border-b-2", isWithdrawals ? "text-white border-brand-500" : "text-gray-400 border-transparent hover:text-white"].join(" ")}
           >
             <span className="inline-flex items-center gap-2">
               <Clock className="h-4 w-4" />
@@ -63,7 +63,7 @@ export function EarningsTabs({ availableBalance, withdrawals, credits, walletCur
           <button
             type="button"
             onClick={() => setTab("incoming")}
-            className={["px-4 py-2 text-sm font-semibold cursor-pointer border-b-2", isIncoming ? "text-white border-blue-500" : "text-gray-400 border-transparent hover:text-white"].join(" ")}
+            className={["px-4 py-2 text-sm font-semibold cursor-pointer border-b-2", isIncoming ? "text-white border-brand-500" : "text-gray-400 border-transparent hover:text-white"].join(" ")}
           >
             <span className="inline-flex items-center gap-2">
               <ArrowUpCircle className="h-4 w-4" />

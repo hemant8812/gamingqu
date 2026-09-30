@@ -77,7 +77,7 @@ export default async function PaymentErrorPage({ searchParams }: { searchParams:
               <h1 className="mt-4 text-3xl md:text-4xl font-black text-white tracking-tight text-center lg:text-left">{title}</h1>
               <p className="mt-2 text-base md:text-lg text-gray-300 text-center lg:text-left">We couldn&apos;t process your payment</p>
               <div className="mt-6">
-                <div className="relative overflow-hidden rounded-2xl border border-rose-500/25 bg-[#0F172A]/70 p-3 md:p-4 text-center error-gradient">
+                <div className="relative overflow-hidden rounded-2xl border border-rose-500/25 bg-ink-800/70 p-3 md:p-4 text-center error-gradient">
                   <div className="text-xs uppercase tracking-wider text-gray-400 font-bold inline-flex items-center gap-2 justify-center">
                     <span className="inline-block h-2 w-2 rounded-full bg-rose-400" />
                     Error Reason

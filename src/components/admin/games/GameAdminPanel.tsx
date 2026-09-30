@@ -94,7 +94,7 @@ export function GameAdminPanel({ games, createAction, updateAction }: Props) {
         <div className="flex justify-end">
           <button
             type="submit"
-            className="inline-flex items-center gap-2 rounded-md bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-500"
+            className="inline-flex items-center gap-2 rounded-md bg-brand-600 px-4 py-2 text-sm font-semibold text-white hover:bg-brand-500"
           >
             <SaveIcon className="h-4 w-4" />
             <span>{selected ? "Update Game" : "Save Game"}</span>

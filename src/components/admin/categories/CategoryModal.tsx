@@ -72,7 +72,7 @@ export function CategoryModal({ editing, games }: { editing: Editing; games: Gam
 
   return (
     <dialog ref={dialogRef} className="modal" onClose={closeModal}>
-      <div className="modal-box w-11/12 max-w-lg bg-[#0F172A] border-0 text-white p-0 overflow-visible max-h-none rounded-2xl">
+      <div className="modal-box w-11/12 max-w-lg bg-ink-800 border-0 text-white p-0 overflow-visible max-h-none rounded-2xl">
         <div className="flex items-center justify-between p-5 border-b border-white/10">
           <h3 className="text-xl font-bold">{editing ? "Edit Category" : "Add Category"}</h3>
           <button onClick={closeModal} className="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-white/10 transition-colors">
@@ -89,7 +89,7 @@ export function CategoryModal({ editing, games }: { editing: Editing; games: Gam
               type="text"
               required
               placeholder="e.g. Rank Boost"
-              className="w-full h-11 px-4 bg-[#0A0E17] border-0 rounded-xl text-white placeholder-gray-500 focus:ring-2 focus:ring-blue-500 focus:outline-none"
+              className="w-full h-11 px-4 bg-ink-900 border-0 rounded-xl text-white placeholder-gray-500 focus:ring-2 focus:ring-brand-500 focus:outline-none"
               defaultValue={editing?.name ?? ""}
             />
             <AutoSlugField nameInputId="name" name="slug" label="Slug" initialValue={editing?.slug ?? ""} />
@@ -98,7 +98,7 @@ export function CategoryModal({ editing, games }: { editing: Editing; games: Gam
 
           <GameSelect games={games} name="gameId" label="Nama Game" initialValue={editing?.gameId} />
 
-          <div className="flex items-center justify-between p-4 bg-[#0A0E17] rounded-xl">
+          <div className="flex items-center justify-between p-4 bg-ink-900 rounded-xl">
             <span className="text-sm font-medium text-gray-300">Active Status</span>
             <label className="relative inline-flex items-center cursor-pointer">
               <input
@@ -118,7 +118,7 @@ export function CategoryModal({ editing, games }: { editing: Editing; games: Gam
             </button>
             <button
               type="submit"
-              className="h-11 px-5 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-xl flex items-center gap-2 transition-colors disabled:opacity-50"
+              className="h-11 px-5 bg-brand-600 hover:bg-brand-700 text-white font-medium rounded-xl flex items-center gap-2 transition-colors disabled:opacity-50"
               disabled={busy}
             >
               {busy && <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>}

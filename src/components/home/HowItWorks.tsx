@@ -33,8 +33,8 @@ export function HowItWorks() {
         "Instantly view pricing list"
       ],
       badge: "Step 01",
-      color: "from-blue-500 to-indigo-500",
-      shadowColor: "rgba(59, 130, 246, 0.4)"
+      color: "from-brand-500 to-brand-500",
+      shadowColor: "rgba(124,92,255, 0.4)"
     },
     {
       id: 1,
@@ -48,8 +48,8 @@ export function HowItWorks() {
         "Flexible schedule coordination"
       ],
       badge: "Step 02",
-      color: "from-cyan-500 to-blue-500",
-      shadowColor: "rgba(6, 182, 212, 0.4)"
+      color: "from-accent-500 to-brand-500",
+      shadowColor: "rgba(224,59,190, 0.4)"
     },
     {
       id: 2,
@@ -63,7 +63,7 @@ export function HowItWorks() {
         "Direct 1-on-1 encrypted booster chat"
       ],
       badge: "Step 03",
-      color: "from-purple-500 to-indigo-500",
+      color: "from-purple-500 to-brand-500",
       shadowColor: "rgba(168, 85, 247, 0.4)"
     },
     {
@@ -107,18 +107,18 @@ export function HowItWorks() {
       onMouseLeave={() => setIsPaused(false)}
     >
       {/* Decorative Blur Background Glows */}
-      <div className="absolute top-1/4 left-1/10 w-96 h-96 bg-blue-500/5 rounded-full filter blur-[100px] pointer-events-none animate-pulse" />
+      <div className="absolute top-1/4 left-1/10 w-96 h-96 bg-brand-500/5 rounded-full filter blur-[100px] pointer-events-none animate-pulse" />
       <div className="absolute bottom-1/4 right-1/10 w-96 h-96 bg-purple-500/5 rounded-full filter blur-[100px] pointer-events-none animate-pulse" />
 
       {/* Section Title */}
       <div className="flex items-center gap-4 mb-10">
         <div className="flex items-center gap-3">
-          <div className="w-8 h-8 rounded-lg bg-blue-500/20 border border-blue-500/30 flex items-center justify-center text-blue-400">
+          <div className="w-8 h-8 rounded-lg bg-brand-500/20 border border-brand-500/30 flex items-center justify-center text-brand-400">
             <Sliders className="h-4 w-4" />
           </div>
           <h2 className="text-2xl font-bold text-white">How It Works</h2>
         </div>
-        <div className="flex-1 h-px bg-gradient-to-r from-blue-500/30 to-transparent" />
+        <div className="flex-1 h-px bg-gradient-to-r from-brand-500/30 to-transparent" />
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch">
@@ -134,15 +134,15 @@ export function HowItWorks() {
                   onClick={() => setActiveStep(idx)}
                   className={`w-full text-left p-5 rounded-2xl border transition-all duration-300 relative overflow-hidden group flex items-start gap-4 cursor-pointer ${
                     isActive
-                      ? "bg-slate-900/60 border-blue-500/40 shadow-lg shadow-blue-500/5"
-                      : "bg-[#0A0E17]/40 border-white/5 hover:border-white/10 hover:bg-[#0A0E17]/60"
+                      ? "bg-slate-900/60 border-brand-500/40 shadow-lg shadow-brand-500/5"
+                      : "bg-ink-900/40 border-white/5 hover:border-white/10 hover:bg-ink-900/60"
                   }`}
                   aria-label={`View step ${idx + 1}: ${step.title}`}
                 >
                   {/* Left indicator bar */}
                   <div 
                     className={`absolute left-0 top-0 bottom-0 w-1 transition-all duration-300 ${
-                      isActive ? "bg-blue-500" : "bg-transparent group-hover:bg-white/20"
+                      isActive ? "bg-brand-500" : "bg-transparent group-hover:bg-white/20"
                     }`} 
                   />
 
@@ -151,7 +151,7 @@ export function HowItWorks() {
                     <div 
                       className={`w-12 h-12 rounded-xl flex items-center justify-center transition-all duration-300 ${
                         isActive
-                          ? "bg-gradient-to-br " + step.color + " text-white shadow-lg shadow-blue-500/20"
+                          ? "bg-gradient-to-br " + step.color + " text-white shadow-lg shadow-brand-500/20"
                           : "bg-white/5 text-gray-400 group-hover:bg-white/10 group-hover:text-white"
                       }`}
                     >
@@ -162,11 +162,11 @@ export function HowItWorks() {
                   {/* Text Details */}
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center justify-between mb-1">
-                      <span className={`text-[10px] font-bold tracking-widest uppercase transition-colors duration-300 ${isActive ? "text-blue-400" : "text-gray-500 group-hover:text-gray-400"}`}>
+                      <span className={`text-[10px] font-bold tracking-widest uppercase transition-colors duration-300 ${isActive ? "text-brand-400" : "text-gray-500 group-hover:text-gray-400"}`}>
                         {step.badge}
                       </span>
                       {isActive && (
-                        <span className="w-1.5 h-1.5 rounded-full bg-blue-500 animate-ping" />
+                        <span className="w-1.5 h-1.5 rounded-full bg-brand-500 animate-ping" />
                       )}
                     </div>
                     <h3 className={`font-bold text-base transition-colors duration-300 ${isActive ? "text-white" : "text-gray-300 group-hover:text-white"}`}>
@@ -179,7 +179,7 @@ export function HowItWorks() {
 
                   <ChevronRight 
                     className={`w-5 h-5 shrink-0 self-center transition-all duration-300 ${
-                      isActive ? "text-blue-400 translate-x-0 opacity-100" : "text-gray-600 translate-x-[-4px] opacity-0 group-hover:opacity-100 group-hover:translate-x-0"
+                      isActive ? "text-brand-400 translate-x-0 opacity-100" : "text-gray-600 translate-x-[-4px] opacity-0 group-hover:opacity-100 group-hover:translate-x-0"
                     }`}
                   />
                 </button>
@@ -197,7 +197,7 @@ export function HowItWorks() {
 
             {/* Top Row: Badge and Progress Bar */}
             <div className="relative z-10 flex items-center justify-between mb-8">
-              <span className={`px-4 py-1.5 rounded-full text-xs font-black tracking-wider text-white bg-gradient-to-r ${steps[activeStep].color} shadow-lg shadow-blue-500/10`}>
+              <span className={`px-4 py-1.5 rounded-full text-xs font-black tracking-wider text-white bg-gradient-to-r ${steps[activeStep].color} shadow-lg shadow-brand-500/10`}>
                 {steps[activeStep].badge}
               </span>
               
@@ -224,8 +224,8 @@ export function HowItWorks() {
                   {/* Floating effect */}
                   <div className={`absolute inset-0 rounded-3xl bg-gradient-to-br ${steps[activeStep].color} opacity-20 filter blur-xl transition-all duration-500 group-hover/visual:opacity-30`} />
                   
-                  <div className={`w-28 h-28 rounded-3xl bg-[#0A0E17]/90 border border-white/10 flex items-center justify-center text-white relative z-10 shadow-2xl transition-transform duration-500 hover:scale-105`}>
-                    <CurrentIcon className="w-12 h-12 text-blue-400 group-hover/visual:text-white transition-colors duration-300" />
+                  <div className={`w-28 h-28 rounded-3xl bg-ink-900/90 border border-white/10 flex items-center justify-center text-white relative z-10 shadow-2xl transition-transform duration-500 hover:scale-105`}>
+                    <CurrentIcon className="w-12 h-12 text-brand-400 group-hover/visual:text-white transition-colors duration-300" />
                   </div>
                 </div>
               </div>

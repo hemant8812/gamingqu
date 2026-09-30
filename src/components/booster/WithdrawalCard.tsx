@@ -179,7 +179,7 @@ export function WithdrawalCard({ availableBalance }: { availableBalance: string 
   };
 
   return (
-    <section className="withdraw-rounded bg-[#0F172A] border border-white/10 rounded-2xl overflow-hidden ring-1 ring-white/5">
+    <section className="withdraw-rounded bg-ink-800 border border-white/10 rounded-2xl overflow-hidden ring-1 ring-white/5">
       <div className="p-6 border-b border-white/10 flex items-center justify-between gap-4">
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 rounded-2xl bg-emerald-500/15 ring-1 ring-emerald-500/20 flex items-center justify-center text-emerald-300">
@@ -203,14 +203,14 @@ export function WithdrawalCard({ availableBalance }: { availableBalance: string 
               <div className="text-xs text-gray-500">Available balance</div>
               <div className="text-2xl font-extrabold text-white tabular-nums">{availableFormatted}</div>
             </div>
-            <div className="w-12 h-12 rounded-2xl bg-blue-500/15 ring-1 ring-blue-500/20 flex items-center justify-center text-blue-300 shrink-0">
+            <div className="w-12 h-12 rounded-2xl bg-brand-500/15 ring-1 ring-brand-500/20 flex items-center justify-center text-brand-300 shrink-0">
               <Wallet className="h-6 w-6" />
             </div>
           </div>
 
           <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
             <div className="text-xs text-gray-500 mb-2">Withdraw</div>
-            <div className="flex items-center gap-3 h-12 rounded-2xl border-2 border-white/10 bg-[#0F172A] px-4 focus-within:border-blue-500">
+            <div className="flex items-center gap-3 h-12 rounded-2xl border-2 border-white/10 bg-ink-800 px-4 focus-within:border-brand-500">
               <div className="text-sm font-semibold text-gray-300 shrink-0">$</div>
               <input
                 type="text"
@@ -250,7 +250,7 @@ export function WithdrawalCard({ availableBalance }: { availableBalance: string 
         )}
 
         {!loaded ? (
-          <div className="rounded-2xl border border-white/10 bg-[#0A0E17] p-4">
+          <div className="rounded-2xl border border-white/10 bg-ink-900 p-4">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div className="h-[84px] rounded-2xl bg-white/5 animate-pulse" />
               <div className="h-[84px] rounded-2xl bg-white/5 animate-pulse" />
@@ -269,7 +269,7 @@ export function WithdrawalCard({ availableBalance }: { availableBalance: string 
               <div>
                 <label className="block text-xs text-gray-400 mb-2">Type</label>
                 <select
-                  className="booster-select select w-full h-11 bg-[#0F172A] border-2 border-white/10 focus:border-blue-500 focus:ring-0 text-white rounded-xl"
+                  className="booster-select select w-full h-11 bg-ink-800 border-2 border-white/10 focus:border-brand-500 focus:ring-0 text-white rounded-xl"
                   value={newType}
                   onChange={(e) => setNewType(e.target.value as PayoutAccountType)}
                   disabled={busy}
@@ -284,7 +284,7 @@ export function WithdrawalCard({ availableBalance }: { availableBalance: string 
                 <input
                   type="text"
                   placeholder="e.g. BCA / DANA / USDT"
-                  className="input w-full h-11 bg-[#0F172A] border-2 border-white/10 focus:border-blue-500 focus:ring-0 text-white placeholder-gray-500 rounded-xl"
+                  className="input w-full h-11 bg-ink-800 border-2 border-white/10 focus:border-brand-500 focus:ring-0 text-white placeholder-gray-500 rounded-xl"
                   value={newProviderName}
                   onChange={(e) => setNewProviderName(e.target.value)}
                   disabled={busy}
@@ -295,7 +295,7 @@ export function WithdrawalCard({ availableBalance }: { availableBalance: string 
                 <input
                   type="text"
                   placeholder="Full name"
-                  className="input w-full h-11 bg-[#0F172A] border-2 border-white/10 focus:border-blue-500 focus:ring-0 text-white placeholder-gray-500 rounded-xl"
+                  className="input w-full h-11 bg-ink-800 border-2 border-white/10 focus:border-brand-500 focus:ring-0 text-white placeholder-gray-500 rounded-xl"
                   value={newAccountName}
                   onChange={(e) => setNewAccountName(e.target.value)}
                   disabled={busy}
@@ -306,7 +306,7 @@ export function WithdrawalCard({ availableBalance }: { availableBalance: string 
                 <input
                   type="text"
                   placeholder="Number or address"
-                  className="input w-full h-11 bg-[#0F172A] border-2 border-white/10 focus:border-blue-500 focus:ring-0 text-white placeholder-gray-500 rounded-xl"
+                  className="input w-full h-11 bg-ink-800 border-2 border-white/10 focus:border-brand-500 focus:ring-0 text-white placeholder-gray-500 rounded-xl"
                   value={newAccountRef}
                   onChange={(e) => setNewAccountRef(e.target.value)}
                   disabled={busy}
@@ -343,20 +343,20 @@ export function WithdrawalCard({ availableBalance }: { availableBalance: string 
                   onClick={() => setSelectedAccountId(a.id)}
                   className={[
                     "text-left rounded-2xl border p-4 w-full transition shadow-sm",
-                    selected ? "border-blue-500 bg-blue-500/5 ring-2 ring-blue-500/20" : "border-white/10 bg-white/5 hover:border-white/20",
+                    selected ? "border-brand-500 bg-brand-500/5 ring-2 ring-brand-500/20" : "border-white/10 bg-white/5 hover:border-white/20",
                   ].join(" ")}
                   aria-pressed={selected}
                 >
                   <div className="flex items-start justify-between gap-3">
                     <div className="min-w-0">
-                      <div className={`text-base font-bold ${selected ? "text-blue-300" : "text-white"}`}>{title}</div>
-                      <div className={`text-sm ${selected ? "text-blue-200/80" : "text-gray-400"}`}>
+                      <div className={`text-base font-bold ${selected ? "text-brand-300" : "text-white"}`}>{title}</div>
+                      <div className={`text-sm ${selected ? "text-brand-200/80" : "text-gray-400"}`}>
                         {a.accountName} • {a.accountRef}
                       </div>
                     </div>
                     <div className="shrink-0 self-center">
                       {selected ? (
-                        <CircleCheck className="h-7 w-7 text-blue-400" />
+                        <CircleCheck className="h-7 w-7 text-brand-400" />
                       ) : (
                         <Circle className="h-7 w-7 text-gray-500" />
                       )}

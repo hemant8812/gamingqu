@@ -1,5 +1,5 @@
 import { db } from "@/lib/prisma";
-import Image from "next/image";
+import { ArtImage } from "@/components/art/ArtImage";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ServicePanel } from "@/components/services/ServicePanel";
@@ -193,36 +193,16 @@ export default async function ServiceDetailPage({ params }: { params: Params }) 
   return (
     <div className="min-h-screen mesh-gradient text-base-content">
       <div className="particles" />
-      <div className="relative h-[220px] overflow-hidden">
-        {service.game.imageUrl && (
-          <Image
-            src={service.game.imageUrl}
-            alt={service.game.name}
-            fill
-            className="object-cover"
-            priority
-            sizes="100vw"
-            unoptimized
-          />
-        )}
-        <div className="absolute inset-0 bg-gradient-to-t from-[#0A0E17] via-[#0A0E17]/80 to-transparent" />
-        <div className="absolute inset-0 bg-gradient-to-r from-[#0A0E17]/50 to-transparent" />
+      <div className="relative h-[240px] overflow-hidden">
+        <ArtImage src={service.game.imageUrl} alt={service.game.name} seed={service.game.slug} priority />
+        <div className="absolute inset-0 bg-gradient-to-t from-ink-900 via-ink-900/80 to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-r from-ink-900/50 to-transparent" />
         <div className="absolute inset-0 flex items-end">
           <div className="max-w-7xl mx-auto px-6 pb-10 w-full">
             <div className="flex items-center gap-4">
-              {service.game.iconUrl && (
-                <div className="relative w-16 h-16 rounded-xl overflow-hidden border-2 border-white/20 shrink-0">
-                  <Image
-                    src={service.game.iconUrl}
-                    alt={service.game.name}
-                    fill
-                    className="object-cover"
-                    sizes="64px"
-                    quality={100}
-                    unoptimized
-                  />
-                </div>
-              )}
+              <div className="relative w-16 h-16 rounded-xl overflow-hidden ring-2 ring-white/15 shrink-0 shadow-[0_16px_40px_-14px_rgba(124,92,255,0.8)]">
+                <ArtImage src={service.game.iconUrl ?? service.game.imageUrl} alt="" seed={service.game.slug} />
+              </div>
               <div>
                 <h1 className="text-3xl md:text-4xl font-black text-white tracking-tight">
                   <Link href={`/${service.game.slug}`} className="hover:text-white">

@@ -16,7 +16,7 @@ export default async function BoosterDashboardPage() {
 
   if (!session?.user) {
     return (
-      <div className="min-h-screen bg-[#0A0E17] flex items-center justify-center">
+      <div className="min-h-screen bg-ink-900 flex items-center justify-center">
         <div className="text-center">
           <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-white/5 mb-4">
             <FiLock className="h-7 w-7 text-gray-400" />
@@ -31,7 +31,7 @@ export default async function BoosterDashboardPage() {
 
   if (!isBooster) {
     return (
-      <div className="min-h-screen bg-[#0A0E17] flex items-center justify-center">
+      <div className="min-h-screen bg-ink-900 flex items-center justify-center">
         <div className="text-center">
           <h1 className="text-3xl font-bold text-white mb-2">Access Denied</h1>
           <p className="text-gray-400">This page is available for boosters only.</p>
@@ -60,14 +60,14 @@ export default async function BoosterDashboardPage() {
   ];
 
   return (
-    <div className="min-h-screen bg-[#0A0E17] text-white">
+    <div className="min-h-screen bg-ink-900 text-white">
       <div className="fixed inset-0 pointer-events-none">
-        <div className="absolute top-0 left-1/4 w-96 h-96 bg-blue-600/10 rounded-full blur-3xl" />
-        <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-cyan-500/10 rounded-full blur-3xl" />
+        <div className="absolute top-0 left-1/4 w-96 h-96 bg-brand-600/10 rounded-full blur-3xl" />
+        <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-accent-500/10 rounded-full blur-3xl" />
       </div>
       <div className="relative z-10 mx-auto max-w-7xl px-6 py-8">
         <div className="lg:hidden mb-4">
-          <details className="rounded-2xl border border-white/10 bg-[#0F172A]">
+          <details className="rounded-2xl border border-white/10 bg-ink-800">
             <summary className="flex items-center justify-between px-4 py-3 cursor-pointer">
               <span className="flex items-center gap-3 text-white">
                 <LayoutDashboard className="h-4 w-4" />
@@ -119,15 +119,15 @@ export default async function BoosterDashboardPage() {
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-[260px_1fr] gap-6">
-          <aside className="space-y-6 hidden lg:block lg:sticky lg:top-8 self-start">
+          <aside className="space-y-6 hidden lg:block lg:sticky lg:top-20 self-start">
             <BoosterSidebar active="overview" />
           </aside>
 
           <main>
-            <section className="relative overflow-hidden rounded-3xl border border-white/10 bg-gradient-to-br from-[#0F172A] via-[#0B1224] to-[#0A0E17] ring-1 ring-white/5 mb-6">
+            <section className="relative overflow-hidden rounded-3xl border border-white/10 bg-gradient-to-br from-ink-800 via-ink-850 to-ink-900 ring-1 ring-white/5 mb-6">
               <div className="absolute inset-0 pointer-events-none">
-                <div className="absolute -top-24 -left-24 h-72 w-72 rounded-full bg-blue-500/15 blur-3xl" />
-                <div className="absolute -bottom-24 -right-24 h-72 w-72 rounded-full bg-cyan-500/10 blur-3xl" />
+                <div className="absolute -top-24 -left-24 h-72 w-72 rounded-full bg-brand-500/15 blur-3xl" />
+                <div className="absolute -bottom-24 -right-24 h-72 w-72 rounded-full bg-accent-500/10 blur-3xl" />
               </div>
               <div className="relative p-6 md:p-7 flex flex-col gap-5">
                 <div className="flex flex-col sm:flex-row items-start justify-between gap-4">
@@ -152,19 +152,19 @@ export default async function BoosterDashboardPage() {
             </section>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-              <div className="group relative overflow-hidden rounded-2xl border border-white/10 bg-gradient-to-b from-[#0F172A] to-[#0A0E17] p-5 flex items-center justify-between ring-1 ring-white/5 hover:ring-white/10 transition">
+              <div className="group relative overflow-hidden rounded-2xl border border-white/10 bg-gradient-to-b from-ink-800 to-ink-900 p-5 flex items-center justify-between ring-1 ring-white/5 hover:ring-white/10 transition">
                 <div className="absolute inset-0 pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity">
-                  <div className="absolute -top-16 -left-16 h-40 w-40 rounded-full bg-blue-500/15 blur-2xl" />
+                  <div className="absolute -top-16 -left-16 h-40 w-40 rounded-full bg-brand-500/15 blur-2xl" />
                 </div>
                 <div>
                   <p className="text-sm text-gray-400 mb-1">Active Jobs</p>
                   <p className="text-2xl font-extrabold text-white tabular-nums">{stats.activeJobs}</p>
                 </div>
-                <div className="w-12 h-12 rounded-xl bg-blue-500/20 flex items-center justify-center text-blue-400 ring-1 ring-blue-500/20">
+                <div className="w-12 h-12 rounded-xl bg-brand-500/20 flex items-center justify-center text-brand-400 ring-1 ring-brand-500/20">
                   <Briefcase className="h-6 w-6" />
                 </div>
               </div>
-              <div className="group relative overflow-hidden rounded-2xl border border-white/10 bg-gradient-to-b from-[#0F172A] to-[#0A0E17] p-5 flex items-center justify-between ring-1 ring-white/5 hover:ring-white/10 transition">
+              <div className="group relative overflow-hidden rounded-2xl border border-white/10 bg-gradient-to-b from-ink-800 to-ink-900 p-5 flex items-center justify-between ring-1 ring-white/5 hover:ring-white/10 transition">
                 <div className="absolute inset-0 pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity">
                   <div className="absolute -top-16 -left-16 h-40 w-40 rounded-full bg-emerald-500/15 blur-2xl" />
                 </div>
@@ -176,7 +176,7 @@ export default async function BoosterDashboardPage() {
                   <DollarSign className="h-6 w-6" />
                 </div>
               </div>
-              <div className="group relative overflow-hidden rounded-2xl border border-white/10 bg-gradient-to-b from-[#0F172A] to-[#0A0E17] p-5 flex items-center justify-between ring-1 ring-white/5 hover:ring-white/10 transition">
+              <div className="group relative overflow-hidden rounded-2xl border border-white/10 bg-gradient-to-b from-ink-800 to-ink-900 p-5 flex items-center justify-between ring-1 ring-white/5 hover:ring-white/10 transition">
                 <div className="absolute inset-0 pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity">
                   <div className="absolute -top-16 -left-16 h-40 w-40 rounded-full bg-yellow-500/15 blur-2xl" />
                 </div>
@@ -188,7 +188,7 @@ export default async function BoosterDashboardPage() {
                   <Star className="h-6 w-6" />
                 </div>
               </div>
-              <div className="group relative overflow-hidden rounded-2xl border border-white/10 bg-gradient-to-b from-[#0F172A] to-[#0A0E17] p-5 flex items-center justify-between ring-1 ring-white/5 hover:ring-white/10 transition">
+              <div className="group relative overflow-hidden rounded-2xl border border-white/10 bg-gradient-to-b from-ink-800 to-ink-900 p-5 flex items-center justify-between ring-1 ring-white/5 hover:ring-white/10 transition">
                 <div className="absolute inset-0 pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity">
                   <div className="absolute -top-16 -left-16 h-40 w-40 rounded-full bg-purple-500/15 blur-2xl" />
                 </div>
@@ -203,21 +203,21 @@ export default async function BoosterDashboardPage() {
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
-              <section className="bg-gradient-to-b from-[#0F172A] to-[#0A0E17] border border-white/10 rounded-2xl overflow-hidden ring-1 ring-white/5">
+              <section className="bg-gradient-to-b from-ink-800 to-ink-900 border border-white/10 rounded-2xl overflow-hidden ring-1 ring-white/5">
                 <div className="p-6 border-b border-white/10 flex items-center justify-between">
                   <h3 className="text-lg font-bold text-white">Active Jobs</h3>
-                  <Link href="/booster/jobs" className="flex items-center gap-2 text-sm text-blue-400 hover:text-blue-300" aria-label="View all jobs">
+                  <Link href="/booster/jobs" className="flex items-center gap-2 text-sm text-brand-400 hover:text-brand-300" aria-label="View all jobs">
                     View All <ChevronRight className="h-4 w-4" />
                   </Link>
                 </div>
                 <div className="p-4 md:p-6 space-y-3">
                   {activeJobs.length === 0 ? (
-                    <div className="rounded-2xl border border-white/10 bg-[#0A0E17] p-6 text-center text-gray-400">
+                    <div className="rounded-2xl border border-white/10 bg-ink-900 p-6 text-center text-gray-400">
                       No active jobs
                     </div>
                   ) : (
                     activeJobs.map((job) => (
-                      <div key={job.id} className="rounded-2xl border border-white/10 bg-[#0A0E17] p-4 ring-1 ring-transparent hover:ring-white/10 transition">
+                      <div key={job.id} className="rounded-2xl border border-white/10 bg-ink-900 p-4 ring-1 ring-transparent hover:ring-white/10 transition">
                         <div className="flex items-start justify-between gap-3 mb-3">
                           <div className="min-w-0">
                             <div className="text-sm font-semibold text-white truncate">{job.title}</div>
@@ -237,12 +237,12 @@ export default async function BoosterDashboardPage() {
                             <span>{job.progress}%</span>
                           </div>
                           <div className="h-1 rounded-full bg-white/10 overflow-hidden ring-1 ring-white/10">
-                            <div className="h-full bg-gradient-to-r from-purple-500 to-indigo-500" style={{ width: `${job.progress}%` }} />
+                            <div className="h-full bg-gradient-to-r from-purple-500 to-brand-500" style={{ width: `${job.progress}%` }} />
                           </div>
                         </div>
                         <div className="mt-3 flex items-center justify-between">
                           <div className="flex items-center gap-2">
-                            <span className="inline-flex items-center px-2 py-0.5 text-[11px] rounded-xl bg-blue-500/20 text-blue-200 ring-1 ring-blue-500/20">
+                            <span className="inline-flex items-center px-2 py-0.5 text-[11px] rounded-xl bg-brand-500/20 text-brand-200 ring-1 ring-brand-500/20">
                               {job.status}
                             </span>
                             <span className={`inline-flex items-center px-2 py-0.5 text-[11px] rounded-xl ring-1 ring-white/10 ${
@@ -262,7 +262,7 @@ export default async function BoosterDashboardPage() {
                 </div>
               </section>
 
-              <section className="bg-gradient-to-b from-[#0F172A] to-[#0A0E17] border border-white/10 rounded-2xl overflow-hidden ring-1 ring-white/5">
+              <section className="bg-gradient-to-b from-ink-800 to-ink-900 border border-white/10 rounded-2xl overflow-hidden ring-1 ring-white/5">
                 <div className="p-6 border-b border-white/10 flex items-center justify-between">
                   <h3 className="text-lg font-bold text-white">Available Jobs</h3>
                   <span className="text-[11px] text-emerald-300 bg-emerald-500/15 ring-1 ring-emerald-500/20 px-2 py-0.5 rounded-xl">
@@ -271,7 +271,7 @@ export default async function BoosterDashboardPage() {
                 </div>
                 <div className="p-4 md:p-6 space-y-2">
                   {availableJobs.map((job) => (
-                    <div key={job.id} className="rounded-2xl border border-white/10 bg-[#0A0E17] p-4 ring-1 ring-transparent hover:ring-white/10 transition">
+                    <div key={job.id} className="rounded-2xl border border-white/10 bg-ink-900 p-4 ring-1 ring-transparent hover:ring-white/10 transition">
                       <div className="flex items-start justify-between gap-3">
                         <div className="min-w-0">
                           <div className="text-sm font-semibold text-white truncate">{job.title}</div>
@@ -291,19 +291,19 @@ export default async function BoosterDashboardPage() {
                       </div>
                     </div>
                   ))}
-                  <Link href="/booster/jobs" className="block text-center text-sm text-blue-400 hover:text-blue-300 pt-2">
+                  <Link href="/booster/jobs" className="block text-center text-sm text-brand-400 hover:text-brand-300 pt-2">
                     View All Available Jobs →
                   </Link>
                 </div>
               </section>
             </div>
 
-            <section className="bg-gradient-to-b from-[#0F172A] to-[#0A0E17] border border-white/10 rounded-2xl overflow-hidden ring-1 ring-white/5">
+            <section className="bg-gradient-to-b from-ink-800 to-ink-900 border border-white/10 rounded-2xl overflow-hidden ring-1 ring-white/5">
               <div className="p-6 border-b border-white/10">
                 <h3 className="text-lg font-bold text-white">Performance Insights</h3>
               </div>
               <div className="p-4 md:p-6 grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div className="rounded-2xl border border-white/10 bg-[#0A0E17] p-5 ring-1 ring-transparent hover:ring-white/10 transition">
+                <div className="rounded-2xl border border-white/10 bg-ink-900 p-5 ring-1 ring-transparent hover:ring-white/10 transition">
                   <div className="flex items-center justify-between mb-3">
                     <div className="text-xs text-gray-400">Earnings this month</div>
                     <div className="w-9 h-9 rounded-xl bg-emerald-500/15 ring-1 ring-emerald-500/20 flex items-center justify-center text-emerald-300">
@@ -312,20 +312,20 @@ export default async function BoosterDashboardPage() {
                   </div>
                   <div className="text-2xl font-black text-white">+23%</div>
                   <div className="mt-2 h-1 rounded-full bg-white/10 overflow-hidden ring-1 ring-white/10">
-                    <div className="h-full w-2/3 bg-gradient-to-r from-emerald-500 to-cyan-500" />
+                    <div className="h-full w-2/3 bg-gradient-to-r from-emerald-500 to-accent-500" />
                   </div>
                 </div>
-                <div className="rounded-2xl border border-white/10 bg-[#0A0E17] p-5 ring-1 ring-transparent hover:ring-white/10 transition">
+                <div className="rounded-2xl border border-white/10 bg-ink-900 p-5 ring-1 ring-transparent hover:ring-white/10 transition">
                   <div className="flex items-center justify-between mb-3">
                     <div className="text-xs text-gray-400">Avg response time</div>
-                    <div className="w-9 h-9 rounded-xl bg-blue-500/15 ring-1 ring-blue-500/20 flex items-center justify-center text-blue-300">
+                    <div className="w-9 h-9 rounded-xl bg-brand-500/15 ring-1 ring-brand-500/20 flex items-center justify-center text-brand-300">
                       <Timer className="h-4.5 w-4.5" />
                     </div>
                   </div>
                   <div className="text-2xl font-black text-white">&lt; 5 min</div>
                   <div className="mt-2 text-[11px] text-gray-500">Last 7 days</div>
                 </div>
-                <div className="rounded-2xl border border-white/10 bg-[#0A0E17] p-5 ring-1 ring-transparent hover:ring-white/10 transition">
+                <div className="rounded-2xl border border-white/10 bg-ink-900 p-5 ring-1 ring-transparent hover:ring-white/10 transition">
                   <div className="flex items-center justify-between mb-3">
                     <div className="text-xs text-gray-400">Completion rate</div>
                     <div className="w-9 h-9 rounded-xl bg-purple-500/15 ring-1 ring-purple-500/20 flex items-center justify-center text-purple-300">
@@ -334,7 +334,7 @@ export default async function BoosterDashboardPage() {
                   </div>
                   <div className="text-2xl font-black text-white">98%</div>
                   <div className="mt-2 h-1 rounded-full bg-white/10 overflow-hidden ring-1 ring-white/10">
-                    <div className="h-full w-[98%] bg-gradient-to-r from-purple-500 to-indigo-500" />
+                    <div className="h-full w-[98%] bg-gradient-to-r from-purple-500 to-brand-500" />
                   </div>
                 </div>
               </div>

@@ -98,17 +98,17 @@ export function FooterSettingsForm({ initial }: { initial: Initial }) {
       });
     };
 
-  const inputClassName = "w-full h-10 px-3 bg-slate-800/50 border border-slate-600 rounded-xl text-white text-sm placeholder-gray-400 hover:border-blue-500/50 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/30 focus:outline-none transition-all";
-  const textareaClassName = "w-full px-3 py-2 bg-slate-800/50 border border-slate-600 rounded-xl text-white text-sm placeholder-gray-400 hover:border-blue-500/50 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/30 focus:outline-none transition-all resize-none";
+  const inputClassName = "w-full h-10 px-3 bg-slate-800/50 border border-slate-600 rounded-xl text-white text-sm placeholder-gray-400 hover:border-brand-500/50 focus:border-brand-500 focus:ring-2 focus:ring-brand-500/30 focus:outline-none transition-all";
+  const textareaClassName = "w-full px-3 py-2 bg-slate-800/50 border border-slate-600 rounded-xl text-white text-sm placeholder-gray-400 hover:border-brand-500/50 focus:border-brand-500 focus:ring-2 focus:ring-brand-500/30 focus:outline-none transition-all resize-none";
 
   return (
-    <form onSubmit={onSubmit} method="post" encType="multipart/form-data" className="bg-[#0F172A] border border-white/10 rounded-2xl overflow-hidden">
+    <form onSubmit={onSubmit} method="post" encType="multipart/form-data" className="bg-ink-800 border border-white/10 rounded-2xl overflow-hidden">
       <div className="p-6">
         <div className="flex gap-2 mb-6">
           <button
             type="button"
             className={`h-10 px-4 font-medium text-sm rounded-xl flex items-center gap-2 transition-colors ${activeTab === "footer1"
-              ? "bg-blue-600 text-white"
+              ? "bg-brand-600 text-white"
               : "bg-white/5 text-gray-400 hover:bg-white/10 hover:text-white"
               }`}
             onClick={() => setActiveTab("footer1")}
@@ -118,7 +118,7 @@ export function FooterSettingsForm({ initial }: { initial: Initial }) {
           <button
             type="button"
             className={`h-10 px-4 font-medium text-sm rounded-xl flex items-center gap-2 transition-colors ${activeTab === "footer2"
-              ? "bg-blue-600 text-white"
+              ? "bg-brand-600 text-white"
               : "bg-white/5 text-gray-400 hover:bg-white/10 hover:text-white"
               }`}
             onClick={() => setActiveTab("footer2")}
@@ -225,7 +225,7 @@ export function FooterSettingsForm({ initial }: { initial: Initial }) {
                         </div>
                         <label
                           htmlFor={field.id}
-                          className="block w-full text-center text-[10px] py-1 bg-blue-600/20 text-blue-400 rounded cursor-pointer hover:bg-blue-600/30 transition-colors"
+                          className="block w-full text-center text-[10px] py-1 bg-brand-600/20 text-brand-400 rounded cursor-pointer hover:bg-brand-600/30 transition-colors"
                         >
                           Choose
                         </label>
@@ -342,7 +342,7 @@ export function FooterSettingsForm({ initial }: { initial: Initial }) {
         <div className="flex justify-end mt-6">
           <button
             type="submit"
-            className="h-11 px-5 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-xl flex items-center gap-2 transition-colors disabled:opacity-50"
+            className="h-11 px-5 bg-brand-600 hover:bg-brand-700 text-white font-medium rounded-xl flex items-center gap-2 transition-colors disabled:opacity-50"
             disabled={busy}
           >
             {busy && <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>}

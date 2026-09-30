@@ -35,7 +35,7 @@ export default async function ReviewsPage() {
   const isMember = role === "MEMBER";
   if (!session?.user) {
     return (
-      <div className="min-h-screen bg-[#0A0E17] flex items-center justify-center">
+      <div className="min-h-screen bg-ink-900 flex items-center justify-center">
         <div className="text-center">
           <h1 className="text-3xl font-bold text-white mb-2">Sign in required</h1>
           <p className="text-gray-400 mb-4">Please sign in to view your reviews.</p>
@@ -46,7 +46,7 @@ export default async function ReviewsPage() {
   }
   if (!isMember) {
     return (
-      <div className="min-h-screen bg-[#0A0E17] flex items-center justify-center">
+      <div className="min-h-screen bg-ink-900 flex items-center justify-center">
         <div className="text-center">
           <h1 className="text-3xl font-bold text-white mb-2">Access Denied</h1>
           <p className="text-gray-400">This page is available for members only.</p>
@@ -71,14 +71,14 @@ export default async function ReviewsPage() {
   });
   const countPublished = reviews.filter((r) => r.isPublished).length;
   return (
-    <div className="min-h-screen bg-[#0A0E17] text-white">
+    <div className="min-h-screen bg-ink-900 text-white">
       <div className="fixed inset-0 pointer-events-none">
-        <div className="absolute top-0 left-1/4 w-96 h-96 bg-blue-600/10 rounded-full blur-3xl" />
-        <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-cyan-500/10 rounded-full blur-3xl" />
+        <div className="absolute top-0 left-1/4 w-96 h-96 bg-brand-600/10 rounded-full blur-3xl" />
+        <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-accent-500/10 rounded-full blur-3xl" />
       </div>
       <div className="relative z-10 mx-auto max-w-7xl px-6 py-8">
         <div className="grid grid-cols-1 lg:grid-cols-[260px_1fr] gap-6">
-          <aside className="space-y-6 hidden lg:block lg:sticky lg:top-8 self-start">
+          <aside className="space-y-6 hidden lg:block lg:sticky lg:top-20 self-start">
             <MemberSidebar active="reviews" />
           </aside>
           <main>
@@ -114,7 +114,7 @@ export default async function ReviewsPage() {
                 </div>
               </div>
             </div>
-            <div className="bg-[#0F172A] border border-white/10 rounded-2xl overflow-hidden">
+            <div className="bg-ink-800 border border-white/10 rounded-2xl overflow-hidden">
               <div className="p-4 border-b border-white/10 flex items-center justify-between">
                 <h2 className="text-lg font-semibold">Your Reviews</h2>
               </div>
@@ -150,7 +150,7 @@ export default async function ReviewsPage() {
                               <div className="text-xs text-gray-500">{gameName}</div>
                               {orderLink ? (
                                 <div className="text-xs mt-1">
-                                  <Link href={orderLink} className="text-blue-400 hover:text-blue-300">View order</Link>
+                                  <Link href={orderLink} className="text-brand-400 hover:text-brand-300">View order</Link>
                                 </div>
                               ) : null}
                               {r.comment ? <div className="text-gray-300 mt-1">{r.comment}</div> : null}

@@ -10,7 +10,7 @@ export default async function AdminBennerPage({ searchParams }: { searchParams?:
   const role = session?.user?.role;
   if (role !== "ADMIN" && role !== "SUPERADMIN") {
     return (
-      <div className="min-h-screen bg-[#0A0E17] flex items-center justify-center">
+      <div className="min-h-screen bg-ink-900 flex items-center justify-center">
         <div className="text-center">
           <h1 className="text-3xl font-bold text-white mb-2">Access Denied</h1>
           <p className="text-gray-400">You don&apos;t have permission to access this page.</p>
@@ -26,11 +26,11 @@ export default async function AdminBennerPage({ searchParams }: { searchParams?:
     orderBy: [{ order: "asc" }, { createdAt: "asc" }],
   });
   return (
-    <div className="min-h-screen bg-[#0A0E17] text-white">
+    <div className="min-h-screen bg-ink-900 text-white">
       {/* Background effects */}
       <div className="fixed inset-0 pointer-events-none">
-        <div className="absolute top-0 left-1/4 w-96 h-96 bg-blue-600/10 rounded-full blur-3xl" />
-        <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-cyan-500/10 rounded-full blur-3xl" />
+        <div className="absolute top-0 left-1/4 w-96 h-96 bg-brand-600/10 rounded-full blur-3xl" />
+        <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-accent-500/10 rounded-full blur-3xl" />
       </div>
 
       <div className="relative z-10 mx-auto max-w-7xl px-6 py-8">

@@ -66,8 +66,8 @@ export function BennerModal({ editing, isOpen, onClose }: { editing: Item | null
 
   return (
     <dialog ref={dialogRef} className="modal" onClose={handleClose}>
-      <div className="modal-box w-11/12 max-w-lg bg-[#0F172A] border-0 text-white p-0 max-h-[90vh] overflow-hidden rounded-2xl">
-        <div className="flex items-center justify-between p-5 border-b border-white/10 sticky top-0 z-10 bg-[#0F172A]/95 backdrop-blur-sm">
+      <div className="modal-box w-11/12 max-w-lg bg-ink-800 border-0 text-white p-0 max-h-[90vh] overflow-hidden rounded-2xl">
+        <div className="flex items-center justify-between p-5 border-b border-white/10 sticky top-0 z-10 bg-ink-800/95 backdrop-blur-sm">
           <h3 className="text-xl font-bold">{editing ? "Edit Banner" : "Add Banner"}</h3>
           <button onClick={handleClose} className="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-white/10 transition-colors">
             <X className="h-5 w-5 text-gray-400" />
@@ -82,7 +82,7 @@ export function BennerModal({ editing, isOpen, onClose }: { editing: Item | null
                 name="title"
                 defaultValue={editing?.title ?? ""}
                 placeholder="Enter title"
-                className="w-full h-11 px-4 bg-[#0A0E17] border-0 rounded-xl text-white placeholder-gray-500 focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                className="w-full h-11 px-4 bg-ink-900 border-0 rounded-xl text-white placeholder-gray-500 focus:ring-2 focus:ring-brand-500 focus:outline-none"
               />
             </div>
             <div>
@@ -92,7 +92,7 @@ export function BennerModal({ editing, isOpen, onClose }: { editing: Item | null
                 defaultValue={editing?.subtitle ?? ""}
                 rows={3}
                 placeholder="Write subtitle"
-                className="w-full px-4 py-3 bg-[#0A0E17] border-0 rounded-xl text-white placeholder-gray-500 focus:ring-2 focus:ring-blue-500 focus:outline-none resize-none"
+                className="w-full px-4 py-3 bg-ink-900 border-0 rounded-xl text-white placeholder-gray-500 focus:ring-2 focus:ring-brand-500 focus:outline-none resize-none"
               />
             </div>
             <div>
@@ -101,14 +101,14 @@ export function BennerModal({ editing, isOpen, onClose }: { editing: Item | null
                 name="buttonLink"
                 defaultValue={editing?.buttonLink ?? ""}
                 placeholder="https://..."
-                className="w-full h-11 px-4 bg-[#0A0E17] border-0 rounded-xl text-white placeholder-gray-500 focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                className="w-full h-11 px-4 bg-ink-900 border-0 rounded-xl text-white placeholder-gray-500 focus:ring-2 focus:ring-brand-500 focus:outline-none"
               />
             </div>
 
             <div>
               <label className="block text-sm font-medium text-gray-300 mb-2">Button Image</label>
               <div
-                className="relative w-full h-40 overflow-hidden rounded-xl cursor-pointer bg-[#0A0E17] hover:bg-white/5 transition-colors"
+                className="relative w-full h-40 overflow-hidden rounded-xl cursor-pointer bg-ink-900 hover:bg-white/5 transition-colors"
                 onClick={() => document.getElementById('modal-file-input')?.click()}
               >
                 {preview || editing?.buttonImageUrl ? (
@@ -135,7 +135,7 @@ export function BennerModal({ editing, isOpen, onClose }: { editing: Item | null
               </div>
             </div>
 
-            <div className="flex items-center justify-between p-4 bg-[#0A0E17] rounded-xl">
+            <div className="flex items-center justify-between p-4 bg-ink-900 rounded-xl">
               <span className="text-sm font-medium text-gray-300">Active Status</span>
               <label className="relative inline-flex items-center cursor-pointer">
                 <input
@@ -150,13 +150,13 @@ export function BennerModal({ editing, isOpen, onClose }: { editing: Item | null
             </div>
           </div>
 
-          <div className="flex justify-end gap-3 p-4 border-t border-white/10 sticky bottom-0 z-10 bg-[#0F172A]/95 backdrop-blur-sm">
+          <div className="flex justify-end gap-3 p-4 border-t border-white/10 sticky bottom-0 z-10 bg-ink-800/95 backdrop-blur-sm">
             <button type="button" onClick={handleClose} className="h-11 px-5 bg-white/5 hover:bg-white/10 text-gray-300 font-medium rounded-xl transition-colors">
               Cancel
             </button>
             <button
               type="submit"
-              className="h-11 px-5 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-xl flex items-center gap-2 transition-colors disabled:opacity-50"
+              className="h-11 px-5 bg-brand-600 hover:bg-brand-700 text-white font-medium rounded-xl flex items-center gap-2 transition-colors disabled:opacity-50"
               disabled={busy}
             >
               {busy && <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>}

@@ -37,7 +37,7 @@ export function GameManager({ games, editing }: { games: Game[], editing: Editin
                 Add game data: name, auto slug, upload image & icon, description, Hot Offer, active status.
             </p>
          </div>
-         <Link href="/admin/games?create=true" className="h-10 px-4 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-xl flex items-center gap-2 transition-colors">
+         <Link href="/admin/games?create=true" className="h-10 px-4 bg-brand-600 hover:bg-brand-700 text-white text-sm font-medium rounded-xl flex items-center gap-2 transition-colors">
             <Plus className="h-4 w-4" />
             Add Game
          </Link>

@@ -42,10 +42,10 @@ export function SettingsForm({ initial }: { initial: Initial }) {
     }
   };
 
-  const inputClassName = "w-full h-11 px-4 bg-slate-800/50 border border-slate-600 rounded-xl text-white placeholder-gray-400 hover:border-blue-500/50 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/30 focus:outline-none transition-all";
+  const inputClassName = "w-full h-11 px-4 bg-slate-800/50 border border-slate-600 rounded-xl text-white placeholder-gray-400 hover:border-brand-500/50 focus:border-brand-500 focus:ring-2 focus:ring-brand-500/30 focus:outline-none transition-all";
 
   return (
-    <form onSubmit={onSubmit} method="post" encType="multipart/form-data" className="bg-[#0F172A] border border-white/10 rounded-2xl p-6 space-y-6">
+    <form onSubmit={onSubmit} method="post" encType="multipart/form-data" className="bg-ink-800 border border-white/10 rounded-2xl p-6 space-y-6">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div>
           <label htmlFor="siteName" className="block text-sm font-medium text-gray-300 mb-2">Website Name</label>
@@ -102,7 +102,7 @@ export function SettingsForm({ initial }: { initial: Initial }) {
       <div className="flex justify-end mt-6">
         <button
           type="submit"
-          className="h-11 px-5 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-xl flex items-center gap-2 transition-colors disabled:opacity-50"
+          className="h-11 px-5 bg-brand-600 hover:bg-brand-700 text-white font-medium rounded-xl flex items-center gap-2 transition-colors disabled:opacity-50"
           disabled={busy}
         >
           {busy && <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>}

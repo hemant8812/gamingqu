@@ -74,7 +74,7 @@ export function BennerManager({ items, canAdd }: Props) {
         </div>
         <button
           onClick={openCreate}
-          className={`h-10 px-4 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-xl flex items-center gap-2 transition-colors ${!canAdd ? "opacity-50 cursor-not-allowed" : ""}`}
+          className={`h-10 px-4 bg-brand-600 hover:bg-brand-700 text-white text-sm font-medium rounded-xl flex items-center gap-2 transition-colors ${!canAdd ? "opacity-50 cursor-not-allowed" : ""}`}
           disabled={!canAdd}
         >
           <Plus className="h-4 w-4" />
@@ -84,12 +84,12 @@ export function BennerManager({ items, canAdd }: Props) {
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {items.length === 0 && (
-          <div className="col-span-full text-center py-12 text-gray-500 border border-dashed border-white/10 rounded-xl bg-[#0F172A]">
+          <div className="col-span-full text-center py-12 text-gray-500 border border-dashed border-white/10 rounded-xl bg-ink-800">
             No banners yet. Add a new banner to get started.
           </div>
         )}
         {items.map((b, i) => (
-          <div key={b.id} className="bg-[#0F172A] border border-white/10 rounded-2xl overflow-hidden">
+          <div key={b.id} className="bg-ink-800 border border-white/10 rounded-2xl overflow-hidden">
             <div className="p-5">
               <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center gap-2">
@@ -129,11 +129,11 @@ export function BennerManager({ items, canAdd }: Props) {
                 </div>
                 <div>
                   <div className="text-xs text-gray-500 font-semibold uppercase tracking-wider">Link</div>
-                  <div className="text-sm text-blue-400 truncate">{b.buttonLink || "-"}</div>
+                  <div className="text-sm text-brand-400 truncate">{b.buttonLink || "-"}</div>
                 </div>
 
                 {b.buttonImageUrl && (
-                  <div className="mt-2 relative h-32 w-full rounded-xl overflow-hidden bg-[#0A0E17]">
+                  <div className="mt-2 relative h-32 w-full rounded-xl overflow-hidden bg-ink-900">
                     <Image src={b.buttonImageUrl} alt="Preview" fill className="object-cover" unoptimized />
                   </div>
                 )}
@@ -145,7 +145,7 @@ export function BennerManager({ items, canAdd }: Props) {
 
       <BennerModal editing={editingItem} isOpen={isModalOpen} onClose={closeModal} />
       <dialog ref={dialogRef} className="modal">
-        <div className="modal-box bg-[#0F172A] border-0 text-white rounded-2xl">
+        <div className="modal-box bg-ink-800 border-0 text-white rounded-2xl">
           <div className="flex flex-col items-center text-center gap-2 mb-4">
             <AlertTriangle className="h-10 w-10 text-yellow-400" />
             <h3 className="font-bold text-xl">Delete Banner</h3>

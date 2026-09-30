@@ -73,7 +73,7 @@ function OptionSelect({
       <div className="relative">
         <div
           className={`flex items-center justify-between w-full px-4 py-3 text-white rounded-xl cursor-pointer select-none ${
-            invalid ? "bg-red-900/20 ring-2 ring-red-500/30 border border-red-500/40" : "bg-[#1e293b]"
+            invalid ? "bg-red-900/20 ring-2 ring-red-500/30 border border-red-500/40" : "bg-ink-700"
           }`}
           onClick={() => setOpen(!open)}
         >
@@ -95,9 +95,9 @@ function OptionSelect({
           </svg>
         </div>
         {open && (
-          <div className="absolute z-50 w-full mt-1 bg-[#1e293b] border border-white/10 rounded-xl shadow-lg overflow-hidden max-h-[500px] overflow-y-auto">
+          <div className="absolute z-50 w-full mt-1 bg-ink-700 border border-white/10 rounded-xl shadow-lg overflow-hidden max-h-[500px] overflow-y-auto">
             <div
-              className="px-4 py-2.5 text-gray-400 cursor-pointer hover:bg-blue-600 hover:text-white transition-colors"
+              className="px-4 py-2.5 text-gray-400 cursor-pointer hover:bg-brand-600 hover:text-white transition-colors"
               onClick={() => {
                 setVal("");
                 setOpen(false);
@@ -109,7 +109,7 @@ function OptionSelect({
               <div
                 key={i}
                 className={`px-4 py-2.5 cursor-pointer flex justify-between items-center transition-colors ${
-                  val === o.label ? "bg-blue-600 text-white" : "text-white hover:bg-blue-600"
+                  val === o.label ? "bg-brand-600 text-white" : "text-white hover:bg-brand-600"
                 }`}
                 onClick={() => {
                   setVal(o.label);
@@ -185,7 +185,7 @@ function OptionRadio({
           {title}
         </div>
         <div className={`rounded-xl overflow-hidden divide-y divide-white/10 border-0 ${
-          invalid ? "bg-red-900/20 ring-2 ring-red-500/30 border-red-500/40" : "bg-[#1e293b]"
+          invalid ? "bg-red-900/20 ring-2 ring-red-500/30 border-red-500/40" : "bg-ink-700"
         }`}>
           {options.map((o, i) => (
             <label 
@@ -196,12 +196,12 @@ function OptionRadio({
                 <div className="relative flex items-center justify-center w-6 h-6 shrink-0">
                   <input
                     type="radio"
-                    className="peer appearance-none w-6 h-6 rounded-full border-0 bg-transparent checked:border-0 ring-2 ring-white/10 checked:ring-blue-600"
+                    className="peer appearance-none w-6 h-6 rounded-full border-0 bg-transparent checked:border-0 ring-2 ring-white/10 checked:ring-brand-600"
                     name={`radio-${title}`}
                     checked={val === o.label}
                     onChange={() => setVal(o.label)}
                   />
-                  <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-3 h-3 rounded-full bg-blue-600 opacity-0 peer-checked:opacity-100 transition-opacity pointer-events-none" />
+                  <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-3 h-3 rounded-full bg-brand-600 opacity-0 peer-checked:opacity-100 transition-opacity pointer-events-none" />
                 </div>
                 <span className="font-semibold text-white">{o.label}</span>
               </div>
@@ -230,18 +230,18 @@ function OptionRadio({
             key={i} 
             className={`
               flex items-center gap-3 p-3 rounded-xl cursor-pointer border border-transparent transition-all
-              ${val === o.label ? "bg-blue-600/20 border-blue-600" : "bg-[#1e293b] border-transparent hover:bg-white/5"}
+              ${val === o.label ? "bg-brand-600/20 border-brand-600" : "bg-ink-700 border-transparent hover:bg-white/5"}
             `}
           >
             <div className="relative flex items-center justify-center w-5 h-5 shrink-0">
               <input
                 type="radio"
-                className="peer appearance-none w-5 h-5 rounded-full border-2 border-gray-500 checked:border-blue-500 bg-transparent"
+                className="peer appearance-none w-5 h-5 rounded-full border-2 border-gray-500 checked:border-brand-500 bg-transparent"
                 name={`radio-${title}`}
                 checked={val === o.label}
                 onChange={() => setVal(o.label)}
               />
-              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-3 h-3 rounded-full bg-blue-500 opacity-0 peer-checked:opacity-100 transition-opacity pointer-events-none" />
+              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-3 h-3 rounded-full bg-brand-500 opacity-0 peer-checked:opacity-100 transition-opacity pointer-events-none" />
             </div>
             <span className={`text-sm font-medium ${val === o.label ? "text-white" : "text-gray-300"}`}>
               {o.label}{" "}
@@ -304,14 +304,14 @@ function OptionCheckboxGroup({
         {title}
       </div>
       <div className={`rounded-xl overflow-hidden divide-y divide-white/10 border-0 ${
-        invalid ? "bg-red-900/20 ring-2 ring-red-500/30 border-red-500/40" : "bg-[#1e293b]"
+        invalid ? "bg-red-900/20 ring-2 ring-red-500/30 border-red-500/40" : "bg-ink-700"
       }`}>
         {options.map((o, i) => (
           <label key={i} className="flex items-center justify-between p-4 cursor-pointer hover:bg-white/5 transition-colors">
             <div className="flex items-center gap-4">
               <input
                 type="checkbox"
-                className="checkbox checkbox-primary rounded-lg w-6 h-6 border-0 bg-transparent checked:bg-blue-600 checked:border-0 ring-2 ring-white/10"
+                className="checkbox checkbox-primary rounded-lg w-6 h-6 border-0 bg-transparent checked:bg-brand-600 checked:border-0 ring-2 ring-white/10"
                 checked={!!vals[o.label]}
                 onChange={(e) => setVals((m) => ({ ...m, [o.label]: e.target.checked }))}
               />
@@ -363,13 +363,13 @@ function OptionSingleCheckbox({
   return (
     <div className="space-y-2">
       <div className={`rounded-xl overflow-hidden border-0 ${
-        invalid ? "bg-red-900/20 ring-2 ring-red-500/30 border-red-500/40" : "bg-[#1e293b]"
+        invalid ? "bg-red-900/20 ring-2 ring-red-500/30 border-red-500/40" : "bg-ink-700"
       }`}>
         <label className="flex items-center justify-between p-4 cursor-pointer hover:bg-white/5 transition-colors">
           <div className="flex items-center gap-4">
             <input
               type="checkbox"
-              className="checkbox checkbox-primary rounded-lg w-6 h-6 border-0 bg-transparent checked:bg-blue-600 checked:border-0 ring-2 ring-white/10"
+              className="checkbox checkbox-primary rounded-lg w-6 h-6 border-0 bg-transparent checked:bg-brand-600 checked:border-0 ring-2 ring-white/10"
               checked={checked}
               onChange={(e) => setChecked(e.target.checked)}
             />
@@ -594,7 +594,7 @@ function RangeDual({ range, onRangeChange }: { range: NonNullable<DetailItem["ra
         
         {/* Active Track (Blue) */}
         <div 
-          className="absolute h-1.5 rounded-full bg-blue-600"
+          className="absolute h-1.5 rounded-full bg-brand-600"
           style={{ 
             left: `${leftPct}%`, 
             width: `${rightPct - leftPct}%` 

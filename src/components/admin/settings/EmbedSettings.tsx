@@ -17,7 +17,7 @@ function PlacementBadge({ p }: { p: Item["placement"] }) {
     p === "HEAD"
       ? "bg-purple-500/20 text-purple-400"
       : p === "BODY"
-        ? "bg-blue-500/20 text-blue-400"
+        ? "bg-brand-500/20 text-brand-400"
         : "bg-gray-500/20 text-gray-400";
   return <span className={`inline-flex items-center px-2 py-0.5 rounded-md text-xs font-medium ${cls}`}>{label}</span>;
 }
@@ -151,13 +151,13 @@ export function EmbedSettings() {
     }
   };
 
-  const inputClassName = "w-full h-11 px-4 bg-slate-800/50 border border-slate-600 rounded-xl text-white text-sm placeholder-gray-400 hover:border-blue-500/50 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/30 focus:outline-none transition-all";
-  const selectClassName = "w-full h-11 px-4 bg-slate-800/50 border border-slate-600 rounded-xl text-white text-sm hover:border-blue-500/50 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/30 focus:outline-none transition-all cursor-pointer";
-  const textareaClassName = "w-full px-4 py-3 bg-slate-800/50 border border-slate-600 rounded-xl text-white text-sm placeholder-gray-400 hover:border-blue-500/50 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/30 focus:outline-none transition-all resize-none";
+  const inputClassName = "w-full h-11 px-4 bg-slate-800/50 border border-slate-600 rounded-xl text-white text-sm placeholder-gray-400 hover:border-brand-500/50 focus:border-brand-500 focus:ring-2 focus:ring-brand-500/30 focus:outline-none transition-all";
+  const selectClassName = "w-full h-11 px-4 bg-slate-800/50 border border-slate-600 rounded-xl text-white text-sm hover:border-brand-500/50 focus:border-brand-500 focus:ring-2 focus:ring-brand-500/30 focus:outline-none transition-all cursor-pointer";
+  const textareaClassName = "w-full px-4 py-3 bg-slate-800/50 border border-slate-600 rounded-xl text-white text-sm placeholder-gray-400 hover:border-brand-500/50 focus:border-brand-500 focus:ring-2 focus:ring-brand-500/30 focus:outline-none transition-all resize-none";
 
   return (
     <div className="space-y-6">
-      <form onSubmit={submitCreate} className="bg-[#0F172A] border border-white/10 rounded-2xl p-6 space-y-5">
+      <form onSubmit={submitCreate} className="bg-ink-800 border border-white/10 rounded-2xl p-6 space-y-5">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
             <label htmlFor="embedName" className="block text-sm font-medium text-gray-300 mb-2">Name</label>
@@ -206,7 +206,7 @@ export function EmbedSettings() {
         <div className="flex justify-end">
           <button
             type="submit"
-            className="h-11 px-5 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-xl flex items-center gap-2 transition-colors disabled:opacity-50"
+            className="h-11 px-5 bg-brand-600 hover:bg-brand-700 text-white font-medium rounded-xl flex items-center gap-2 transition-colors disabled:opacity-50"
             disabled={loading}
           >
             Save Embed
@@ -216,7 +216,7 @@ export function EmbedSettings() {
 
       {error && <div className="text-sm text-red-400">{error}</div>}
 
-      <div className="bg-[#0F172A] border border-white/10 rounded-2xl p-6">
+      <div className="bg-ink-800 border border-white/10 rounded-2xl p-6">
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-lg font-bold text-white">Embed List</h2>
           <div className="text-xs text-gray-500">{items.length} items</div>
@@ -305,7 +305,7 @@ export function EmbedSettings() {
                     </button>
                     <button
                       type="submit"
-                      className="h-10 px-4 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-xl transition-colors disabled:opacity-50"
+                      className="h-10 px-4 bg-brand-600 hover:bg-brand-700 text-white font-medium rounded-xl transition-colors disabled:opacity-50"
                       disabled={loading}
                     >
                       Save Changes

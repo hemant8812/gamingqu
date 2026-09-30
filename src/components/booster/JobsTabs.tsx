@@ -27,14 +27,14 @@ export function JobsTabs({ available, active }: { available: AvailableJob[]; act
   const end = start + perPage;
   const pageItems = isAvailable ? available.slice(start, end) : [];
   return (
-    <div className="bg-[#0F172A] border border-white/10 rounded-2xl overflow-hidden ring-1 ring-white/5">
+    <div className="bg-ink-800 border border-white/10 rounded-2xl overflow-hidden ring-1 ring-white/5">
       <div className="px-4 md:px-6">
         <div className="relative border-b border-white/10">
           <div className="flex items-center justify-center gap-6 py-4">
             <button
               type="button"
               onClick={() => setTab("available")}
-              className={["px-4 py-2 text-sm font-semibold cursor-pointer border-b-2 inline-flex items-center gap-2", isAvailable ? "text-white border-blue-500" : "text-gray-400 border-transparent hover:text-white"].join(" ")}
+              className={["px-4 py-2 text-sm font-semibold cursor-pointer border-b-2 inline-flex items-center gap-2", isAvailable ? "text-white border-brand-500" : "text-gray-400 border-transparent hover:text-white"].join(" ")}
             >
               <Briefcase className="h-4 w-4" />
               <span>Available Jobs</span>
@@ -42,7 +42,7 @@ export function JobsTabs({ available, active }: { available: AvailableJob[]; act
             <button
               type="button"
               onClick={() => setTab("active")}
-              className={["px-4 py-2 text-sm font-semibold cursor-pointer border-b-2 inline-flex items-center gap-2", isActive ? "text-white border-blue-500" : "text-gray-400 border-transparent hover:text-white"].join(" ")}
+              className={["px-4 py-2 text-sm font-semibold cursor-pointer border-b-2 inline-flex items-center gap-2", isActive ? "text-white border-brand-500" : "text-gray-400 border-transparent hover:text-white"].join(" ")}
             >
               <Activity className="h-4 w-4" />
               <span>Active Jobs</span>
@@ -50,7 +50,7 @@ export function JobsTabs({ available, active }: { available: AvailableJob[]; act
             <button
               type="button"
               onClick={() => setTab("completed")}
-              className={["px-4 py-2 text-sm font-semibold cursor-pointer border-b-2 inline-flex items-center gap-2", isCompleted ? "text-white border-blue-500" : "text-gray-400 border-transparent hover:text-white"].join(" ")}
+              className={["px-4 py-2 text-sm font-semibold cursor-pointer border-b-2 inline-flex items-center gap-2", isCompleted ? "text-white border-brand-500" : "text-gray-400 border-transparent hover:text-white"].join(" ")}
             >
               <CheckCircle className="h-4 w-4" />
               <span>Completed</span>
@@ -93,7 +93,7 @@ export function JobsTabs({ available, active }: { available: AvailableJob[]; act
                     }
                   }
                   return (
-                    <div key={job.id} className="rounded-md border border-blue-500/20 bg-blue-600/10 ring-1 ring-blue-500/20 p-4 mb-2">
+                    <div key={job.id} className="rounded-md border border-brand-500/20 bg-brand-600/10 ring-1 ring-brand-500/20 p-4 mb-2">
                       <div className="flex items-center justify-between mb-2">
                         <div className="inline-flex items-center px-2 py-0.5 rounded-md bg-white/5 ring-1 ring-white/10 text-xs text-gray-200">{job.id}</div>
                         <div className="text-[11px] text-gray-400">{createdStr}</div>
@@ -147,7 +147,7 @@ export function JobsTabs({ available, active }: { available: AvailableJob[]; act
                       type="button"
                       key={`jobs-page-${p}`}
                       onClick={() => setPage(p)}
-                      className={["px-3 py-1.5 text-xs rounded-md ring-1 transition", activePage ? "bg-blue-600 text-white ring-blue-500" : "bg-white/5 text-gray-300 ring-white/10 hover:bg-white/10"].join(" ")}
+                      className={["px-3 py-1.5 text-xs rounded-md ring-1 transition", activePage ? "bg-brand-600 text-white ring-brand-500" : "bg-white/5 text-gray-300 ring-white/10 hover:bg-white/10"].join(" ")}
                       aria-current={activePage ? "page" : undefined}
                     >
                       {p}
@@ -169,7 +169,7 @@ export function JobsTabs({ available, active }: { available: AvailableJob[]; act
             ) : (
               <div className="max-h-96 overflow-y-auto pr-1">
                 {active.map((job) => (
-                  <div key={job.id} className="rounded-2xl border border-white/10 bg-[#0A0E17] p-4 mb-2">
+                  <div key={job.id} className="rounded-2xl border border-white/10 bg-ink-900 p-4 mb-2">
                     <div className="flex items-center justify-between gap-3">
                       <div className="min-w-0">
                         <div className="text-sm font-semibold text-white truncate">{job.title}</div>
@@ -179,7 +179,7 @@ export function JobsTabs({ available, active }: { available: AvailableJob[]; act
                     </div>
                     <div className="mt-3">
                       <div className="h-2 rounded-full bg-white/5 overflow-hidden">
-                        <div className="h-full bg-blue-500" style={{ width: `${Math.max(0, Math.min(100, job.progress))}%` }} />
+                        <div className="h-full bg-brand-500" style={{ width: `${Math.max(0, Math.min(100, job.progress))}%` }} />
                       </div>
                       <div className="mt-1 text-xs text-gray-400">Progress {job.progress}% • {job.price}</div>
                     </div>
@@ -199,7 +199,7 @@ export function JobsTabs({ available, active }: { available: AvailableJob[]; act
         {selected && (
           <div className="fixed inset-0 z-50 flex items-center justify-center p-4 overflow-y-auto">
             <div className="absolute inset-0 bg-black/50 backdrop-blur-md" onClick={() => setSelected(null)} />
-            <div className="relative w-full max-w-xl rounded-2xl bg-[#0F172A] border border-white/10 ring-1 ring-white/10 shadow-xl">
+            <div className="relative w-full max-w-xl rounded-2xl bg-ink-800 border border-white/10 ring-1 ring-white/10 shadow-xl">
               <div className="p-4 md:p-6 border-b border-white/10 flex items-center justify-between">
                 <div className="inline-flex items-center px-2 py-0.5 rounded-md bg-white/5 ring-1 ring-white/10 text-xs text-gray-200">{selected.id}</div>
                 <div className="text-[11px] text-gray-400">
@@ -232,7 +232,7 @@ export function JobsTabs({ available, active }: { available: AvailableJob[]; act
                       });
                     }
                     return (
-                      <div className="mt-4 rounded-xl bg-[#0A0E17] border border-white/10 p-4 w-full">
+                      <div className="mt-4 rounded-xl bg-ink-900 border border-white/10 p-4 w-full">
                         <div className="grid grid-cols-[1fr_auto] gap-y-2">
                           {rows.map((row, idx) => (
                             <Fragment key={`row-${idx}`}>

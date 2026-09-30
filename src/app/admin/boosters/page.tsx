@@ -10,7 +10,7 @@ export default async function AdminBoostersPage({ searchParams }: { searchParams
   const role = session?.user?.role;
   if (role !== "ADMIN" && role !== "SUPERADMIN") {
     return (
-      <div className="min-h-screen bg-[#0A0E17] flex items-center justify-center">
+      <div className="min-h-screen bg-ink-900 flex items-center justify-center">
         <div className="text-center">
           <h1 className="text-3xl font-bold text-white mb-2">Access Denied</h1>
           <p className="text-gray-400">You don&apos;t have permission to access this page.</p>
@@ -112,11 +112,11 @@ export default async function AdminBoostersPage({ searchParams }: { searchParams
   }
 
   return (
-    <div className="min-h-screen bg-[#0A0E17] text-white">
+    <div className="min-h-screen bg-ink-900 text-white">
       {/* Background effects */}
       <div className="fixed inset-0 pointer-events-none">
-        <div className="absolute top-0 left-1/4 w-96 h-96 bg-blue-600/10 rounded-full blur-3xl" />
-        <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-cyan-500/10 rounded-full blur-3xl" />
+        <div className="absolute top-0 left-1/4 w-96 h-96 bg-brand-600/10 rounded-full blur-3xl" />
+        <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-accent-500/10 rounded-full blur-3xl" />
       </div>
 
       <div className="relative z-10 mx-auto max-w-7xl px-6 py-8">
@@ -135,28 +135,28 @@ export default async function AdminBoostersPage({ searchParams }: { searchParams
               name="q"
               defaultValue={q}
               placeholder="Search boosters by name, email, discord, or games..."
-              className="w-full pl-12 pr-4 h-11 bg-[#0F172A] border border-white/10 rounded-xl text-white placeholder-gray-500 focus:border-blue-500 focus:outline-none transition-colors text-sm"
+              className="w-full pl-12 pr-4 h-11 bg-ink-800 border border-white/10 rounded-xl text-white placeholder-gray-500 focus:border-brand-500 focus:outline-none transition-colors text-sm"
             />
           </div>
           <div className="flex gap-3">
             <select
               name="status"
               defaultValue={statusFilter}
-              className="h-11 px-4 bg-[#0F172A] border border-white/10 rounded-xl text-white focus:border-blue-500 focus:outline-none select select-bordered text-sm font-normal"
+              className="h-11 px-4 bg-ink-800 border border-white/10 rounded-xl text-white focus:border-brand-500 focus:outline-none select select-bordered text-sm font-normal"
             >
               <option value="ALL">All Statuses</option>
               <option value="PENDING">Pending</option>
               <option value="APPROVED">Approved</option>
               <option value="REJECTED">Rejected</option>
             </select>
-            <button type="submit" className="h-11 px-5 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-xl transition-colors text-sm">
+            <button type="submit" className="h-11 px-5 bg-brand-600 hover:bg-brand-700 text-white font-medium rounded-xl transition-colors text-sm">
               Apply
             </button>
           </div>
         </form>
 
         {/* Boosters Table Card */}
-        <div className="bg-[#0F172A] border border-white/10 rounded-2xl overflow-hidden">
+        <div className="bg-ink-800 border border-white/10 rounded-2xl overflow-hidden">
           <div className="p-6 border-b border-white/10">
             <h3 className="text-lg font-bold text-white">Booster Applications</h3>
           </div>
@@ -186,7 +186,7 @@ export default async function AdminBoostersPage({ searchParams }: { searchParams
                       <td className="px-6 py-4">
                         <div className="font-semibold text-white">{app.fullName || "N/A"}</div>
                         {app.user && (
-                          <div className="text-xs text-blue-400">Account: @{app.user.username}</div>
+                          <div className="text-xs text-brand-400">Account: @{app.user.username}</div>
                         )}
                       </td>
                       <td className="px-6 py-4 space-y-1">

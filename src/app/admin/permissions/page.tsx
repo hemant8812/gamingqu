@@ -19,7 +19,7 @@ export default async function AdminPermissionsPage() {
   const role = session?.user?.role;
   if (role !== "SUPERADMIN") {
     return (
-      <div className="min-h-screen bg-[#0A0E17] flex items-center justify-center">
+      <div className="min-h-screen bg-ink-900 flex items-center justify-center">
         <div className="text-center">
           <h1 className="text-3xl font-bold text-white mb-2">Access Denied</h1>
           <p className="text-gray-400">Only Super Admin can access this page.</p>
@@ -56,11 +56,11 @@ export default async function AdminPermissionsPage() {
   const map = new Map(list.map((p) => [p.key, p.enabled]));
 
   return (
-    <div className="min-h-screen bg-[#0A0E17] text-white">
+    <div className="min-h-screen bg-ink-900 text-white">
       {/* Background effects */}
       <div className="fixed inset-0 pointer-events-none">
-        <div className="absolute top-0 left-1/4 w-96 h-96 bg-blue-600/10 rounded-full blur-3xl" />
-        <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-cyan-500/10 rounded-full blur-3xl" />
+        <div className="absolute top-0 left-1/4 w-96 h-96 bg-brand-600/10 rounded-full blur-3xl" />
+        <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-accent-500/10 rounded-full blur-3xl" />
       </div>
 
       <div className="relative z-10 mx-auto max-w-7xl px-6 py-8">
@@ -78,7 +78,7 @@ export default async function AdminPermissionsPage() {
               <form
                 key={p.key}
                 action={togglePermission.bind(null, p.key, !enabled)}
-                className="bg-[#0F172A] border border-white/10 rounded-2xl p-5 flex items-center justify-between hover:border-blue-500/30 transition-colors"
+                className="bg-ink-800 border border-white/10 rounded-2xl p-5 flex items-center justify-between hover:border-brand-500/30 transition-colors"
               >
                 <div>
                   <div className="font-bold text-white">{p.label}</div>
@@ -87,7 +87,7 @@ export default async function AdminPermissionsPage() {
                 <button
                   type="submit"
                   aria-pressed={enabled}
-                  className={`relative inline-flex items-center h-7 w-12 rounded-full transition-colors ${enabled ? "bg-blue-600" : "bg-gray-700"} focus:outline-none`}
+                  className={`relative inline-flex items-center h-7 w-12 rounded-full transition-colors ${enabled ? "bg-brand-600" : "bg-gray-700"} focus:outline-none`}
                 >
                   <span className={`absolute left-1 top-1/2 -translate-y-1/2 size-5 rounded-full bg-white transition-transform shadow ${enabled ? "translate-x-5" : "translate-x-0"}`} />
                   <span className="sr-only">{enabled ? "Enabled" : "Disabled"}</span>

@@ -20,7 +20,7 @@ export function ChangePasswordForm() {
             required
             autoComplete="current-password"
             placeholder="Enter your current password"
-            className="mt-1 w-full h-11 bg-[#0A0E17] border border-white/10 rounded-xl text-white placeholder-gray-500 focus:border-blue-500 focus:outline-none px-3"
+            className="mt-1 w-full h-11 bg-ink-900 border border-white/10 rounded-xl text-white placeholder-gray-500 focus:border-brand-500 focus:outline-none px-3"
             value={currentPassword}
             onChange={(e) => setCurrentPassword(e.target.value)}
           />
@@ -37,7 +37,7 @@ export function ChangePasswordForm() {
             required
             autoComplete="new-password"
             placeholder="Enter a new strong password"
-            className="mt-1 w-full h-11 bg-[#0A0E17] border border-white/10 rounded-xl text-white placeholder-gray-500 focus:border-blue-500 focus:outline-none px-3"
+            className="mt-1 w-full h-11 bg-ink-900 border border-white/10 rounded-xl text-white placeholder-gray-500 focus:border-brand-500 focus:outline-none px-3"
             value={newPassword}
             onChange={(e) => setNewPassword(e.target.value)}
           />
@@ -54,12 +54,12 @@ export function ChangePasswordForm() {
             required
             autoComplete="new-password"
             placeholder="Re-enter your new password"
-            className={`mt-1 w-full h-11 bg-[#0A0E17] rounded-xl text-white placeholder-gray-500 focus:outline-none px-3 ${
+            className={`mt-1 w-full h-11 bg-ink-900 rounded-xl text-white placeholder-gray-500 focus:outline-none px-3 ${
               isMismatch
                 ? "border border-red-500/60 hover:border-red-400 focus:border-red-400"
                 : isMatch
                 ? "border border-emerald-500/60 hover:border-emerald-400 focus:border-emerald-400"
-                : "border border-white/10 hover:border-white/20 focus:border-blue-500"
+                : "border border-white/10 hover:border-white/20 focus:border-brand-500"
             }`}
             value={confirmPassword}
             onChange={(e) => setConfirmPassword(e.target.value)}

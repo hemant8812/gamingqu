@@ -6,7 +6,7 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: "#0A0E17",
+  themeColor: "#0b0a13",
 };
 
 export default function AuthLayout({ children }: { children: ReactNode }) {

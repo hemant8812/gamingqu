@@ -46,10 +46,10 @@ export default async function ContactPage() {
   ].filter((x) => x.url.length > 0);
 
   return (
-    <div className="min-h-screen bg-[#0A0E17] text-white">
+    <div className="min-h-screen bg-ink-900 text-white">
       <div className="fixed inset-0 pointer-events-none">
-        <div className="absolute top-0 left-1/4 w-96 h-96 bg-blue-600/10 rounded-full blur-3xl" />
-        <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-cyan-500/10 rounded-full blur-3xl" />
+        <div className="absolute top-0 left-1/4 w-96 h-96 bg-brand-600/10 rounded-full blur-3xl" />
+        <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-accent-500/10 rounded-full blur-3xl" />
       </div>
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 pt-10 pb-12">
         <JsonLd
@@ -74,27 +74,27 @@ export default async function ContactPage() {
 
         <section className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           <div className="lg:col-span-2 space-y-6">
-            <div className="rounded-2xl border border-white/10 bg-[#0F172A] p-6">
+            <div className="rounded-2xl border border-white/10 bg-ink-800 p-6">
               <div className="flex items-center gap-3 mb-4">
-                <FiMail className="h-5 w-5 text-blue-400" />
+                <FiMail className="h-5 w-5 text-brand-400" />
                 <h2 className="text-xl font-bold">Email</h2>
               </div>
               <div className="text-sm opacity-80">
                 {contactEmail ? (
-                  <a href={`mailto:${contactEmail}`} className="text-blue-400 hover:text-blue-300 hover:underline">{contactEmail}</a>
+                  <a href={`mailto:${contactEmail}`} className="text-brand-400 hover:text-brand-300 hover:underline">{contactEmail}</a>
                 ) : (
                   <span className="opacity-60">Email not available</span>
                 )}
               </div>
             </div>
-            <div className="rounded-2xl border border-white/10 bg-[#0F172A] p-6">
+            <div className="rounded-2xl border border-white/10 bg-ink-800 p-6">
               <div className="flex items-center gap-3 mb-4">
-                <FiPhone className="h-5 w-5 text-cyan-400" />
+                <FiPhone className="h-5 w-5 text-accent-400" />
                 <h2 className="text-xl font-bold">Phone</h2>
               </div>
               <div className="text-sm opacity-80">
                 {contactPhone ? (
-                  <a href={`tel:${contactPhone}`} className="text-blue-400 hover:text-blue-300 hover:underline">{contactPhone}</a>
+                  <a href={`tel:${contactPhone}`} className="text-brand-400 hover:text-brand-300 hover:underline">{contactPhone}</a>
                 ) : (
                   <span className="opacity-60">Phone number not available</span>
                 )}
@@ -102,7 +102,7 @@ export default async function ContactPage() {
             </div>
           </div>
           <aside className="space-y-6">
-            <div className="rounded-2xl border border-white/10 bg-[#0F172A] p-6">
+            <div className="rounded-2xl border border-white/10 bg-ink-800 p-6">
               <div className="flex items-center gap-3 mb-4">
                 <FiLink className="h-5 w-5 text-emerald-400" />
                 <h2 className="text-xl font-bold">Social Media</h2>
@@ -133,7 +133,7 @@ export default async function ContactPage() {
                 )}
               </div>
             </div>
-            <div className="rounded-2xl border border-white/10 bg-[#0F172A] p-6">
+            <div className="rounded-2xl border border-white/10 bg-ink-800 p-6">
               <h3 className="text-lg font-semibold mb-2">Need quick help?</h3>
               <p className="text-sm opacity-80">Our support team can explain the services and usage policies.</p>
               <div className="mt-4 flex flex-wrap gap-2">

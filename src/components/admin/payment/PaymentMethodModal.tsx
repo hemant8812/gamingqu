@@ -126,8 +126,8 @@ export function PaymentMethodModal() {
 
   return (
     <dialog ref={dialogRef} className="modal" onClose={closeModal}>
-      <div className="modal-box w-11/12 max-w-3xl bg-[#0F172A] border-0 text-white p-0 max-height-[90vh] overflow-y-auto rounded-2xl">
-        <div className="flex items-center justify-between p-5 border-b border-white/10 sticky top-0 z-10 bg-[#0F172A]/95 backdrop-blur-sm">
+      <div className="modal-box w-11/12 max-w-3xl bg-ink-800 border-0 text-white p-0 max-height-[90vh] overflow-y-auto rounded-2xl">
+        <div className="flex items-center justify-between p-5 border-b border-white/10 sticky top-0 z-10 bg-ink-800/95 backdrop-blur-sm">
           <h3 className="text-xl font-bold">{isEdit ? "Edit Payment Method" : "Add Payment Method"}</h3>
           <button onClick={closeModal} className="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-white/10 transition-colors">
             <X className="h-5 w-5 text-gray-400" />
@@ -143,7 +143,7 @@ export function PaymentMethodModal() {
               type="text"
               required
               placeholder="e.g. Card"
-              className="w-full h-11 px-4 bg-[#0A0E17] border-0 rounded-xl text-white placeholder-gray-500 focus:ring-2 focus:ring-blue-500 focus:outline-none"
+              className="w-full h-11 px-4 bg-ink-900 border-0 rounded-xl text-white placeholder-gray-500 focus:ring-2 focus:ring-brand-500 focus:outline-none"
               defaultValue={isEdit && initial ? initial.name : undefined}
             />
             <AutoSlugField nameInputId="name" name="slug" label="Slug" initialValue={isEdit && initial ? initial.slug : ""} />
@@ -166,7 +166,7 @@ export function PaymentMethodModal() {
                         : "percent"
                     : "percent"
                 }
-                className="w-full h-11 px-3 bg-[#0A0E17] border-0 rounded-xl text-white focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                className="w-full h-11 px-3 bg-ink-900 border-0 rounded-xl text-white focus:ring-2 focus:ring-brand-500 focus:outline-none"
               >
                 <option value="percent">Percent</option>
                 <option value="fixed">Fixed</option>
@@ -180,7 +180,7 @@ export function PaymentMethodModal() {
                 type="number"
                 step="0.001"
                 placeholder="2.900"
-                className="w-full h-11 px-4 bg-[#0A0E17] border-0 rounded-xl text-white placeholder-gray-500 focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                className="w-full h-11 px-4 bg-ink-900 border-0 rounded-xl text-white placeholder-gray-500 focus:ring-2 focus:ring-brand-500 focus:outline-none"
                 defaultValue={
                   isEdit
                     ? initial?.feePercent != null
@@ -199,13 +199,13 @@ export function PaymentMethodModal() {
                 name="sortOrder"
                 type="number"
                 placeholder="0"
-                className="w-full h-11 px-4 bg-[#0A0E17] border-0 rounded-xl text-white placeholder-gray-500 focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                className="w-full h-11 px-4 bg-ink-900 border-0 rounded-xl text-white placeholder-gray-500 focus:ring-2 focus:ring-brand-500 focus:outline-none"
                 defaultValue={isEdit && initial ? initial.sortOrder : undefined}
               />
             </div>
           </div>
 
-          <div className="flex items-center gap-3 p-4 bg-[#0A0E17] rounded-xl">
+          <div className="flex items-center gap-3 p-4 bg-ink-900 rounded-xl">
             <label className="relative inline-flex items-center cursor-pointer">
               <input
                 id="isActive"
@@ -225,7 +225,7 @@ export function PaymentMethodModal() {
             </button>
             <button
               type="submit"
-              className="h-11 px-5 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-xl flex items-center gap-2 transition-colors disabled:opacity-50"
+              className="h-11 px-5 bg-brand-600 hover:bg-brand-700 text-white font-medium rounded-xl flex items-center gap-2 transition-colors disabled:opacity-50"
               disabled={busy}
             >
               {busy && <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>}

@@ -8,7 +8,7 @@ export default async function AdminAnalyticsPage() {
   const role = session?.user?.role;
   if (role !== "ADMIN" && role !== "SUPERADMIN") {
     return (
-      <div className="min-h-screen bg-[#0A0E17] flex items-center justify-center">
+      <div className="min-h-screen bg-ink-900 flex items-center justify-center">
         <div className="text-center">
           <h1 className="text-3xl font-bold text-white mb-2">Access Denied</h1>
           <p className="text-gray-400">You don&apos;t have permission to access this page.</p>
@@ -108,11 +108,11 @@ export default async function AdminAnalyticsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#0A0E17] text-white">
+    <div className="min-h-screen bg-ink-900 text-white">
       {/* Background effects */}
       <div className="fixed inset-0 pointer-events-none">
-        <div className="absolute top-0 left-1/4 w-96 h-96 bg-blue-600/10 rounded-full blur-3xl" />
-        <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-cyan-500/10 rounded-full blur-3xl" />
+        <div className="absolute top-0 left-1/4 w-96 h-96 bg-brand-600/10 rounded-full blur-3xl" />
+        <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-accent-500/10 rounded-full blur-3xl" />
       </div>
 
       <div className="relative z-10 mx-auto max-w-7xl px-6 py-8">
@@ -124,7 +124,7 @@ export default async function AdminAnalyticsPage() {
 
         {/* Stats Cards */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
-          <div className="bg-[#0F172A] border border-white/10 rounded-2xl p-5">
+          <div className="bg-ink-800 border border-white/10 rounded-2xl p-5">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-gray-400 mb-1">Net Profit</p>
@@ -139,18 +139,18 @@ export default async function AdminAnalyticsPage() {
               </div>
             </div>
           </div>
-          <div className="bg-[#0F172A] border border-white/10 rounded-2xl p-5">
+          <div className="bg-ink-800 border border-white/10 rounded-2xl p-5">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-gray-400 mb-1">Total Orders</p>
                 <p className="text-3xl font-bold text-white">{totalOrders}</p>
               </div>
-              <div className="w-12 h-12 rounded-xl bg-blue-500/20 flex items-center justify-center text-blue-400">
+              <div className="w-12 h-12 rounded-xl bg-brand-500/20 flex items-center justify-center text-brand-400">
                 <FiShoppingCart className="h-6 w-6" />
               </div>
             </div>
           </div>
-          <div className="bg-[#0F172A] border border-white/10 rounded-2xl p-5">
+          <div className="bg-ink-800 border border-white/10 rounded-2xl p-5">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-gray-400 mb-1">Avg. Net Profit per Order</p>
@@ -161,13 +161,13 @@ export default async function AdminAnalyticsPage() {
               </div>
             </div>
           </div>
-          <div className="bg-[#0F172A] border border-white/10 rounded-2xl p-5">
+          <div className="bg-ink-800 border border-white/10 rounded-2xl p-5">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-gray-400 mb-1">Conversion Rate</p>
                 <p className="text-3xl font-bold text-white">{conversionRate}</p>
               </div>
-              <div className="w-12 h-12 rounded-xl bg-cyan-500/20 flex items-center justify-center text-cyan-400">
+              <div className="w-12 h-12 rounded-xl bg-accent-500/20 flex items-center justify-center text-accent-400">
                 <FiTrendingUp className="h-6 w-6" />
               </div>
             </div>
@@ -176,9 +176,9 @@ export default async function AdminAnalyticsPage() {
 
         {/* Charts Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div className="bg-[#0F172A] border border-white/10 rounded-2xl p-6">
+          <div className="bg-ink-800 border border-white/10 rounded-2xl p-6">
             <h3 className="text-lg font-bold text-white mb-4">Net Profit Overview</h3>
-            <div className="h-56 bg-[#0A0E17] rounded-xl border border-white/5 p-3">
+            <div className="h-56 bg-ink-900 rounded-xl border border-white/5 p-3">
               {revenueSeries.length === 0 ? (
                 <div className="h-full flex items-center justify-center text-gray-500">
                   <div className="text-center">
@@ -194,7 +194,7 @@ export default async function AdminAnalyticsPage() {
                       return revenueSeries.map((d) => (
                         <div
                           key={d.date}
-                          className="flex-1 bg-blue-500/40 hover:bg-blue-500/60 rounded-t-md"
+                          className="flex-1 bg-brand-500/40 hover:bg-brand-500/60 rounded-t-md"
                           style={{ height: `${Math.max(4, Math.round((d.value / max) * 100))}%` }}
                           title={`${d.date}: $${d.value.toFixed(2)}`}
                         />
@@ -209,9 +209,9 @@ export default async function AdminAnalyticsPage() {
               )}
             </div>
           </div>
-          <div className="bg-[#0F172A] border border-white/10 rounded-2xl p-6">
+          <div className="bg-ink-800 border border-white/10 rounded-2xl p-6">
             <h3 className="text-lg font-bold text-white mb-4">Orders by Game</h3>
-            <div className="h-56 bg-[#0A0E17] rounded-xl border border-white/5 p-3">
+            <div className="h-56 bg-ink-900 rounded-xl border border-white/5 p-3">
               {ordersByGame.length === 0 ? (
                 <div className="h-full flex items-center justify-center text-gray-500">
                   <div className="text-center">

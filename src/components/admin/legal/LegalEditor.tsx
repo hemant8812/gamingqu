@@ -104,7 +104,7 @@ export function LegalEditor({ page, onBack }: { page: Page | null; onBack: () =>
         <button
           onClick={handleSave}
           disabled={loading}
-          className="h-10 px-5 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-xl flex items-center gap-2 transition-colors disabled:opacity-50"
+          className="h-10 px-5 bg-brand-600 hover:bg-brand-700 text-white font-medium rounded-xl flex items-center gap-2 transition-colors disabled:opacity-50"
         >
           {loading && <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>}
           <Save className="h-4 w-4" />
@@ -112,7 +112,7 @@ export function LegalEditor({ page, onBack }: { page: Page | null; onBack: () =>
         </button>
       </div>
 
-      <div className="bg-[#0F172A] border border-white/10 rounded-2xl p-6 space-y-6">
+      <div className="bg-ink-800 border border-white/10 rounded-2xl p-6 space-y-6">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div className="w-full">
             <label className="block text-sm font-medium text-gray-300 mb-2">
@@ -121,7 +121,7 @@ export function LegalEditor({ page, onBack }: { page: Page | null; onBack: () =>
             <input
               type="text"
               placeholder="e.g. Terms and Conditions"
-              className="w-full rounded-md bg-[#0A0E17] border border-white/10 px-3 py-2 text-sm text-white focus:outline-none focus:border-blue-500 transition-colors"
+              className="w-full rounded-md bg-ink-900 border border-white/10 px-3 py-2 text-sm text-white focus:outline-none focus:border-brand-500 transition-colors"
               value={formData.title}
               onChange={(e) => setFormData({ ...formData, title: e.target.value })}
             />
@@ -133,7 +133,7 @@ export function LegalEditor({ page, onBack }: { page: Page | null; onBack: () =>
             <input
               type="text"
               placeholder="e.g. terms-and-conditions"
-              className="w-full rounded-md bg-[#0A0E17] border border-white/10 px-3 py-2 text-sm text-white focus:outline-none focus:border-blue-500 transition-colors"
+              className="w-full rounded-md bg-ink-900 border border-white/10 px-3 py-2 text-sm text-white focus:outline-none focus:border-brand-500 transition-colors"
               value={formData.slug}
               onChange={(e) => {
                   setFormData({ ...formData, slug: e.target.value });
@@ -143,7 +143,7 @@ export function LegalEditor({ page, onBack }: { page: Page | null; onBack: () =>
           </div>
         </div>
 
-        <div className="flex items-center justify-between p-4 bg-[#0A0E17] rounded-xl border border-white/5">
+        <div className="flex items-center justify-between p-4 bg-ink-900 rounded-xl border border-white/5">
           <span className="text-sm font-medium text-gray-300">Active Status</span>
           <label className="relative inline-flex items-center cursor-pointer">
             <input 
@@ -152,7 +152,7 @@ export function LegalEditor({ page, onBack }: { page: Page | null; onBack: () =>
               checked={formData.isActive}
               onChange={(e) => setFormData({ ...formData, isActive: e.target.checked })}
             />
-            <div className="w-11 h-6 bg-gray-700 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-800 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+            <div className="w-11 h-6 bg-gray-700 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-brand-800 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-brand-600"></div>
           </label>
         </div>
 

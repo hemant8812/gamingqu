@@ -1,5 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
+import { FiZap, FiMessageCircle } from "react-icons/fi";
 import { FaTelegramPlane, FaYoutube, FaDiscord, FaFacebookF } from "react-icons/fa";
 import { getFooterSettings } from "@/lib/settings";
 import { getSiteMeta } from "@/lib/seo";
@@ -44,43 +45,61 @@ export async function Footer() {
     if (!active) return null;
 
     return (
-        <footer className="bg-[#0A0E17] text-gray-300 relative overflow-hidden">
+        <footer className="bg-ink-950 text-gray-300 relative overflow-hidden border-t border-white/[0.06]">
             {/* Gradient line at top */}
-            <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-blue-500 to-transparent" />
+            <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-brand-500 to-transparent" />
 
             {/* Subtle glow orbs */}
-            <div className="absolute bottom-0 left-1/4 w-64 h-64 bg-blue-600/5 rounded-full blur-3xl" />
-            <div className="absolute bottom-0 right-1/4 w-64 h-64 bg-cyan-500/5 rounded-full blur-3xl" />
+            <div className="absolute bottom-0 left-1/4 w-64 h-64 bg-brand-600/5 rounded-full blur-3xl" />
+            <div className="absolute bottom-0 right-1/4 w-64 h-64 bg-accent-500/5 rounded-full blur-3xl" />
 
-            <div className="max-w-7xl mx-auto z-10 relative p-10">
+            <div className="max-w-7xl mx-auto z-10 relative px-4 sm:px-6 pt-12 pb-10">
+                {/* Support strip */}
+                <div className="mb-12 flex flex-col items-start justify-between gap-4 rounded-2xl border border-brand-500/20 bg-gradient-to-r from-brand-900/50 via-ink-800 to-ink-800 p-6 sm:flex-row sm:items-center">
+                    <div className="flex items-center gap-4">
+                        <span className="grid h-12 w-12 shrink-0 place-items-center rounded-xl bg-brand-500/20 text-brand-200 ring-1 ring-brand-400/30">
+                            <FiMessageCircle className="h-5 w-5" />
+                        </span>
+                        <div>
+                            <div className="font-display text-lg font-bold text-white">Questions before you order?</div>
+                            <div className="text-sm text-gray-400">Our support team is online 24/7 and usually replies within minutes.</div>
+                        </div>
+                    </div>
+                    <Link href="/contact" className="btn btn-gaming h-11 rounded-xl px-6">Contact support</Link>
+                </div>
                 <div className="footer flex flex-col md:flex-row gap-10">
                     <aside className="w-full md:w-[40%]">
                         {logo ? (
                             <Image src={logo} alt={siteName} width={150} height={50} className="h-10 w-auto mb-0" unoptimized />
                         ) : (
-                            <span className="text-3xl font-black tracking-tighter mb-0 block gradient-text">{siteName}</span>
+                            <span className="inline-flex items-center gap-2">
+                                <span className="grid h-9 w-9 place-items-center rounded-xl bg-gradient-to-br from-brand-400 via-brand-600 to-accent-500">
+                                    <FiZap className="h-4 w-4 text-white" />
+                                </span>
+                                <span className="font-display text-2xl font-extrabold tracking-tight text-white">{siteName}</span>
+                            </span>
                         )}
-                        <p className="text-gray-400 mt-0 leading-relaxed max-w-full text-sm">
+                        <p className="text-gray-400 mt-4 leading-relaxed max-w-sm text-sm">
                             {shortDesc || "Your ultimate gaming paradise. Discover the best games and gaming experiences with professional boosting services."}
                         </p>
                         <div className="flex gap-3 mt-6">
                             {smTelegram && (
-                                <a href={smTelegram} target="_blank" rel="noopener noreferrer" aria-label="Telegram" className="w-10 h-10 flex items-center justify-center rounded-xl glass-light text-gray-400 hover:text-cyan-400 hover:bg-white/10 transition-all">
+                                <a href={smTelegram} target="_blank" rel="noopener noreferrer" aria-label="Telegram" className="w-10 h-10 flex items-center justify-center rounded-xl border border-white/10 bg-white/[0.04] text-gray-400 hover:text-accent-400 hover:bg-white/10 transition-all">
                                     <FaTelegramPlane size={18} />
                                 </a>
                             )}
                             {smYoutube && (
-                                <a href={smYoutube} target="_blank" rel="noopener noreferrer" aria-label="YouTube" className="w-10 h-10 flex items-center justify-center rounded-xl glass-light text-gray-400 hover:text-red-500 hover:bg-white/10 transition-all">
+                                <a href={smYoutube} target="_blank" rel="noopener noreferrer" aria-label="YouTube" className="w-10 h-10 flex items-center justify-center rounded-xl border border-white/10 bg-white/[0.04] text-gray-400 hover:text-red-500 hover:bg-white/10 transition-all">
                                     <FaYoutube size={18} />
                                 </a>
                             )}
                             {smDiscord && (
-                                <a href={smDiscord} target="_blank" rel="noopener noreferrer" aria-label="Discord" className="w-10 h-10 flex items-center justify-center rounded-xl glass-light text-gray-400 hover:text-indigo-400 hover:bg-white/10 transition-all">
+                                <a href={smDiscord} target="_blank" rel="noopener noreferrer" aria-label="Discord" className="w-10 h-10 flex items-center justify-center rounded-xl border border-white/10 bg-white/[0.04] text-gray-400 hover:text-brand-400 hover:bg-white/10 transition-all">
                                     <FaDiscord size={18} />
                                 </a>
                             )}
                             {smFacebook && (
-                                <a href={smFacebook} target="_blank" rel="noopener noreferrer" aria-label="Facebook" className="w-10 h-10 flex items-center justify-center rounded-xl glass-light text-gray-400 hover:text-blue-500 hover:bg-white/10 transition-all">
+                                <a href={smFacebook} target="_blank" rel="noopener noreferrer" aria-label="Facebook" className="w-10 h-10 flex items-center justify-center rounded-xl border border-white/10 bg-white/[0.04] text-gray-400 hover:text-brand-500 hover:bg-white/10 transition-all">
                                     <FaFacebookF size={18} />
                                 </a>
                             )}
@@ -89,30 +108,30 @@ export async function Footer() {
 
                     <div className="flex-1 flex flex-col md:flex-row justify-between gap-10">
                         <nav className="flex flex-col gap-2 min-w-[150px]">
-                            <div className="font-bold text-white text-sm uppercase tracking-wider mb-2">{siteName}</div>
+                            <div className="font-display font-semibold text-white text-sm uppercase tracking-[0.14em] mb-2">{siteName}</div>
                             {navs.map((n, i) => (
-                                <Link key={i} href={n.url} className="text-gray-400 hover:text-blue-400 transition-colors text-sm">
+                                <Link key={i} href={n.url} className="text-gray-400 hover:text-white transition-colors text-sm">
                                     {n.title}
                                 </Link>
                             ))}
                         </nav>
                         <nav className="flex flex-col gap-2 min-w-[150px]">
-                            <h6 className="font-bold text-white text-sm uppercase tracking-wider mb-2">Legal</h6>
+                            <h6 className="font-display font-semibold text-white text-sm uppercase tracking-[0.14em] mb-2">Legal</h6>
                             {legals.map((l, i) => (
-                                <Link key={i} href={l.url} className="text-gray-400 hover:text-cyan-400 transition-colors text-sm">
+                                <Link key={i} href={l.url} className="text-gray-400 hover:text-white transition-colors text-sm">
                                     {l.title}
                                 </Link>
                             ))}
                         </nav>
                         <nav className="flex flex-col gap-2 min-w-[200px]">
-                            <h6 className="font-bold text-white text-sm uppercase tracking-wider mb-2">We Accept</h6>
+                            <h6 className="font-display font-semibold text-white text-sm uppercase tracking-[0.14em] mb-2">We Accept</h6>
                             <div className="grid grid-cols-3 gap-3">
-                                {pmPaypal ? <div className="bg-white/5 rounded-lg p-2 hover:bg-white/10 transition-colors flex items-center justify-center"><Image src={pmPaypal} alt="PayPal" width={60} height={40} className="h-6 w-auto object-contain" unoptimized /></div> : null}
-                                {pmMc ? <div className="bg-white/5 rounded-lg p-2 hover:bg-white/10 transition-colors flex items-center justify-center"><Image src={pmMc} alt="Mastercard" width={60} height={40} className="h-6 w-auto object-contain" unoptimized /></div> : null}
-                                {pmVisa ? <div className="bg-white/5 rounded-lg p-2 hover:bg-white/10 transition-colors flex items-center justify-center"><Image src={pmVisa} alt="Visa" width={60} height={40} className="h-6 w-auto object-contain" unoptimized /></div> : null}
-                                {pmApplePay ? <div className="bg-white/5 rounded-lg p-2 hover:bg-white/10 transition-colors flex items-center justify-center"><Image src={pmApplePay} alt="Apple Pay" width={60} height={40} className="h-6 w-auto object-contain" unoptimized /></div> : null}
-                                {pmGpay ? <div className="bg-white/5 rounded-lg p-2 hover:bg-white/10 transition-colors flex items-center justify-center"><Image src={pmGpay} alt="Google Pay" width={60} height={40} className="h-6 w-auto object-contain" unoptimized /></div> : null}
-                                {pmStripe ? <div className="bg-white/5 rounded-lg p-2 hover:bg-white/10 transition-colors flex items-center justify-center"><Image src={pmStripe} alt="Stripe" width={60} height={40} className="h-6 w-auto object-contain" unoptimized /></div> : null}
+                                {pmPaypal ? <div className="bg-white/[0.04] ring-1 ring-white/10 rounded-lg h-10 px-2 overflow-hidden text-[10px] text-gray-500 hover:bg-white/10 transition-colors flex items-center justify-center"><Image src={pmPaypal} alt="PayPal" width={60} height={40} className="h-6 w-auto object-contain" unoptimized /></div> : null}
+                                {pmMc ? <div className="bg-white/[0.04] ring-1 ring-white/10 rounded-lg h-10 px-2 overflow-hidden text-[10px] text-gray-500 hover:bg-white/10 transition-colors flex items-center justify-center"><Image src={pmMc} alt="Mastercard" width={60} height={40} className="h-6 w-auto object-contain" unoptimized /></div> : null}
+                                {pmVisa ? <div className="bg-white/[0.04] ring-1 ring-white/10 rounded-lg h-10 px-2 overflow-hidden text-[10px] text-gray-500 hover:bg-white/10 transition-colors flex items-center justify-center"><Image src={pmVisa} alt="Visa" width={60} height={40} className="h-6 w-auto object-contain" unoptimized /></div> : null}
+                                {pmApplePay ? <div className="bg-white/[0.04] ring-1 ring-white/10 rounded-lg h-10 px-2 overflow-hidden text-[10px] text-gray-500 hover:bg-white/10 transition-colors flex items-center justify-center"><Image src={pmApplePay} alt="Apple Pay" width={60} height={40} className="h-6 w-auto object-contain" unoptimized /></div> : null}
+                                {pmGpay ? <div className="bg-white/[0.04] ring-1 ring-white/10 rounded-lg h-10 px-2 overflow-hidden text-[10px] text-gray-500 hover:bg-white/10 transition-colors flex items-center justify-center"><Image src={pmGpay} alt="Google Pay" width={60} height={40} className="h-6 w-auto object-contain" unoptimized /></div> : null}
+                                {pmStripe ? <div className="bg-white/[0.04] ring-1 ring-white/10 rounded-lg h-10 px-2 overflow-hidden text-[10px] text-gray-500 hover:bg-white/10 transition-colors flex items-center justify-center"><Image src={pmStripe} alt="Stripe" width={60} height={40} className="h-6 w-auto object-contain" unoptimized /></div> : null}
                             </div>
                         </nav>
                     </div>
@@ -120,11 +139,11 @@ export async function Footer() {
             </div>
 
             {/* Bottom Bar */}
-            <div className="border-t border-white/5 px-10 py-6 max-w-7xl mx-auto z-10 relative text-sm">
+            <div className="border-t border-white/5 px-4 sm:px-6 py-6 max-w-7xl mx-auto z-10 relative text-sm">
                 <aside className="items-center grid-flow-col w-full">
                     <div className="flex flex-col md:flex-row justify-between items-center w-full gap-4">
                         <div>
-                            <p className="text-white font-semibold">
+                            <p className="text-gray-400">
                                 {copyright || <>© {siteName} {new Date().getFullYear()}. All rights reserved.</>}
                             </p>
                             {(address || reg) && (

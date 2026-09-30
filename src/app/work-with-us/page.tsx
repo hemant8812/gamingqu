@@ -25,10 +25,10 @@ export default async function WorkWithUsPage() {
   const description = `Join as a professional booster at ${siteName}.`;
 
   return (
-    <div className="min-h-screen bg-[#0A0E17] text-white">
+    <div className="min-h-screen bg-ink-900 text-white">
       <div className="fixed inset-0 pointer-events-none">
-        <div className="absolute top-0 left-1/4 w-96 h-96 bg-blue-600/10 rounded-full blur-3xl" />
-        <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-cyan-500/10 rounded-full blur-3xl" />
+        <div className="absolute top-0 left-1/4 w-96 h-96 bg-brand-600/10 rounded-full blur-3xl" />
+        <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-accent-500/10 rounded-full blur-3xl" />
       </div>
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 pt-10 pb-12">
         <JsonLd
@@ -49,9 +49,9 @@ export default async function WorkWithUsPage() {
         </div>
 
         <section className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-10">
-          <div className="lg:col-span-2 rounded-2xl border border-white/10 bg-[#0F172A] p-6">
+          <div className="lg:col-span-2 rounded-2xl border border-white/10 bg-ink-800 p-6">
             <div className="flex items-center gap-3 mb-4">
-              <FiThumbsUp className="h-5 w-5 text-blue-400" />
+              <FiThumbsUp className="h-5 w-5 text-brand-400" />
               <h2 className="text-xl font-bold">Benefits of being a booster</h2>
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -65,8 +65,8 @@ export default async function WorkWithUsPage() {
                 </div>
               </div>
               <div className="flex items-start gap-3">
-                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-blue-500/10 border border-blue-500/20">
-                  <FiShield className="h-5 w-5 text-blue-400" />
+                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-brand-500/10 border border-brand-500/20">
+                  <FiShield className="h-5 w-5 text-brand-400" />
                 </div>
                 <div>
                   <div className="font-semibold">Secure Platform</div>
@@ -83,8 +83,8 @@ export default async function WorkWithUsPage() {
                 </div>
               </div>
               <div className="flex items-start gap-3">
-                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-cyan-500/10 border border-cyan-500/20">
-                  <FiClock className="h-5 w-5 text-cyan-400" />
+                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-accent-500/10 border border-accent-500/20">
+                  <FiClock className="h-5 w-5 text-accent-400" />
                 </div>
                 <div>
                   <div className="font-semibold">Flexible Hours</div>
@@ -100,9 +100,9 @@ export default async function WorkWithUsPage() {
             </div>
           </div>
 
-          <aside className="rounded-2xl border border-white/10 bg-[#0F172A] p-6">
+          <aside className="rounded-2xl border border-white/10 bg-ink-800 p-6">
             <div className="flex items-center gap-3 mb-4">
-              <FiUsers className="h-5 w-5 text-blue-400" />
+              <FiUsers className="h-5 w-5 text-brand-400" />
               <h2 className="text-xl font-bold">Application steps</h2>
             </div>
             <ol className="space-y-3 text-sm opacity-80 list-decimal list-inside">

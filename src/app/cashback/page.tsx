@@ -29,10 +29,10 @@ export default async function CashbackPage() {
   ]);
   const webPage = webPageLd({ name: PAGE_NAME, url, description, base });
   return (
-    <div className="min-h-screen bg-[#0A0E17] text-white">
+    <div className="min-h-screen bg-ink-900 text-white">
       <div className="fixed inset-0 pointer-events-none">
-        <div className="absolute top-0 left-1/4 w-96 h-96 bg-blue-600/10 rounded-full blur-3xl" />
-        <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-cyan-500/10 rounded-full blur-3xl" />
+        <div className="absolute top-0 left-1/4 w-96 h-96 bg-brand-600/10 rounded-full blur-3xl" />
+        <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-accent-500/10 rounded-full blur-3xl" />
       </div>
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 pt-10 pb-10">
         <JsonLd data={[breadcrumb, webPage]} />
@@ -48,7 +48,7 @@ export default async function CashbackPage() {
         </div>
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <section className="lg:col-span-2 space-y-6">
-          <div className="rounded-2xl border border-white/10 bg-[#0F172A]">
+          <div className="rounded-2xl border border-white/10 bg-ink-800">
             <div className="p-6">
               <h2 className="text-xl font-bold">Program Overview</h2>
               <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -62,8 +62,8 @@ export default async function CashbackPage() {
                   </div>
                 </div>
                 <div className="flex items-start gap-3">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-blue-500/10 border border-blue-500/20">
-                    <FiClock className="h-5 w-5 text-blue-400" />
+                  <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-brand-500/10 border border-brand-500/20">
+                    <FiClock className="h-5 w-5 text-brand-400" />
                   </div>
                   <div>
                     <div className="font-semibold">Processed in 24 - 48 business hours</div>
@@ -73,7 +73,7 @@ export default async function CashbackPage() {
               </div>
             </div>
           </div>
-          <div className="rounded-2xl border border-white/10 bg-[#0F172A]">
+          <div className="rounded-2xl border border-white/10 bg-ink-800">
             <div className="p-6">
               <h2 className="text-xl font-bold">How It Works</h2>
               <ol className="mt-4 list-decimal list-inside space-y-2 text-sm opacity-90">
@@ -84,7 +84,7 @@ export default async function CashbackPage() {
               </ol>
             </div>
           </div>
-          <div className="rounded-2xl border border-white/10 bg-[#0F172A]">
+          <div className="rounded-2xl border border-white/10 bg-ink-800">
             <div className="p-6">
               <div className="flex items-center gap-3 mb-4">
                 <FiShield className="h-5 w-5 text-emerald-400" />
@@ -102,8 +102,8 @@ export default async function CashbackPage() {
           </div>
         </section>
         <aside className="space-y-6">
-          <div className="rounded-2xl border border-white/10 bg-[#0F172A] overflow-hidden">
-            <div className="relative h-32 md:h-40 w-full bg-[#0F172A]">
+          <div className="rounded-2xl border border-white/10 bg-ink-800 overflow-hidden">
+            <div className="relative h-32 md:h-40 w-full bg-ink-800">
               <svg viewBox="0 0 360 160" preserveAspectRatio="xMidYMid slice" className="absolute inset-0 w-full h-full opacity-95">
                 <defs>
                   <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">

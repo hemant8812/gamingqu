@@ -36,7 +36,7 @@ export default async function WalletPage() {
   const isMember = role === "MEMBER";
   if (!session?.user) {
     return (
-      <div className="min-h-screen bg-[#0A0E17] flex items-center justify-center">
+      <div className="min-h-screen bg-ink-900 flex items-center justify-center">
         <div className="text-center">
           <h1 className="text-3xl font-bold text-white mb-2">Sign in required</h1>
           <p className="text-gray-400 mb-4">Please sign in to access your wallet.</p>
@@ -47,7 +47,7 @@ export default async function WalletPage() {
   }
   if (!isMember) {
     return (
-      <div className="min-h-screen bg-[#0A0E17] flex items-center justify-center">
+      <div className="min-h-screen bg-ink-900 flex items-center justify-center">
         <div className="text-center">
           <h1 className="text-3xl font-bold text-white mb-2">Access Denied</h1>
           <p className="text-gray-400">This page is available for members only.</p>
@@ -70,14 +70,14 @@ export default async function WalletPage() {
     : [];
   const balanceStr = `$${Number.parseFloat((wallet?.balance ?? 0).toString()).toFixed(2)}`;
   return (
-    <div className="min-h-screen bg-[#0A0E17] text-white">
+    <div className="min-h-screen bg-ink-900 text-white">
       <div className="fixed inset-0 pointer-events-none">
-        <div className="absolute top-0 left-1/4 w-96 h-96 bg-blue-600/10 rounded-full blur-3xl" />
-        <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-cyan-500/10 rounded-full blur-3xl" />
+        <div className="absolute top-0 left-1/4 w-96 h-96 bg-brand-600/10 rounded-full blur-3xl" />
+        <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-accent-500/10 rounded-full blur-3xl" />
       </div>
       <div className="relative z-10 mx-auto max-w-7xl px-6 py-8">
         <div className="grid grid-cols-1 lg:grid-cols-[260px_1fr] gap-6">
-          <aside className="space-y-6 hidden lg:block lg:sticky lg:top-8 self-start">
+          <aside className="space-y-6 hidden lg:block lg:sticky lg:top-20 self-start">
             <MemberSidebar active="wallet" />
           </aside>
           <main>
@@ -99,7 +99,7 @@ export default async function WalletPage() {
                   <p className="text-sm text-gray-400 mb-1">Currency</p>
                   <p className="text-3xl font-bold text-white">{wallet?.currency ?? "USD"}</p>
                 </div>
-                <div className="w-12 h-12 rounded-xl bg-blue-500/20 flex items-center justify-center text-blue-400 ring-1 ring-blue-500/20">
+                <div className="w-12 h-12 rounded-xl bg-brand-500/20 flex items-center justify-center text-brand-400 ring-1 ring-brand-500/20">
                   <ArrowDownCircle className="h-6 w-6" />
                 </div>
               </div>
@@ -113,7 +113,7 @@ export default async function WalletPage() {
                 </div>
               </div>
             </div>
-            <div className="bg-[#0F172A] border border-white/10 rounded-2xl overflow-hidden">
+            <div className="bg-ink-800 border border-white/10 rounded-2xl overflow-hidden">
               <div className="p-4 border-b border-white/10 flex items-center justify-between">
                 <h2 className="text-lg font-semibold">Wallet Transactions</h2>
               </div>
@@ -150,7 +150,7 @@ export default async function WalletPage() {
                             <div className={isCredit ? "text-emerald-400 font-semibold" : "text-red-400 font-semibold"}>{amountStr}</div>
                             <div className="text-sm text-gray-300">
                               {t.order?.code ? (
-                                <Link href={`/dashboard/orders?order=${encodeURIComponent(t.order.code)}`} className="text-blue-400 hover:text-blue-300">
+                                <Link href={`/dashboard/orders?order=${encodeURIComponent(t.order.code)}`} className="text-brand-400 hover:text-brand-300">
                                   Linked to order {t.order.code}
                                 </Link>
                               ) : (

@@ -99,8 +99,8 @@ export function ServiceModal({ games, categories, editing }: { games: GameOption
 
   return (
     <dialog ref={dialogRef} className="modal" onClose={closeModal}>
-      <div className="modal-box w-11/12 max-w-5xl bg-[#0F172A] border-0 text-white p-0 max-h-[90vh] rounded-2xl flex flex-col">
-        <div className="flex items-center justify-between p-5 border-b border-white/10 shrink-0 bg-[#0F172A]">
+      <div className="modal-box w-11/12 max-w-5xl bg-ink-800 border-0 text-white p-0 max-h-[90vh] rounded-2xl flex flex-col">
+        <div className="flex items-center justify-between p-5 border-b border-white/10 shrink-0 bg-ink-800">
           <h3 className="text-xl font-bold">{editing ? "Edit Service" : "Add Service"}</h3>
           <button onClick={closeModal} className="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-white/10 transition-colors">
             <X className="h-5 w-5 text-gray-400" />
@@ -118,7 +118,7 @@ export function ServiceModal({ games, categories, editing }: { games: GameOption
                   type="text"
                   required
                   placeholder="e.g. Rank Boost PvP"
-                  className="w-full h-11 px-4 bg-[#0A0E17] border-0 rounded-xl text-white placeholder-gray-500 focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                  className="w-full h-11 px-4 bg-ink-900 border-0 rounded-xl text-white placeholder-gray-500 focus:ring-2 focus:ring-brand-500 focus:outline-none"
                   defaultValue={editing?.name ?? ""}
                 />
               </div>
@@ -153,7 +153,7 @@ export function ServiceModal({ games, categories, editing }: { games: GameOption
                             setFeatures((f) => f.map((x, idx) => (idx === i ? val : x)));
                           }}
                           placeholder={`Feature ${i + 1}`}
-                          className="flex-1 h-11 px-4 bg-[#0A0E17] border-0 rounded-xl text-white placeholder-gray-500 focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                          className="flex-1 h-11 px-4 bg-ink-900 border-0 rounded-xl text-white placeholder-gray-500 focus:ring-2 focus:ring-brand-500 focus:outline-none"
                         />
                         <button
                           type="button"
@@ -178,7 +178,7 @@ export function ServiceModal({ games, categories, editing }: { games: GameOption
                   </div>
                 </div>
                 <div className="mt-4 space-y-3">
-                  <div className="flex items-center justify-between p-4 bg-[#0A0E17] rounded-xl">
+                  <div className="flex items-center justify-between p-4 bg-ink-900 rounded-xl">
                     <span className="text-sm font-medium text-gray-300">Hot Offer</span>
                     <label className="relative inline-flex items-center cursor-pointer">
                       <input
@@ -191,7 +191,7 @@ export function ServiceModal({ games, categories, editing }: { games: GameOption
                       <div className="w-11 h-6 bg-gray-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-red-500"></div>
                     </label>
                   </div>
-                  <div className="flex items-center justify-between p-4 bg-[#0A0E17] rounded-xl">
+                  <div className="flex items-center justify-between p-4 bg-ink-900 rounded-xl">
                     <span className="text-sm font-medium text-gray-300">Active</span>
                     <label className="relative inline-flex items-center cursor-pointer">
                       <input
@@ -204,7 +204,7 @@ export function ServiceModal({ games, categories, editing }: { games: GameOption
                       <div className="w-11 h-6 bg-gray-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-green-500"></div>
                     </label>
                   </div>
-                  <div className="flex items-center p-4 bg-[#0A0E17] rounded-xl focus-within:ring-2 focus-within:ring-blue-500 transition-all">
+                  <div className="flex items-center p-4 bg-ink-900 rounded-xl focus-within:ring-2 focus-within:ring-brand-500 transition-all">
                     <span className="text-sm font-medium text-gray-300 shrink-0">Price</span>
                     <input
                       id="price"
@@ -233,13 +233,13 @@ export function ServiceModal({ games, categories, editing }: { games: GameOption
             
           </div>
 
-          <div className="flex justify-end gap-3 p-6 border-t border-white/10 shrink-0 bg-[#0F172A]">
+          <div className="flex justify-end gap-3 p-6 border-t border-white/10 shrink-0 bg-ink-800">
             <button type="button" onClick={closeModal} className="h-11 px-5 bg-white/5 hover:bg-white/10 text-gray-300 font-medium rounded-xl transition-colors">
               Cancel
             </button>
             <button
               type="submit"
-              className="h-11 px-5 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-xl flex items-center gap-2 transition-colors disabled:opacity-50"
+              className="h-11 px-5 bg-brand-600 hover:bg-brand-700 text-white font-medium rounded-xl flex items-center gap-2 transition-colors disabled:opacity-50"
               disabled={busy}
             >
               {busy && <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>}

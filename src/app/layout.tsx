@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Geist, Geist_Mono, Sora } from "next/font/google";
 import "./globals.css";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
@@ -18,6 +18,13 @@ const geistSans = Geist({
   display: "swap",
 });
 
+const sora = Sora({
+  variable: "--font-sora",
+  subsets: ["latin"],
+  weight: ["500", "600", "700", "800"],
+  display: "swap",
+});
+
 const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
   subsets: ["latin"],
@@ -25,7 +32,7 @@ const geistMono = Geist_Mono({
 });
 
 export const viewport: Viewport = {
-  themeColor: "#0A0E17",
+  themeColor: "#0b0a13",
   width: "device-width",
   initialScale: 1,
   maximumScale: 5,
@@ -131,7 +138,7 @@ export default async function RootLayout({
       <head>
         <link rel="icon" href="/favicon.ico" />
         <link rel="icon" href={favicon} />
-        <meta name="theme-color" content="#0A0E17" />
+        <meta name="theme-color" content="#0b0a13" />
         <script
           dangerouslySetInnerHTML={{
             __html: `
@@ -241,7 +248,7 @@ export default async function RootLayout({
         />
         <JsonLd data={[websiteLd, orgLd]} />
       </head>
-      <body className={`${geistSans.variable} ${geistMono.variable} antialiased`} suppressHydrationWarning>
+      <body className={`${geistSans.variable} ${geistMono.variable} ${sora.variable} antialiased`} suppressHydrationWarning>
         <EmbedInjector embeds={embeds} nonce={nonce} />
         <Providers eurPerUsd={eurPerUsd}>
           <Navbar siteName={siteName} logoUrl={logoUrl} user={session?.user ?? null} />

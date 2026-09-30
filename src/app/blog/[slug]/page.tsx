@@ -62,10 +62,10 @@ export default async function BlogDetailPage({ params }: Props) {
 
   const { base, siteName, logo } = await getSiteMeta();
   return (
-    <div className="min-h-screen bg-[#0A0E17] text-white">
+    <div className="min-h-screen bg-ink-900 text-white">
       <div className="fixed inset-0 pointer-events-none">
-        <div className="absolute top-0 left-1/4 w-96 h-96 bg-blue-600/10 rounded-full blur-3xl" />
-        <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-cyan-500/10 rounded-full blur-3xl" />
+        <div className="absolute top-0 left-1/4 w-96 h-96 bg-brand-600/10 rounded-full blur-3xl" />
+        <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-accent-500/10 rounded-full blur-3xl" />
       </div>
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 pt-16 pb-14">
       <JsonLd
@@ -128,7 +128,7 @@ export default async function BlogDetailPage({ params }: Props) {
             <Link
               key={p.id}
               href={`/blog/${p.slug}`}
-              className="block overflow-hidden rounded-xl border border-white/10 bg-[#0F172A] text-white shadow hover:-translate-y-0.5 transition-transform"
+              className="block overflow-hidden rounded-xl border border-white/10 bg-ink-800 text-white shadow hover:-translate-y-0.5 transition-transform"
             >
               <div className="relative w-full h-36">
                 {p.imageUrl ? (

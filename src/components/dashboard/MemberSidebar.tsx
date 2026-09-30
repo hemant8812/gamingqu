@@ -1,72 +1,25 @@
 'use client';
-import Link from "next/link";
-import { signOut } from "next-auth/react";
-import { Home, ShoppingCart, User, Wallet, Star, MessageSquare, Settings, LogOut } from "lucide-react";
+import { Home, ShoppingCart, User, Wallet, Star, MessageSquare, Settings } from "lucide-react";
+import { PanelNav, PanelTabs, type PanelNavItem } from "@/components/panel/PanelNav";
 
 type ActiveTab = "overview" | "orders" | "profile" | "wallet" | "reviews" | "settings";
 
 export function MemberSidebar({ active }: { active: ActiveTab }) {
-  const itemCls = (isActive: boolean) =>
-    isActive
-      ? "w-full flex items-center gap-3 px-3 py-2 rounded-xl bg-white/10 text-white"
-      : "w-full flex items-center gap-3 px-3 py-2 rounded-xl hover:bg-white/5 text-gray-300";
+  const items: PanelNavItem[] = [
+    { href: "/dashboard", label: "Overview", icon: <Home className="h-4 w-4" />, active: active === "overview" },
+    { href: "/dashboard/orders", label: "My Orders", icon: <ShoppingCart className="h-4 w-4" />, active: active === "orders" },
+    { href: "/dashboard/profile", label: "Profile", icon: <User className="h-4 w-4" />, active: active === "profile" },
+    { href: "/dashboard/wallet", label: "Wallet", icon: <Wallet className="h-4 w-4" />, active: active === "wallet" },
+    { href: "/dashboard/reviews", label: "Reviews", icon: <Star className="h-4 w-4" />, active: active === "reviews" },
+    { href: "#", label: "Messages", icon: <MessageSquare className="h-4 w-4" />, active: false, disabled: true },
+    { href: "/dashboard/settings", label: "Settings", icon: <Settings className="h-4 w-4" />, active: active === "settings" },
+  ];
   return (
-    <nav className="bg-[#0F172A] border border-white/10 rounded-2xl p-4">
-      <ul className="space-y-1">
-        <li>
-          <Link href="/dashboard" className={itemCls(active === "overview")}>
-            <Home className="h-4 w-4" />
-            <span>Overview</span>
-          </Link>
-        </li>
-        <li>
-          <Link href="/dashboard/orders" className={itemCls(active === "orders")}>
-            <ShoppingCart className="h-4 w-4" />
-            <span>My Orders</span>
-          </Link>
-        </li>
-        <li>
-          <Link href="/dashboard/profile" className={itemCls(active === "profile")}>
-            <User className="h-4 w-4" />
-            <span>Profile</span>
-          </Link>
-        </li>
-        <li>
-          <Link href="/dashboard/wallet" className={itemCls(active === "wallet")}>
-            <Wallet className="h-4 w-4" />
-            <span>Wallet</span>
-          </Link>
-        </li>
-        <li>
-          <Link href="/dashboard/reviews" className={itemCls(active === "reviews")}>
-            <Star className="h-4 w-4" />
-            <span>Reviews</span>
-          </Link>
-        </li>
-        <li>
-          <Link href="#" className="flex items-center gap-3 px-3 py-2 rounded-xl hover:bg-white/5 text-gray-300" aria-disabled>
-            <MessageSquare className="h-4 w-4" />
-            <span>Messages</span>
-          </Link>
-        </li>
-        <li>
-          <Link href="/dashboard/settings" className={itemCls(active === "settings")}>
-            <Settings className="h-4 w-4" />
-            <span>Settings</span>
-          </Link>
-        </li>
-      </ul>
-      <div className="border-t border-white/10 mt-4 pt-4">
-        <button
-          type="button"
-          className="w-full flex items-center gap-3 px-3 py-2 rounded-xl hover:bg-red-500/20 text-red-400"
-          aria-label="Logout"
-          onClick={() => signOut({ callbackUrl: "/" })}
-        >
-          <LogOut className="h-4 w-4" />
-          <span>Logout</span>
-        </button>
+    <>
+      <PanelTabs items={items.filter((i) => !i.disabled)} />
+      <div className="hidden lg:block">
+        <PanelNav role="Client" items={items} />
       </div>
-    </nav>
+    </>
   );
 }

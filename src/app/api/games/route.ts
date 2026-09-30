@@ -23,6 +23,7 @@ const getHomeGamesCached = unstable_cache(
           iconUrl: true,
           isHotOffer: true,
           sortOrder: true,
+          _count: { select: { services: { where: { isActive: true } } } },
         },
       }),
       db.game.count({ where: { isActive: true } }),
@@ -34,6 +35,7 @@ const getHomeGamesCached = unstable_cache(
       imageUrl: g.imageUrl ?? null,
       iconUrl: g.iconUrl ?? null,
       isHotOffer: g.isHotOffer,
+      offers: g._count.services,
     }));
     return { items: data, total };
   },

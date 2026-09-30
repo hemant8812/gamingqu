@@ -75,14 +75,14 @@ export function LegalManager() {
             setSelectedPage(null);
             setView("edit");
           }}
-          className="h-10 px-4 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-xl flex items-center gap-2 transition-colors"
+          className="h-10 px-4 bg-brand-600 hover:bg-brand-700 text-white text-sm font-medium rounded-xl flex items-center gap-2 transition-colors"
         >
           <Plus className="h-4 w-4" />
           Create New Page
         </button>
       </div>
 
-      <div className="bg-[#0F172A] border border-white/10 rounded-2xl overflow-hidden">
+      <div className="bg-ink-800 border border-white/10 rounded-2xl overflow-hidden">
         <div className="p-5 border-b border-white/10 flex items-center justify-between">
           <h2 className="text-lg font-bold text-white">Legal Pages Data</h2>
         </div>
@@ -90,7 +90,7 @@ export function LegalManager() {
         <div className="p-4 space-y-3">
           {loading ? (
             <div className="flex items-center justify-center py-12">
-              <Loader2 className="h-8 w-8 animate-spin text-blue-500" />
+              <Loader2 className="h-8 w-8 animate-spin text-brand-500" />
             </div>
           ) : pages.length === 0 ? (
             <div className="text-center py-12">
@@ -102,9 +102,9 @@ export function LegalManager() {
             pages.map((page) => (
               <div
                 key={page.id}
-                className="flex items-center gap-4 p-3 bg-[#0A0E17] hover:bg-white/5 rounded-xl transition-colors"
+                className="flex items-center gap-4 p-3 bg-ink-900 hover:bg-white/5 rounded-xl transition-colors"
               >
-                <div className="w-14 h-14 rounded-lg bg-white/5 overflow-hidden flex items-center justify-center shrink-0 text-blue-400">
+                <div className="w-14 h-14 rounded-lg bg-white/5 overflow-hidden flex items-center justify-center shrink-0 text-brand-400">
                   <FileText className="h-6 w-6" />
                 </div>
                 <div className="flex-1 min-w-0">

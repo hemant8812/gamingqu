@@ -78,7 +78,7 @@ export function AdminSettingsTabs({ initialTab, setting, footer }: Props) {
             <div className="flex gap-2 mb-6">
                 <button
                     className={`h-10 px-4 font-medium text-sm rounded-xl flex items-center gap-2 transition-colors ${activeTab === "general"
-                            ? "bg-blue-600 text-white"
+                            ? "bg-brand-600 text-white"
                             : "bg-white/5 text-gray-400 hover:bg-white/10 hover:text-white"
                         }`}
                     onClick={() => setActiveTab("general")}
@@ -88,7 +88,7 @@ export function AdminSettingsTabs({ initialTab, setting, footer }: Props) {
                 </button>
                 <button
                     className={`h-10 px-4 font-medium text-sm rounded-xl flex items-center gap-2 transition-colors ${activeTab === "currency"
-                            ? "bg-blue-600 text-white"
+                            ? "bg-brand-600 text-white"
                             : "bg-white/5 text-gray-400 hover:bg-white/10 hover:text-white"
                         }`}
                     onClick={() => setActiveTab("currency")}
@@ -98,7 +98,7 @@ export function AdminSettingsTabs({ initialTab, setting, footer }: Props) {
                 </button>
                 <button
                     className={`h-10 px-4 font-medium text-sm rounded-xl flex items-center gap-2 transition-colors ${activeTab === "footer"
-                            ? "bg-blue-600 text-white"
+                            ? "bg-brand-600 text-white"
                             : "bg-white/5 text-gray-400 hover:bg-white/10 hover:text-white"
                         }`}
                     onClick={() => setActiveTab("footer")}
@@ -108,7 +108,7 @@ export function AdminSettingsTabs({ initialTab, setting, footer }: Props) {
                 </button>
                 <button
                     className={`h-10 px-4 font-medium text-sm rounded-xl flex items-center gap-2 transition-colors ${activeTab === "embed"
-                            ? "bg-blue-600 text-white"
+                            ? "bg-brand-600 text-white"
                             : "bg-white/5 text-gray-400 hover:bg-white/10 hover:text-white"
                         }`}
                     onClick={() => setActiveTab("embed")}
@@ -118,7 +118,7 @@ export function AdminSettingsTabs({ initialTab, setting, footer }: Props) {
                 </button>
                 <button
                     className={`h-10 px-4 font-medium text-sm rounded-xl flex items-center gap-2 transition-colors ${activeTab === "seo"
-                            ? "bg-blue-600 text-white"
+                            ? "bg-brand-600 text-white"
                             : "bg-white/5 text-gray-400 hover:bg-white/10 hover:text-white"
                         }`}
                     onClick={() => setActiveTab("seo")}

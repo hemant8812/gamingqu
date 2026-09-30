@@ -69,8 +69,8 @@ export default function BoosterApplyForm({ heroImage }: BoosterApplyFormProps) {
                 className="object-cover"
             />
         </div>
-        <div className="absolute inset-0 bg-gradient-to-br from-blue-900/40 via-indigo-900/40 to-cyan-900/40" />
-        <div className="absolute inset-0 bg-gradient-to-t from-[#0A0E17] via-transparent to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-br from-brand-900/40 via-brand-900/40 to-accent-900/40" />
+        <div className="absolute inset-0 bg-gradient-to-t from-ink-900 via-transparent to-transparent" />
 
         <div className="relative z-10 p-8 h-full flex flex-col justify-end">
             <h2 className="text-3xl font-black text-white mb-3 leading-tight">
@@ -83,7 +83,7 @@ export default function BoosterApplyForm({ heroImage }: BoosterApplyFormProps) {
       </div>
 
       {/* Right Side - Form */}
-      <div className="p-6 lg:p-12 flex flex-col justify-center relative bg-[#0A0E17]/80 lg:bg-transparent">
+      <div className="p-6 lg:p-12 flex flex-col justify-center relative bg-ink-900/80 lg:bg-transparent">
         <div className="w-full mx-auto space-y-5">
             <div className="text-center lg:text-left">
               <h1 className="text-3xl font-black text-white mb-2">
@@ -114,7 +114,7 @@ export default function BoosterApplyForm({ heroImage }: BoosterApplyFormProps) {
                         <label className="label text-sm font-medium text-gray-300 mb-1">Full Name</label>
                         <div className="relative group">
                             <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none z-10">
-                                <FiUser className="h-5 w-5 text-gray-500 group-focus-within:text-blue-400 transition-colors" />
+                                <FiUser className="h-5 w-5 text-gray-500 group-focus-within:text-brand-400 transition-colors" />
                             </div>
                             <input
                                 id="fullName"
@@ -123,7 +123,7 @@ export default function BoosterApplyForm({ heroImage }: BoosterApplyFormProps) {
                                 value={formData.fullName}
                                 onChange={handleChange}
                                 placeholder="John Doe"
-                                className="input w-full pl-11 h-12 bg-[#0A0E17] border-2 border-transparent hover:border-blue-500 focus:border-blue-500 focus:ring-0 text-white placeholder-gray-500 rounded-xl transition-all duration-300 focus:shadow-[0_0_20px_rgba(139,92,246,0.2)]"
+                                className="input w-full pl-11 h-12 bg-ink-900 border-2 border-transparent hover:border-brand-500 focus:border-brand-500 focus:ring-0 text-white placeholder-gray-500 rounded-xl transition-all duration-300 focus:shadow-[0_0_20px_rgba(139,92,246,0.2)]"
                                 required
                             />
                         </div>
@@ -134,7 +134,7 @@ export default function BoosterApplyForm({ heroImage }: BoosterApplyFormProps) {
                         <label className="label text-sm font-medium text-gray-300 mb-1">Email</label>
                         <div className="relative group">
                             <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none z-10">
-                                <FiMail className="h-5 w-5 text-gray-500 group-focus-within:text-blue-400 transition-colors" />
+                                <FiMail className="h-5 w-5 text-gray-500 group-focus-within:text-brand-400 transition-colors" />
                             </div>
                             <input
                                 id="email"
@@ -143,7 +143,7 @@ export default function BoosterApplyForm({ heroImage }: BoosterApplyFormProps) {
                                 value={formData.email}
                                 onChange={handleChange}
                                 placeholder="john@example.com"
-                                className="input w-full pl-11 h-12 bg-[#0A0E17] border-2 border-transparent hover:border-blue-500 focus:border-blue-500 focus:ring-0 text-white placeholder-gray-500 rounded-xl transition-all duration-300 focus:shadow-[0_0_20px_rgba(139,92,246,0.2)]"
+                                className="input w-full pl-11 h-12 bg-ink-900 border-2 border-transparent hover:border-brand-500 focus:border-brand-500 focus:ring-0 text-white placeholder-gray-500 rounded-xl transition-all duration-300 focus:shadow-[0_0_20px_rgba(139,92,246,0.2)]"
                                 required
                             />
                         </div>
@@ -154,7 +154,7 @@ export default function BoosterApplyForm({ heroImage }: BoosterApplyFormProps) {
                         <label className="label text-sm font-medium text-gray-300 mb-1">Discord</label>
                         <div className="relative group">
                             <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none z-10">
-                                <SiDiscord className="h-5 w-5 text-gray-500 group-focus-within:text-blue-400 transition-colors" />
+                                <SiDiscord className="h-5 w-5 text-gray-500 group-focus-within:text-brand-400 transition-colors" />
                             </div>
                             <input
                                 id="discord"
@@ -163,7 +163,7 @@ export default function BoosterApplyForm({ heroImage }: BoosterApplyFormProps) {
                                 value={formData.discord}
                                 onChange={handleChange}
                                 placeholder="username#1234"
-                                className="input w-full pl-11 h-12 bg-[#0A0E17] border-2 border-transparent hover:border-blue-500 focus:border-blue-500 focus:ring-0 text-white placeholder-gray-500 rounded-xl transition-all duration-300 focus:shadow-[0_0_20px_rgba(139,92,246,0.2)]"
+                                className="input w-full pl-11 h-12 bg-ink-900 border-2 border-transparent hover:border-brand-500 focus:border-brand-500 focus:ring-0 text-white placeholder-gray-500 rounded-xl transition-all duration-300 focus:shadow-[0_0_20px_rgba(139,92,246,0.2)]"
                                 required
                             />
                         </div>
@@ -174,7 +174,7 @@ export default function BoosterApplyForm({ heroImage }: BoosterApplyFormProps) {
                         <label className="label text-sm font-medium text-gray-300 mb-1">WhatsApp</label>
                         <div className="relative group">
                             <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none z-10">
-                                <FiPhone className="h-5 w-5 text-gray-500 group-focus-within:text-blue-400 transition-colors" />
+                                <FiPhone className="h-5 w-5 text-gray-500 group-focus-within:text-brand-400 transition-colors" />
                             </div>
                             <input
                                 id="whatsapp"
@@ -183,7 +183,7 @@ export default function BoosterApplyForm({ heroImage }: BoosterApplyFormProps) {
                                 value={formData.whatsapp}
                                 onChange={handleChange}
                                 placeholder="+1234567890"
-                                className="input w-full pl-11 h-12 bg-[#0A0E17] border-2 border-transparent hover:border-blue-500 focus:border-blue-500 focus:ring-0 text-white placeholder-gray-500 rounded-xl transition-all duration-300 focus:shadow-[0_0_20px_rgba(139,92,246,0.2)]"
+                                className="input w-full pl-11 h-12 bg-ink-900 border-2 border-transparent hover:border-brand-500 focus:border-brand-500 focus:ring-0 text-white placeholder-gray-500 rounded-xl transition-all duration-300 focus:shadow-[0_0_20px_rgba(139,92,246,0.2)]"
                                 required
                             />
                         </div>
@@ -198,7 +198,7 @@ export default function BoosterApplyForm({ heroImage }: BoosterApplyFormProps) {
                         name="games"
                         value={formData.games}
                         onChange={handleChange}
-                        className="textarea w-full bg-[#0A0E17] border-2 border-transparent hover:border-blue-500 focus:border-blue-500 focus:ring-0 text-white placeholder-gray-500 rounded-xl transition-all duration-300 focus:shadow-[0_0_20px_rgba(139,92,246,0.2)] h-32"
+                        className="textarea w-full bg-ink-900 border-2 border-transparent hover:border-brand-500 focus:border-brand-500 focus:ring-0 text-white placeholder-gray-500 rounded-xl transition-all duration-300 focus:shadow-[0_0_20px_rgba(139,92,246,0.2)] h-32"
                         placeholder="Tell us about your gaming experience and the games you excel at..."
                         required
                     />

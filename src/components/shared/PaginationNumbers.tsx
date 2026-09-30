@@ -13,7 +13,7 @@ export function PaginationNumbers({ page, totalPages, basePath = "/admin/orders"
         <Link
           key={p}
           href={`${basePath}?page=${p}`}
-          className={`min-w-8 h-8 px-3 inline-flex items-center justify-center rounded-lg text-sm ${p === page ? "bg-blue-600 text-white" : "bg-white/5 text-gray-300 hover:bg-white/10"}`}
+          className={`min-w-8 h-8 px-3 inline-flex items-center justify-center rounded-lg text-sm ${p === page ? "bg-brand-600 text-white" : "bg-white/5 text-gray-300 hover:bg-white/10"}`}
           aria-label={`Go to page ${p}`}
         >
           {p}

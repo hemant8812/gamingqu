@@ -89,7 +89,7 @@ export function AutoSlugField({
         name={name}
         type="text"
         placeholder="e.g. rank-boost-pvp"
-        className="w-full h-11 px-4 bg-[#0A0E17] border-0 rounded-xl text-white placeholder-gray-500 focus:ring-2 focus:ring-blue-500 focus:outline-none"
+        className="w-full h-11 px-4 bg-ink-900 border-0 rounded-xl text-white placeholder-gray-500 focus:ring-2 focus:ring-brand-500 focus:outline-none"
         ref={inputRef}
         onInput={() => setLocked(false)}
         defaultValue={initialValue}

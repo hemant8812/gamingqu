@@ -39,15 +39,15 @@ export function SeoSettingsForm({ initial }: { initial: Initial }) {
     }
   };
 
-  const input = "w-full h-11 px-4 bg-slate-800/50 border border-slate-600 rounded-xl text-white placeholder-gray-400 hover:border-blue-500/50 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/30 focus:outline-none transition-all";
-  const textarea = "w-full px-4 py-2 bg-slate-800/50 border border-slate-600 rounded-xl text-white placeholder-gray-400 hover:border-blue-500/50 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/30 focus:outline-none transition-all resize-none";
+  const input = "w-full h-11 px-4 bg-slate-800/50 border border-slate-600 rounded-xl text-white placeholder-gray-400 hover:border-brand-500/50 focus:border-brand-500 focus:ring-2 focus:ring-brand-500/30 focus:outline-none transition-all";
+  const textarea = "w-full px-4 py-2 bg-slate-800/50 border border-slate-600 rounded-xl text-white placeholder-gray-400 hover:border-brand-500/50 focus:border-brand-500 focus:ring-2 focus:ring-brand-500/30 focus:outline-none transition-all resize-none";
 
   return (
-    <form onSubmit={onSubmit} method="post" encType="multipart/form-data" className="bg-[#0F172A] border border-white/10 rounded-2xl p-6 space-y-6">
+    <form onSubmit={onSubmit} method="post" encType="multipart/form-data" className="bg-ink-800 border border-white/10 rounded-2xl p-6 space-y-6">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div className="bg-slate-800/30 border border-slate-700/50 rounded-xl p-4">
           <div className="flex items-center gap-2 mb-3">
-            <SearchIcon className="w-4 h-4 text-blue-400" />
+            <SearchIcon className="w-4 h-4 text-brand-400" />
             <span className="text-sm font-semibold text-white">Website Meta</span>
           </div>
           <div className="space-y-3">
@@ -63,7 +63,7 @@ export function SeoSettingsForm({ initial }: { initial: Initial }) {
         </div>
         <div className="bg-slate-800/30 border border-slate-700/50 rounded-xl p-4">
           <div className="flex items-center gap-2 mb-3">
-            <PhoneIcon className="w-4 h-4 text-blue-400" />
+            <PhoneIcon className="w-4 h-4 text-brand-400" />
             <span className="text-sm font-semibold text-white">Contact</span>
           </div>
           <div className="space-y-3">
@@ -82,7 +82,7 @@ export function SeoSettingsForm({ initial }: { initial: Initial }) {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div className="bg-slate-800/30 border border-slate-700/50 rounded-xl p-4">
           <div className="flex items-center gap-2 mb-3">
-            <MapPinIcon className="w-4 h-4 text-blue-400" />
+            <MapPinIcon className="w-4 h-4 text-brand-400" />
             <span className="text-sm font-semibold text-white">Organization</span>
           </div>
           <div className="space-y-3">
@@ -102,7 +102,7 @@ export function SeoSettingsForm({ initial }: { initial: Initial }) {
         </div>
         <div className="bg-slate-800/30 border border-slate-700/50 rounded-xl p-4">
           <div className="flex items-center gap-2 mb-3">
-            <SearchIcon className="w-4 h-4 text-blue-400" />
+            <SearchIcon className="w-4 h-4 text-brand-400" />
             <span className="text-sm font-semibold text-white">Social Links (sameAs)</span>
           </div>
           <div className="space-y-3">
@@ -117,7 +117,7 @@ export function SeoSettingsForm({ initial }: { initial: Initial }) {
       <div className="flex justify-end mt-6">
         <button
           type="submit"
-          className="h-11 px-5 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-xl flex items-center gap-2 transition-colors disabled:opacity-50"
+          className="h-11 px-5 bg-brand-600 hover:bg-brand-700 text-white font-medium rounded-xl flex items-center gap-2 transition-colors disabled:opacity-50"
           disabled={busy}
         >
           {busy && <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>}

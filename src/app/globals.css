@@ -10,53 +10,124 @@
 @theme {
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
+  --font-display: var(--font-sora), var(--font-geist-sans);
+
+  /* Surfaces: near-black with a violet cast */
+  --color-ink-950: #06050b;
+  --color-ink-900: #0b0a13;
+  --color-ink-850: #0f0d1a;
+  --color-ink-800: #14121f;
+  --color-ink-700: #1d1a2e;
+  --color-ink-600: #29253f;
+  --color-ink-500: #3a3556;
+
+  /* Brand: electric violet */
+  --color-brand-50: #f3f0ff;
+  --color-brand-100: #e6e0ff;
+  --color-brand-200: #cfc4ff;
+  --color-brand-300: #b3a1ff;
+  --color-brand-400: #977fff;
+  --color-brand-500: #7c5cff;
+  --color-brand-600: #6a45f5;
+  --color-brand-700: #5834d6;
+  --color-brand-800: #4629ab;
+  --color-brand-900: #372285;
+  --color-brand-950: #1f1450;
+
+  /* Accent: hot magenta, used sparingly for glow and highlights */
+  --color-accent-50: #fdf0fb;
+  --color-accent-100: #fbe0f7;
+  --color-accent-200: #f8c2ef;
+  --color-accent-300: #f394e2;
+  --color-accent-400: #ec5fd0;
+  --color-accent-500: #e03bbe;
+  --color-accent-600: #c425a0;
+  --color-accent-700: #a11c82;
+  --color-accent-800: #82186a;
+  --color-accent-900: #6a1757;
+  --color-accent-950: #430532;
+
+  /* Highlight: lime, for prices and "live" states */
+  --color-lime-glow: #b6f24a;
+}
+
+@plugin "daisyui/theme" {
+  name: "dark";
+  default: true;
+  prefersdark: true;
+  color-scheme: dark;
+  --color-base-100: #0b0a13;
+  --color-base-200: #14121f;
+  --color-base-300: #1d1a2e;
+  --color-base-content: #ecebf5;
+  --color-primary: #7c5cff;
+  --color-primary-content: #ffffff;
+  --color-secondary: #e03bbe;
+  --color-secondary-content: #ffffff;
+  --color-accent: #b6f24a;
+  --color-accent-content: #0b0a13;
+  --color-neutral: #1d1a2e;
+  --color-neutral-content: #ecebf5;
+  --color-info: #60a5fa;
+  --color-success: #34d399;
+  --color-warning: #fbbf24;
+  --color-error: #f87171;
+  --radius-selector: 0.75rem;
+  --radius-field: 0.75rem;
+  --radius-box: 1rem;
 }
 
 /* ============================================
    GAMING DESIGN SYSTEM - Color Tokens
    ============================================ */
 :root {
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.13 0.028 261.692);
+  --background: #0b0a13;
+  --foreground: #ecebf5;
 
-  /* Gaming Color Palette */
-  --gaming-dark: #0A0E17;
-  --gaming-darker: #050810;
-  --gaming-card: #0F172A;
-  --gaming-card-hover: #1E293B;
-  --gaming-border: rgba(255, 255, 255, 0.08);
+  --gaming-dark: #0b0a13;
+  --gaming-darker: #06050b;
+  --gaming-card: #14121f;
+  --gaming-card-hover: #1d1a2e;
+  --gaming-border: rgba(255, 255, 255, 0.07);
 
-  /* Accent Colors - Solid Blue */
-  --primary-color: #3B82F6;
-  --primary-hover: #2563EB;
-  --primary-light: rgba(59, 130, 246, 0.2);
+  --primary-color: #7c5cff;
+  --primary-hover: #6a45f5;
+  --primary-light: rgba(124, 92, 255, 0.2);
 
-  /* Legacy Gradient (kept for compatibility) */
-  --gradient-primary: linear-gradient(135deg, #3B82F6 0%, #2563EB 100%);
-  --gradient-accent: linear-gradient(135deg, #3B82F6 0%, #06B6D4 100%);
-  --gradient-subtle: linear-gradient(135deg, rgba(59, 130, 246, 0.1) 0%, rgba(6, 182, 212, 0.1) 100%);
+  --gradient-primary: linear-gradient(135deg, #7c5cff 0%, #a34dff 55%, #e03bbe 100%);
+  --gradient-accent: linear-gradient(135deg, #7c5cff 0%, #e03bbe 100%);
+  --gradient-subtle: linear-gradient(135deg, rgba(124, 92, 255, 0.1) 0%, rgba(224, 59, 190, 0.08) 100%);
 
-  /* Glow Colors */
-  --glow-blue: rgba(59, 130, 246, 0.5);
-  --glow-cyan: rgba(6, 182, 212, 0.5);
-  --glow-pink: rgba(244, 114, 182, 0.5);
+  --glow-blue: rgba(124, 92, 255, 0.5);
+  --glow-cyan: rgba(224, 59, 190, 0.45);
+  --glow-pink: rgba(224, 59, 190, 0.5);
 }
 
 .dark {
-  --background: oklch(0.13 0.028 261.692);
-  --foreground: oklch(0.985 0.002 247.839);
+  --background: #0b0a13;
+  --foreground: #ecebf5;
 }
 
 body {
-  @apply bg-base-100 text-base-content;
+  @apply bg-ink-900 text-base-content;
+}
+
+h1, h2, h3, .font-display {
+  font-family: var(--font-display);
+  letter-spacing: -0.02em;
+}
+
+::selection {
+  background: rgba(124, 92, 255, 0.45);
+  color: #fff;
 }
 
 .booster-select {
-  background-color: #0F172A;
+  background-color: #14121f;
 }
 
 .booster-select option {
-  background-color: #0F172A;
+  background-color: #14121f;
   color: #ffffff;
 }
 
@@ -73,21 +144,21 @@ body {
    GLASSMORPHISM UTILITIES
    ============================================ */
 .glass {
-  background: rgba(15, 23, 42, 0.7);
+  background: rgba(20, 18, 31, 0.72);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
   border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .glass-light {
-  background: rgba(30, 41, 59, 0.6);
+  background: rgba(29, 26, 46, 0.6);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
   border: 1px solid rgba(255, 255, 255, 0.08);
 }
 
 .glass-card {
-  background: linear-gradient(135deg, rgba(15, 23, 42, 0.9) 0%, rgba(30, 41, 59, 0.7) 100%);
+  background: linear-gradient(135deg, rgba(20, 18, 31, 0.92) 0%, rgba(29, 26, 46, 0.72) 100%);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
   border: 1px solid rgba(255, 255, 255, 0.1);
@@ -98,7 +169,7 @@ body {
    NEON GLOW EFFECTS
    ============================================ */
 .glow-primary {
-  box-shadow: 0 0 20px var(--glow-blue), 0 0 40px rgba(139, 92, 246, 0.2);
+  box-shadow: 0 0 20px var(--glow-blue), 0 0 40px rgba(224, 59, 190, 0.2);
 }
 
 .glow-accent {
@@ -129,7 +200,10 @@ body {
    GRADIENT UTILITIES
    ============================================ */
 .gradient-text {
-  color: #3B82F6;
+  background: linear-gradient(100deg, #b3a1ff 0%, #7c5cff 40%, #e03bbe 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
   font-weight: 700;
 }
 
@@ -147,20 +221,20 @@ body {
    GAMING BUTTON STYLES
    ============================================ */
 .btn-gaming {
-  background: #2563EB;
+  background: linear-gradient(135deg, #7c5cff 0%, #6a45f5 100%);
   border: none;
   color: white;
   font-weight: 700;
   position: relative;
   overflow: hidden;
-  transition: all 0.3s ease;
-  box-shadow: 0 4px 15px rgba(37, 99, 235, 0.35);
+  transition: transform 0.25s ease, box-shadow 0.25s ease, filter 0.25s ease;
+  box-shadow: 0 6px 24px -6px rgba(124, 92, 255, 0.65), inset 0 1px 0 rgba(255, 255, 255, 0.18);
 }
 
 .btn-gaming:hover {
-  background: #1D4ED8;
-  transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(29, 78, 216, 0.4);
+  filter: brightness(1.1);
+  transform: translateY(-1px);
+  box-shadow: 0 10px 30px -6px rgba(124, 92, 255, 0.8), inset 0 1px 0 rgba(255, 255, 255, 0.2);
 }
 
 .btn-buynow {
@@ -420,7 +494,7 @@ body {
 }
 
 .input-gaming:focus {
-  border-color: #3B82F6;
+  border-color: #7c5cff;
   box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2), 0 0 20px rgba(59, 130, 246, 0.1);
   outline: none;
 }
@@ -489,7 +563,7 @@ body {
 .hero-bolt {
   width: 80%;
   height: 80%;
-  background: #3B82F6;
+  background: #7c5cff;
   clip-path: polygon(10% 0%, 90% 0%, 70% 25%, 95% 25%, 60% 95%, 40% 95%, 55% 60%, 25% 60%, 35% 35%, 5% 35%);
   filter: drop-shadow(0 10px 20px rgba(0, 0, 0, 0.35));
 }
@@ -526,7 +600,7 @@ body {
   cursor: pointer;
 }
 .hero-dot-btn:focus-visible {
-  outline: 2px solid #3B82F6;
+  outline: 2px solid #7c5cff;
   outline-offset: 2px;
 }
 .hero-dot {
@@ -634,3 +708,127 @@ img {
 }
 
 
+
+/* ============================================
+   REDESIGN UTILITIES
+   ============================================ */
+
+/* Big violet halo behind page heroes */
+.hero-halo {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(closest-side at 50% 55%, rgba(124, 92, 255, 0.55), rgba(124, 92, 255, 0.12) 55%, transparent 80%),
+    radial-gradient(closest-side at 70% 30%, rgba(224, 59, 190, 0.18), transparent 70%);
+  filter: blur(8px);
+}
+
+/* Concentric rings, drawn with CSS so the hero needs no image */
+.hero-rings {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: repeating-radial-gradient(circle at 50% 60%, rgba(255, 255, 255, 0.045) 0 1px, transparent 1px 22px);
+  mask-image: radial-gradient(closest-side at 50% 60%, #000 30%, transparent 85%);
+  -webkit-mask-image: radial-gradient(closest-side at 50% 60%, #000 30%, transparent 85%);
+}
+
+.dot-grid {
+  background-image: radial-gradient(rgba(255, 255, 255, 0.07) 1px, transparent 1px);
+  background-size: 18px 18px;
+}
+
+/* Surface card used by panels and public sections */
+.surface {
+  background: linear-gradient(180deg, rgba(29, 26, 46, 0.55) 0%, rgba(20, 18, 31, 0.9) 100%);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  border-radius: 1.25rem;
+}
+
+.surface-hover {
+  transition: border-color 0.25s ease, transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.surface-hover:hover {
+  border-color: rgba(124, 92, 255, 0.45);
+  transform: translateY(-3px);
+  box-shadow: 0 18px 40px -18px rgba(124, 92, 255, 0.55);
+}
+
+/* Game tile: artwork card with bottom-weighted shade */
+.game-tile {
+  position: relative;
+  overflow: hidden;
+  border-radius: 1.25rem;
+  isolation: isolate;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  transition: transform 0.35s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.35s ease, border-color 0.35s ease;
+}
+
+.game-tile:hover {
+  transform: translateY(-4px);
+  border-color: rgba(124, 92, 255, 0.55);
+  box-shadow: 0 24px 50px -20px rgba(124, 92, 255, 0.7);
+}
+
+.game-tile .game-tile-art {
+  transition: transform 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.game-tile:hover .game-tile-art {
+  transform: scale(1.06);
+}
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  border-radius: 999px;
+  padding: 0.3rem 0.7rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  background: rgba(11, 10, 19, 0.55);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+.eyebrow {
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--color-brand-300);
+}
+
+/* Panel navigation item */
+.panel-link {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.65rem 0.85rem;
+  border-radius: 0.8rem;
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: #a9a5c2;
+  transition: background 0.2s ease, color 0.2s ease;
+}
+
+.panel-link:hover {
+  background: rgba(255, 255, 255, 0.04);
+  color: #fff;
+}
+
+.panel-link-active {
+  color: #fff;
+  background: linear-gradient(90deg, rgba(124, 92, 255, 0.28) 0%, rgba(124, 92, 255, 0.06) 100%);
+  box-shadow: inset 2px 0 0 #7c5cff;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .game-tile, .game-tile .game-tile-art, .surface-hover, .card-gaming, .float, .pulse-glow, .shimmer::after {
+    transition: none !important;
+    animation: none !important;
+  }
+}

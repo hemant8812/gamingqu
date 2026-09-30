@@ -79,8 +79,8 @@ export default function RegisterPage() {
       <div className="particles" />
 
       {/* Animated gradient orbs */}
-      <div className="absolute top-1/3 right-1/4 w-96 h-96 bg-cyan-500/20 rounded-full blur-3xl animate-pulse" />
-      <div className="absolute bottom-1/3 left-1/4 w-80 h-80 bg-blue-600/20 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }} />
+      <div className="absolute top-1/3 right-1/4 w-96 h-96 bg-accent-500/20 rounded-full blur-3xl animate-pulse" />
+      <div className="absolute bottom-1/3 left-1/4 w-80 h-80 bg-brand-600/20 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }} />
 
       <div className="w-full max-w-6xl grid grid-cols-1 lg:grid-cols-2 glass-card rounded-3xl shadow-2xl overflow-hidden border border-white/10 relative z-10">
 
@@ -88,8 +88,8 @@ export default function RegisterPage() {
         <div className="hidden lg:flex flex-col relative p-8 justify-between overflow-hidden">
           {/* Background image with overlay */}
           <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1542751371-adc38448a05e?q=80&w=2070&auto=format&fit=crop')] bg-cover bg-center opacity-30" />
-          <div className="absolute inset-0 bg-gradient-to-br from-cyan-900/80 via-indigo-900/60 to-blue-900/80" />
-          <div className="absolute inset-0 bg-gradient-to-t from-[#0A0E17] via-transparent to-transparent" />
+          <div className="absolute inset-0 bg-gradient-to-br from-accent-900/80 via-brand-900/60 to-brand-900/80" />
+          <div className="absolute inset-0 bg-gradient-to-t from-ink-900 via-transparent to-transparent" />
 
           {/* Top - Logo */}
           <div className="relative z-10 flex justify-end">
@@ -100,7 +100,7 @@ export default function RegisterPage() {
 
           {/* Middle - Content */}
           <div className="relative z-10 max-w-md ml-auto text-right">
-            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full glass-light text-sm text-cyan-300 font-medium mb-6">
+            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full glass-light text-sm text-accent-300 font-medium mb-6">
               <Star className="h-4 w-4" />
               Join the Elite
             </div>
@@ -113,11 +113,11 @@ export default function RegisterPage() {
 
             {/* Stats */}
             <div className="flex items-center gap-4 mt-4 justify-end">
-              <div className="flex items-center gap-2 text-blue-400 text-sm">
+              <div className="flex items-center gap-2 text-brand-400 text-sm">
                 <Users className="h-5 w-5" />
                 <span>50K+ Members</span>
               </div>
-              <div className="flex items-center gap-2 text-cyan-400 text-sm">
+              <div className="flex items-center gap-2 text-accent-400 text-sm">
                 <FiAward className="h-5 w-5" />
                 <span>Top Rated</span>
               </div>
@@ -128,7 +128,7 @@ export default function RegisterPage() {
           <div className="relative z-10 flex gap-2 justify-end">
             <div className="h-1 w-4 bg-white/20 rounded-full" />
             <div className="h-1 w-4 bg-white/20 rounded-full" />
-            <div className="h-1 w-12 rounded-full bg-gradient-to-r from-cyan-500 to-blue-500" />
+            <div className="h-1 w-12 rounded-full bg-gradient-to-r from-accent-500 to-brand-500" />
           </div>
         </div>
 
@@ -151,7 +151,7 @@ export default function RegisterPage() {
                   <label className="label text-sm font-medium text-gray-300 mb-1">Full Name</label>
                   <div className="relative group">
                     <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none z-10">
-                      <FiUser className="h-5 w-5 text-gray-500 group-focus-within:text-blue-400 transition-colors" />
+                      <FiUser className="h-5 w-5 text-gray-500 group-focus-within:text-brand-400 transition-colors" />
                     </div>
                     <input
                       id="name"
@@ -159,7 +159,7 @@ export default function RegisterPage() {
                       value={name}
                       onChange={(e) => setName(e.target.value)}
                       placeholder="John Doe"
-                      className="input w-full pl-10 h-11 bg-[#0A0E17] border-2 border-white/10 focus:border-blue-500 focus:ring-0 text-white placeholder-gray-500 rounded-xl transition-all duration-300 focus:shadow-[0_0_20px_rgba(139,92,246,0.2)] text-sm"
+                      className="input w-full pl-10 h-11 bg-ink-900 border-2 border-white/10 focus:border-brand-500 focus:ring-0 text-white placeholder-gray-500 rounded-xl transition-all duration-300 focus:shadow-[0_0_20px_rgba(139,92,246,0.2)] text-sm"
                       required
                       autoComplete="name"
                     />
@@ -169,7 +169,7 @@ export default function RegisterPage() {
                   <label className="label text-sm font-medium text-gray-300 mb-1">Username</label>
                   <div className="relative group">
                     <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none z-10">
-                      <FiAtSign className="h-5 w-5 text-gray-500 group-focus-within:text-blue-400 transition-colors" />
+                      <FiAtSign className="h-5 w-5 text-gray-500 group-focus-within:text-brand-400 transition-colors" />
                     </div>
                     <input
                       id="username"
@@ -177,7 +177,7 @@ export default function RegisterPage() {
                       value={username}
                       onChange={(e) => setUsername(e.target.value)}
                       placeholder="johndoe"
-                      className="input w-full pl-10 h-11 bg-[#0A0E17] border-2 border-white/10 focus:border-blue-500 focus:ring-0 text-white placeholder-gray-500 rounded-xl transition-all duration-300 focus:shadow-[0_0_20px_rgba(139,92,246,0.2)] text-sm"
+                      className="input w-full pl-10 h-11 bg-ink-900 border-2 border-white/10 focus:border-brand-500 focus:ring-0 text-white placeholder-gray-500 rounded-xl transition-all duration-300 focus:shadow-[0_0_20px_rgba(139,92,246,0.2)] text-sm"
                       required
                       autoComplete="username"
                     />
@@ -190,7 +190,7 @@ export default function RegisterPage() {
                 <label className="label text-sm font-medium text-gray-300 mb-1">Email Address</label>
                 <div className="relative group">
                   <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none z-10">
-                    <FiMail className="h-5 w-5 text-gray-500 group-focus-within:text-blue-400 transition-colors" />
+                    <FiMail className="h-5 w-5 text-gray-500 group-focus-within:text-brand-400 transition-colors" />
                   </div>
                   <input
                     id="email"
@@ -198,7 +198,7 @@ export default function RegisterPage() {
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     placeholder="john@example.com"
-                    className="input w-full pl-10 h-11 bg-[#0A0E17] border-2 border-white/10 focus:border-blue-500 focus:ring-0 text-white placeholder-gray-500 rounded-xl transition-all duration-300 focus:shadow-[0_0_20px_rgba(139,92,246,0.2)] text-sm"
+                    className="input w-full pl-10 h-11 bg-ink-900 border-2 border-white/10 focus:border-brand-500 focus:ring-0 text-white placeholder-gray-500 rounded-xl transition-all duration-300 focus:shadow-[0_0_20px_rgba(139,92,246,0.2)] text-sm"
                     required
                     autoComplete="email"
                   />
@@ -210,7 +210,7 @@ export default function RegisterPage() {
                 <label className="label text-sm font-medium text-gray-300 mb-1">Password</label>
                 <div className="relative group">
                   <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none z-10">
-                    <FiLock className="h-5 w-5 text-gray-500 group-focus-within:text-blue-400 transition-colors" />
+                    <FiLock className="h-5 w-5 text-gray-500 group-focus-within:text-brand-400 transition-colors" />
                   </div>
                   <input
                     id="password"
@@ -218,7 +218,7 @@ export default function RegisterPage() {
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     placeholder="Create a password"
-                    className="input w-full pl-10 h-11 bg-[#0A0E17] border-2 border-white/10 focus:border-blue-500 focus:ring-0 text-white placeholder-gray-500 rounded-xl transition-all duration-300 focus:shadow-[0_0_20px_rgba(139,92,246,0.2)] text-sm"
+                    className="input w-full pl-10 h-11 bg-ink-900 border-2 border-white/10 focus:border-brand-500 focus:ring-0 text-white placeholder-gray-500 rounded-xl transition-all duration-300 focus:shadow-[0_0_20px_rgba(139,92,246,0.2)] text-sm"
                     required
                     autoComplete="new-password"
                   />
@@ -230,7 +230,7 @@ export default function RegisterPage() {
                 <label className="label text-sm font-medium text-gray-300 mb-1">Confirm Password</label>
                 <div className="relative group">
                   <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none z-10">
-                    <FiLock className="h-5 w-5 text-gray-500 group-focus-within:text-blue-400 transition-colors" />
+                    <FiLock className="h-5 w-5 text-gray-500 group-focus-within:text-brand-400 transition-colors" />
                   </div>
                   <input
                     id="confirm"
@@ -238,7 +238,7 @@ export default function RegisterPage() {
                     value={confirm}
                     onChange={(e) => setConfirm(e.target.value)}
                     placeholder="Confirm your password"
-                    className="input w-full pl-10 h-11 bg-[#0A0E17] border-2 border-white/10 focus:border-blue-500 focus:ring-0 text-white placeholder-gray-500 rounded-xl transition-all duration-300 focus:shadow-[0_0_20px_rgba(139,92,246,0.2)] text-sm"
+                    className="input w-full pl-10 h-11 bg-ink-900 border-2 border-white/10 focus:border-brand-500 focus:ring-0 text-white placeholder-gray-500 rounded-xl transition-all duration-300 focus:shadow-[0_0_20px_rgba(139,92,246,0.2)] text-sm"
                     required
                     autoComplete="new-password"
                   />
@@ -265,13 +265,13 @@ export default function RegisterPage() {
                     name="consent"
                     type="checkbox"
                     required
-                    className="checkbox checkbox-sm border-2 border-gray-600 checked:border-blue-500 checked:bg-blue-500 rounded-md mt-0.5"
+                    className="checkbox checkbox-sm border-2 border-gray-600 checked:border-brand-500 checked:bg-brand-500 rounded-md mt-0.5"
                   />
                   <span className="text-xs text-gray-400 group-hover:text-gray-300 transition-colors leading-snug">
                     I agree to the{" "}
-                    <Link href="/terms" className="text-blue-400 hover:text-blue-300 hover:underline">Terms of Service</Link>
+                    <Link href="/terms" className="text-brand-400 hover:text-brand-300 hover:underline">Terms of Service</Link>
                     {" "}and{" "}
-                    <Link href="/privacy" className="text-blue-400 hover:text-blue-300 hover:underline">Privacy Policy</Link>
+                    <Link href="/privacy" className="text-brand-400 hover:text-brand-300 hover:underline">Privacy Policy</Link>
                   </span>
                 </label>
               </div>
@@ -320,7 +320,7 @@ export default function RegisterPage() {
             {/* Login Link */}
             <p className="text-center text-gray-400 text-sm">
               Already have an account?{" "}
-              <Link href="/login" className="text-blue-400 hover:text-blue-300 font-bold transition-colors">
+              <Link href="/login" className="text-brand-400 hover:text-brand-300 font-bold transition-colors">
                 Log In
               </Link>
             </p>

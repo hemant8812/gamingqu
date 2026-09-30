@@ -48,7 +48,7 @@ export function ServiceList({ services }: { services: ServiceItem[] }) {
       {services.map((s) => (
         <div
           key={s.id}
-          className="flex items-center gap-4 p-3 bg-[#0A0E17] hover:bg-white/5 rounded-xl transition-colors"
+          className="flex items-center gap-4 p-3 bg-ink-900 hover:bg-white/5 rounded-xl transition-colors"
         >
           <div className="w-14 h-14 rounded-lg bg-white/5 overflow-hidden flex items-center justify-center shrink-0">
             {s.imageUrl ? (
@@ -69,7 +69,7 @@ export function ServiceList({ services }: { services: ServiceItem[] }) {
                   Hot Offer
                 </span>
               )}
-              <span className="inline-flex px-2 py-0.5 text-xs font-medium rounded-md bg-blue-500/20 text-blue-400">
+              <span className="inline-flex px-2 py-0.5 text-xs font-medium rounded-md bg-brand-500/20 text-brand-400">
                 ${Number(s.price).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
               </span>
             </div>
@@ -94,7 +94,7 @@ export function ServiceList({ services }: { services: ServiceItem[] }) {
       ))}
     </div>
     <dialog ref={dialogRef} className="modal">
-      <div className="modal-box bg-[#0F172A] border-0 text-white rounded-2xl">
+      <div className="modal-box bg-ink-800 border-0 text-white rounded-2xl">
         <div className="flex flex-col items-center text-center gap-2 mb-4">
           <AlertTriangle className="h-10 w-10 text-yellow-400" />
           <h3 className="font-bold text-xl">Delete Service</h3>

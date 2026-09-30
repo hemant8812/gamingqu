@@ -6,14 +6,14 @@ type ToggleProps = { label: string; desc?: string; value: boolean; onChange: (v:
 
 function Toggle({ label, desc, value, onChange }: ToggleProps) {
   return (
-    <div className="flex items-center justify-between p-4 rounded-xl bg-[#0A0E17] border border-white/10">
+    <div className="flex items-center justify-between p-4 rounded-xl bg-ink-900 border border-white/10">
       <div>
         <div className="text-sm font-medium text-white">{label}</div>
         {desc ? <div className="text-xs text-gray-400">{desc}</div> : null}
       </div>
       <label className="inline-flex items-center cursor-pointer">
         <input type="checkbox" className="sr-only peer" checked={value} onChange={(e) => onChange(e.target.checked)} />
-        <div className="w-11 h-6 bg-white/10 peer-checked:bg-blue-600 rounded-full peer-focus:ring-2 ring-blue-500 transition-colors relative">
+        <div className="w-11 h-6 bg-white/10 peer-checked:bg-brand-600 rounded-full peer-focus:ring-2 ring-brand-500 transition-colors relative">
           <div className={`absolute top-0.5 left-0.5 w-5 h-5 rounded-full bg-white transition-transform ${value ? "translate-x-5" : ""}`} />
         </div>
       </label>
@@ -80,7 +80,7 @@ export function SettingsClient() {
         <div className="rounded-xl bg-white/10 text-white text-xs px-3 py-1">{themeLabel}</div>
       </div>
       <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-3">
-        <div className="flex items-center gap-3 p-4 rounded-xl bg-[#0A0E17] border border-white/10">
+        <div className="flex items-center gap-3 p-4 rounded-xl bg-ink-900 border border-white/10">
           <div className="flex-1">
             <div className="text-sm font-medium text-white">Theme</div>
             <div className="text-xs text-gray-400">Switch between Dark and Light</div>

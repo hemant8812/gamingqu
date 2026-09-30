@@ -24,7 +24,7 @@ const ROLE_LABEL: Record<Role, string> = {
 
 const ROLE_BADGE_CLASS: Record<Role, string> = {
   SUPERADMIN: "bg-red-500/20 text-red-400",
-  ADMIN: "bg-blue-500/20 text-blue-400",
+  ADMIN: "bg-brand-500/20 text-brand-400",
   BOOSTER: "bg-orange-500/20 text-orange-400",
   MEMBER: "bg-gray-500/20 text-gray-400",
 };
@@ -188,7 +188,7 @@ export function UserList({
           <div className="text-center py-12 text-gray-500">No users found</div>
         ) : (
           users.map((u) => (
-            <div key={u.id} className="bg-[#0A0E17] rounded-xl p-4">
+            <div key={u.id} className="bg-ink-900 rounded-xl p-4">
               <div className="flex items-start justify-between mb-3">
                 <div>
                   <div className="text-white font-medium">{u.name ?? "-"}</div>

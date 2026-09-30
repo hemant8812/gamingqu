@@ -211,11 +211,11 @@ export default async function AdminUsersPage({ searchParams }: { searchParams: P
   const myId = session?.user?.id ?? null;
 
   return (
-    <div className="min-h-screen bg-[#0A0E17] text-white">
+    <div className="min-h-screen bg-ink-900 text-white">
       {/* Background effects */}
       <div className="fixed inset-0 pointer-events-none">
-        <div className="absolute top-0 left-1/4 w-96 h-96 bg-blue-600/10 rounded-full blur-3xl" />
-        <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-cyan-500/10 rounded-full blur-3xl" />
+        <div className="absolute top-0 left-1/4 w-96 h-96 bg-brand-600/10 rounded-full blur-3xl" />
+        <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-accent-500/10 rounded-full blur-3xl" />
       </div>
 
       <div className="relative z-10 mx-auto max-w-7xl px-6 py-8">
@@ -229,18 +229,18 @@ export default async function AdminUsersPage({ searchParams }: { searchParams: P
 
         {/* Stats Grid */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
-          <div className="bg-[#0F172A] border border-white/10 rounded-2xl p-5">
+          <div className="bg-ink-800 border border-white/10 rounded-2xl p-5">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-gray-400 mb-1">Total Users</p>
                 <p className="text-3xl font-bold text-white">{totalUser}</p>
               </div>
-              <div className="w-12 h-12 rounded-xl bg-blue-500/20 flex items-center justify-center text-blue-400">
+              <div className="w-12 h-12 rounded-xl bg-brand-500/20 flex items-center justify-center text-brand-400">
                 <UsersIcon className="h-6 w-6" />
               </div>
             </div>
           </div>
-          <div className="bg-[#0F172A] border border-white/10 rounded-2xl p-5">
+          <div className="bg-ink-800 border border-white/10 rounded-2xl p-5">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-gray-400 mb-1">Members</p>
@@ -251,7 +251,7 @@ export default async function AdminUsersPage({ searchParams }: { searchParams: P
               </div>
             </div>
           </div>
-          <div className="bg-[#0F172A] border border-white/10 rounded-2xl p-5">
+          <div className="bg-ink-800 border border-white/10 rounded-2xl p-5">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-gray-400 mb-1">Boosters</p>
@@ -262,7 +262,7 @@ export default async function AdminUsersPage({ searchParams }: { searchParams: P
               </div>
             </div>
           </div>
-          <div className="bg-[#0F172A] border border-white/10 rounded-2xl p-5">
+          <div className="bg-ink-800 border border-white/10 rounded-2xl p-5">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-gray-400 mb-1">Suspended</p>
@@ -282,7 +282,7 @@ export default async function AdminUsersPage({ searchParams }: { searchParams: P
         </div>
 
         {/* Users Table Card */}
-        <div className="bg-[#0F172A] border border-white/10 rounded-2xl overflow-hidden">
+        <div className="bg-ink-800 border border-white/10 rounded-2xl overflow-hidden">
           <div className="p-4 border-b border-white/10 flex items-center justify-between">
             <h3 className="text-lg font-bold text-white">Users</h3>
             <UsersSearchInput />

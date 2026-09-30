@@ -40,7 +40,7 @@ export default async function ProfilePage({ searchParams }: { searchParams?: Pro
   const isMember = role === "MEMBER";
   if (!session?.user) {
     return (
-      <div className="min-h-screen bg-[#0A0E17] flex items-center justify-center">
+      <div className="min-h-screen bg-ink-900 flex items-center justify-center">
         <div className="text-center">
           <h1 className="text-3xl font-bold text-white mb-2">Sign in required</h1>
           <p className="text-gray-400 mb-4">Please sign in to view your profile.</p>
@@ -51,7 +51,7 @@ export default async function ProfilePage({ searchParams }: { searchParams?: Pro
   }
   if (!isMember) {
     return (
-      <div className="min-h-screen bg-[#0A0E17] flex items-center justify-center">
+      <div className="min-h-screen bg-ink-900 flex items-center justify-center">
         <div className="text-center">
           <h1 className="text-3xl font-bold text-white mb-2">Access Denied</h1>
           <p className="text-gray-400">This page is available for members only.</p>
@@ -91,14 +91,14 @@ export default async function ProfilePage({ searchParams }: { searchParams?: Pro
       : undefined;
   const toastType: "success" | "error" = toast === "error" ? "error" : "success";
   return (
-    <div className="min-h-screen bg-[#0A0E17] text-white">
+    <div className="min-h-screen bg-ink-900 text-white">
       <div className="fixed inset-0 pointer-events-none">
-        <div className="absolute top-0 left-1/4 w-96 h-96 bg-blue-600/10 rounded-full blur-3xl" />
-        <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-cyan-500/10 rounded-full blur-3xl" />
+        <div className="absolute top-0 left-1/4 w-96 h-96 bg-brand-600/10 rounded-full blur-3xl" />
+        <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-accent-500/10 rounded-full blur-3xl" />
       </div>
       <div className="relative z-10 mx-auto max-w-7xl px-6 py-8">
         <div className="grid grid-cols-1 lg:grid-cols-[260px_1fr] gap-6">
-          <aside className="space-y-6 hidden lg:block lg:sticky lg:top-8 self-start">
+          <aside className="space-y-6 hidden lg:block lg:sticky lg:top-20 self-start">
             <MemberSidebar active="profile" />
           </aside>
           <main>
@@ -171,9 +171,9 @@ export default async function ProfilePage({ searchParams }: { searchParams?: Pro
                     <div className="text-sm">For security, please create a password to protect your account.</div>
                   </div>
                 </div>
-                <div className="bg-[#0F172A] border border-white/10 rounded-2xl p-5">
+                <div className="bg-ink-800 border border-white/10 rounded-2xl p-5">
                   <div className="flex items-center gap-3 mb-4">
-                    <div className="w-9 h-9 rounded-xl bg-blue-500/20 flex items-center justify-center text-blue-400 ring-1 ring-blue-500/20">
+                    <div className="w-9 h-9 rounded-xl bg-brand-500/20 flex items-center justify-center text-brand-400 ring-1 ring-brand-500/20">
                       <User className="h-5 w-5" />
                     </div>
                     <div>
@@ -187,9 +187,9 @@ export default async function ProfilePage({ searchParams }: { searchParams?: Pro
                 </div>
               </div>
             ) : (
-              <div className="bg-[#0F172A] border border-white/10 rounded-2xl p-5">
+              <div className="bg-ink-800 border border-white/10 rounded-2xl p-5">
                 <div className="flex items-center gap-3 mb-4">
-                  <div className="w-9 h-9 rounded-xl bg-blue-500/20 flex items-center justify-center text-blue-400 ring-1 ring-blue-500/20">
+                  <div className="w-9 h-9 rounded-xl bg-brand-500/20 flex items-center justify-center text-brand-400 ring-1 ring-brand-500/20">
                     <User className="h-5 w-5" />
                   </div>
                   <div>

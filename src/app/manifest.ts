@@ -9,8 +9,8 @@ export default async function manifest(): Promise<MetadataRoute.Manifest> {
     description: tagline,
     start_url: "/",
     display: "standalone",
-    background_color: "#0A0E17",
-    theme_color: "#0A0E17",
+    background_color: "#0b0a13",
+    theme_color: "#0b0a13",
     orientation: "portrait-primary",
     icons: [
       { src: favicon, sizes: "192x192", type: "image/png", purpose: "any" },

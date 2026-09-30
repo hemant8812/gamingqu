@@ -47,7 +47,7 @@
          onChange={(e) => setQ(e.target.value)}
          type="text"
          placeholder="Search by order code or service..."
-         className="w-full pl-9 pr-3 h-10 bg-[#0A0E17] border border-white/10 rounded-xl text-white placeholder-gray-500 focus:border-blue-500 focus:outline-none transition-colors"
+         className="w-full pl-9 pr-3 h-10 bg-ink-900 border border-white/10 rounded-xl text-white placeholder-gray-500 focus:border-brand-500 focus:outline-none transition-colors"
          aria-label="Search orders"
        />
      </div>

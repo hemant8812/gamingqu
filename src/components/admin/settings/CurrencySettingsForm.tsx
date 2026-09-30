@@ -50,7 +50,7 @@ export function CurrencySettingsForm({
    };
  
    const inputClassName =
-     "w-full h-11 px-4 bg-slate-800/50 border border-slate-600 rounded-xl text-white placeholder-gray-400 hover:border-blue-500/50 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/30 focus:outline-none transition-all";
+     "w-full h-11 px-4 bg-slate-800/50 border border-slate-600 rounded-xl text-white placeholder-gray-400 hover:border-brand-500/50 focus:border-brand-500 focus:ring-2 focus:ring-brand-500/30 focus:outline-none transition-all";
  
   const clampPercent = (n: number) => Math.max(0, Math.min(100, n));
   const formatPercent = (n: number) => {
@@ -59,7 +59,7 @@ export function CurrencySettingsForm({
   };
 
    return (
-     <form onSubmit={onSubmit} method="post" className="bg-[#0F172A] border border-white/10 rounded-2xl p-6 space-y-6">
+     <form onSubmit={onSubmit} method="post" className="bg-ink-800 border border-white/10 rounded-2xl p-6 space-y-6">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
          <div>
            <label htmlFor="eurPerUsd" className="block text-sm font-medium text-gray-300 mb-2">

@@ -64,7 +64,7 @@ export function GameList({ games }: { games: Game[] }) {
   };
 
   return (
-    <div className="bg-[#0F172A] border border-white/10 rounded-2xl overflow-hidden">
+    <div className="bg-ink-800 border border-white/10 rounded-2xl overflow-hidden">
       <div className="p-5 border-b border-white/10 flex items-center justify-between">
         <h2 className="text-lg font-bold text-white">Game Data</h2>
         <GameSearchInput />
@@ -81,8 +81,8 @@ export function GameList({ games }: { games: Game[] }) {
             onDragStart={(e) => handleDragStart(e, index)}
             onDragOver={(e) => handleDragOver(e, index)}
             onDragEnd={handleDragEnd}
-            className={`flex items-center gap-4 p-3 bg-[#0A0E17] hover:bg-white/5 rounded-xl transition-all duration-200 border border-transparent select-none cursor-pointer ${
-              dragStartIdx.current === index ? "opacity-40 scale-[0.98] border-blue-500/30" : "opacity-100"
+            className={`flex items-center gap-4 p-3 bg-ink-900 hover:bg-white/5 rounded-xl transition-all duration-200 border border-transparent select-none cursor-pointer ${
+              dragStartIdx.current === index ? "opacity-40 scale-[0.98] border-brand-500/30" : "opacity-100"
             }`}
           >
             {/* Drag Handle */}

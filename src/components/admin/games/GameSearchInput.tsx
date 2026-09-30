@@ -39,7 +39,7 @@ export function GameSearchInput({ placeholder = "Search games..." }: { placehold
         value={value}
         onChange={(e) => setValue(e.target.value)}
         placeholder={placeholder}
-        className="pl-10 pr-4 h-10 w-64 bg-[#0A0E17] border-0 rounded-xl text-white placeholder-gray-500 focus:ring-2 focus:ring-blue-500 focus:outline-none transition-all"
+        className="pl-10 pr-4 h-10 w-64 bg-ink-900 border-0 rounded-xl text-white placeholder-gray-500 focus:ring-2 focus:ring-brand-500 focus:outline-none transition-all"
         aria-label="Search games"
       />
     </div>

@@ -63,20 +63,20 @@ export function AdminOrdersTable({ orders, page = 1, totalPages = 1 }: { orders:
             type="text"
             aria-label="Search orders"
             placeholder="Search orders..."
-            className="w-full pl-12 pr-4 h-12 bg-[#0F172A] border border-white/10 rounded-xl text-white placeholder-gray-500 focus:border-blue-500 focus:outline-none transition-colors"
+            className="w-full pl-12 pr-4 h-12 bg-ink-800 border border-white/10 rounded-xl text-white placeholder-gray-500 focus:border-brand-500 focus:outline-none transition-colors"
             value={q}
             onChange={(e) => setQ(e.target.value)}
           />
         </div>
         <button
           onClick={onExport}
-          className="h-12 px-6 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-xl flex items-center gap-2 transition-colors"
+          className="h-12 px-6 bg-brand-600 hover:bg-brand-700 text-white font-medium rounded-xl flex items-center gap-2 transition-colors"
         >
           <FiDownload className="h-5 w-5" />
           Export
         </button>
       </div>
-      <div className="bg-[#0F172A] border border-white/10 rounded-2xl overflow-hidden">
+      <div className="bg-ink-800 border border-white/10 rounded-2xl overflow-hidden">
         <div className="p-6 border-b border-white/10">
           <div className="flex items-center justify-between">
             <h3 className="text-lg font-bold text-white">Recent Orders</h3>

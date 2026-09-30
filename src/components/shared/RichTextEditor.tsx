@@ -220,7 +220,7 @@ export function RichTextEditor({ name, initialHtml = "", placeholder = "Enter de
     updateToolbarState();
   };
   const btnClass = (active?: boolean) =>
-    `size-7 rounded-lg ${active ? "bg-blue-600 ring-blue-400/50" : "bg-zinc-900 ring-white/10"} text-white inline-flex items-center justify-center hover:bg-zinc-800`;
+    `size-7 rounded-lg ${active ? "bg-brand-600 ring-brand-400/50" : "bg-zinc-900 ring-white/10"} text-white inline-flex items-center justify-center hover:bg-zinc-800`;
   const confirmDialog = () => {
     if (!dialogMode) return;
     if (dialogMode === "link") {
@@ -349,7 +349,7 @@ export function RichTextEditor({ name, initialHtml = "", placeholder = "Enter de
       <input ref={inputRef} type="hidden" name={name} />
       {dialogMode && (
         <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/60">
-        <div className="w-11/12 max-w-sm bg-[#0F172A] border border-white/10 text-white rounded-2xl shadow-lg">
+        <div className="w-11/12 max-w-sm bg-ink-800 border border-white/10 text-white rounded-2xl shadow-lg">
             <div className="flex items-center justify-between p-5 border-b border-white/10">
               <div className="text-sm font-semibold">{dialogMode === "image" ? "Insert Image URL" : dialogMode === "table" ? "Insert Table" : "Insert URL"}</div>
               <button type="button" onClick={cancelDialog} className="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-white/10 transition-colors">
@@ -366,7 +366,7 @@ export function RichTextEditor({ name, initialHtml = "", placeholder = "Enter de
                         type="number"
                         min={1}
                         max={30}
-                        className="w-full h-11 px-4 bg-[#0A0E17] border-0 rounded-xl text-white placeholder-gray-500 focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                        className="w-full h-11 px-4 bg-ink-900 border-0 rounded-xl text-white placeholder-gray-500 focus:ring-2 focus:ring-brand-500 focus:outline-none"
                         value={tableRows}
                         onChange={(e) => setTableRows(Number(e.target.value))}
                       />
@@ -377,7 +377,7 @@ export function RichTextEditor({ name, initialHtml = "", placeholder = "Enter de
                         type="number"
                         min={1}
                         max={12}
-                        className="w-full h-11 px-4 bg-[#0A0E17] border-0 rounded-xl text-white placeholder-gray-500 focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                        className="w-full h-11 px-4 bg-ink-900 border-0 rounded-xl text-white placeholder-gray-500 focus:ring-2 focus:ring-brand-500 focus:outline-none"
                         value={tableCols}
                         onChange={(e) => setTableCols(Number(e.target.value))}
                       />
@@ -393,7 +393,7 @@ export function RichTextEditor({ name, initialHtml = "", placeholder = "Enter de
                   <input
                     type="text"
                     placeholder={dialogMode === "image" ? "https://example.com/image.jpg" : "https://example.com"}
-                    className="w-full h-11 px-4 bg-[#0A0E17] border-0 rounded-xl text-white placeholder-gray-500 focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                    className="w-full h-11 px-4 bg-ink-900 border-0 rounded-xl text-white placeholder-gray-500 focus:ring-2 focus:ring-brand-500 focus:outline-none"
                     value={dialogValue}
                     onChange={(e) => setDialogValue(e.target.value)}
                   />
@@ -406,7 +406,7 @@ export function RichTextEditor({ name, initialHtml = "", placeholder = "Enter de
                 <button
                   type="button"
                   onClick={confirmDialog}
-                  className="h-10 px-4 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-xl transition-colors disabled:opacity-50"
+                  className="h-10 px-4 bg-brand-600 hover:bg-brand-700 text-white font-medium rounded-xl transition-colors disabled:opacity-50"
                   disabled={dialogMode !== "table" ? !dialogValue : false}
                 >
                   Insert

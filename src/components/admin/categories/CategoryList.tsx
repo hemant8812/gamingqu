@@ -96,8 +96,8 @@ export function CategoryList({ categories }: { categories: CategoryItem[] }) {
           onDragStart={(e) => handleDragStart(e, index)}
           onDragOver={(e) => handleDragOver(e, index)}
           onDragEnd={handleDragEnd}
-          className={`flex items-center gap-4 p-3 bg-[#0A0E17] hover:bg-white/5 rounded-xl transition-all duration-200 border border-transparent select-none ${
-            dragStartIdx.current === index ? "opacity-40 scale-[0.98] border-blue-500/30" : "opacity-100"
+          className={`flex items-center gap-4 p-3 bg-ink-900 hover:bg-white/5 rounded-xl transition-all duration-200 border border-transparent select-none ${
+            dragStartIdx.current === index ? "opacity-40 scale-[0.98] border-brand-500/30" : "opacity-100"
           }`}
         >
           {/* Drag Handle */}
@@ -148,7 +148,7 @@ export function CategoryList({ categories }: { categories: CategoryItem[] }) {
       ))}
     </div>
     <dialog ref={dialogRef} className="modal">
-      <div className="modal-box bg-[#0F172A] border-0 text-white rounded-2xl">
+      <div className="modal-box bg-ink-800 border-0 text-white rounded-2xl">
         <div className="flex flex-col items-center text-center gap-2 mb-4">
           <AlertTriangle className="h-10 w-10 text-yellow-400" />
           <h3 className="font-bold text-xl">Delete Category</h3>

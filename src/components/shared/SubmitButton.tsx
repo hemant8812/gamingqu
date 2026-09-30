@@ -3,7 +3,7 @@
  
  export function SubmitButton({
    children,
-   className = "w-full h-9 rounded-lg bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold",
+   className = "w-full h-9 rounded-lg bg-brand-600 hover:bg-brand-700 text-white text-sm font-semibold",
    pendingClassName = "opacity-75 cursor-wait",
  }: {
    children: React.ReactNode;

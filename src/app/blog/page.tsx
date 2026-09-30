@@ -55,10 +55,10 @@ export default async function BlogPage({ searchParams }: { searchParams?: Promis
   };
 
   return (
-    <div className="min-h-screen bg-[#0A0E17] text-white">
+    <div className="min-h-screen bg-ink-900 text-white">
       <div className="fixed inset-0 pointer-events-none">
-        <div className="absolute top-0 left-1/4 w-96 h-96 bg-blue-600/10 rounded-full blur-3xl" />
-        <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-cyan-500/10 rounded-full blur-3xl" />
+        <div className="absolute top-0 left-1/4 w-96 h-96 bg-brand-600/10 rounded-full blur-3xl" />
+        <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-accent-500/10 rounded-full blur-3xl" />
       </div>
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 pt-10 pb-10">
         <JsonLd data={[breadcrumb, itemListLd]} />
@@ -73,7 +73,7 @@ export default async function BlogPage({ searchParams }: { searchParams?: Promis
           {posts.map((p, idx) => (
             <article
               key={p.id}
-              className="overflow-hidden rounded-xl border border-white/10 bg-[#0F172A] text-white shadow transition-transform hover:-translate-y-0.5"
+              className="overflow-hidden rounded-xl border border-white/10 bg-ink-800 text-white shadow transition-transform hover:-translate-y-0.5"
             >
               <Link href={`/blog/${p.slug}`} className="block">
                 <div className="relative w-full h-44">
@@ -148,7 +148,7 @@ export default async function BlogPage({ searchParams }: { searchParams?: Promis
                     aria-current={p === currentPage ? "page" : undefined}
                     className={`inline-flex items-center justify-center h-9 min-w-9 px-4 rounded-xl text-sm font-semibold transition-colors ${
                       p === currentPage
-                        ? "bg-gradient-to-r from-blue-500 to-cyan-500 text-white shadow-lg shadow-blue-500/25"
+                        ? "bg-gradient-to-r from-brand-500 to-accent-500 text-white shadow-lg shadow-brand-500/25"
                         : "bg-white/5 hover:bg-white/10 text-gray-300"
                     }`}
                   >
