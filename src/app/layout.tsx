@@ -84,7 +84,7 @@ export async function generateMetadata(): Promise<Metadata> {
     },
     icons: {
       icon: [
-        { url: "/favicon.ico", type: "image/x-icon" },
+        { url: "/favicon.ico", type: "image/png" },
         { url: favicon },
       ],
       shortcut: ["/favicon.ico"],

@@ -2,5 +2,5 @@
 export const SITE_DEFAULTS = {
   name: "ArcaneBoost",
   tagline: "Professional Game Boosting Services",
-  logo: "/icons/logo.png",
+  logo: "/brand/arcaneboost-icon-512.png",
 } as const;

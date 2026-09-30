@@ -47,7 +47,7 @@ export default async function ServiceDetailPage({ params }: { params: Params }) 
 
   const { base, siteName, favicon, logoUrl } = await getSiteMeta();
   const brandName = siteName;
-  const bannerLogoUrl = favicon || logoUrl || "/icons/logo.png";
+  const bannerLogoUrl = favicon || logoUrl || "/brand/arcaneboost-icon-512.png";
 
   const service = await db.service.findFirst({
     where: { slug: serviceSlug, isActive: true, game: { slug: gameSlug, isActive: true } },

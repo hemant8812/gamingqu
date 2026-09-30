@@ -86,7 +86,7 @@ export default function LoginPage() {
           {/* Top - Logo */}
           <div className="relative z-10">
             <Link href="/" className="inline-block">
-              <Image src="/icons/logo.png" alt={SITE_DEFAULTS.name} width={140} height={40} className="object-contain" />
+              <Image src="/icons/logo.png" alt={SITE_DEFAULTS.name} width={140} height={40} className="object-contain" style={{ height: 40, width: "auto", maxWidth: 220 }} />
             </Link>
           </div>
 

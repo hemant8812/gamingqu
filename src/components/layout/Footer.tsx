@@ -1,6 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
-import { FiZap, FiMessageCircle } from "react-icons/fi";
+import { FiMessageCircle } from "react-icons/fi";
 import { FaTelegramPlane, FaYoutube, FaDiscord, FaFacebookF } from "react-icons/fa";
 import { getFooterSettings } from "@/lib/settings";
 import { getSiteMeta } from "@/lib/seo";
@@ -70,12 +70,11 @@ export async function Footer() {
                 <div className="footer flex flex-col md:flex-row gap-10">
                     <aside className="w-full md:w-[40%]">
                         {logo ? (
-                            <Image src={logo} alt={siteName} width={150} height={50} className="h-10 w-auto mb-0" unoptimized />
+                            <Image src={logo} alt={siteName} width={150} height={50} className="h-10 w-auto mb-0" style={{ height: 40, width: "auto", maxWidth: 220 }} unoptimized />
                         ) : (
                             <span className="inline-flex items-center gap-2">
-                                <span className="grid h-9 w-9 place-items-center rounded-xl bg-gradient-to-br from-brand-400 via-brand-600 to-accent-500">
-                                    <FiZap className="h-4 w-4 text-white" />
-                                </span>
+                                {/* eslint-disable-next-line @next/next/no-img-element */}
+                                <img src="/brand/arcaneboost-icon.svg" alt="" width={36} height={36} className="h-9 w-9 rounded-xl" />
                                 <span className="font-display text-2xl font-extrabold tracking-tight text-white">{siteName}</span>
                             </span>
                         )}

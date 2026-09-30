@@ -102,7 +102,7 @@ export function HowItWorks() {
 
   return (
     <section 
-      className="mt-16 mb-20 relative"
+      className="mt-16 mb-20 relative overflow-x-clip"
       onMouseEnter={() => setIsPaused(true)}
       onMouseLeave={() => setIsPaused(false)}
     >

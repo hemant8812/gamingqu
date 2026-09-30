@@ -188,7 +188,8 @@ export function Navbar({ siteName = SITE_DEFAULTS.name, logoUrl = null, user = n
                   alt={siteName}
                   width={120}
                   height={40}
-                  className="h-8 w-auto object-contain"
+                  className="h-8 w-auto max-w-[118px] object-contain object-left sm:max-w-[180px]"
+                  style={{ height: 32, width: "auto" }}
                   onError={() => setShowLogo(false)}
                   unoptimized
                   priority
@@ -196,9 +197,8 @@ export function Navbar({ siteName = SITE_DEFAULTS.name, logoUrl = null, user = n
               </Link>
             ) : (
               <Link href="/" className="p-0 inline-flex items-center gap-2" aria-label="Go to homepage">
-                <span className="grid h-8 w-8 place-items-center rounded-xl bg-gradient-to-br from-brand-400 via-brand-600 to-accent-500 shadow-[0_6px_18px_-6px_rgba(124,92,255,0.9)]">
-                  <FiZap className="h-4 w-4 text-white" />
-                </span>
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src="/brand/arcaneboost-icon.svg" alt="" width={32} height={32} className="h-8 w-8 rounded-xl shadow-[0_6px_18px_-6px_rgba(124,92,255,0.9)]" />
                 <span className="font-display text-xl font-extrabold tracking-tight text-white">{siteName}</span>
               </Link>
             )}
