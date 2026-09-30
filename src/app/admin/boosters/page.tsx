@@ -4,11 +4,12 @@ import { FiStar, FiSearch, FiCheck, FiX, FiTrash2, FiClock } from "react-icons/f
 import { db } from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
 import { DeleteApplicationButton } from "@/components/admin/boosters/DeleteApplicationButton";
+import { assertAdminSection, canAccessAdminSection } from "@/lib/adminAccess";
 
 export default async function AdminBoostersPage({ searchParams }: { searchParams: Promise<Record<string, string | string[] | undefined>> }) {
   const session = await getServerSession(authOptions);
   const role = session?.user?.role;
-  if (role !== "ADMIN" && role !== "SUPERADMIN") {
+  if ((role !== "ADMIN" && role !== "SUPERADMIN") || !(await canAccessAdminSection("boosters"))) {
     return (
       <div className="min-h-screen bg-ink-900 flex items-center justify-center">
         <div className="text-center">
@@ -55,6 +56,7 @@ export default async function AdminBoostersPage({ searchParams }: { searchParams
   // Server Actions
   async function approveApplicationAction(formData: FormData) {
     "use server";
+    await assertAdminSection("boosters");
     const idStr = formData.get("id");
     const id = idStr ? Number(idStr) : null;
     if (!id) return;
@@ -80,6 +82,7 @@ export default async function AdminBoostersPage({ searchParams }: { searchParams
 
   async function rejectApplicationAction(formData: FormData) {
     "use server";
+    await assertAdminSection("boosters");
     const idStr = formData.get("id");
     const id = idStr ? Number(idStr) : null;
     if (!id) return;
@@ -97,6 +100,7 @@ export default async function AdminBoostersPage({ searchParams }: { searchParams
 
   async function deleteApplicationAction(formData: FormData) {
     "use server";
+    await assertAdminSection("boosters");
     const idStr = formData.get("id");
     const id = idStr ? Number(idStr) : null;
     if (!id) return;

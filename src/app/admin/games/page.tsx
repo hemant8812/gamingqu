@@ -4,6 +4,7 @@ import { db } from "@/lib/prisma";
 import { PageToast } from "@/components/shared/PageToast";
 import { GameManager } from "@/components/admin/games/GameManager";
 import { normalizeQuery, parseToast } from "@/lib/page-utils";
+import { canAccessAdminSection } from "@/lib/adminAccess";
 
 async function getGames(q?: string) {
   try {
@@ -42,7 +43,7 @@ async function getGames(q?: string) {
 export default async function AdminGamesPage({ searchParams }: { searchParams: Promise<Record<string, string | string[] | undefined>> }) {
   const session = await getServerSession(authOptions);
   const role = session?.user?.role;
-  if (role !== "ADMIN" && role !== "SUPERADMIN") {
+  if ((role !== "ADMIN" && role !== "SUPERADMIN") || !(await canAccessAdminSection("games"))) {
     return (
       <div className="min-h-screen bg-ink-900 flex items-center justify-center">
         <div className="text-center">

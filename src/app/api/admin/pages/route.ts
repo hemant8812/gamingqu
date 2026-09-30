@@ -2,12 +2,13 @@ import { NextResponse } from "next/server";
 import { db } from "@/lib/prisma";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/auth";
+import { canAccessAdminSection } from "@/lib/adminAccess";
 
 export async function GET() {
   try {
     const session = await getServerSession(authOptions);
     const role = session?.user?.role;
-    if (role !== "ADMIN" && role !== "SUPERADMIN") {
+    if ((role !== "ADMIN" && role !== "SUPERADMIN") || !(await canAccessAdminSection("legal"))) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
@@ -27,7 +28,7 @@ export async function POST(req: Request) {
   try {
     const session = await getServerSession(authOptions);
     const role = session?.user?.role;
-    if (role !== "ADMIN" && role !== "SUPERADMIN") {
+    if ((role !== "ADMIN" && role !== "SUPERADMIN") || !(await canAccessAdminSection("legal"))) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 

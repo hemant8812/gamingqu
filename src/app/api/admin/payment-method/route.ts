@@ -5,11 +5,12 @@ import { NextResponse } from "next/server";
 import { revalidatePath, revalidateTag } from "next/cache";
 import path from "path";
 import { promises as fs } from "fs";
+import { canAccessAdminSection } from "@/lib/adminAccess";
 
 export async function GET() {
   const session = await getServerSession(authOptions);
   const role = session?.user?.role;
-  if (role !== "ADMIN" && role !== "SUPERADMIN") {
+  if ((role !== "ADMIN" && role !== "SUPERADMIN") || !(await canAccessAdminSection("payment-method"))) {
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   }
   try {
@@ -26,7 +27,7 @@ export async function GET() {
 export async function POST(req: Request) {
   const session = await getServerSession(authOptions);
   const role = session?.user?.role;
-  if (role !== "ADMIN" && role !== "SUPERADMIN") {
+  if ((role !== "ADMIN" && role !== "SUPERADMIN") || !(await canAccessAdminSection("payment-method"))) {
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   }
   try {
@@ -82,7 +83,7 @@ export async function POST(req: Request) {
 export async function PUT(req: Request) {
   const session = await getServerSession(authOptions);
   const role = session?.user?.role;
-  if (role !== "ADMIN" && role !== "SUPERADMIN") {
+  if ((role !== "ADMIN" && role !== "SUPERADMIN") || !(await canAccessAdminSection("payment-method"))) {
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   }
   try {
@@ -153,7 +154,7 @@ export async function PUT(req: Request) {
 export async function DELETE(req: Request) {
   const session = await getServerSession(authOptions);
   const role = session?.user?.role;
-  if (role !== "ADMIN" && role !== "SUPERADMIN") {
+  if ((role !== "ADMIN" && role !== "SUPERADMIN") || !(await canAccessAdminSection("payment-method"))) {
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   }
   try {

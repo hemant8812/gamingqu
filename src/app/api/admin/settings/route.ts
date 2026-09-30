@@ -7,6 +7,7 @@ import path from "path";
 import { promises as fs } from "fs";
 import { getFooterSettings } from "@/lib/settings";
 import { SITE_DEFAULTS } from "@/lib/constants";
+import { canAccessAdminSection } from "@/lib/adminAccess";
 
 async function saveBrandFile(file: File | null, kind: "logo" | "favicon"): Promise<string | undefined> {
   if (!file || file.size === 0) return undefined;
@@ -66,7 +67,7 @@ export async function POST(req: Request) {
   try {
     const session = await getServerSession(authOptions);
     const role = session?.user?.role;
-    if (role !== "ADMIN" && role !== "SUPERADMIN") {
+    if ((role !== "ADMIN" && role !== "SUPERADMIN") || !(await canAccessAdminSection("settings"))) {
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
     const form = await req.formData();

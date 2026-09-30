@@ -6,6 +6,7 @@ import { revalidateTag } from "next/cache";
 import { sanitizeHtml, sanitizePlain } from "@/lib/sanitize";
 import path from "path";
 import { promises as fs } from "fs";
+import { canAccessAdminSection } from "@/lib/adminAccess";
 
 function slugify(input: string) {
   return input.toLowerCase().trim().replace(/[\s_]+/g, "-").replace(/[^a-z0-9-]/g, "").replace(/-+/g, "-").replace(/^-|-$/g, "");
@@ -31,7 +32,7 @@ export async function POST(req: Request) {
   try {
     const session = await getServerSession(authOptions);
     const role = session?.user?.role;
-    if (role !== "ADMIN" && role !== "SUPERADMIN") {
+    if ((role !== "ADMIN" && role !== "SUPERADMIN") || !(await canAccessAdminSection("games"))) {
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
     const form = await req.formData();
@@ -93,7 +94,7 @@ export async function PUT(req: Request) {
   try {
     const session = await getServerSession(authOptions);
     const role = session?.user?.role;
-    if (role !== "ADMIN" && role !== "SUPERADMIN") {
+    if ((role !== "ADMIN" && role !== "SUPERADMIN") || !(await canAccessAdminSection("games"))) {
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
     const form = await req.formData();

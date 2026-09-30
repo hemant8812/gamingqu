@@ -3,6 +3,7 @@ import { authOptions } from "@/auth";
 import { db } from "@/lib/prisma";
 import React from "react";
 import { ServiceDataManager } from "@/components/admin/services/ServiceDataManager";
+import { canAccessAdminSection } from "@/lib/adminAccess";
 
 type ServiceOption = { id: number; name: string; slug: string; price: string };
 
@@ -22,7 +23,7 @@ async function getServices(): Promise<ServiceOption[]> {
 export default async function AdminServiceDataPage() {
   const session = await getServerSession(authOptions);
   const role = session?.user?.role;
-  if (role !== "ADMIN" && role !== "SUPERADMIN") {
+  if ((role !== "ADMIN" && role !== "SUPERADMIN") || !(await canAccessAdminSection("services-data"))) {
     return (
       <div className="min-h-screen bg-ink-900 flex items-center justify-center">
         <div className="text-center">

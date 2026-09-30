@@ -5,6 +5,7 @@ import { NextResponse } from "next/server";
 import * as cheerio from "cheerio";
 import Parser from "rss-parser";
 import { toSlug, stripHtml } from "@/lib/text";
+import { canAccessAdminSection } from "@/lib/adminAccess";
 
 const parser = new Parser();
 
@@ -21,7 +22,7 @@ async function imageFromArticle(link: string) {
 
 export async function POST(req: Request) {
   const session = await getServerSession(authOptions);
-  if (session?.user?.role !== "ADMIN" && session?.user?.role !== "SUPERADMIN") {
+  if ((session?.user?.role !== "ADMIN" && session?.user?.role !== "SUPERADMIN") || !(await canAccessAdminSection("blog"))) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
@@ -55,7 +56,7 @@ export async function POST(req: Request) {
 
 export async function GET() {
     const session = await getServerSession(authOptions);
-    if (session?.user?.role !== "ADMIN" && session?.user?.role !== "SUPERADMIN") {
+    if ((session?.user?.role !== "ADMIN" && session?.user?.role !== "SUPERADMIN") || !(await canAccessAdminSection("blog"))) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
@@ -69,7 +70,7 @@ export async function GET() {
 
 export async function PUT(req: Request) {
     const session = await getServerSession(authOptions);
-    if (session?.user?.role !== "ADMIN" && session?.user?.role !== "SUPERADMIN") {
+    if ((session?.user?.role !== "ADMIN" && session?.user?.role !== "SUPERADMIN") || !(await canAccessAdminSection("blog"))) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
@@ -237,7 +238,7 @@ export async function PUT(req: Request) {
 
 export async function DELETE(req: Request) {
     const session = await getServerSession(authOptions);
-    if (session?.user?.role !== "ADMIN" && session?.user?.role !== "SUPERADMIN") {
+    if ((session?.user?.role !== "ADMIN" && session?.user?.role !== "SUPERADMIN") || !(await canAccessAdminSection("blog"))) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
     

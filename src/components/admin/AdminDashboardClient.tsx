@@ -101,13 +101,14 @@ export function AdminDashboardClient({ enabled, isSuperAdmin, stats }: AdminDash
         { key: "payment-method", title: "Payment Method", description: "Manage payment methods and fees", href: "/admin/payment-method", icon: <FiCreditCard className="h-6 w-6" />, color: "bg-brand-500/20 text-brand-400" },
         { key: "blog", title: "Blog", description: "Write and publish articles", href: "/admin/blog", icon: <FiFileText className="h-6 w-6" />, color: "bg-brand-500/20 text-brand-400" },
         { key: "benner", title: "Banners", description: "Manage promotional banners", href: "/admin/benner", icon: <FiImage className="h-6 w-6" />, color: "bg-rose-500/20 text-rose-400" },
+        { key: "legal", title: "Legal Pages", description: "Edit terms, privacy and refund pages", href: "/admin/legal", icon: <FiFileText className="h-6 w-6" />, color: "bg-brand-500/20 text-brand-400" },
         { key: "settings", title: "Settings", description: "Configure website settings", href: "/admin/settings", icon: <FiSettings className="h-6 w-6" />, color: "bg-slate-500/20 text-slate-400" },
         { key: "permissions", title: "Permissions", description: "Manage admin access rights", href: "/admin/permissions", icon: <FiShield className="h-6 w-6" />, color: "bg-red-500/20 text-red-400" },
     ];
 
     const visibleItems = isSuperAdmin
         ? menuItems
-        : menuItems.filter(item => enabled.has(item.key) || (item.key === "services-data" && enabled.has("services")));
+        : menuItems.filter(item => enabled.has(item.key));
 
     return (
         <div className="min-h-screen bg-ink-900 text-white">

@@ -5,7 +5,7 @@ import {
 } from "react-icons/fi";
 import { PanelNav, PanelTabs, type PanelNavItem } from "@/components/panel/PanelNav";
 
-// Same keys and filtering rules as AdminDashboardClient.
+// Keys match ADMIN_SECTIONS in lib/adminAccess.ts.
 const ITEMS: (PanelNavItem & { key: string })[] = [
   { key: "dashboard", href: "/admin", label: "Dashboard", icon: <FiGrid className="h-4 w-4" /> },
   { key: "orders", href: "/admin/orders", label: "Orders", icon: <FiShoppingCart className="h-4 w-4" /> },
@@ -29,8 +29,7 @@ export function AdminSidebar({ enabled, isSuperAdmin }: { enabled: string[]; isS
   const items = ITEMS.filter((it) => {
     if (it.key === "dashboard") return true;
     if (it.key === "permissions") return isSuperAdmin;
-    if (isSuperAdmin) return true;
-    return allowed.has(it.key) || (it.key === "services-data" && allowed.has("services"));
+    return isSuperAdmin || allowed.has(it.key);
   });
 
   return (

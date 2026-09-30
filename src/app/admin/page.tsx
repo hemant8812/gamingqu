@@ -2,6 +2,7 @@ import { db } from "@/lib/prisma";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/auth";
 import { AdminDashboardClient } from "@/components/admin/AdminDashboardClient";
+import { getAdminAccess } from "@/lib/adminAccess";
 
 export default async function AdminDashboard() {
   const session = await getServerSession(authOptions);
@@ -17,13 +18,9 @@ export default async function AdminDashboard() {
     );
   }
 
-  let enabled = new Set<string>();
-  try {
-    const perms = await db.adminPermission.findMany({ orderBy: { key: "asc" } });
-    enabled = new Set(perms.filter((p) => p.enabled).map((p) => p.key));
-  } catch {
-    enabled = new Set();
-  }
+  // Sections this admin was granted (super admins get all of them).
+  const access = await getAdminAccess();
+  const enabled = access?.allowed ?? new Set<string>();
 
   // Fetch stats for dashboard
   type DashboardStats = {

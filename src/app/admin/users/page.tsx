@@ -12,12 +12,21 @@ import { UsersSearchInput } from "@/components/admin/users/UsersSearchInput";
 import { generateRandomUserId } from "@/lib/userId";
 import { UserList } from "@/components/admin/users/UserList";
 import { normalizeQuery, parseToast, getParamStr } from "@/lib/page-utils";
+import { assertAdminSection, canAccessAdminSection, getAdminAccess } from "@/lib/adminAccess";
 
 const ALLOWED_ROLES: Role[] = ["SUPERADMIN", "ADMIN", "BOOSTER", "MEMBER"];
 
 function resolveRole(roleInput: string | null): Role {
   const v = (roleInput ?? "MEMBER") as Role;
   return ALLOWED_ROLES.includes(v) ? v : "MEMBER";
+}
+
+const STAFF_ROLES: Role[] = ["ADMIN", "SUPERADMIN"];
+
+// Only a super admin may create, change or remove admin accounts.
+async function actorIsSuperAdmin(): Promise<boolean> {
+  const access = await getAdminAccess();
+  return !!access?.isSuper;
 }
 
 export default async function AdminUsersPage({ searchParams }: { searchParams: Promise<Record<string, string | string[] | undefined>> }) {
@@ -37,11 +46,12 @@ export default async function AdminUsersPage({ searchParams }: { searchParams: P
   const q = normalizeQuery(sp, "q", 64);
   const session = await getServerSession(authOptions);
   const role = session?.user?.role;
-  if (role !== "ADMIN" && role !== "SUPERADMIN") {
+  if ((role !== "ADMIN" && role !== "SUPERADMIN") || !(await canAccessAdminSection("users"))) {
     return <div className="min-h-screen bg-base-200 text-base-content p-8">Forbidden</div>;
   }
   async function createUser(formData: FormData) {
     "use server";
+    await assertAdminSection("users");
     const name = (formData.get("name") as string | null)?.trim() ?? null;
     const email = (formData.get("email") as string | null)?.trim() ?? null;
     const username = (formData.get("username") as string | null)?.trim() ?? "";
@@ -52,6 +62,9 @@ export default async function AdminUsersPage({ searchParams }: { searchParams: P
     const resolvedRole: Role = resolveRole(roleInput);
     const passwordHash = password ? await hash(password, 10) : undefined;
     const isSuspended = suspendedRaw === "on";
+    if (STAFF_ROLES.includes(resolvedRole) && !(await actorIsSuperAdmin())) {
+      return { ok: false, message: "Only a super admin can create admin accounts" };
+    }
     if (!email) {
       return { ok: false, message: "Email is required" };
     }
@@ -101,6 +114,7 @@ export default async function AdminUsersPage({ searchParams }: { searchParams: P
   }
   async function updateUser(formData: FormData) {
     "use server";
+    await assertAdminSection("users");
     const id = (formData.get("id") as string | null) ?? "";
     const name = (formData.get("name") as string | null)?.trim() ?? null;
     const email = (formData.get("email") as string | null)?.trim() ?? null;
@@ -110,6 +124,12 @@ export default async function AdminUsersPage({ searchParams }: { searchParams: P
     const resolvedRole: Role = resolveRole(roleInput);
     const isSuspended = suspendedRaw === "on";
     if (!id) return { ok: false, message: "ID not found" };
+    if (!(await actorIsSuperAdmin())) {
+      const target = await db.user.findUnique({ where: { id }, select: { role: true } });
+      if ((target && STAFF_ROLES.includes(target.role)) || STAFF_ROLES.includes(resolvedRole)) {
+        return { ok: false, message: "Only a super admin can change admin accounts" };
+      }
+    }
     if (email) {
       const existingEmail = await db.user.findUnique({ where: { email } });
       if (existingEmail && existingEmail.id !== id) {
@@ -157,6 +177,7 @@ export default async function AdminUsersPage({ searchParams }: { searchParams: P
   }
   async function deleteUser(formData: FormData) {
     "use server";
+    await assertAdminSection("users");
     const id = (formData.get("id") as string | null) ?? "";
     const session = await getServerSession(authOptions);
     const myId = session?.user?.id ?? "";
@@ -164,6 +185,7 @@ export default async function AdminUsersPage({ searchParams }: { searchParams: P
     if (id === myId) return;
     const target = await db.user.findUnique({ where: { id }, select: { role: true } });
     if (target?.role === "SUPERADMIN") return;
+    if (target?.role === "ADMIN" && !(await actorIsSuperAdmin())) return;
     try {
       await db.user.delete({ where: { id } });
       revalidatePath("/admin/users");

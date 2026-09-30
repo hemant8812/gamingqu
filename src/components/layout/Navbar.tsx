@@ -20,6 +20,8 @@ type Props = {
     username?: string | null;
     role?: "MEMBER" | "BOOSTER" | "ADMIN" | "SUPERADMIN";
   } | null;
+  // Admin sections this user may open (from lib/adminAccess).
+  adminKeys?: string[];
 };
 
 type ApiServiceDTO = {
@@ -32,7 +34,25 @@ type ApiServiceDTO = {
 };
 type MenuGame = { slug: string; name: string; iconUrl?: string | null };
 
-export function Navbar({ siteName = SITE_DEFAULTS.name, logoUrl = null, user = null }: Props) {
+const ADMIN_MENU = [
+  { key: "dashboard", href: "/admin", label: "Dashboard", icon: FiGrid },
+  { key: "orders", href: "/admin/orders", label: "Orders", icon: FiShoppingCart },
+  { key: "users", href: "/admin/users", label: "Users", icon: FiUsers },
+  { key: "boosters", href: "/admin/boosters", label: "Boosters", icon: FiZap },
+  { key: "analytics", href: "/admin/analytics", label: "Analytics", icon: FiBarChart2 },
+  { key: "games", href: "/admin/games", label: "Games", icon: FiPlay },
+  { key: "categories", href: "/admin/categories", label: "Categories", icon: FiTag },
+  { key: "services", href: "/admin/services", label: "Services", icon: FiTool },
+  { key: "services-data", href: "/admin/service-data", label: "Data Service", icon: FiBarChart2 },
+  { key: "payment-method", href: "/admin/payment-method", label: "Payment Method", icon: FiCreditCard },
+  { key: "blog", href: "/admin/blog", label: "Blog", icon: FiBookOpen },
+  { key: "benner", href: "/admin/benner", label: "Banner", icon: FiImage },
+  { key: "legal", href: "/admin/legal", label: "Legal Pages", icon: FiFileText },
+  { key: "permissions", href: "/admin/permissions", label: "Permissions", icon: FiShield },
+  { key: "settings", href: "/admin/settings", label: "Settings", icon: FiSettings },
+];
+
+export function Navbar({ siteName = SITE_DEFAULTS.name, logoUrl = null, user = null, adminKeys = [] }: Props) {
   const { symbol: currency, setSymbol: setCurrency, convert } = useCurrency();
   const [showLogo, setShowLogo] = useState<boolean>(!!logoUrl);
   const pathname = usePathname();
@@ -53,6 +73,20 @@ export function Navbar({ siteName = SITE_DEFAULTS.name, logoUrl = null, user = n
       elem.blur();
     }
   };
+
+  const isSuperAdmin = user?.role === "SUPERADMIN";
+  const allowedAdmin = new Set(adminKeys);
+  const adminMenuItems = ADMIN_MENU.filter((m) => {
+    if (m.key === "dashboard") return true;
+    if (m.key === "permissions") return isSuperAdmin;
+    return isSuperAdmin || allowedAdmin.has(m.key);
+  }).map((m) => (
+    <li key={m.key}>
+      <Link href={m.href} onClick={closeDropdown} className="hover:bg-white/10 rounded-xl text-gray-200">
+        <m.icon className="h-4 w-4 text-brand-400" /> {m.label}
+      </Link>
+    </li>
+  ));
 
   useEffect(() => {
     if (!searchOpen) {
@@ -188,25 +222,7 @@ export function Navbar({ siteName = SITE_DEFAULTS.name, logoUrl = null, user = n
               </button>
               <ul tabIndex={0} className="dropdown-content z-[1] menu p-2 shadow-[0_24px_60px_-20px_rgba(0,0,0,0.8)] bg-ink-800/95 backdrop-blur-xl border border-white/10 rounded-2xl w-64 mt-4 max-h-[70vh] flex-nowrap overflow-y-auto">
                 {isAdminContext ? (
-                  <>
-                    <li><Link href="/admin" onClick={closeDropdown} className="hover:bg-white/10 rounded-xl text-gray-200"><FiGrid className="h-4 w-4 text-brand-400" /> Dashboard</Link></li>
-                    <li><Link href="/admin/users" onClick={closeDropdown} className="hover:bg-white/10 rounded-xl text-gray-200"><FiUsers className="h-4 w-4 text-brand-400" /> Users</Link></li>
-                    <li><Link href="/admin/boosters" onClick={closeDropdown} className="hover:bg-white/10 rounded-xl text-gray-200"><FiZap className="h-4 w-4 text-brand-400" /> Boosters</Link></li>
-                    <li><Link href="/admin/orders" onClick={closeDropdown} className="hover:bg-white/10 rounded-xl text-gray-200"><FiShoppingCart className="h-4 w-4 text-brand-400" /> Orders</Link></li>
-                    <li><Link href="/admin/analytics" onClick={closeDropdown} className="hover:bg-white/10 rounded-xl text-gray-200"><FiBarChart2 className="h-4 w-4 text-brand-400" /> Analytics</Link></li>
-                    <li><Link href="/admin/games" onClick={closeDropdown} className="hover:bg-white/10 rounded-xl text-gray-200"><FiPlay className="h-4 w-4 text-brand-400" /> Games</Link></li>
-                    <li><Link href="/admin/categories" onClick={closeDropdown} className="hover:bg-white/10 rounded-xl text-gray-200"><FiTag className="h-4 w-4 text-brand-400" /> Categories</Link></li>
-                    <li><Link href="/admin/services" onClick={closeDropdown} className="hover:bg-white/10 rounded-xl text-gray-200"><FiTool className="h-4 w-4 text-brand-400" /> Services</Link></li>
-                    <li><Link href="/admin/service-data" onClick={closeDropdown} className="hover:bg-white/10 rounded-xl text-gray-200"><FiBarChart2 className="h-4 w-4 text-brand-400" /> Data Service</Link></li>
-                    <li><Link href="/admin/payment-method" onClick={closeDropdown} className="hover:bg-white/10 rounded-xl text-gray-200"><FiCreditCard className="h-4 w-4 text-brand-400" /> Payment Method</Link></li>
-                    <li><Link href="/admin/blog" onClick={closeDropdown} className="hover:bg-white/10 rounded-xl text-gray-200"><FiBookOpen className="h-4 w-4 text-brand-400" /> Blog</Link></li>
-                    <li><Link href="/admin/benner" onClick={closeDropdown} className="hover:bg-white/10 rounded-xl text-gray-200"><FiImage className="h-4 w-4 text-brand-400" /> Banner</Link></li>
-                    <li><Link href="/admin/legal" onClick={closeDropdown} className="hover:bg-white/10 rounded-xl text-gray-200"><FiFileText className="h-4 w-4 text-brand-400" /> Legal Pages</Link></li>
-                    {user?.role === "SUPERADMIN" && (
-                      <li><Link href="/admin/permissions" onClick={closeDropdown} className="hover:bg-white/10 rounded-xl text-gray-200"><FiShield className="h-4 w-4 text-brand-400" /> Permissions</Link></li>
-                    )}
-                    <li><Link href="/admin/settings" onClick={closeDropdown} className="hover:bg-white/10 rounded-xl text-gray-200"><FiSettings className="h-4 w-4 text-brand-400" /> Settings</Link></li>
-                  </>
+                  <>{adminMenuItems}</>
                 ) : (
                   <>
                     {menuGames.length === 0 ? (
@@ -373,25 +389,7 @@ export function Navbar({ siteName = SITE_DEFAULTS.name, logoUrl = null, user = n
               </button>
               <ul tabIndex={0} className="dropdown-content z-[1] menu p-2 shadow-[0_24px_60px_-20px_rgba(0,0,0,0.8)] bg-ink-800/95 backdrop-blur-xl border border-white/10 rounded-2xl w-56 mt-4">
                 {isAdminContext ? (
-                  <>
-                    <li><Link href="/admin" onClick={closeDropdown} className="hover:bg-white/10 rounded-xl text-gray-200"><FiGrid className="h-4 w-4 text-brand-400" /> Dashboard</Link></li>
-                    <li><Link href="/admin/users" onClick={closeDropdown} className="hover:bg-white/10 rounded-xl text-gray-200"><FiUsers className="h-4 w-4 text-brand-400" /> Users</Link></li>
-                    <li><Link href="/admin/boosters" onClick={closeDropdown} className="hover:bg-white/10 rounded-xl text-gray-200"><FiZap className="h-4 w-4 text-brand-400" /> Boosters</Link></li>
-                    <li><Link href="/admin/orders" onClick={closeDropdown} className="hover:bg-white/10 rounded-xl text-gray-200"><FiShoppingCart className="h-4 w-4 text-brand-400" /> Orders</Link></li>
-                    <li><Link href="/admin/analytics" onClick={closeDropdown} className="hover:bg-white/10 rounded-xl text-gray-200"><FiBarChart2 className="h-4 w-4 text-brand-400" /> Analytics</Link></li>
-                    <li><Link href="/admin/games" onClick={closeDropdown} className="hover:bg-white/10 rounded-xl text-gray-200"><FiPlay className="h-4 w-4 text-brand-400" /> Games</Link></li>
-                    <li><Link href="/admin/categories" onClick={closeDropdown} className="hover:bg-white/10 rounded-xl text-gray-200"><FiTag className="h-4 w-4 text-brand-400" /> Categories</Link></li>
-                    <li><Link href="/admin/services" onClick={closeDropdown} className="hover:bg-white/10 rounded-xl text-gray-200"><FiTool className="h-4 w-4 text-brand-400" /> Services</Link></li>
-                    <li><Link href="/admin/service-data" onClick={closeDropdown} className="hover:bg-white/10 rounded-xl text-gray-200"><FiBarChart2 className="h-4 w-4 text-brand-400" /> Data Service</Link></li>
-                    <li><Link href="/admin/payment-method" onClick={closeDropdown} className="hover:bg-white/10 rounded-xl text-gray-200"><FiCreditCard className="h-4 w-4 text-brand-400" /> Payment Method</Link></li>
-                    <li><Link href="/admin/blog" onClick={closeDropdown} className="hover:bg-white/10 rounded-xl text-gray-200"><FiBookOpen className="h-4 w-4 text-brand-400" /> Blog</Link></li>
-                    <li><Link href="/admin/benner" onClick={closeDropdown} className="hover:bg-white/10 rounded-xl text-gray-200"><FiImage className="h-4 w-4 text-brand-400" /> Banner</Link></li>
-                    <li><Link href="/admin/legal" onClick={closeDropdown} className="hover:bg-white/10 rounded-xl text-gray-200"><FiFileText className="h-4 w-4 text-brand-400" /> Legal Pages</Link></li>
-                    {user?.role === "SUPERADMIN" && (
-                      <li><Link href="/admin/permissions" onClick={closeDropdown} className="hover:bg-white/10 rounded-xl text-gray-200"><FiShield className="h-4 w-4 text-brand-400" /> Permissions</Link></li>
-                    )}
-                    <li><Link href="/admin/settings" onClick={closeDropdown} className="hover:bg-white/10 rounded-xl text-gray-200"><FiSettings className="h-4 w-4 text-brand-400" /> Settings</Link></li>
-                  </>
+                  <>{adminMenuItems}</>
                 ) : (
                   <>
                     <li><Link href="/about" onClick={closeDropdown} className="hover:bg-white/10 rounded-xl text-gray-200">About us</Link></li>

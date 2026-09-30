@@ -8,11 +8,12 @@ import { PaymentMethodModal } from "@/components/admin/payment/PaymentMethodModa
 import { db } from "@/lib/prisma";
 import { PageToast } from "@/components/shared/PageToast";
 import { parseToast } from "@/lib/page-utils";
+import { assertAdminSection, canAccessAdminSection } from "@/lib/adminAccess";
 
 export default async function AdminPaymentMethodPage({ searchParams }: { searchParams?: Promise<Record<string, string | string[] | undefined>> }) {
   const session = await getServerSession(authOptions);
   const role = session?.user?.role;
-  if (role !== "ADMIN" && role !== "SUPERADMIN") {
+  if ((role !== "ADMIN" && role !== "SUPERADMIN") || !(await canAccessAdminSection("payment-method"))) {
     return (
       <div className="min-h-screen bg-ink-900 flex items-center justify-center">
         <div className="text-center">
@@ -42,6 +43,7 @@ export default async function AdminPaymentMethodPage({ searchParams }: { searchP
  
   async function deleteMethodAction(formData: FormData) {
     "use server";
+    await assertAdminSection("payment-method");
     const idStr = String(formData.get("id") ?? "");
     const id = Number(idStr);
     if (!Number.isFinite(id) || id <= 0) return;

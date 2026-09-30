@@ -5,6 +5,7 @@ import { db } from "@/lib/prisma";
 import { revalidateTag } from "next/cache";
 import path from "path";
 import { promises as fs } from "fs";
+import { canAccessAdminSection } from "@/lib/adminAccess";
 
 async function saveButtonImage(file: File | null): Promise<string | undefined> {
   if (!file || file.size === 0) return undefined;
@@ -21,7 +22,7 @@ async function saveButtonImage(file: File | null): Promise<string | undefined> {
 
 export async function GET() {
   const session = await getServerSession(authOptions);
-  if (session?.user?.role !== "ADMIN" && session?.user?.role !== "SUPERADMIN") {
+  if ((session?.user?.role !== "ADMIN" && session?.user?.role !== "SUPERADMIN") || !(await canAccessAdminSection("benner"))) {
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   }
   try {
@@ -37,7 +38,7 @@ export async function GET() {
 
 export async function POST(req: Request) {
   const session = await getServerSession(authOptions);
-  if (session?.user?.role !== "ADMIN" && session?.user?.role !== "SUPERADMIN") {
+  if ((session?.user?.role !== "ADMIN" && session?.user?.role !== "SUPERADMIN") || !(await canAccessAdminSection("benner"))) {
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   }
   try {

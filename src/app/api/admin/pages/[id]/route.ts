@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { db } from "@/lib/prisma";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/auth";
+import { canAccessAdminSection } from "@/lib/adminAccess";
 
 export async function GET(req: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
@@ -29,7 +30,7 @@ export async function PUT(req: Request, { params }: { params: Promise<{ id: stri
   try {
     const session = await getServerSession(authOptions);
     const role = session?.user?.role;
-    if (role !== "ADMIN" && role !== "SUPERADMIN") {
+    if ((role !== "ADMIN" && role !== "SUPERADMIN") || !(await canAccessAdminSection("legal"))) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
@@ -59,7 +60,7 @@ export async function DELETE(req: Request, { params }: { params: Promise<{ id: s
   try {
     const session = await getServerSession(authOptions);
     const role = session?.user?.role;
-    if (role !== "ADMIN" && role !== "SUPERADMIN") {
+    if ((role !== "ADMIN" && role !== "SUPERADMIN") || !(await canAccessAdminSection("legal"))) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 

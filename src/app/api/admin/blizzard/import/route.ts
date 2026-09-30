@@ -6,6 +6,7 @@ import * as cheerio from "cheerio";
 import fs from "node:fs";
 import path from "node:path";
 import { toSlug, stripHtml } from "@/lib/text";
+import { canAccessAdminSection } from "@/lib/adminAccess";
 
 async function fetchHtml(url: string) {
   const res = await fetch(url, {
@@ -74,7 +75,7 @@ async function downloadImageToPublic(imageUrl: string, base: string, nameHint: s
 
 export async function POST() {
   const session = await getServerSession(authOptions);
-  if (session?.user?.role !== "ADMIN" && session?.user?.role !== "SUPERADMIN") {
+  if ((session?.user?.role !== "ADMIN" && session?.user?.role !== "SUPERADMIN") || !(await canAccessAdminSection("blog"))) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 

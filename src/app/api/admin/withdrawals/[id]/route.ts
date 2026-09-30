@@ -3,6 +3,7 @@ import { NextResponse } from "next/server";
 import { z } from "zod";
 import { authOptions } from "@/auth";
 import { db } from "@/lib/prisma";
+import { canAccessAdminSection } from "@/lib/adminAccess";
 
 const UpdateSchema = z.object({
   status: z.enum(["PENDING", "PROCESSING", "REJECTED", "PAID"]),
@@ -13,7 +14,7 @@ async function requireAdmin() {
   const session = await getServerSession(authOptions);
   const role = session?.user?.role;
   if (!session?.user) return { ok: false as const, res: NextResponse.json({ error: "Unauthorized" }, { status: 401 }) };
-  if (role !== "ADMIN" && role !== "SUPERADMIN")
+  if ((role !== "ADMIN" && role !== "SUPERADMIN") || !(await canAccessAdminSection("boosters")))
     return { ok: false as const, res: NextResponse.json({ error: "Forbidden" }, { status: 403 }) };
   return { ok: true as const };
 }

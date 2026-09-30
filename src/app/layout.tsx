@@ -11,6 +11,7 @@ import { headers } from "next/headers";
 import { EmbedInjector } from "@/components/EmbedInjector";
 import { getSiteMeta } from "@/lib/seo";
 import { JsonLd } from "@/components/shared/JsonLd";
+import { getAdminAccess } from "@/lib/adminAccess";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -103,6 +104,9 @@ export default async function RootLayout({
     getEmbeds(),
     headers(),
   ]);
+  const role = session?.user?.role;
+  const adminAccess = role === "ADMIN" || role === "SUPERADMIN" ? await getAdminAccess() : null;
+  const adminKeys = adminAccess ? [...adminAccess.allowed] : [];
   const nonce = hdrs.get("x-nonce") || "";
   const { base, siteName, logo, favicon, logoUrl, contactEmail, contactPhone, eurPerUsd } = meta;
 
@@ -251,7 +255,7 @@ export default async function RootLayout({
       <body className={`${geistSans.variable} ${geistMono.variable} ${sora.variable} antialiased`} suppressHydrationWarning>
         <EmbedInjector embeds={embeds} nonce={nonce} />
         <Providers eurPerUsd={eurPerUsd}>
-          <Navbar siteName={siteName} logoUrl={logoUrl} user={session?.user ?? null} />
+          <Navbar siteName={siteName} logoUrl={logoUrl} user={session?.user ?? null} adminKeys={adminKeys} />
           <main className="pt-16">{children}</main>
         </Providers>
         <Footer />

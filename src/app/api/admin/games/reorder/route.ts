@@ -3,12 +3,13 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/auth";
 import { db } from "@/lib/prisma";
 import { revalidateTag } from "next/cache";
+import { canAccessAdminSection } from "@/lib/adminAccess";
 
 export async function POST(req: Request) {
   try {
     const session = await getServerSession(authOptions);
     const role = session?.user?.role;
-    if (role !== "ADMIN" && role !== "SUPERADMIN") {
+    if ((role !== "ADMIN" && role !== "SUPERADMIN") || !(await canAccessAdminSection("games"))) {
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
     const { ids } = await req.json();

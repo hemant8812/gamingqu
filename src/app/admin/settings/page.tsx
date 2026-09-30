@@ -4,11 +4,12 @@ import { getFooterSettings, getWebsiteSettingCore } from "@/lib/settings";
 import { PageToast } from "@/components/shared/PageToast";
 import { parseToast } from "@/lib/page-utils";
 import { AdminSettingsTabs } from "@/components/admin/settings/AdminSettingsTabs";
+import { canAccessAdminSection } from "@/lib/adminAccess";
 
 export default async function AdminSettingsPage({ searchParams }: { searchParams?: Promise<Record<string, string | string[] | undefined>> }) {
   const session = await getServerSession(authOptions);
   const role = session?.user?.role;
-  if (role !== "ADMIN" && role !== "SUPERADMIN") {
+  if ((role !== "ADMIN" && role !== "SUPERADMIN") || !(await canAccessAdminSection("settings"))) {
     return (
       <div className="min-h-screen bg-ink-900 flex items-center justify-center">
         <div className="text-center">

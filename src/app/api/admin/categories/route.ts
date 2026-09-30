@@ -3,6 +3,7 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/auth";
 import { db } from "@/lib/prisma";
 import { revalidatePath, revalidateTag } from "next/cache";
+import { canAccessAdminSection } from "@/lib/adminAccess";
 
 function slugify(input: string) {
   return input.toLowerCase().trim().replace(/[\s_]+/g, "-").replace(/[^a-z0-9-]/g, "").replace(/-+/g, "-").replace(/^-|-$/g, "");
@@ -12,7 +13,7 @@ export async function GET() {
   try {
     const session = await getServerSession(authOptions);
     const role = session?.user?.role;
-    if (role !== "ADMIN" && role !== "SUPERADMIN") {
+    if ((role !== "ADMIN" && role !== "SUPERADMIN") || !(await canAccessAdminSection("categories"))) {
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
     const categories = await db.category.findMany({
@@ -36,7 +37,7 @@ export async function POST(req: Request) {
   try {
     const session = await getServerSession(authOptions);
     const role = session?.user?.role;
-    if (role !== "ADMIN" && role !== "SUPERADMIN") {
+    if ((role !== "ADMIN" && role !== "SUPERADMIN") || !(await canAccessAdminSection("categories"))) {
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
     const form = await req.formData();
@@ -80,7 +81,7 @@ export async function PUT(req: Request) {
   try {
     const session = await getServerSession(authOptions);
     const role = session?.user?.role;
-    if (role !== "ADMIN" && role !== "SUPERADMIN") {
+    if ((role !== "ADMIN" && role !== "SUPERADMIN") || !(await canAccessAdminSection("categories"))) {
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
     const form = await req.formData();
@@ -128,7 +129,7 @@ export async function DELETE(req: Request) {
   try {
     const session = await getServerSession(authOptions);
     const role = session?.user?.role;
-    if (role !== "ADMIN" && role !== "SUPERADMIN") {
+    if ((role !== "ADMIN" && role !== "SUPERADMIN") || !(await canAccessAdminSection("categories"))) {
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
     const form = await req.formData();

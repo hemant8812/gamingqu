@@ -5,6 +5,7 @@ import { PageToast } from "@/components/shared/PageToast";
 import { CategoryManager } from "@/components/admin/categories/CategoryManager";
 import { normalizeQuery, parseToast } from "@/lib/page-utils";
 import { getSimpleGames } from "@/lib/selects";
+import { canAccessAdminSection } from "@/lib/adminAccess";
 
 async function getCategories(q?: string) {
   try {
@@ -38,7 +39,7 @@ async function getCategories(q?: string) {
 export default async function AdminCategoriesPage({ searchParams }: { searchParams?: Promise<Record<string, string | string[] | undefined>> }) {
   const session = await getServerSession(authOptions);
   const role = session?.user?.role;
-  if (role !== "ADMIN" && role !== "SUPERADMIN") {
+  if ((role !== "ADMIN" && role !== "SUPERADMIN") || !(await canAccessAdminSection("categories"))) {
     return (
       <div className="min-h-screen bg-ink-900 flex items-center justify-center">
         <div className="text-center">
