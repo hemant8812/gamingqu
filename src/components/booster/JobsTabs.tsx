@@ -76,10 +76,11 @@ function OrderRow({ job, children }: { job: BoosterJob; children: React.ReactNod
   );
 }
 
-function CodeForm({ action, code, children, className }: { action: Action; code: string; children: React.ReactNode; className: string }) {
+function CodeForm({ action, code, back, children, className }: { action: Action; code: string; back: string; children: React.ReactNode; className: string }) {
   return (
     <form action={action}>
       <input type="hidden" name="code" value={code} />
+      <input type="hidden" name="back" value={back} />
       <button type="submit" className={className}>
         {children}
       </button>
@@ -92,6 +93,7 @@ export function JobsTabs({
   active,
   completed,
   hasServices,
+  back = "/booster/orders",
   acceptAction,
   startAction,
   completeAction,
@@ -100,6 +102,7 @@ export function JobsTabs({
   active: BoosterJob[];
   completed: BoosterJob[];
   hasServices: boolean;
+  back?: string;
   acceptAction: Action;
   startAction: Action;
   completeAction: Action;
@@ -226,11 +229,11 @@ export function JobsTabs({
                   </span>
                   <div className="flex gap-2">
                     {job.status === "ACCEPTED" && (
-                      <CodeForm action={startAction} code={job.id} className="btn btn-sm h-9 rounded-xl border border-white/10 bg-white/[0.06] text-white hover:bg-white/10">
+                      <CodeForm back={back} action={startAction} code={job.id} className="btn btn-sm h-9 rounded-xl border border-white/10 bg-white/[0.06] text-white hover:bg-white/10">
                         <Play className="h-4 w-4" /> Start
                       </CodeForm>
                     )}
-                    <CodeForm action={completeAction} code={job.id} className="btn btn-gaming btn-sm h-9 rounded-xl">
+                    <CodeForm back={back} action={completeAction} code={job.id} className="btn btn-gaming btn-sm h-9 rounded-xl">
                       <CheckCircle className="h-4 w-4" /> Mark complete
                     </CodeForm>
                   </div>
@@ -275,7 +278,7 @@ export function JobsTabs({
               <button type="button" onClick={() => setConfirm(null)} className="btn h-11 rounded-xl border border-white/10 bg-white/[0.04] text-gray-200">
                 Cancel
               </button>
-              <CodeForm action={acceptAction} code={confirm.id} className="btn h-11 w-full rounded-xl border-0 bg-lime-glow font-bold text-ink-900 hover:brightness-110">
+              <CodeForm back={back} action={acceptAction} code={confirm.id} className="btn h-11 w-full rounded-xl border-0 bg-lime-glow font-bold text-ink-900 hover:brightness-110">
                 Take this order
               </CodeForm>
             </div>

@@ -4,42 +4,62 @@ import { FiLock } from "react-icons/fi";
 import { authOptions } from "@/auth";
 import { db } from "@/lib/prisma";
 import { BoosterSidebar } from "@/components/dashboard/BoosterSidebar";
-import { getAvailableJobs, getBoosterServiceIds, getMyJobs, type BoosterJob } from "@/lib/boosterJobs";
-import { Activity, Briefcase, CheckCircle, ChevronRight, DollarSign, Gamepad2, Star } from "lucide-react";
+import { JobsTabs } from "@/components/booster/JobsTabs";
+import { PageToast } from "@/components/shared/PageToast";
+import { getAvailableJobs, getBoosterServiceIds, getMyJobs } from "@/lib/boosterJobs";
+import { acceptJob, completeJob, startJob } from "@/lib/boosterActions";
+import { CalendarClock, Gamepad2, KeyRound, LifeBuoy, MessageSquare, ScrollText, TrendingUp, UserRound, Wallet } from "lucide-react";
 
 export const metadata = {
   title: "Booster Dashboard",
 };
 
-function StatCard({ label, value, icon, tone }: { label: string; value: string; icon: React.ReactNode; tone: string }) {
+// Level is based on completed orders.
+const LEVELS = [
+  { name: "New booster", short: "NEW", min: 0 },
+  { name: "Pro booster", short: "PRO", min: 10 },
+  { name: "Main booster", short: "MAIN", min: 50 },
+];
+
+const TOASTS: Record<string, { m: string; t: "success" | "error" }> = {
+  accepted: { m: "Order taken. You can find it under In process.", t: "success" },
+  taken: { m: "Someone else already took this order.", t: "error" },
+  started: { m: "Marked as in progress.", t: "success" },
+  completed: { m: "Order marked as completed.", t: "success" },
+};
+
+function money(n: number, currency = "USD") {
+  try {
+    return new Intl.NumberFormat("en-US", { style: "currency", currency }).format(n);
+  } catch {
+    return `$${n.toFixed(2)}`;
+  }
+}
+
+function Row({ icon, label, value }: { icon: React.ReactNode; label: string; value: string }) {
   return (
-    <div className="surface flex items-center justify-between gap-3 p-5">
-      <div className="min-w-0">
-        <div className="text-sm text-gray-400">{label}</div>
-        <div className="mt-1 truncate font-display text-2xl font-bold text-white tabular-nums">{value}</div>
-      </div>
-      <span className={`grid h-12 w-12 shrink-0 place-items-center rounded-xl ring-1 ${tone}`}>{icon}</span>
+    <div className="flex items-center justify-between gap-3 border-b border-white/[0.07] py-3 last:border-0">
+      <span className="flex items-center gap-2.5 text-sm text-gray-300">
+        <span className="text-gray-500">{icon}</span>
+        {label}
+      </span>
+      <span className="font-semibold text-white tabular-nums">{value}</span>
     </div>
   );
 }
 
-function JobLine({ job, right }: { job: BoosterJob; right: React.ReactNode }) {
+function AccountLink({ href, icon, label }: { href: string; icon: React.ReactNode; label: string }) {
   return (
-    <li className="flex items-center justify-between gap-3 rounded-xl border border-white/10 bg-ink-900/60 p-4">
-      <div className="min-w-0">
-        <div className="truncate font-semibold text-white">{job.title}</div>
-        <div className="truncate text-xs text-gray-400">
-          <span className="font-mono">{job.id}</span> · {job.game}
-        </div>
-      </div>
-      <div className="flex shrink-0 items-center gap-3">{right}</div>
-    </li>
+    <Link href={href} className="flex items-center gap-2.5 rounded-xl border border-white/10 bg-ink-900/60 px-3 py-2.5 text-sm text-gray-200 transition-colors hover:border-brand-500/40 hover:text-white">
+      <span className="text-brand-300">{icon}</span>
+      {label}
+    </Link>
   );
 }
 
-export default async function BoosterDashboardPage() {
+export default async function BoosterDashboardPage({ searchParams }: { searchParams: Promise<Record<string, string | string[] | undefined>> }) {
   const session = await getServerSession(authOptions);
-  const user = session?.user as { id?: string; role?: string; name?: string | null; username?: string | null } | undefined;
+  const user = session?.user as { id?: string; role?: string; name?: string | null; username?: string | null; email?: string | null } | undefined;
 
   if (!user) {
     return (
@@ -68,116 +88,154 @@ export default async function BoosterDashboardPage() {
   }
 
   const me = user.id;
-  const name = user.username ?? user.name ?? "Booster";
+  const display = user.username ?? user.name ?? "Booster";
 
   const serviceIds = await getBoosterServiceIds(me).catch(() => [] as number[]);
-  const [inProcess, available, completedCount, earnings, rating] = await Promise.all([
-    getMyJobs(me, "active", 5).catch(() => []),
-    getAvailableJobs(serviceIds, 5).catch(() => []),
+  const [available, inProcess, completed, completedCount, earned, wallet, lastOrder, myServices] = await Promise.all([
+    getAvailableJobs(serviceIds).catch(() => []),
+    getMyJobs(me, "active").catch(() => []),
+    getMyJobs(me, "completed", 20).catch(() => []),
     db.order.count({ where: { boosterId: me, fulfillmentStatus: "COMPLETED" } }).catch(() => 0),
     db.order.aggregate({ _sum: { boosterPay: true }, where: { boosterId: me, fulfillmentStatus: "COMPLETED" } }).catch(() => null),
-    db.review.aggregate({ _avg: { rating: true }, _count: { _all: true }, where: { isPublished: true, order: { boosterId: me } } }).catch(() => null),
+    db.wallet.findUnique({ where: { userId: me }, select: { balance: true, currency: true } }).catch(() => null),
+    db.order.findFirst({ where: { boosterId: me }, orderBy: { acceptedAt: "desc" }, select: { acceptedAt: true } }).catch(() => null),
+    db.boosterService
+      .findMany({ where: { userId: me }, select: { service: { select: { name: true, game: { select: { name: true } } } } } })
+      .catch(() => []),
   ]);
 
-  const earned = Number.parseFloat(String(earnings?._sum.boosterPay ?? 0)) || 0;
-  const earnedText = new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" }).format(earned);
-  const ratingCount = rating?._count._all ?? 0;
-  const ratingText = ratingCount > 0 && rating?._avg.rating ? rating._avg.rating.toFixed(2) : "New";
+  const currency = wallet?.currency ?? "USD";
+  const balance = Number.parseFloat(String(wallet?.balance ?? 0)) || 0;
+  const totalEarned = Number.parseFloat(String(earned?._sum.boosterPay ?? 0)) || 0;
+  const lastOrderText = lastOrder?.acceptedAt
+    ? new Date(lastOrder.acceptedAt).toLocaleDateString(undefined, { day: "2-digit", month: "2-digit", year: "2-digit" })
+    : "None yet";
+
+  const levelIndex = LEVELS.reduce((acc, l, i) => (completedCount >= l.min ? i : acc), 0);
+  const next = LEVELS[levelIndex + 1];
+  const top = LEVELS[LEVELS.length - 1].min;
+  const progress = Math.min(100, Math.round((completedCount / top) * 100));
+
+  const sp = await searchParams;
+  const toast = TOASTS[typeof sp.toast === "string" ? sp.toast : ""];
 
   return (
     <div className="min-h-screen bg-ink-900 text-white">
+      <PageToast message={toast?.m} type={toast?.t} />
       <div className="relative z-10 mx-auto max-w-7xl px-6 py-8">
-        <div className="grid grid-cols-1 lg:grid-cols-[260px_1fr] gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-[240px_1fr] gap-6">
           <aside className="space-y-6 lg:sticky lg:top-20 self-start">
             <BoosterSidebar active="overview" />
           </aside>
-          <main className="min-w-0 space-y-6">
-            <section className="relative overflow-hidden rounded-[1.5rem] border border-brand-500/25 bg-gradient-to-br from-brand-900/60 via-ink-800 to-ink-900 p-6 md:p-8">
-              <div className="dot-grid absolute inset-0 opacity-50" />
-              <div className="relative flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
-                <div>
-                  <div className="eyebrow mb-2">Booster dashboard</div>
-                  <h1 className="text-3xl font-extrabold md:text-4xl">
-                    Welcome, <span className="gradient-text">{name}</span>
-                  </h1>
-                  <p className="mt-2 text-sm text-gray-300">
-                    {serviceIds.length > 0
-                      ? `You work on ${serviceIds.length} service${serviceIds.length === 1 ? "" : "s"}.`
-                      : "Choose the services you can do to start getting orders."}
-                  </p>
-                </div>
-                <Link href="/booster/orders" className="btn btn-gaming h-11 rounded-xl px-5">
-                  Find orders <ChevronRight className="h-4 w-4" />
-                </Link>
-              </div>
-            </section>
-
-            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
-              <StatCard label="In process" value={String(inProcess.length)} icon={<Activity className="h-5 w-5 text-brand-200" />} tone="bg-brand-500/15 ring-brand-400/30" />
-              <StatCard label="Total earnings" value={earnedText} icon={<DollarSign className="h-5 w-5 text-emerald-300" />} tone="bg-emerald-500/15 ring-emerald-400/30" />
-              <StatCard label="Rating" value={ratingText} icon={<Star className="h-5 w-5 text-amber-300" />} tone="bg-amber-500/15 ring-amber-400/30" />
-              <StatCard label="Completed" value={String(completedCount)} icon={<CheckCircle className="h-5 w-5 text-accent-300" />} tone="bg-accent-500/15 ring-accent-400/30" />
+          <main className="min-w-0 space-y-8">
+            <div className="flex items-center justify-between gap-3">
+              <h1 className="text-3xl font-extrabold">My account</h1>
+              <Link href="/booster/messages" className="btn btn-gaming h-10 rounded-xl px-5">
+                <MessageSquare className="h-4 w-4" /> Messages
+              </Link>
             </div>
 
-            <div className="grid grid-cols-1 gap-6 xl:grid-cols-2">
+            <div className="grid grid-cols-1 gap-4 xl:grid-cols-[1fr_1.4fr_1fr]">
+              {/* Wallet */}
               <section className="surface p-5">
-                <div className="mb-4 flex items-center justify-between">
-                  <h2 className="flex items-center gap-2 text-lg font-bold"><Activity className="h-5 w-5 text-brand-300" /> In process</h2>
-                  <Link href="/booster/orders" className="text-sm text-brand-300 hover:text-white">View all</Link>
+                <Row icon={<Wallet className="h-4 w-4" />} label="Balance" value={money(balance, currency)} />
+                <Row icon={<CalendarClock className="h-4 w-4" />} label="Last order" value={lastOrderText} />
+                <Row icon={<TrendingUp className="h-4 w-4" />} label="Total earned" value={money(totalEarned, currency)} />
+                <div className="mt-4 grid gap-2">
+                  <Link href="/booster/earnings" className="btn btn-gaming h-11 rounded-xl">Withdraw</Link>
+                  <Link href="/booster/earnings" className="btn h-11 rounded-xl border border-white/10 bg-white/[0.04] text-gray-200 hover:bg-white/[0.08]">
+                    My withdrawals
+                  </Link>
                 </div>
-                {inProcess.length === 0 ? (
-                  <p className="rounded-xl border border-white/10 bg-ink-900/60 p-6 text-center text-sm text-gray-400">No orders in process.</p>
-                ) : (
-                  <ul className="space-y-2">
-                    {inProcess.map((j) => (
-                      <JobLine
-                        key={j.id}
-                        job={j}
-                        right={
-                          <>
-                            <span className="rounded-full bg-white/5 px-2 py-0.5 text-[11px] text-gray-300 ring-1 ring-white/10">
-                              {j.status === "IN_PROGRESS" ? "In progress" : "Accepted"}
-                            </span>
-                            <span className="font-semibold text-emerald-300 tabular-nums">{j.price}</span>
-                          </>
-                        }
-                      />
-                    ))}
-                  </ul>
-                )}
               </section>
 
+              {/* Level + services */}
               <section className="surface p-5">
-                <div className="mb-4 flex items-center justify-between">
-                  <h2 className="flex items-center gap-2 text-lg font-bold"><Briefcase className="h-5 w-5 text-lime-glow" /> Available orders</h2>
-                  <Link href="/booster/orders" className="text-sm text-brand-300 hover:text-white">See all</Link>
+                <div className="grid grid-cols-3 gap-2">
+                  {LEVELS.map((l, i) => (
+                    <div
+                      key={l.short}
+                      className={`rounded-xl border px-2 py-2 text-center text-xs font-semibold sm:text-sm ${
+                        i === levelIndex ? "border-brand-500/60 bg-brand-500/15 text-white" : "border-white/10 text-gray-400"
+                      }`}
+                    >
+                      {l.name}
+                    </div>
+                  ))}
                 </div>
-                {serviceIds.length === 0 ? (
-                  <div className="rounded-xl border border-white/10 bg-ink-900/60 p-6 text-center">
-                    <Gamepad2 className="mx-auto mb-2 h-8 w-8 text-brand-300" />
-                    <p className="text-sm text-gray-400">Pick your services to see orders here.</p>
-                    <Link href="/booster/services" className="btn btn-gaming btn-sm mt-3 rounded-xl">Choose services</Link>
+                <div className="relative mt-5 h-2 rounded-full bg-white/10" role="progressbar" aria-valuemin={0} aria-valuemax={top} aria-valuenow={Math.min(completedCount, top)} aria-label="Booster level progress">
+                  <div className="h-full rounded-full bg-gradient-to-r from-brand-500 to-accent-500" style={{ width: `${progress}%` }} />
+                  {LEVELS.map((l) => (
+                    <span
+                      key={l.short}
+                      className="absolute top-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full bg-brand-600 px-1.5 py-0.5 text-[9px] font-bold text-white ring-2 ring-ink-800"
+                      style={{ left: `${Math.max(6, Math.min(94, (l.min / top) * 100))}%` }}
+                    >
+                      {l.short}
+                    </span>
+                  ))}
+                </div>
+                <p className="mt-3 text-center text-xs text-gray-400">
+                  {next
+                    ? `${completedCount} completed. ${next.min - completedCount} more to reach ${next.name}.`
+                    : `${completedCount} completed. You have the top level.`}
+                </p>
+
+                <div className="mt-5 border-t border-white/[0.07] pt-4">
+                  <div className="mb-3 flex items-center justify-between">
+                    <span className="text-sm font-semibold text-white">Services I can do</span>
+                    <Link href="/booster/services" className="text-xs font-semibold text-brand-300 hover:text-white">Edit</Link>
                   </div>
-                ) : available.length === 0 ? (
-                  <p className="rounded-xl border border-white/10 bg-ink-900/60 p-6 text-center text-sm text-gray-400">No open orders for your services right now.</p>
-                ) : (
-                  <ul className="space-y-2">
-                    {available.map((j) => (
-                      <JobLine
-                        key={j.id}
-                        job={j}
-                        right={
-                          <>
-                            <span className="font-semibold text-emerald-300 tabular-nums">{j.price}</span>
-                            <Link href="/booster/orders" className="btn btn-xs h-8 rounded-lg border-0 bg-lime-glow px-3 font-bold text-ink-900">Get order</Link>
-                          </>
-                        }
-                      />
-                    ))}
-                  </ul>
-                )}
+                  {myServices.length === 0 ? (
+                    <Link href="/booster/services" className="flex items-center gap-2 rounded-xl border border-dashed border-white/15 p-3 text-sm text-gray-400 hover:text-white">
+                      <Gamepad2 className="h-4 w-4" /> Choose the services you can do
+                    </Link>
+                  ) : (
+                    <div className="flex max-h-28 flex-wrap gap-1.5 overflow-y-auto">
+                      {myServices.map((s, i) => (
+                        <span key={i} className="rounded-lg border border-white/10 bg-ink-900/60 px-2 py-1 text-xs text-gray-200">
+                          <span className="text-brand-300">{s.service.game?.name}:</span> {s.service.name}
+                        </span>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              </section>
+
+              {/* Account */}
+              <section className="surface p-5">
+                <div className="mb-4 flex items-center gap-3">
+                  <span className="grid h-11 w-11 shrink-0 place-items-center rounded-xl bg-gradient-to-br from-lime-glow to-brand-600 font-bold uppercase text-white">
+                    {display.slice(0, 1)}
+                  </span>
+                  <div className="min-w-0">
+                    <div className="truncate font-bold text-white">{display}</div>
+                    <div className="truncate text-xs text-gray-400">ID: {me}</div>
+                    <div className="truncate text-xs text-gray-400">{user.email}</div>
+                  </div>
+                </div>
+                <div className="grid gap-2">
+                  <AccountLink href="/booster/profile" icon={<UserRound className="h-4 w-4" />} label="Edit profile" />
+                  <AccountLink href="/booster/settings" icon={<KeyRound className="h-4 w-4" />} label="Change password" />
+                  <AccountLink href="/contact" icon={<LifeBuoy className="h-4 w-4" />} label="Write to admins" />
+                  <AccountLink href="/trust-safety" icon={<ScrollText className="h-4 w-4" />} label="Rules" />
+                </div>
               </section>
             </div>
+
+            <section>
+              <h2 className="mb-4 text-2xl font-extrabold">Orders you can take</h2>
+              <JobsTabs
+                available={available}
+                active={inProcess}
+                completed={completed}
+                hasServices={serviceIds.length > 0}
+                back="/booster"
+                acceptAction={acceptJob}
+                startAction={startJob}
+                completeAction={completeJob}
+              />
+            </section>
           </main>
         </div>
       </div>

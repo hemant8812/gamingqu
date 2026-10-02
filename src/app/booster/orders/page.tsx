@@ -5,11 +5,9 @@ import { FiLock } from "react-icons/fi";
 import { BoosterSidebar } from "@/components/dashboard/BoosterSidebar";
 import { ArrowLeft } from "lucide-react";
 import { JobsTabs } from "@/components/booster/JobsTabs";
-import { db } from "@/lib/prisma";
-import { revalidatePath } from "next/cache";
-import { redirect } from "next/navigation";
 import { PageToast } from "@/components/shared/PageToast";
 import { getAvailableJobs, getBoosterId, getBoosterServiceIds, getMyJobs } from "@/lib/boosterJobs";
+import { acceptJob, completeJob, startJob } from "@/lib/boosterActions";
 
 export const metadata = {
   title: "Orders",
@@ -48,47 +46,6 @@ export default async function BoosterOrdersPage({ searchParams }: { searchParams
 
   const boosterId = await getBoosterId();
   if (!boosterId) return null;
-
-  // Take an open order. The update only matches while nobody else has it,
-  // so two boosters clicking at once cannot both get the same order.
-  async function acceptJob(formData: FormData) {
-    "use server";
-    const me = await getBoosterId();
-    const code = String(formData.get("code") ?? "");
-    if (!me || !code) return;
-    const serviceIds = await getBoosterServiceIds(me);
-    const res = await db.order.updateMany({
-      where: { code, status: "PAID", fulfillmentStatus: "PENDING", boosterId: null, serviceId: { in: serviceIds } },
-      data: { boosterId: me, fulfillmentStatus: "ACCEPTED", acceptedAt: new Date() },
-    });
-    revalidatePath("/booster/orders");
-    revalidatePath("/booster");
-    redirect(`/booster/orders?toast=${res.count ? "accepted" : "taken"}`);
-  }
-
-  async function startJob(formData: FormData) {
-    "use server";
-    const me = await getBoosterId();
-    const code = String(formData.get("code") ?? "");
-    if (!me || !code) return;
-    await db.order.updateMany({ where: { code, boosterId: me, fulfillmentStatus: "ACCEPTED" }, data: { fulfillmentStatus: "IN_PROGRESS" } });
-    revalidatePath("/booster/orders");
-    redirect("/booster/orders?toast=started");
-  }
-
-  async function completeJob(formData: FormData) {
-    "use server";
-    const me = await getBoosterId();
-    const code = String(formData.get("code") ?? "");
-    if (!me || !code) return;
-    await db.order.updateMany({
-      where: { code, boosterId: me, fulfillmentStatus: { in: ["ACCEPTED", "IN_PROGRESS"] } },
-      data: { fulfillmentStatus: "COMPLETED", completedAt: new Date() },
-    });
-    revalidatePath("/booster/orders");
-    revalidatePath("/booster");
-    redirect("/booster/orders?toast=completed");
-  }
 
   const serviceIds = await getBoosterServiceIds(boosterId).catch(() => [] as number[]);
   const [availableJobs, activeJobs, completedJobs] = await Promise.all([
@@ -135,6 +92,7 @@ export default async function BoosterOrdersPage({ searchParams }: { searchParams
               active={activeJobs}
               completed={completedJobs}
               hasServices={serviceIds.length > 0}
+              back="/booster/orders"
               acceptAction={acceptJob}
               startAction={startJob}
               completeAction={completeJob}
