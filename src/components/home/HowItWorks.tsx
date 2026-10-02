@@ -68,14 +68,14 @@ export function HowItWorks() {
     },
     {
       id: 3,
-      title: "Track & Play",
-      shortDesc: "Watch progress live or play side-by-side.",
-      longDesc: "Track your order's real-time progress through your personal dashboard. If you chose Self-Play, join your booster in-game. If you chose Piloted, rest easy with secure VPN protection.",
+      title: "Track & Confirm",
+      shortDesc: "Follow progress, then confirm when it's done.",
+      longDesc: "Follow your order and chat with your booster from your dashboard. When the booster finishes, check the result and click Confirm. Not happy yet? Send it back and they keep going.",
       icon: Play,
       features: [
-        "24/7 live dashboard progress tracking",
-        "Military-grade VPN and safety protocols",
-        "100% satisfaction or money-back guarantee"
+        "Order status and booster chat in your dashboard",
+        "You confirm before the order counts as done",
+        "Money-back guarantee if we can't deliver"
       ],
       badge: "Step 04",
       color: "from-emerald-500 to-teal-500",

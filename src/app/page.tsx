@@ -1,4 +1,12 @@
-import { HomeContent } from "@/components/home/HomeContent";
+import { HomeHero } from "@/components/home/HomeHero";
+import { GameGrid } from "@/components/home/GameGrid";
+import { HotOffers } from "@/components/home/HotOffers";
+import { HowItWorks } from "@/components/home/HowItWorks";
+import { Benefits } from "@/components/home/Benefits";
+import { LatestGuides } from "@/components/home/LatestGuides";
+import { BoosterCta } from "@/components/home/BoosterCta";
+import { PlayerReviews } from "@/components/home/PlayerReviews";
+import { getHomeData } from "@/lib/homeData";
 import type { Metadata } from "next";
 import { getFooterSettings } from "@/lib/settings";
 import { getSiteMeta } from "@/lib/seo";
@@ -43,7 +51,11 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function Home() {
-  const [meta, f] = await Promise.all([getSiteMeta(), getFooterSettings()]);
+  const [meta, f, home] = await Promise.all([
+    getSiteMeta(),
+    getFooterSettings(),
+    getHomeData().catch(() => ({ games: [], gameCount: 0, offersByGame: {}, offerTabs: [] })),
+  ]);
   const { base, siteName, tagline, logo, contactEmail, contactPhone } = meta;
 
   const sameAs = [f?.smTelegramUrl, f?.smYoutubeUrl, f?.smDiscordUrl, f?.smFacebookUrl]
@@ -85,7 +97,18 @@ export default async function Home() {
   return (
     <>
       <JsonLd data={[webPageLd, profServiceLd]} />
-      <HomeContent />
+      <div className="min-h-screen bg-ink-900 text-base-content">
+        <HomeHero gameCount={home.gameCount} />
+        <main className="mx-auto max-w-7xl space-y-20 px-4 py-14 sm:px-6 md:py-20">
+          <GameGrid games={home.games} total={home.gameCount} />
+          <HotOffers tabs={home.offerTabs} offersByGame={home.offersByGame} />
+          <Benefits />
+          <HowItWorks />
+          <PlayerReviews />
+          <LatestGuides />
+          <BoosterCta />
+        </main>
+      </div>
     </>
   );
 }

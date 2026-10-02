@@ -4,9 +4,28 @@ import { FiMessageCircle } from "react-icons/fi";
 import { FaTelegramPlane, FaYoutube, FaDiscord, FaFacebookF } from "react-icons/fa";
 import { getFooterSettings } from "@/lib/settings";
 import { getSiteMeta } from "@/lib/seo";
+import { db } from "@/lib/prisma";
 
 export async function Footer() {
-    const [s, ws] = await Promise.all([getFooterSettings(), getSiteMeta()]);
+    const [s, ws, footerGames] = await Promise.all([
+        getFooterSettings(),
+        getSiteMeta(),
+        db.game
+            .findMany({
+                where: { isActive: true },
+                orderBy: [{ sortOrder: "asc" }, { name: "asc" }],
+                take: 40,
+                select: {
+                    slug: true,
+                    name: true,
+                    services: { where: { isActive: true }, orderBy: [{ isHotOffer: "desc" }, { name: "asc" }], take: 5, select: { slug: true, name: true } },
+                },
+            })
+            .catch(() => []),
+    ]);
+    // Biggest games get their own column of services; the rest are listed together.
+    const featuredGames = footerGames.filter((g) => g.services.length > 0).slice(0, 2);
+    const otherGames = footerGames.filter((g) => !featuredGames.includes(g));
     const active = s?.isActive ?? true;
     const disclaimer = (s?.disclaimer ?? "").trim();
     const shortDesc = (s?.shortDescription ?? "").trim();
@@ -137,6 +156,36 @@ export async function Footer() {
                 </div>
             </div>
 
+            {/* Games and services */}
+            {footerGames.length > 0 && (
+                <div className="max-w-7xl mx-auto z-10 relative px-4 sm:px-6 pb-10">
+                    <div className="grid grid-cols-2 gap-8 border-t border-white/5 pt-10 md:grid-cols-4">
+                        {featuredGames.map((g) => (
+                            <nav key={g.slug} aria-label={g.name} className="flex flex-col gap-2">
+                                <Link href={`/${g.slug}`} className="font-display font-semibold text-white text-sm uppercase tracking-[0.14em] mb-2 hover:text-brand-200">{g.name}</Link>
+                                {g.services.map((sv) => (
+                                    <Link key={sv.slug} href={`/${g.slug}/${sv.slug}`} className="text-gray-400 hover:text-white transition-colors text-sm">
+                                        {sv.name}
+                                    </Link>
+                                ))}
+                            </nav>
+                        ))}
+                        {otherGames.length > 0 && (
+                            <nav aria-label="More games" className={featuredGames.length < 2 ? "col-span-2 md:col-span-3" : "col-span-2"}>
+                                <div className="font-display font-semibold text-white text-sm uppercase tracking-[0.14em] mb-3">More games</div>
+                                <ul className="grid grid-cols-2 gap-x-6 gap-y-2 sm:grid-cols-3">
+                                    {otherGames.map((g) => (
+                                        <li key={g.slug}>
+                                            <Link href={`/${g.slug}`} className="text-gray-400 hover:text-white transition-colors text-sm">{g.name}</Link>
+                                        </li>
+                                    ))}
+                                </ul>
+                            </nav>
+                        )}
+                    </div>
+                </div>
+            )}
+
             {/* Bottom Bar */}
             <div className="border-t border-white/5 px-4 sm:px-6 py-6 max-w-7xl mx-auto z-10 relative text-sm">
                 <aside className="items-center grid-flow-col w-full">
@@ -159,6 +208,16 @@ export async function Footer() {
                     </div>
                 </aside>
             </div>
+
+            {/* Trademark note: shown unless an admin wrote their own disclaimer */}
+            {!disclaimer && (
+                <div className="border-t border-white/5 px-4 sm:px-6 py-4 max-w-7xl mx-auto relative z-10">
+                    <p className="text-xs leading-relaxed text-gray-600">
+                        {siteName} is an independent service and is not affiliated with, endorsed or sponsored by any game publisher or developer.
+                        Game names, logos and artwork are trademarks of their respective owners and are used here only to describe the games we support.
+                    </p>
+                </div>
+            )}
 
             {/* Disclaimer */}
             {disclaimer && (
