@@ -247,6 +247,9 @@ const baseAuthOptions: NextAuthOptions = {
         const u = user as User & { username?: string | null; id: string };
         token.id = u.id;
         token.username = u.username ?? null;
+        // Put the role in the token right away; middleware reads it to keep boosters out of shop pages.
+        const role = (user as { role?: string }).role;
+        if (role) (token as Record<string, unknown>).role = role;
         (token as Record<string, unknown>).suspended = false;
       } else if (token.id) {
         try {

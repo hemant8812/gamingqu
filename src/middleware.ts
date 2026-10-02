@@ -1,4 +1,18 @@
 import { NextResponse, NextRequest } from "next/server";
+import { getToken } from "next-auth/jwt";
+
+// Logged-in boosters only see the booster panel and info pages, never the
+// shop (prices, games, services, checkout).
+const BOOSTER_ALLOWED = [
+  "/booster", "/login", "/register", "/post-login", "/auth", "/contact", "/trust-safety",
+  "/about", "/blog", "/work-with-us", "/terms", "/privacy", "/refund", "/cookies",
+  "/uploads", "/brand", "/icons", "/_next", "/favicon.ico", "/robots.txt", "/sitemap.xml", "/manifest.webmanifest",
+];
+const BOOSTER_BLOCKED_API = ["/api/checkout", "/api/orders/pay"];
+
+function startsWithAny(path: string, list: string[]) {
+  return list.some((p) => path === p || path.startsWith(`${p}/`));
+}
 
 const RATE_LIMIT_WINDOW_MS = 15 * 60 * 1000;
 const RATE_LIMIT_MAX = 30;
@@ -65,6 +79,18 @@ export async function middleware(req: NextRequest) {
     const ip = ipHeader.split(",")[0].trim();
     if (shouldBlockByIp(ip)) {
       return NextResponse.json({ error: "Too many requests" }, { status: 429 });
+    }
+  }
+
+  const token = await getToken({ req, secret: process.env.AUTH_SECRET }).catch(() => null);
+  if ((token as { role?: string } | null)?.role === "BOOSTER") {
+    const path = url.pathname;
+    if (path.startsWith("/api/")) {
+      if (startsWithAny(path, BOOSTER_BLOCKED_API)) {
+        return NextResponse.json({ error: "Boosters cannot place orders" }, { status: 403 });
+      }
+    } else if (!startsWithAny(path, BOOSTER_ALLOWED)) {
+      return NextResponse.redirect(new URL("/booster", req.url));
     }
   }
 

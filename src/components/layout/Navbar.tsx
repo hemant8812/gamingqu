@@ -58,6 +58,9 @@ export function Navbar({ siteName = SITE_DEFAULTS.name, logoUrl = null, user = n
   const pathname = usePathname();
   const router = useRouter();
   const isAdminRole = user?.role === "ADMIN" || user?.role === "SUPERADMIN";
+  // Boosters work from their panel and do not see the shop (games, search, prices).
+  const isBooster = user?.role === "BOOSTER";
+  const homeHref = isBooster ? "/booster" : "/";
   const isAdminContext = isAdminRole || (pathname?.startsWith("/admin") || pathname?.startsWith("/super-admin"));
   const [searchOpen, setSearchOpen] = useState<boolean>(false);
   const [searchQuery, setSearchQuery] = useState<string>("");
@@ -182,7 +185,7 @@ export function Navbar({ siteName = SITE_DEFAULTS.name, logoUrl = null, user = n
           {/* Left Side: Logo & Menu */}
           <div className="flex items-center gap-2 sm:gap-3 shrink-0">
             {showLogo && logoUrl ? (
-              <Link href="/" className="text-xl p-0 inline-flex items-center" aria-label="Go to homepage">
+              <Link href={homeHref} className="text-xl p-0 inline-flex items-center" aria-label="Go to homepage">
                 <Image
                   src={logoUrl}
                   alt={siteName}
@@ -196,14 +199,14 @@ export function Navbar({ siteName = SITE_DEFAULTS.name, logoUrl = null, user = n
                 />
               </Link>
             ) : (
-              <Link href="/" className="p-0 inline-flex items-center gap-2" aria-label="Go to homepage">
+              <Link href={homeHref} className="p-0 inline-flex items-center gap-2" aria-label="Go to homepage">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img src="/brand/arcaneboost-icon.svg" alt="" width={32} height={32} className="h-8 w-8 rounded-xl shadow-[0_6px_18px_-6px_rgba(124,92,255,0.9)]" />
                 <span className="font-display text-xl font-extrabold tracking-tight text-white">{siteName}</span>
               </Link>
             )}
 
-            <div className="dropdown hidden md:block">
+            {!isBooster && <div className="dropdown hidden md:block">
               <button
                 type="button"
                 className="btn btn-ghost btn-sm h-10 min-h-[2.5rem] px-3 gap-2 text-gray-200 hover:text-white border border-white/10 hover:border-brand-500/40 bg-white/[0.03] hover:bg-brand-500/10 rounded-xl"
@@ -250,13 +253,13 @@ export function Navbar({ siteName = SITE_DEFAULTS.name, logoUrl = null, user = n
                   </>
                 )}
               </ul>
-            </div>
+            </div>}
 
             
           </div>
 
           {/* Center Search Bar (Desktop) */}
-          <div className="hidden md:flex absolute left-1/2 -translate-x-1/2 w-[22rem] lg:w-[34rem]">
+          {!isBooster && <div className="hidden md:flex absolute left-1/2 -translate-x-1/2 w-[22rem] lg:w-[34rem]">
             <form
               onSubmit={(e) => {
                 e.preventDefault();
@@ -367,11 +370,11 @@ export function Navbar({ siteName = SITE_DEFAULTS.name, logoUrl = null, user = n
                 </div>
               )}
             </form>
-          </div>
+          </div>}
 
           {/* Right Side: Icons */}
           <div className="flex items-center gap-2 sm:gap-3 shrink-0">
-            <div className="dropdown md:hidden">
+            {!isBooster && <div className="dropdown md:hidden">
               <button
                 type="button"
                 className="btn btn-ghost h-10 min-h-[2.5rem] px-3 gap-2 text-gray-300 hover:text-white border border-white/10 hover:border-brand-500/40 bg-white/[0.03] hover:bg-brand-500/10 rounded-xl"
@@ -398,7 +401,7 @@ export function Navbar({ siteName = SITE_DEFAULTS.name, logoUrl = null, user = n
                   </>
                 )}
               </ul>
-            </div>
+            </div>}
             {/* Mobile Search Button - COMPLETELY REMOVED */}
             {/* 
             <span
@@ -417,7 +420,7 @@ export function Navbar({ siteName = SITE_DEFAULTS.name, logoUrl = null, user = n
             <form ... className="md:hidden ..."> ... </form> 
             */}
 
-            <div className="dropdown dropdown-end">
+            {!isBooster && <div className="dropdown dropdown-end">
               <button
                 type="button"
                 className="btn btn-ghost h-10 min-h-[2.5rem] px-3 gap-2 text-gray-300 hover:text-white border border-white/10 hover:border-brand-500/40 bg-white/[0.03] hover:bg-brand-500/10 rounded-xl"
@@ -439,7 +442,7 @@ export function Navbar({ siteName = SITE_DEFAULTS.name, logoUrl = null, user = n
                 <li><button onClick={() => { setCurrency("$"); closeDropdown(); }} className="hover:bg-white/10 rounded-xl text-gray-200">$ US</button></li>
                 <li><button onClick={() => { setCurrency("€"); closeDropdown(); }} className="hover:bg-white/10 rounded-xl text-gray-200">€ EU</button></li>
               </ul>
-            </div>
+            </div>}
 
             {user ? (
               <div className="dropdown dropdown-end">
