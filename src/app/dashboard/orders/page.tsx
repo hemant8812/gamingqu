@@ -9,6 +9,7 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { autoConfirmDue, confirmOrder, AUTO_CONFIRM_HOURS } from "@/lib/orderCompletion";
 import { PageToast } from "@/components/shared/PageToast";
+import { OrderChat } from "@/components/chat/OrderChat";
 import { OrdersSearchInput } from "@/components/dashboard/OrdersSearchInput";
 
 function formatDateTimeEnglish(d: Date) {
@@ -433,6 +434,11 @@ export default async function MyOrdersPage({ searchParams }: { searchParams?: Pr
                                 </div>
                               )}
                             </div>
+                            {selected.booster && (
+                              <div className="mb-4">
+                                <OrderChat code={selected.code} title="Chat with your booster" />
+                              </div>
+                            )}
                             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                               <div className="space-y-2">
                                 <div className="space-y-1">

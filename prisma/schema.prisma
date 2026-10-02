@@ -73,6 +73,7 @@ model User {
   orders        Order[]  @relation("OrderCustomer")
   boosterOrders Order[]  @relation("OrderBooster")
   boosterServices BoosterService[]
+  orderMessages OrderMessage[]
   wallet       Wallet?
   payoutAccounts BoosterPayoutAccount[]
   reviews      Review[]
@@ -470,6 +471,7 @@ model Order {
   payments Payment[]
   walletTransactions WalletTransaction[]
   reviews Review[]
+  messages OrderMessage[]
 
   @@index([userId, status, createdAt])
   @@index([serviceId, methodSlug])
@@ -599,4 +601,18 @@ model BoosterWithdrawal {
 
   @@index([userId, status, createdAt])
   @@index([accountId])
+}
+
+// Chat between the customer, the assigned booster and admins on one order.
+model OrderMessage {
+  id        Int      @id @default(autoincrement())
+  orderId   Int
+  senderId  String
+  body      String   @db.Text
+  createdAt DateTime @default(now())
+
+  order  Order @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  sender User  @relation(fields: [senderId], references: [id], onDelete: Cascade)
+
+  @@index([orderId, createdAt])
 }

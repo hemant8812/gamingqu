@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from "react";
 import Link from "next/link";
-import { Briefcase, CheckCircle, Activity, Play, X, Gamepad2, Clock } from "lucide-react";
+import { Briefcase, CheckCircle, Activity, Play, X, Gamepad2, Clock, MessageSquare } from "lucide-react";
 import type { BoosterJob } from "@/lib/boosterJobs";
 
 type Action = (formData: FormData) => void | Promise<void>;
@@ -241,6 +241,9 @@ export function JobsTabs({
                   >
                     {job.status === "WAITING_CONFIRM" ? "Waiting for customer to confirm" : job.status === "IN_PROGRESS" ? "In progress" : "Accepted"}
                   </span>
+                  <Link href={`/booster/chat/${encodeURIComponent(job.id)}`} className="btn btn-sm h-9 rounded-xl border border-white/10 bg-white/[0.04] text-gray-200 hover:bg-white/[0.08]">
+                    <MessageSquare className="h-4 w-4" /> Chat with customer
+                  </Link>
                   {job.status !== "WAITING_CONFIRM" && <div className="flex gap-2">
                     {job.status === "ACCEPTED" && (
                       <CodeForm back={back} action={startAction} code={job.id} className="btn btn-sm h-9 rounded-xl border border-white/10 bg-white/[0.06] text-white hover:bg-white/10">

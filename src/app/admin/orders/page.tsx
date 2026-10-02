@@ -15,6 +15,7 @@ import { PaymentBadge, FulfillmentBadge } from "@/components/shared/StatusBadge"
 import { formatDateTimeID } from "@/lib/datetime";
 import { assertAdminSection, canAccessAdminSection } from "@/lib/adminAccess";
 import { autoConfirmDue, confirmOrder } from "@/lib/orderCompletion";
+import { OrderChat } from "@/components/chat/OrderChat";
 
  
 
@@ -474,6 +475,12 @@ export default async function AdminOrdersPage({ searchParams }: { searchParams?:
                 </div>
               </div>
             </div>
+          </div>
+        )}
+
+        {selected && (
+          <div className="mb-6">
+            <OrderChat code={selected.code} title={`Order chat · ${selected.code}`} />
           </div>
         )}
 
