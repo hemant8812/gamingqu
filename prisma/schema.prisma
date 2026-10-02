@@ -70,7 +70,9 @@ model User {
   sessions      Session[]
   boosterApplications BoosterApplication[]
   posts         Post[]
-  orders        Order[]
+  orders        Order[]  @relation("OrderCustomer")
+  boosterOrders Order[]  @relation("OrderBooster")
+  boosterServices BoosterService[]
   wallet       Wallet?
   payoutAccounts BoosterPayoutAccount[]
   reviews      Review[]
@@ -240,6 +242,7 @@ model Service {
   details  ServiceDetail[]
   orders   Order[]
   reviews  Review[]
+  boosters BoosterService[]
 
   @@index([gameId, categoryId])
   @@index([isActive, createdAt])
@@ -449,10 +452,15 @@ model Order {
   contactDiscord String?
   characterName String?
   payload       Json?
+  // Booster who accepted the job; null while it is open.
+  boosterId     String?
+  acceptedAt    DateTime?
+  completedAt   DateTime?
   createdAt     DateTime    @default(now())
   updatedAt     DateTime    @updatedAt
 
-  user    User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+  user    User?    @relation("OrderCustomer", fields: [userId], references: [id], onDelete: SetNull)
+  booster User?    @relation("OrderBooster", fields: [boosterId], references: [id], onDelete: SetNull)
   service Service  @relation(fields: [serviceId], references: [id], onDelete: Cascade)
   payments Payment[]
   walletTransactions WalletTransaction[]
@@ -460,6 +468,21 @@ model Order {
 
   @@index([userId, status, createdAt])
   @@index([serviceId, methodSlug])
+  @@index([boosterId, fulfillmentStatus])
+}
+
+// Services a booster has chosen to work on; they only see jobs for these.
+model BoosterService {
+  id        Int      @id @default(autoincrement())
+  userId    String
+  serviceId Int
+  createdAt DateTime @default(now())
+
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  service Service @relation(fields: [serviceId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, serviceId])
+  @@index([serviceId])
 }
 
 model Payment {

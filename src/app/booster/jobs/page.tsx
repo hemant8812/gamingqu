@@ -6,12 +6,16 @@ import { BoosterSidebar } from "@/components/dashboard/BoosterSidebar";
 import { ArrowLeft } from "lucide-react";
 import { JobsTabs } from "@/components/booster/JobsTabs";
 import { db } from "@/lib/prisma";
+import { revalidatePath } from "next/cache";
+import { redirect } from "next/navigation";
+import { PageToast } from "@/components/shared/PageToast";
+import { getAvailableJobs, getBoosterId, getBoosterServiceIds, getMyJobs } from "@/lib/boosterJobs";
 
 export const metadata = {
   title: "Booster Jobs",
 };
 
-export default async function BoosterJobsPage() {
+export default async function BoosterJobsPage({ searchParams }: { searchParams: Promise<Record<string, string | string[] | undefined>> }) {
   const session = await getServerSession(authOptions);
   const role = session?.user?.role;
   const isBooster = role === "BOOSTER";
@@ -42,37 +46,65 @@ export default async function BoosterJobsPage() {
     );
   }
 
-  const activeJobs = [
-    { id: "ORD-001", title: "Diamond Boost", game: "League of Legends", status: "In Progress" as const, progress: 65, price: "$99.99" },
-    { id: "ORD-014", title: "Ranked Placement", game: "Valorant", status: "Pending" as const, progress: 10, price: "$29.99" },
-  ];
+  const boosterId = await getBoosterId();
+  if (!boosterId) return null;
 
-  let availableJobs: Array<{ id: string; title: string; game: string; price: string; createdAt: string; payload?: string }> = [];
-  try {
-    const list = await db.order.findMany({
-      where: { status: "PAID", fulfillmentStatus: "PENDING" },
-      select: {
-        code: true,
-        items: true,
-        boosterPay: true,
-        currency: true,
-        serviceSlug: true,
-        createdAt: true,
-        payload: true,
-        service: { select: { name: true, game: { select: { name: true } } } },
-      },
-      orderBy: [{ createdAt: "desc" }],
-      take: 50,
+  // Take an open order. The update only matches while nobody else has it,
+  // so two boosters clicking at once cannot both get the same order.
+  async function acceptJob(formData: FormData) {
+    "use server";
+    const me = await getBoosterId();
+    const code = String(formData.get("code") ?? "");
+    if (!me || !code) return;
+    const serviceIds = await getBoosterServiceIds(me);
+    const res = await db.order.updateMany({
+      where: { code, status: "PAID", fulfillmentStatus: "PENDING", boosterId: null, serviceId: { in: serviceIds } },
+      data: { boosterId: me, fulfillmentStatus: "ACCEPTED", acceptedAt: new Date() },
     });
-    availableJobs = list.map((o) => {
-      const title = o.service?.name ?? o.serviceSlug;
-      const game = o.service?.game?.name ?? "";
-      const amount = typeof o.boosterPay === "number" ? o.boosterPay : Number.parseFloat(String(o.boosterPay));
-      const price = new Intl.NumberFormat("en-US", { style: "currency", currency: o.currency, maximumFractionDigits: 2 }).format(amount);
-      const payloadStr = typeof o.payload === "string" ? o.payload : JSON.stringify(o.payload ?? {});
-      return { id: o.code, title, game, price, createdAt: new Date(o.createdAt as unknown as string).toISOString(), payload: payloadStr };
+    revalidatePath("/booster/jobs");
+    revalidatePath("/booster");
+    redirect(`/booster/jobs?toast=${res.count ? "accepted" : "taken"}`);
+  }
+
+  async function startJob(formData: FormData) {
+    "use server";
+    const me = await getBoosterId();
+    const code = String(formData.get("code") ?? "");
+    if (!me || !code) return;
+    await db.order.updateMany({ where: { code, boosterId: me, fulfillmentStatus: "ACCEPTED" }, data: { fulfillmentStatus: "IN_PROGRESS" } });
+    revalidatePath("/booster/jobs");
+    redirect("/booster/jobs?toast=started");
+  }
+
+  async function completeJob(formData: FormData) {
+    "use server";
+    const me = await getBoosterId();
+    const code = String(formData.get("code") ?? "");
+    if (!me || !code) return;
+    await db.order.updateMany({
+      where: { code, boosterId: me, fulfillmentStatus: { in: ["ACCEPTED", "IN_PROGRESS"] } },
+      data: { fulfillmentStatus: "COMPLETED", completedAt: new Date() },
     });
-  } catch {}
+    revalidatePath("/booster/jobs");
+    revalidatePath("/booster");
+    redirect("/booster/jobs?toast=completed");
+  }
+
+  const serviceIds = await getBoosterServiceIds(boosterId).catch(() => [] as number[]);
+  const [availableJobs, activeJobs, completedJobs] = await Promise.all([
+    getAvailableJobs(serviceIds).catch(() => []),
+    getMyJobs(boosterId, "active").catch(() => []),
+    getMyJobs(boosterId, "completed").catch(() => []),
+  ]);
+
+  const sp = await searchParams;
+  const toastKey = typeof sp.toast === "string" ? sp.toast : "";
+  const toast: Record<string, { m: string; t: "success" | "error" }> = {
+    accepted: { m: "Order taken. You can find it under In process.", t: "success" },
+    taken: { m: "Someone else already took this order.", t: "error" },
+    started: { m: "Marked as in progress.", t: "success" },
+    completed: { m: "Order marked as completed.", t: "success" },
+  };
 
   return (
     <div className="min-h-screen bg-ink-900 text-white">
@@ -88,8 +120,8 @@ export default async function BoosterJobsPage() {
           <main>
             <div className="flex items-start justify-between gap-3 mb-6">
               <div>
-                <h1 className="text-2xl font-bold text-white">Jobs</h1>
-                <div className="text-sm text-gray-400">Manage your active work and accept new jobs</div>
+                <h1 className="text-2xl font-bold text-white">Find orders</h1>
+                <div className="text-sm text-gray-400">Paid orders for the services you can do</div>
               </div>
               <Link href="/booster" className="btn btn-gaming btn-sm !rounded-md inline-flex items-center gap-2">
                 <ArrowLeft className="h-4 w-4" />
@@ -97,7 +129,16 @@ export default async function BoosterJobsPage() {
               </Link>
             </div>
 
-            <JobsTabs available={availableJobs.map((j) => ({ id: j.id, title: j.title, game: j.game, price: j.price, createdAt: j.createdAt, payload: j.payload }))} active={activeJobs} />
+            <PageToast message={toast[toastKey]?.m} type={toast[toastKey]?.t} />
+            <JobsTabs
+              available={availableJobs}
+              active={activeJobs}
+              completed={completedJobs}
+              hasServices={serviceIds.length > 0}
+              acceptAction={acceptJob}
+              startAction={startJob}
+              completeAction={completeJob}
+            />
           </main>
         </div>
       </div>

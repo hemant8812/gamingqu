@@ -1,14 +1,15 @@
 'use client';
 import Link from "next/link";
-import { LayoutDashboard, Briefcase, DollarSign, User, MessageSquare, Settings, Zap } from "lucide-react";
+import { LayoutDashboard, Briefcase, DollarSign, User, MessageSquare, Settings, Zap, Gamepad2 } from "lucide-react";
 import { PanelNav, PanelTabs, type PanelNavItem } from "@/components/panel/PanelNav";
 
-type ActiveTab = "overview" | "jobs" | "earnings" | "profile" | "messages" | "settings";
+type ActiveTab = "overview" | "jobs" | "services" | "earnings" | "profile" | "messages" | "settings";
 
 export function BoosterSidebar({ active }: { active: ActiveTab }) {
   const items: PanelNavItem[] = [
     { href: "/booster", label: "Overview", icon: <LayoutDashboard className="h-4 w-4" />, active: active === "overview" },
     { href: "/booster/jobs", label: "Jobs", icon: <Briefcase className="h-4 w-4" />, active: active === "jobs" },
+    { href: "/booster/services", label: "My Services", icon: <Gamepad2 className="h-4 w-4" />, active: active === "services" },
     { href: "/booster/earnings", label: "Earnings", icon: <DollarSign className="h-4 w-4" />, active: active === "earnings" },
     { href: "/booster/profile", label: "Profile", icon: <User className="h-4 w-4" />, active: active === "profile" },
     { href: "/booster/messages", label: "Messages", icon: <MessageSquare className="h-4 w-4" />, active: active === "messages" },
@@ -32,8 +33,8 @@ export function BoosterSidebar({ active }: { active: ActiveTab }) {
                   <Zap className="h-4 w-4" />
                 </span>
                 <span>
-                  <span className="block font-semibold text-white">Find new jobs</span>
-                  <span className="text-xs text-gray-400">Open orders waiting</span>
+                  <span className="block font-semibold text-white">Find orders</span>
+                  <span className="text-xs text-gray-400">For your services</span>
                 </span>
               </Link>
             </div>
