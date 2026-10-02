@@ -52,6 +52,7 @@ export async function Footer() {
         { title: s?.navHomeTitle?.trim() || "Home", url: s?.navHomeUrl?.trim() || "/" },
         { title: s?.navAboutTitle?.trim() || "About Us", url: s?.navAboutUrl?.trim() || "/about" },
         { title: s?.navFaqTitle?.trim() || "Blog", url: s?.navFaqUrl?.trim() || "/blog" },
+        { title: "FAQ", url: "/faq" },
         { title: s?.navBoosterTitle?.trim() || "Become a Booster", url: s?.navBoosterUrl?.trim() || "/work-with-us" },
     ];
     const legals: Array<{ title: string; url: string }> = [

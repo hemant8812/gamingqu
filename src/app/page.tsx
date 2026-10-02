@@ -6,6 +6,8 @@ import { Benefits } from "@/components/home/Benefits";
 import { LatestGuides } from "@/components/home/LatestGuides";
 import { BoosterCta } from "@/components/home/BoosterCta";
 import { PlayerReviews } from "@/components/home/PlayerReviews";
+import { Faq } from "@/components/home/Faq";
+import { faqJsonLd } from "@/lib/faq";
 import { getHomeData } from "@/lib/homeData";
 import type { Metadata } from "next";
 import { getFooterSettings } from "@/lib/settings";
@@ -96,7 +98,7 @@ export default async function Home() {
 
   return (
     <>
-      <JsonLd data={[webPageLd, profServiceLd]} />
+      <JsonLd data={[webPageLd, profServiceLd, faqJsonLd()]} />
       <div className="min-h-screen bg-ink-900 text-base-content">
         <HomeHero gameCount={home.gameCount} />
         <main className="mx-auto max-w-7xl space-y-20 px-4 py-14 sm:px-6 md:py-20">
@@ -105,6 +107,7 @@ export default async function Home() {
           <Benefits />
           <HowItWorks />
           <PlayerReviews />
+          <Faq />
           <LatestGuides />
           <BoosterCta />
         </main>

@@ -5,7 +5,7 @@ import { getToken } from "next-auth/jwt";
 // shop (prices, games, services, checkout).
 const BOOSTER_ALLOWED = [
   "/booster", "/login", "/register", "/post-login", "/auth", "/contact", "/trust-safety",
-  "/about", "/blog", "/work-with-us", "/terms", "/privacy", "/refund", "/cookies",
+  "/about", "/blog", "/faq", "/work-with-us", "/terms", "/privacy", "/refund", "/cookies",
   "/uploads", "/brand", "/icons", "/_next", "/favicon.ico", "/robots.txt", "/sitemap.xml", "/manifest.webmanifest",
 ];
 const BOOSTER_BLOCKED_API = ["/api/checkout", "/api/orders/pay"];
