@@ -1,6 +1,7 @@
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/auth";
 import { db } from "@/lib/prisma";
+import { autoConfirmDue } from "@/lib/orderCompletion";
 
 export type BoosterJob = {
   id: string; // order code
@@ -9,7 +10,7 @@ export type BoosterJob = {
   price: string;
   createdAt: string;
   payload?: string;
-  status: "PENDING" | "ACCEPTED" | "IN_PROGRESS" | "COMPLETED" | "CANCELED";
+  status: "PENDING" | "ACCEPTED" | "IN_PROGRESS" | "WAITING_CONFIRM" | "COMPLETED" | "CANCELED";
 };
 
 // Signed-in booster's user id, or null when the user is not a booster.
@@ -78,10 +79,11 @@ export async function getAvailableJobs(serviceIds: number[], take = 50): Promise
 }
 
 export async function getMyJobs(boosterId: string, which: "active" | "completed", take = 50): Promise<BoosterJob[]> {
+  await autoConfirmDue().catch(() => null);
   const rows = await db.order.findMany({
     where: {
       boosterId,
-      fulfillmentStatus: which === "active" ? { in: ["ACCEPTED", "IN_PROGRESS"] } : "COMPLETED",
+      fulfillmentStatus: which === "active" ? { in: ["ACCEPTED", "IN_PROGRESS", "WAITING_CONFIRM"] } : "COMPLETED",
     },
     select: jobSelect,
     orderBy: which === "active" ? { acceptedAt: "desc" } : { completedAt: "desc" },

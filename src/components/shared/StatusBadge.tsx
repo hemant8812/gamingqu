@@ -19,7 +19,7 @@ export function PaymentBadge({ status }: { status: "CREATED" | "PENDING" | "PAID
   );
 }
 
-export function FulfillmentBadge({ status }: { status: "PENDING" | "ACCEPTED" | "IN_PROGRESS" | "COMPLETED" | "CANCELED" }) {
+export function FulfillmentBadge({ status }: { status: "PENDING" | "ACCEPTED" | "IN_PROGRESS" | "WAITING_CONFIRM" | "COMPLETED" | "CANCELED" }) {
   const cls =
     status === "COMPLETED"
       ? "bg-emerald-500/20 text-emerald-400"
@@ -29,7 +29,7 @@ export function FulfillmentBadge({ status }: { status: "PENDING" | "ACCEPTED" | 
       ? "bg-red-500/20 text-red-400"
       : "bg-brand-500/20 text-brand-400";
   const Icon = status === "COMPLETED" ? CheckCircle : status === "PENDING" ? Clock : Shield;
-  const label = status === "COMPLETED" ? "Completed" : status === "PENDING" ? "Pending" : status === "ACCEPTED" ? "Accepted" : status === "IN_PROGRESS" ? "In Progress" : "Canceled";
+  const label = status === "COMPLETED" ? "Completed" : status === "PENDING" ? "Pending" : status === "ACCEPTED" ? "Accepted" : status === "IN_PROGRESS" ? "In Progress" : status === "WAITING_CONFIRM" ? "Waiting to confirm" : "Canceled";
   return (
     <span className={`inline-flex items-center gap-1 px-2 py-0.5 text-xs font-medium rounded-md w-fit whitespace-nowrap ${cls}`}>
       <Icon className="h-3.5 w-3.5 shrink-0" />

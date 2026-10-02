@@ -14,6 +14,7 @@ import { SubmitButton } from "@/components/shared/SubmitButton";
 import { PaymentBadge, FulfillmentBadge } from "@/components/shared/StatusBadge";
 import { formatDateTimeID } from "@/lib/datetime";
 import { assertAdminSection, canAccessAdminSection } from "@/lib/adminAccess";
+import { autoConfirmDue, confirmOrder } from "@/lib/orderCompletion";
 
  
 
@@ -37,6 +38,10 @@ export default async function AdminOrdersPage({ searchParams }: { searchParams?:
   const pageRaw = sp?.page;
   const pageStr = typeof pageRaw === "string" ? pageRaw : Array.isArray(pageRaw) ? pageRaw[0] ?? "1" : "1";
   let page = Number.parseInt(pageStr || "1", 10);
+  await autoConfirmDue().catch(() => null);
+  const boosters = await db.user
+    .findMany({ where: { role: "BOOSTER", isSuspended: false }, select: { id: true, username: true }, orderBy: { username: "asc" } })
+    .catch(() => [] as { id: string; username: string }[]);
   const pageSize = 5;
   const totalCount = await db.order.count();
   const totalPages = Math.max(1, Math.ceil(totalCount / pageSize));
@@ -49,6 +54,7 @@ export default async function AdminOrdersPage({ searchParams }: { searchParams?:
     select: {
       code: true,
       user: { select: { id: true, username: true } },
+      booster: { select: { username: true } },
       service: { select: { name: true, game: { select: { name: true } } } },
       methodSlug: true,
       status: true,
@@ -67,6 +73,7 @@ export default async function AdminOrdersPage({ searchParams }: { searchParams?:
   const uiOrders = orders.map((o) => ({
     code: o.code,
     user: o.user ? { id: o.user.id, username: o.user.username } : null,
+    booster: o.booster?.username ?? null,
     service: o.service
       ? { name: o.service.name, game: o.service.game ? { name: o.service.game.name } : null }
       : null,
@@ -93,6 +100,10 @@ export default async function AdminOrdersPage({ searchParams }: { searchParams?:
       ? "Order status updated successfully"
       : toast === "fulfillment_changed"
       ? "Fulfillment status updated successfully"
+      : toast === "booster_changed"
+      ? "Booster assignment updated"
+      : toast === "paid_out"
+      ? "Order completed and booster paid"
       : toast === "error"
       ? "Operation failed"
       : undefined;
@@ -116,6 +127,8 @@ export default async function AdminOrdersPage({ searchParams }: { searchParams?:
           contactDiscord: true,
           characterName: true,
           payload: true,
+          paidOutAt: true,
+          booster: { select: { id: true, username: true } },
           createdAt: true,
         },
       })
@@ -180,6 +193,45 @@ export default async function AdminOrdersPage({ searchParams }: { searchParams?:
     redirect(`/admin/orders?order=${encodeURIComponent(code)}&toast=status_changed`);
   }
 
+  // Assign an order to a booster, or unassign it ("" = back to open orders).
+  async function assignBoosterAction(formData: FormData) {
+    "use server";
+    await assertAdminSection("orders");
+    const code = String(formData.get("code") || "");
+    const boosterId = String(formData.get("boosterId") || "");
+    if (!code) return;
+    try {
+      if (!boosterId) {
+        await db.order.updateMany({
+          where: { code, paidOutAt: null },
+          data: { boosterId: null, fulfillmentStatus: "PENDING", acceptedAt: null, doneAt: null },
+        });
+      } else {
+        const booster = await db.user.findFirst({ where: { id: boosterId, role: "BOOSTER" }, select: { id: true } });
+        if (booster) {
+          await db.order.updateMany({
+            where: { code, paidOutAt: null },
+            data: { boosterId: booster.id, fulfillmentStatus: "ACCEPTED", acceptedAt: new Date(), doneAt: null },
+          });
+        }
+      }
+    } catch {
+      /* ignore */
+    }
+    revalidatePath("/admin/orders");
+    redirect(`/admin/orders?order=${encodeURIComponent(code)}&toast=booster_changed`);
+  }
+
+  async function confirmPayAction(formData: FormData) {
+    "use server";
+    await assertAdminSection("orders");
+    const code = String(formData.get("code") || "");
+    if (!code) return;
+    await confirmOrder(code, { allowFrom: ["ACCEPTED", "IN_PROGRESS", "WAITING_CONFIRM"] }).catch(() => null);
+    revalidatePath("/admin/orders");
+    redirect(`/admin/orders?order=${encodeURIComponent(code)}&toast=paid_out`);
+  }
+
   async function changeFulfillmentStatusAction(formData: FormData) {
     "use server";
     await assertAdminSection("orders");
@@ -189,7 +241,15 @@ export default async function AdminOrdersPage({ searchParams }: { searchParams?:
     try {
       const order = await db.order.findUnique({ where: { code }, select: { id: true } });
       if (!order) return;
-      await db.order.update({ where: { id: order.id }, data: { fulfillmentStatus } });
+      if (fulfillmentStatus === "COMPLETED") {
+        // Completing pays the assigned booster once.
+        await confirmOrder(code, { allowFrom: ["ACCEPTED", "IN_PROGRESS", "WAITING_CONFIRM"] });
+      } else {
+        await db.order.update({
+          where: { id: order.id },
+          data: { fulfillmentStatus, ...(fulfillmentStatus === "WAITING_CONFIRM" ? { doneAt: new Date() } : {}) },
+        });
+      }
     } catch {
       /* ignore */
     }
@@ -346,7 +406,8 @@ export default async function AdminOrdersPage({ searchParams }: { searchParams?:
                       <option value="PENDING">PENDING</option>
                       <option value="ACCEPTED">ACCEPTED</option>
                       <option value="IN_PROGRESS">IN_PROGRESS</option>
-                      <option value="COMPLETED">COMPLETED</option>
+                      <option value="WAITING_CONFIRM">WAITING_CONFIRM</option>
+                      <option value="COMPLETED">COMPLETED (pays booster)</option>
                       <option value="CANCELED">CANCELED</option>
                     </select>
                     <SubmitButton className="w-full h-9 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-semibold" pendingClassName="opacity-75 cursor-wait">
@@ -362,6 +423,39 @@ export default async function AdminOrdersPage({ searchParams }: { searchParams?:
                       </SubmitButton>
                     </form>
                   )}
+
+                  {/* Booster assignment and payout */}
+                  <div className="space-y-2 rounded-lg border border-white/10 p-3">
+                    <div className="text-xs text-gray-500 font-bold">Booster</div>
+                    <div className="text-sm text-white">
+                      {selected.booster?.username ?? "Not assigned"}
+                      {selected.paidOutAt && <span className="ml-2 rounded bg-emerald-500/15 px-1.5 py-0.5 text-[11px] text-emerald-300">Paid</span>}
+                    </div>
+                    {!selected.paidOutAt && (
+                      <>
+                        <form action={assignBoosterAction} className="flex gap-2">
+                          <input type="hidden" name="code" value={selected.code} />
+                          <select name="boosterId" defaultValue={selected.booster?.id ?? ""} className="min-w-0 flex-1 h-9 px-2 rounded-lg bg-ink-800 border border-white/10 text-white text-sm">
+                            <option value="">— Unassigned (open) —</option>
+                            {boosters.map((b) => (
+                              <option key={b.id} value={b.id}>{b.username}</option>
+                            ))}
+                          </select>
+                          <SubmitButton className="h-9 px-3 rounded-lg bg-brand-600 hover:bg-brand-700 text-white text-sm font-semibold" pendingClassName="opacity-75 cursor-wait">
+                            Save
+                          </SubmitButton>
+                        </form>
+                        {selected.booster && (
+                          <form action={confirmPayAction}>
+                            <input type="hidden" name="code" value={selected.code} />
+                            <SubmitButton className="w-full h-9 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-semibold" pendingClassName="opacity-75 cursor-wait">
+                              Confirm &amp; pay booster
+                            </SubmitButton>
+                          </form>
+                        )}
+                      </>
+                    )}
+                  </div>
 
                   <form action={changeBoosterPayAction} className="space-y-2">
                     <input type="hidden" name="code" value={selected.code} />

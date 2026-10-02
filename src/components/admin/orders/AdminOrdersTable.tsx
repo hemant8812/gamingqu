@@ -11,10 +11,11 @@ import { formatDateTimeID } from "@/lib/datetime";
 type OrderItem = {
   code: string;
   user?: { id: string; username: string | null } | null;
+  booster?: string | null;
   service?: { name: string | null; game?: { name: string | null } | null } | null;
   methodSlug: string;
   status: "CREATED" | "PENDING" | "PAID" | "CANCELED" | "FAILED";
-  fulfillmentStatus: "PENDING" | "ACCEPTED" | "IN_PROGRESS" | "COMPLETED" | "CANCELED";
+  fulfillmentStatus: "PENDING" | "ACCEPTED" | "IN_PROGRESS" | "WAITING_CONFIRM" | "COMPLETED" | "CANCELED";
   items: unknown;
   fee: unknown;
   amount: unknown;
@@ -111,6 +112,7 @@ export function AdminOrdersTable({ orders, page = 1, totalPages = 1 }: { orders:
                     </div>
                     <div>
                       <div className="text-sm text-white">{o.user?.username ?? "-"}</div>
+                      <div className="text-[11px] text-gray-500">Booster: {o.booster ?? "—"}</div>
                       <div className="text-xs text-gray-500">{o.user?.id ?? "-"}</div>
                     </div>
                     <div>

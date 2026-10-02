@@ -26,7 +26,7 @@ const TOASTS: Record<string, { m: string; t: "success" | "error" }> = {
   accepted: { m: "Order taken. You can find it under In process.", t: "success" },
   taken: { m: "Someone else already took this order.", t: "error" },
   started: { m: "Marked as in progress.", t: "success" },
-  completed: { m: "Order marked as completed.", t: "success" },
+  completed: { m: "Marked as done. You get paid when the customer confirms.", t: "success" },
   saved: { m: "Your services are saved.", t: "success" },
 };
 

@@ -1,5 +1,5 @@
 "use client";
-import Image from "next/image";
+import { ArtImage } from "@/components/art/ArtImage";
 import { useRouter } from "next/navigation";
 import { Pencil, Trash2, AlertTriangle, X, GripVertical } from "lucide-react";
 import { useState, useRef, useEffect } from "react";
@@ -112,9 +112,9 @@ export function CategoryList({ categories }: { categories: CategoryItem[] }) {
             <GripVertical className="h-4.5 w-4.5" />
           </div>
 
-          <div className="w-10 h-10 rounded-lg bg-white/5 overflow-hidden flex items-center justify-center shrink-0">
+          <div className="relative w-10 h-10 rounded-lg bg-white/5 overflow-hidden flex items-center justify-center shrink-0">
             {c.game.iconUrl ? (
-              <Image src={c.game.iconUrl} alt={c.game.name} width={40} height={40} className="object-cover w-full h-full" unoptimized />
+              <ArtImage src={c.game.iconUrl} alt={c.game.name} seed={c.game.name} />
             ) : (
               <div className="text-[10px] text-gray-500">No icon</div>
             )}

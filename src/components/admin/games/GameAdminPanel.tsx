@@ -1,5 +1,5 @@
 "use client";
-import Image from "next/image";
+import { ArtImage } from "@/components/art/ArtImage";
 import { useMemo, useState } from "react";
 import { RichTextEditor } from "@/components/shared/RichTextEditor";
 import { ImageUploadField } from "@/components/shared/ImageUploadField";
@@ -128,9 +128,9 @@ export function GameAdminPanel({ games, createAction, updateAction }: Props) {
               onClick={() => setSelected(g)}
               className="w-full text-left flex items-center gap-4 rounded-xl border border-zinc-900 bg-black p-3 hover:bg-zinc-900/40"
             >
-              <div className="w-16 h-16 rounded-md bg-zinc-900 overflow-hidden flex items-center justify-center">
+              <div className="relative w-16 h-16 rounded-md bg-zinc-900 overflow-hidden flex items-center justify-center">
                 {g.imageUrl ? (
-                  <Image src={g.imageUrl} alt={g.name} width={64} height={64} className="object-cover w-16 h-16" unoptimized />
+                  <ArtImage src={g.imageUrl} alt={g.name} seed={g.name} />
                 ) : (
                   <div className="text-xs text-zinc-500">No image</div>
                 )}
@@ -143,9 +143,9 @@ export function GameAdminPanel({ games, createAction, updateAction }: Props) {
                   {g.isHotOffer && <span className="px-2 py-0.5 rounded-md bg-orange-600 text-white">Hot Offer</span>}
                 </div>
               </div>
-              <div className="w-10 h-10 rounded-md bg-zinc-900 overflow-hidden flex items-center justify-center">
+              <div className="relative w-10 h-10 rounded-md bg-zinc-900 overflow-hidden flex items-center justify-center">
                 {g.iconUrl ? (
-                  <Image src={g.iconUrl} alt="icon" width={40} height={40} className="object-cover w-10 h-10" unoptimized />
+                  <ArtImage src={g.iconUrl} alt="" seed={g.name} />
                 ) : (
                   <div className="text-[10px] text-zinc-500">No icon</div>
                 )}

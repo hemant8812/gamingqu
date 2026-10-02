@@ -5,6 +5,10 @@ import { authOptions } from "@/auth";
 import { db } from "@/lib/prisma";
 import { ShoppingCart, CheckCircle, Clock, Shield, Eye, CreditCard, XCircle } from "lucide-react";
 import { MemberSidebar } from "@/components/dashboard/MemberSidebar";
+import { revalidatePath } from "next/cache";
+import { redirect } from "next/navigation";
+import { autoConfirmDue, confirmOrder, AUTO_CONFIRM_HOURS } from "@/lib/orderCompletion";
+import { PageToast } from "@/components/shared/PageToast";
 import { OrdersSearchInput } from "@/components/dashboard/OrdersSearchInput";
 
 function formatDateTimeEnglish(d: Date) {
@@ -67,7 +71,7 @@ function PaymentBadge({ status }: { status: "CREATED" | "PENDING" | "PAID" | "CA
   );
 }
 
-function FulfillmentBadge({ status }: { status: "PENDING" | "ACCEPTED" | "IN_PROGRESS" | "COMPLETED" | "CANCELED" }) {
+function FulfillmentBadge({ status }: { status: "PENDING" | "ACCEPTED" | "IN_PROGRESS" | "WAITING_CONFIRM" | "COMPLETED" | "CANCELED" }) {
   const cls =
     status === "COMPLETED"
       ? "bg-emerald-500/20 text-emerald-400"
@@ -93,6 +97,8 @@ function FulfillmentBadge({ status }: { status: "PENDING" | "ACCEPTED" | "IN_PRO
       ? "Accepted"
       : status === "IN_PROGRESS"
       ? "In Progress"
+      : status === "WAITING_CONFIRM"
+      ? "Done – please confirm"
       : "Canceled";
   return (
     <span className={`inline-flex items-center gap-2 px-2.5 py-1 text-xs font-medium rounded-lg ${cls}`}>
@@ -134,8 +140,41 @@ export default async function MyOrdersPage({ searchParams }: { searchParams?: Pr
   const filterUpper = typeof filterParam === "string" ? filterParam.toUpperCase() : "ALL";
   const qParam = sp?.q;
   const q = typeof qParam === "string" ? qParam.trim() : "";
+  const myId = session.user.id;
+
+  // Customer confirms the booster finished; this pays the booster.
+  async function confirmMyOrder(formData: FormData) {
+    "use server";
+    const s2 = await getServerSession(authOptions);
+    const code = String(formData.get("code") ?? "");
+    if (!s2?.user?.id || !code) return;
+    const own = await db.order.findFirst({ where: { code, userId: s2.user.id }, select: { id: true } });
+    if (!own) return;
+    await confirmOrder(code);
+    revalidatePath("/dashboard/orders");
+    redirect(`/dashboard/orders?order=${encodeURIComponent(code)}&toast=confirmed`);
+  }
+
+  // Customer says it is not finished; the order goes back to the booster.
+  async function sendBackOrder(formData: FormData) {
+    "use server";
+    const s2 = await getServerSession(authOptions);
+    const code = String(formData.get("code") ?? "");
+    if (!s2?.user?.id || !code) return;
+    await db.order.updateMany({
+      where: { code, userId: s2.user.id, fulfillmentStatus: "WAITING_CONFIRM", paidOutAt: null },
+      data: { fulfillmentStatus: "IN_PROGRESS", doneAt: null },
+    });
+    revalidatePath("/dashboard/orders");
+    redirect(`/dashboard/orders?order=${encodeURIComponent(code)}&toast=sent_back`);
+  }
+
+  await autoConfirmDue().catch(() => null);
+  const toastKey = typeof sp?.toast === "string" ? sp.toast : "";
+  const toastMsg = toastKey === "confirmed" ? "Thanks! The order is completed." : toastKey === "sent_back" ? "Sent back to your booster to finish." : undefined;
+
   const list = await db.order.findMany({
-    where: { userId: session.user.id },
+    where: { userId: myId },
     select: {
       code: true,
       serviceSlug: true,
@@ -151,6 +190,8 @@ export default async function MyOrdersPage({ searchParams }: { searchParams?: Pr
       characterName: true,
       payload: true,
       createdAt: true,
+      doneAt: true,
+      booster: { select: { username: true } },
       service: { select: { name: true, game: { select: { name: true } } } },
     },
     orderBy: [{ createdAt: "desc" }],
@@ -161,6 +202,8 @@ export default async function MyOrdersPage({ searchParams }: { searchParams?: Pr
     const status =
       o.fulfillmentStatus === "COMPLETED"
         ? "Completed"
+        : o.fulfillmentStatus === "WAITING_CONFIRM"
+        ? "Please confirm"
         : o.fulfillmentStatus === "IN_PROGRESS"
         ? "In Progress"
         : o.fulfillmentStatus === "ACCEPTED"
@@ -171,6 +214,8 @@ export default async function MyOrdersPage({ searchParams }: { searchParams?: Pr
     const percent =
       o.fulfillmentStatus === "COMPLETED"
         ? 100
+        : o.fulfillmentStatus === "WAITING_CONFIRM"
+        ? 90
         : o.fulfillmentStatus === "IN_PROGRESS"
         ? 60
         : o.fulfillmentStatus === "ACCEPTED"
@@ -184,7 +229,7 @@ export default async function MyOrdersPage({ searchParams }: { searchParams?: Pr
   let filteredRows = rows;
   if (filterUpper === "IN_PROGRESS") {
     filteredRows = rows.filter(
-      (o) => o.fulfillment === "PENDING" || o.fulfillment === "ACCEPTED" || o.fulfillment === "IN_PROGRESS"
+      (o) => o.fulfillment === "PENDING" || o.fulfillment === "ACCEPTED" || o.fulfillment === "IN_PROGRESS" || o.fulfillment === "WAITING_CONFIRM"
     );
   } else if (filterUpper === "COMPLETED") {
     filteredRows = rows.filter((o) => o.fulfillment === "COMPLETED");
@@ -237,6 +282,7 @@ export default async function MyOrdersPage({ searchParams }: { searchParams?: Pr
         <div className="grid grid-cols-1 lg:grid-cols-[260px_1fr] gap-6">
           <aside className="space-y-6 hidden lg:block lg:sticky lg:top-20 self-start">
             <MemberSidebar active="orders" />
+            <PageToast message={toastMsg} />
           </aside>
           <main>
             <div className="flex items-center justify-between mb-6">
@@ -364,11 +410,34 @@ export default async function MyOrdersPage({ searchParams }: { searchParams?: Pr
                         </div>
                         {selected?.code === o.id && (
                           <div className="mt-3 rounded-2xl border border-white/10 bg-ink-800 p-4">
+                            <div className="mb-4 flex flex-wrap items-center justify-between gap-3 rounded-xl border border-white/10 bg-ink-900/60 p-3">
+                              <div className="text-sm text-gray-300">
+                                Booster:{" "}
+                                <span className="font-semibold text-white">
+                                  {selected.booster?.username ?? (selected.status === "PAID" ? "Finding a booster…" : "Assigned after payment")}
+                                </span>
+                              </div>
+                              {selected.fulfillmentStatus === "WAITING_CONFIRM" && (
+                                <div className="flex flex-wrap items-center gap-2">
+                                  <span className="text-xs text-gray-400">
+                                    Your booster finished. Confirm within {AUTO_CONFIRM_HOURS}h or it is confirmed automatically.
+                                  </span>
+                                  <form action={confirmMyOrder}>
+                                    <input type="hidden" name="code" value={selected.code} />
+                                    <button type="submit" className="btn btn-gaming btn-sm h-9 rounded-xl">Confirm completed</button>
+                                  </form>
+                                  <form action={sendBackOrder}>
+                                    <input type="hidden" name="code" value={selected.code} />
+                                    <button type="submit" className="btn btn-sm h-9 rounded-xl border border-white/10 bg-white/[0.04] text-gray-200">Not done yet</button>
+                                  </form>
+                                </div>
+                              )}
+                            </div>
                             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                               <div className="space-y-2">
                                 <div className="space-y-1">
                                   <div className="text-xs text-gray-500">Order Status</div>
-                                  <div className="text-sm text-white"><FulfillmentBadge status={selected.fulfillmentStatus as "PENDING" | "ACCEPTED" | "IN_PROGRESS" | "COMPLETED" | "CANCELED"} /></div>
+                                  <div className="text-sm text-white"><FulfillmentBadge status={selected.fulfillmentStatus as "PENDING" | "ACCEPTED" | "IN_PROGRESS" | "WAITING_CONFIRM" | "COMPLETED" | "CANCELED"} /></div>
                                 </div>
                                 <div className="space-y-1">
                                   <div className="text-xs text-gray-500">Payment Status</div>

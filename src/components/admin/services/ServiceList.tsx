@@ -1,5 +1,5 @@
 "use client";
-import Image from "next/image";
+import { ArtImage } from "@/components/art/ArtImage";
 import { useRouter } from "next/navigation";
 import { Pencil, Trash2, AlertTriangle, X } from "lucide-react";
 import { useState, useRef, useEffect } from "react";
@@ -50,9 +50,9 @@ export function ServiceList({ services }: { services: ServiceItem[] }) {
           key={s.id}
           className="flex items-center gap-4 p-3 bg-ink-900 hover:bg-white/5 rounded-xl transition-colors"
         >
-          <div className="w-14 h-14 rounded-lg bg-white/5 overflow-hidden flex items-center justify-center shrink-0">
+          <div className="relative w-14 h-14 rounded-lg bg-white/5 overflow-hidden flex items-center justify-center shrink-0">
             {s.imageUrl ? (
-              <Image src={s.imageUrl} alt={s.name} width={56} height={56} className="object-cover w-full h-full" unoptimized />
+              <ArtImage src={s.imageUrl} alt={s.name} seed={s.name} />
             ) : (
               <div className="text-xs text-gray-500">No image</div>
             )}

@@ -47,7 +47,7 @@ export async function completeJob(formData: FormData) {
   if (!me || !code) return;
   await db.order.updateMany({
     where: { code, boosterId: me, fulfillmentStatus: { in: ["ACCEPTED", "IN_PROGRESS"] } },
-    data: { fulfillmentStatus: "COMPLETED", completedAt: new Date() },
+    data: { fulfillmentStatus: "WAITING_CONFIRM", doneAt: new Date() },
   });
   done(formData, "completed");
 }

@@ -232,12 +232,16 @@ export function JobsTabs({
                 <div className="flex flex-col items-end gap-2">
                   <span
                     className={`rounded-full px-2 py-0.5 text-[11px] font-semibold ring-1 ${
-                      job.status === "IN_PROGRESS" ? "bg-sky-500/15 text-sky-200 ring-sky-400/30" : "bg-amber-500/15 text-amber-200 ring-amber-400/30"
+                      job.status === "WAITING_CONFIRM"
+                        ? "bg-lime-500/15 text-lime-200 ring-lime-400/30"
+                        : job.status === "IN_PROGRESS"
+                          ? "bg-sky-500/15 text-sky-200 ring-sky-400/30"
+                          : "bg-amber-500/15 text-amber-200 ring-amber-400/30"
                     }`}
                   >
-                    {job.status === "IN_PROGRESS" ? "In progress" : "Accepted"}
+                    {job.status === "WAITING_CONFIRM" ? "Waiting for customer to confirm" : job.status === "IN_PROGRESS" ? "In progress" : "Accepted"}
                   </span>
-                  <div className="flex gap-2">
+                  {job.status !== "WAITING_CONFIRM" && <div className="flex gap-2">
                     {job.status === "ACCEPTED" && (
                       <CodeForm back={back} action={startAction} code={job.id} className="btn btn-sm h-9 rounded-xl border border-white/10 bg-white/[0.06] text-white hover:bg-white/10">
                         <Play className="h-4 w-4" /> Start
@@ -246,7 +250,7 @@ export function JobsTabs({
                     <CodeForm back={back} action={completeAction} code={job.id} className="btn btn-gaming btn-sm h-9 rounded-xl">
                       <CheckCircle className="h-4 w-4" /> Mark complete
                     </CodeForm>
-                  </div>
+                  </div>}
                 </div>
               </OrderRow>
             ))
