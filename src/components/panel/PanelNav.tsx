@@ -11,6 +11,8 @@ export type PanelNavItem = {
   icon: ReactNode;
   active?: boolean;
   disabled?: boolean;
+  // Small counter shown after the label, e.g. new orders.
+  badge?: number;
 };
 
 type Tone = "brand" | "accent" | "lime";
@@ -74,6 +76,11 @@ export function PanelNav({
               >
                 <span className={active ? "text-brand-300" : "text-gray-500"}>{it.icon}</span>
                 <span className="truncate">{it.label}</span>
+                {!!it.badge && (
+                  <span className="ml-auto rounded-full bg-lime-glow px-1.5 text-[11px] font-bold tabular-nums text-ink-900" aria-label={`${it.badge} new`}>
+                    {it.badge}
+                  </span>
+                )}
               </Link>
             </li>
           );

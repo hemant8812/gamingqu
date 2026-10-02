@@ -1,14 +1,30 @@
 'use client';
 import Link from "next/link";
+import { useEffect, useState } from "react";
 import { LayoutDashboard, Briefcase, DollarSign, User, MessageSquare, Settings, Zap, Gamepad2 } from "lucide-react";
 import { PanelNav, PanelTabs, type PanelNavItem } from "@/components/panel/PanelNav";
 
 type ActiveTab = "overview" | "orders" | "services" | "earnings" | "profile" | "messages" | "settings";
 
 export function BoosterSidebar({ active }: { active: ActiveTab }) {
+  const [newOrders, setNewOrders] = useState(0);
+  useEffect(() => {
+    let alive = true;
+    const load = () =>
+      fetch("/api/booster/new-orders", { cache: "no-store" })
+        .then((r) => (r.ok ? r.json() : { count: 0 }))
+        .then((d: { count?: number }) => alive && setNewOrders(Number(d.count) || 0))
+        .catch(() => {});
+    load();
+    const id = setInterval(load, 60000);
+    return () => {
+      alive = false;
+      clearInterval(id);
+    };
+  }, []);
   const items: PanelNavItem[] = [
     { href: "/booster", label: "Overview", icon: <LayoutDashboard className="h-4 w-4" />, active: active === "overview" },
-    { href: "/booster/orders", label: "Orders", icon: <Briefcase className="h-4 w-4" />, active: active === "orders" },
+    { href: "/booster/orders", label: "Orders", icon: <Briefcase className="h-4 w-4" />, active: active === "orders", badge: newOrders },
     { href: "/booster/services", label: "My Services", icon: <Gamepad2 className="h-4 w-4" />, active: active === "services" },
     { href: "/booster/earnings", label: "Earnings", icon: <DollarSign className="h-4 w-4" />, active: active === "earnings" },
     { href: "/booster/profile", label: "Profile", icon: <User className="h-4 w-4" />, active: active === "profile" },
