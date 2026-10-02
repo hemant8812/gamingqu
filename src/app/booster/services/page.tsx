@@ -1,12 +1,11 @@
 import Link from "next/link";
-import { redirect } from "next/navigation";
-import { revalidatePath } from "next/cache";
 import { ArrowRight } from "lucide-react";
 import { ServicePicker } from "@/components/booster/ServicePicker";
 import { db } from "@/lib/prisma";
 import { BoosterSidebar } from "@/components/dashboard/BoosterSidebar";
 import { PageToast } from "@/components/shared/PageToast";
 import { getBoosterId, getBoosterServiceIds } from "@/lib/boosterJobs";
+import { saveServices } from "@/lib/boosterActions";
 
 export const metadata = {
   title: "My Services",
@@ -25,26 +24,6 @@ export default async function BoosterServicesPage({ searchParams }: { searchPara
         </div>
       </div>
     );
-  }
-
-  async function saveServices(formData: FormData) {
-    "use server";
-    const me = await getBoosterId();
-    if (!me) return;
-    const picked = formData
-      .getAll("serviceId")
-      .map((v) => Number.parseInt(String(v), 10))
-      .filter((n) => Number.isFinite(n));
-    // Only keep ids of services that exist and are active.
-    const valid = await db.service.findMany({ where: { id: { in: picked }, isActive: true }, select: { id: true } });
-    await db.$transaction([
-      db.boosterService.deleteMany({ where: { userId: me } }),
-      db.boosterService.createMany({ data: valid.map((s) => ({ userId: me, serviceId: s.id })), skipDuplicates: true }),
-    ]);
-    revalidatePath("/booster/services");
-    revalidatePath("/booster/orders");
-    revalidatePath("/booster");
-    redirect("/booster/services?toast=saved");
   }
 
   const sp = await searchParams;
@@ -88,6 +67,7 @@ export default async function BoosterServicesPage({ searchParams }: { searchPara
               <div className="surface p-10 text-center text-gray-400">No services are available yet.</div>
             ) : (
               <form action={saveServices} className="space-y-4">
+                <input type="hidden" name="back" value="/booster/services" />
                 <ServicePicker games={games} initial={mine} />
                 <div className="sticky bottom-4 flex justify-end">
                   <button type="submit" className="btn btn-gaming h-11 rounded-xl px-6 shadow-lg">

@@ -51,3 +51,26 @@ export async function completeJob(formData: FormData) {
   });
   done(formData, "completed");
 }
+
+// Replace the booster's list of services they can do.
+export async function saveServices(formData: FormData) {
+  const me = await getBoosterId();
+  if (!me) return;
+  const picked = formData
+    .getAll("serviceId")
+    .map((v) => Number.parseInt(String(v), 10))
+    .filter((n) => Number.isFinite(n));
+  const valid = await db.service.findMany({ where: { id: { in: picked }, isActive: true }, select: { id: true } });
+  await db.$transaction([
+    db.boosterService.deleteMany({ where: { userId: me } }),
+    db.boosterService.createMany({ data: valid.map((s) => ({ userId: me, serviceId: s.id })), skipDuplicates: true }),
+  ]);
+  revalidatePath("/booster/services");
+  const back = String(formData.get("back") ?? "");
+  if (back === "/booster/services") {
+    revalidatePath("/booster");
+    revalidatePath("/booster/orders");
+    redirect("/booster/services?toast=saved");
+  }
+  done(formData, "saved");
+}

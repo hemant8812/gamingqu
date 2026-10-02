@@ -94,6 +94,7 @@ export function JobsTabs({
   completed,
   hasServices,
   back = "/booster/orders",
+  servicesControl,
   acceptAction,
   startAction,
   completeAction,
@@ -103,6 +104,7 @@ export function JobsTabs({
   completed: BoosterJob[];
   hasServices: boolean;
   back?: string;
+  servicesControl?: React.ReactNode;
   acceptAction: Action;
   startAction: Action;
   completeAction: Action;
@@ -157,9 +159,13 @@ export function JobsTabs({
               <p className="mx-auto mt-1 max-w-md text-sm text-gray-400">
                 Pick the games and services you can do. New orders for them will show up here.
               </p>
-              <Link href="/booster/services" className="btn btn-gaming mt-5 h-10 rounded-xl px-5">
-                Choose services
-              </Link>
+              <div className="mt-5 flex justify-center">
+                {servicesControl ?? (
+                  <Link href="/booster/services" className="btn btn-gaming h-10 rounded-xl px-5">
+                    Choose services
+                  </Link>
+                )}
+              </div>
             </div>
           ) : (
             <>
@@ -190,9 +196,13 @@ export function JobsTabs({
                     </button>
                   );
                 })}
-                <Link href="/booster/services" className="ml-auto text-xs font-semibold text-brand-300 hover:text-white">
-                  Services I can do
-                </Link>
+                <div className="ml-auto">
+                  {servicesControl ?? (
+                    <Link href="/booster/services" className="text-xs font-semibold text-brand-300 hover:text-white">
+                      Services I can do
+                    </Link>
+                  )}
+                </div>
               </div>
               {shown.length === 0 ? (
                 <div className="surface p-10 text-center text-gray-400">

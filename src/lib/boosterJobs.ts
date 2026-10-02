@@ -89,3 +89,16 @@ export async function getMyJobs(boosterId: string, which: "active" | "completed"
   });
   return (rows as unknown as JobRow[]).map(toJob);
 }
+
+// Active games with their active services, for the service picker.
+export async function getServiceCatalog() {
+  return db.game.findMany({
+    where: { isActive: true, services: { some: { isActive: true } } },
+    orderBy: [{ sortOrder: "asc" }, { name: "asc" }],
+    select: {
+      id: true,
+      name: true,
+      services: { where: { isActive: true }, orderBy: { name: "asc" }, select: { id: true, name: true } },
+    },
+  });
+}

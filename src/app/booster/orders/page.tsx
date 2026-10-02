@@ -6,8 +6,9 @@ import { BoosterSidebar } from "@/components/dashboard/BoosterSidebar";
 import { ArrowLeft } from "lucide-react";
 import { JobsTabs } from "@/components/booster/JobsTabs";
 import { PageToast } from "@/components/shared/PageToast";
-import { getAvailableJobs, getBoosterId, getBoosterServiceIds, getMyJobs } from "@/lib/boosterJobs";
-import { acceptJob, completeJob, startJob } from "@/lib/boosterActions";
+import { getAvailableJobs, getBoosterId, getBoosterServiceIds, getMyJobs, getServiceCatalog } from "@/lib/boosterJobs";
+import { acceptJob, completeJob, saveServices, startJob } from "@/lib/boosterActions";
+import { ServicesDialog } from "@/components/booster/ServicesDialog";
 
 export const metadata = {
   title: "Orders",
@@ -48,10 +49,11 @@ export default async function BoosterOrdersPage({ searchParams }: { searchParams
   if (!boosterId) return null;
 
   const serviceIds = await getBoosterServiceIds(boosterId).catch(() => [] as number[]);
-  const [availableJobs, activeJobs, completedJobs] = await Promise.all([
+  const [availableJobs, activeJobs, completedJobs, catalog] = await Promise.all([
     getAvailableJobs(serviceIds).catch(() => []),
     getMyJobs(boosterId, "active").catch(() => []),
     getMyJobs(boosterId, "completed").catch(() => []),
+    getServiceCatalog().catch(() => []),
   ]);
 
   const sp = await searchParams;
@@ -61,6 +63,7 @@ export default async function BoosterOrdersPage({ searchParams }: { searchParams
     taken: { m: "Someone else already took this order.", t: "error" },
     started: { m: "Marked as in progress.", t: "success" },
     completed: { m: "Order marked as completed.", t: "success" },
+    saved: { m: "Your services are saved.", t: "success" },
   };
 
   return (
@@ -93,6 +96,7 @@ export default async function BoosterOrdersPage({ searchParams }: { searchParams
               completed={completedJobs}
               hasServices={serviceIds.length > 0}
               back="/booster/orders"
+              servicesControl={<ServicesDialog games={catalog} initial={serviceIds} action={saveServices} back="/booster/orders" />}
               acceptAction={acceptJob}
               startAction={startJob}
               completeAction={completeJob}

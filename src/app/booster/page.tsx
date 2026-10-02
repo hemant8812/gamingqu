@@ -6,8 +6,9 @@ import { db } from "@/lib/prisma";
 import { BoosterSidebar } from "@/components/dashboard/BoosterSidebar";
 import { JobsTabs } from "@/components/booster/JobsTabs";
 import { PageToast } from "@/components/shared/PageToast";
-import { getAvailableJobs, getBoosterServiceIds, getMyJobs } from "@/lib/boosterJobs";
-import { acceptJob, completeJob, startJob } from "@/lib/boosterActions";
+import { getAvailableJobs, getBoosterServiceIds, getMyJobs, getServiceCatalog } from "@/lib/boosterJobs";
+import { acceptJob, completeJob, saveServices, startJob } from "@/lib/boosterActions";
+import { ServicesDialog } from "@/components/booster/ServicesDialog";
 import { CalendarClock, Gamepad2, KeyRound, LifeBuoy, MessageSquare, ScrollText, TrendingUp, UserRound, Wallet } from "lucide-react";
 
 export const metadata = {
@@ -26,6 +27,7 @@ const TOASTS: Record<string, { m: string; t: "success" | "error" }> = {
   taken: { m: "Someone else already took this order.", t: "error" },
   started: { m: "Marked as in progress.", t: "success" },
   completed: { m: "Order marked as completed.", t: "success" },
+  saved: { m: "Your services are saved.", t: "success" },
 };
 
 function money(n: number, currency = "USD") {
@@ -91,7 +93,7 @@ export default async function BoosterDashboardPage({ searchParams }: { searchPar
   const display = user.username ?? user.name ?? "Booster";
 
   const serviceIds = await getBoosterServiceIds(me).catch(() => [] as number[]);
-  const [available, inProcess, completed, completedCount, earned, wallet, lastOrder, myServices] = await Promise.all([
+  const [available, inProcess, completed, completedCount, earned, wallet, lastOrder, myServices, catalog] = await Promise.all([
     getAvailableJobs(serviceIds).catch(() => []),
     getMyJobs(me, "active").catch(() => []),
     getMyJobs(me, "completed", 20).catch(() => []),
@@ -102,7 +104,12 @@ export default async function BoosterDashboardPage({ searchParams }: { searchPar
     db.boosterService
       .findMany({ where: { userId: me }, select: { service: { select: { name: true, game: { select: { name: true } } } } } })
       .catch(() => []),
+    getServiceCatalog().catch(() => []),
   ]);
+
+  const servicesButton = (label?: string, className?: string) => (
+    <ServicesDialog games={catalog} initial={serviceIds} action={saveServices} back="/booster" label={label} className={className} />
+  );
 
   const currency = wallet?.currency ?? "USD";
   const balance = Number.parseFloat(String(wallet?.balance ?? 0)) || 0;
@@ -184,12 +191,13 @@ export default async function BoosterDashboardPage({ searchParams }: { searchPar
                 <div className="mt-5 border-t border-white/[0.07] pt-4">
                   <div className="mb-3 flex items-center justify-between">
                     <span className="text-sm font-semibold text-white">Services I can do</span>
-                    <Link href="/booster/services" className="text-xs font-semibold text-brand-300 hover:text-white">Edit</Link>
+                    {servicesButton("Edit", "text-xs font-semibold text-brand-300 hover:text-white")}
                   </div>
                   {myServices.length === 0 ? (
-                    <Link href="/booster/services" className="flex items-center gap-2 rounded-xl border border-dashed border-white/15 p-3 text-sm text-gray-400 hover:text-white">
-                      <Gamepad2 className="h-4 w-4" /> Choose the services you can do
-                    </Link>
+                    <div className="rounded-xl border border-dashed border-white/15 p-3 text-sm text-gray-400">
+                      <Gamepad2 className="mb-2 h-4 w-4" />
+                      {servicesButton("Choose the services you can do", "text-left font-semibold text-brand-300 hover:text-white")}
+                    </div>
                   ) : (
                     <div className="flex max-h-28 flex-wrap gap-1.5 overflow-y-auto">
                       {myServices.map((s, i) => (
@@ -231,6 +239,7 @@ export default async function BoosterDashboardPage({ searchParams }: { searchPar
                 completed={completed}
                 hasServices={serviceIds.length > 0}
                 back="/booster"
+                servicesControl={servicesButton()}
                 acceptAction={acceptJob}
                 startAction={startJob}
                 completeAction={completeJob}
