@@ -3,12 +3,12 @@ import Link from "next/link";
 import { LayoutDashboard, Briefcase, DollarSign, User, MessageSquare, Settings, Zap, Gamepad2 } from "lucide-react";
 import { PanelNav, PanelTabs, type PanelNavItem } from "@/components/panel/PanelNav";
 
-type ActiveTab = "overview" | "jobs" | "services" | "earnings" | "profile" | "messages" | "settings";
+type ActiveTab = "overview" | "orders" | "services" | "earnings" | "profile" | "messages" | "settings";
 
 export function BoosterSidebar({ active }: { active: ActiveTab }) {
   const items: PanelNavItem[] = [
     { href: "/booster", label: "Overview", icon: <LayoutDashboard className="h-4 w-4" />, active: active === "overview" },
-    { href: "/booster/jobs", label: "Jobs", icon: <Briefcase className="h-4 w-4" />, active: active === "jobs" },
+    { href: "/booster/orders", label: "Orders", icon: <Briefcase className="h-4 w-4" />, active: active === "orders" },
     { href: "/booster/services", label: "My Services", icon: <Gamepad2 className="h-4 w-4" />, active: active === "services" },
     { href: "/booster/earnings", label: "Earnings", icon: <DollarSign className="h-4 w-4" />, active: active === "earnings" },
     { href: "/booster/profile", label: "Profile", icon: <User className="h-4 w-4" />, active: active === "profile" },
@@ -26,7 +26,7 @@ export function BoosterSidebar({ active }: { active: ActiveTab }) {
           footer={
             <div className="px-3 pb-3">
               <Link
-                href="/booster/jobs"
+                href="/booster/orders"
                 className="flex items-center gap-3 rounded-xl border border-lime-glow/20 bg-lime-glow/[0.06] p-3 text-sm text-gray-200 hover:border-lime-glow/40"
               >
                 <span className="grid h-8 w-8 place-items-center rounded-lg bg-lime-glow/15 text-lime-glow">

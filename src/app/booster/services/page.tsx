@@ -42,7 +42,7 @@ export default async function BoosterServicesPage({ searchParams }: { searchPara
       db.boosterService.createMany({ data: valid.map((s) => ({ userId: me, serviceId: s.id })), skipDuplicates: true }),
     ]);
     revalidatePath("/booster/services");
-    revalidatePath("/booster/jobs");
+    revalidatePath("/booster/orders");
     revalidatePath("/booster");
     redirect("/booster/services?toast=saved");
   }
@@ -76,11 +76,11 @@ export default async function BoosterServicesPage({ searchParams }: { searchPara
               <div>
                 <h1 className="text-2xl font-bold text-white">My Services</h1>
                 <p className="mt-1 max-w-2xl text-sm text-gray-400">
-                  Tap the services you can do, then save. The Jobs page will only show you orders for these services.
+                  Tap the services you can do, then save. The Orders page will only show you orders for these services.
                 </p>
               </div>
-              <Link href="/booster/jobs" className="btn btn-sm h-9 rounded-xl border border-white/10 bg-white/[0.04] text-gray-200 hover:bg-white/[0.08]">
-                Go to jobs <ArrowRight className="h-4 w-4" />
+              <Link href="/booster/orders" className="btn btn-sm h-9 rounded-xl border border-white/10 bg-white/[0.04] text-gray-200 hover:bg-white/[0.08]">
+                Go to orders <ArrowRight className="h-4 w-4" />
               </Link>
             </div>
 

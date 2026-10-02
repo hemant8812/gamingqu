@@ -42,7 +42,9 @@ export const RESERVED_SLUGS: ReadonlySet<string> = new Set([
 export async function getSiteMeta() {
   const s = await getWebsiteSettingCore();
   const base = getBaseUrl();
-  const siteName = s?.siteName?.trim() || SITE_DEFAULTS.name;
+  const storedName = s?.siteName?.trim() ?? "";
+  // The site was renamed from Gamingqu; an old stored name shows the new one.
+  const siteName = !storedName || /^gaming ?qu$/i.test(storedName) ? SITE_DEFAULTS.name : storedName;
   const tagline = s?.tagline?.trim() || SITE_DEFAULTS.tagline;
   const rawLogo = s?.logoUrl?.trim() || null;
   const rawFavicon = s?.faviconUrl?.trim() || null;

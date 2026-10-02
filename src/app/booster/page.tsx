@@ -2,19 +2,46 @@ import { getServerSession } from "next-auth";
 import Link from "next/link";
 import { FiLock } from "react-icons/fi";
 import { authOptions } from "@/auth";
+import { db } from "@/lib/prisma";
 import { BoosterSidebar } from "@/components/dashboard/BoosterSidebar";
-import { BadgeCheck, Briefcase, CheckCircle, ChevronRight, DollarSign, LayoutDashboard, MessageSquare, Settings, Star, Timer, User } from "lucide-react";
+import { getAvailableJobs, getBoosterServiceIds, getMyJobs, type BoosterJob } from "@/lib/boosterJobs";
+import { Activity, Briefcase, CheckCircle, ChevronRight, DollarSign, Gamepad2, Star } from "lucide-react";
 
 export const metadata = {
   title: "Booster Dashboard",
 };
 
+function StatCard({ label, value, icon, tone }: { label: string; value: string; icon: React.ReactNode; tone: string }) {
+  return (
+    <div className="surface flex items-center justify-between gap-3 p-5">
+      <div className="min-w-0">
+        <div className="text-sm text-gray-400">{label}</div>
+        <div className="mt-1 truncate font-display text-2xl font-bold text-white tabular-nums">{value}</div>
+      </div>
+      <span className={`grid h-12 w-12 shrink-0 place-items-center rounded-xl ring-1 ${tone}`}>{icon}</span>
+    </div>
+  );
+}
+
+function JobLine({ job, right }: { job: BoosterJob; right: React.ReactNode }) {
+  return (
+    <li className="flex items-center justify-between gap-3 rounded-xl border border-white/10 bg-ink-900/60 p-4">
+      <div className="min-w-0">
+        <div className="truncate font-semibold text-white">{job.title}</div>
+        <div className="truncate text-xs text-gray-400">
+          <span className="font-mono">{job.id}</span> · {job.game}
+        </div>
+      </div>
+      <div className="flex shrink-0 items-center gap-3">{right}</div>
+    </li>
+  );
+}
+
 export default async function BoosterDashboardPage() {
   const session = await getServerSession(authOptions);
-  const role = session?.user?.role;
-  const isBooster = role === "BOOSTER";
+  const user = session?.user as { id?: string; role?: string; name?: string | null; username?: string | null } | undefined;
 
-  if (!session?.user) {
+  if (!user) {
     return (
       <div className="min-h-screen bg-ink-900 flex items-center justify-center">
         <div className="text-center">
@@ -29,7 +56,7 @@ export default async function BoosterDashboardPage() {
     );
   }
 
-  if (!isBooster) {
+  if (user.role !== "BOOSTER" || !user.id) {
     return (
       <div className="min-h-screen bg-ink-900 flex items-center justify-center">
         <div className="text-center">
@@ -40,305 +67,117 @@ export default async function BoosterDashboardPage() {
     );
   }
 
-  const name = session.user?.name ?? session.user?.username ?? "Booster";
+  const me = user.id;
+  const name = user.username ?? user.name ?? "Booster";
 
-  const stats = {
-    activeJobs: 3,
-    totalEarnings: "$4,567.89",
-    rating: 4.92,
-    completed: 156,
-  };
+  const serviceIds = await getBoosterServiceIds(me).catch(() => [] as number[]);
+  const [inProcess, available, completedCount, earnings, rating] = await Promise.all([
+    getMyJobs(me, "active", 5).catch(() => []),
+    getAvailableJobs(serviceIds, 5).catch(() => []),
+    db.order.count({ where: { boosterId: me, fulfillmentStatus: "COMPLETED" } }).catch(() => 0),
+    db.order.aggregate({ _sum: { boosterPay: true }, where: { boosterId: me, fulfillmentStatus: "COMPLETED" } }).catch(() => null),
+    db.review.aggregate({ _avg: { rating: true }, _count: { _all: true }, where: { isPublished: true, order: { boosterId: me } } }).catch(() => null),
+  ]);
 
-  const activeJobs = [
-    { id: "ORD-001", title: "Diamond Boost", game: "League of Legends", progress: 65, price: "$99.99", status: "In Progress" as const, eta: "2h 30m", priority: "High" as const },
-  ];
-
-  const availableJobs = [
-    { id: "JOB-101", title: "Gold to Platinum Boost", game: "League of Legends", queue: "Solo Queue", price: "$34.99", tags: ["Fast"] },
-    { id: "JOB-102", title: "Diamond Coaching 3 Hours", game: "Valorant", queue: "Educational", price: "$89.99", tags: ["Coaching"] },
-    { id: "JOB-103", title: "Mythic +15 Carry", game: "World of Warcraft", queue: "PvE", price: "$20.99", tags: ["Carry"] },
-  ];
+  const earned = Number.parseFloat(String(earnings?._sum.boosterPay ?? 0)) || 0;
+  const earnedText = new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" }).format(earned);
+  const ratingCount = rating?._count._all ?? 0;
+  const ratingText = ratingCount > 0 && rating?._avg.rating ? rating._avg.rating.toFixed(2) : "New";
 
   return (
     <div className="min-h-screen bg-ink-900 text-white">
-      <div className="fixed inset-0 pointer-events-none">
-        <div className="absolute top-0 left-1/4 w-96 h-96 bg-brand-600/10 rounded-full blur-3xl" />
-        <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-accent-500/10 rounded-full blur-3xl" />
-      </div>
       <div className="relative z-10 mx-auto max-w-7xl px-6 py-8">
-        <div className="lg:hidden mb-4">
-          <details className="rounded-2xl border border-white/10 bg-ink-800">
-            <summary className="flex items-center justify-between px-4 py-3 cursor-pointer">
-              <span className="flex items-center gap-3 text-white">
-                <LayoutDashboard className="h-4 w-4" />
-                <span>Menu Booster</span>
-              </span>
-              <ChevronRight className="h-4 w-4" />
-            </summary>
-            <nav className="p-3">
-              <ul className="space-y-1">
-                <li>
-                  <Link href="/booster" className="w-full flex items-center gap-3 px-3 py-2 rounded-xl bg-white/10 text-white">
-                    <LayoutDashboard className="h-4 w-4" />
-                    <span>Overview</span>
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/booster/jobs" className="w-full flex items-center gap-3 px-3 py-2 rounded-xl hover:bg-white/5 text-gray-300">
-                    <Briefcase className="h-4 w-4" />
-                    <span>Jobs</span>
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/booster/earnings" className="w-full flex items-center gap-3 px-3 py-2 rounded-xl hover:bg-white/5 text-gray-300">
-                    <DollarSign className="h-4 w-4" />
-                    <span>Earnings</span>
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/booster/profile" className="w-full flex items-center gap-3 px-3 py-2 rounded-xl hover:bg-white/5 text-gray-300">
-                    <User className="h-4 w-4" />
-                    <span>Profile</span>
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/booster/messages" className="w-full flex items-center gap-3 px-3 py-2 rounded-xl hover:bg-white/5 text-gray-300">
-                    <MessageSquare className="h-4 w-4" />
-                    <span>Messages</span>
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/booster/settings" className="w-full flex items-center gap-3 px-3 py-2 rounded-xl hover:bg-white/5 text-gray-300">
-                    <Settings className="h-4 w-4" />
-                    <span>Settings</span>
-                  </Link>
-                </li>
-              </ul>
-            </nav>
-          </details>
-        </div>
-
         <div className="grid grid-cols-1 lg:grid-cols-[260px_1fr] gap-6">
-          <aside className="space-y-6 hidden lg:block lg:sticky lg:top-20 self-start">
+          <aside className="space-y-6 lg:sticky lg:top-20 self-start">
             <BoosterSidebar active="overview" />
           </aside>
-
-          <main>
-            <section className="relative overflow-hidden rounded-3xl border border-white/10 bg-gradient-to-br from-ink-800 via-ink-850 to-ink-900 ring-1 ring-white/5 mb-6">
-              <div className="absolute inset-0 pointer-events-none">
-                <div className="absolute -top-24 -left-24 h-72 w-72 rounded-full bg-brand-500/15 blur-3xl" />
-                <div className="absolute -bottom-24 -right-24 h-72 w-72 rounded-full bg-accent-500/10 blur-3xl" />
-              </div>
-              <div className="relative p-6 md:p-7 flex flex-col gap-5">
-                <div className="flex flex-col sm:flex-row items-start justify-between gap-4">
-                  <div className="min-w-0">
-                    <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 ring-1 ring-white/10 text-xs text-gray-300">
-                      <BadgeCheck className="h-4 w-4 text-emerald-400" />
-                      Booster Dashboard
-                    </div>
-                    <h1 className="mt-3 text-3xl md:text-4xl font-black tracking-tight text-white">
-                      Welcome, <span className="gradient-text">{String(name)}</span>
-                    </h1>
-                    <p className="mt-1 text-sm text-gray-300/90">Focus on speed, transparency, and delivery quality.</p>
-                  </div>
-                  <div className="shrink-0 flex items-center gap-2">
-                    <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-emerald-500/15 text-emerald-200 ring-1 ring-emerald-500/25 text-xs">
-                      <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" />
-                      Available for Jobs
-                    </div>
-                  </div>
+          <main className="min-w-0 space-y-6">
+            <section className="relative overflow-hidden rounded-[1.5rem] border border-brand-500/25 bg-gradient-to-br from-brand-900/60 via-ink-800 to-ink-900 p-6 md:p-8">
+              <div className="dot-grid absolute inset-0 opacity-50" />
+              <div className="relative flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+                <div>
+                  <div className="eyebrow mb-2">Booster dashboard</div>
+                  <h1 className="text-3xl font-extrabold md:text-4xl">
+                    Welcome, <span className="gradient-text">{name}</span>
+                  </h1>
+                  <p className="mt-2 text-sm text-gray-300">
+                    {serviceIds.length > 0
+                      ? `You work on ${serviceIds.length} service${serviceIds.length === 1 ? "" : "s"}.`
+                      : "Choose the services you can do to start getting orders."}
+                  </p>
                 </div>
+                <Link href="/booster/orders" className="btn btn-gaming h-11 rounded-xl px-5">
+                  Find orders <ChevronRight className="h-4 w-4" />
+                </Link>
               </div>
             </section>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-              <div className="group relative overflow-hidden rounded-2xl border border-white/10 bg-gradient-to-b from-ink-800 to-ink-900 p-5 flex items-center justify-between ring-1 ring-white/5 hover:ring-white/10 transition">
-                <div className="absolute inset-0 pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity">
-                  <div className="absolute -top-16 -left-16 h-40 w-40 rounded-full bg-brand-500/15 blur-2xl" />
-                </div>
-                <div>
-                  <p className="text-sm text-gray-400 mb-1">Active Jobs</p>
-                  <p className="text-2xl font-extrabold text-white tabular-nums">{stats.activeJobs}</p>
-                </div>
-                <div className="w-12 h-12 rounded-xl bg-brand-500/20 flex items-center justify-center text-brand-400 ring-1 ring-brand-500/20">
-                  <Briefcase className="h-6 w-6" />
-                </div>
-              </div>
-              <div className="group relative overflow-hidden rounded-2xl border border-white/10 bg-gradient-to-b from-ink-800 to-ink-900 p-5 flex items-center justify-between ring-1 ring-white/5 hover:ring-white/10 transition">
-                <div className="absolute inset-0 pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity">
-                  <div className="absolute -top-16 -left-16 h-40 w-40 rounded-full bg-emerald-500/15 blur-2xl" />
-                </div>
-                <div>
-                  <p className="text-sm text-gray-400 mb-1">Total Earnings</p>
-                  <p className="text-2xl font-extrabold text-white tabular-nums">{stats.totalEarnings}</p>
-                </div>
-                <div className="w-12 h-12 rounded-xl bg-emerald-500/20 flex items-center justify-center text-emerald-400 ring-1 ring-emerald-500/20">
-                  <DollarSign className="h-6 w-6" />
-                </div>
-              </div>
-              <div className="group relative overflow-hidden rounded-2xl border border-white/10 bg-gradient-to-b from-ink-800 to-ink-900 p-5 flex items-center justify-between ring-1 ring-white/5 hover:ring-white/10 transition">
-                <div className="absolute inset-0 pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity">
-                  <div className="absolute -top-16 -left-16 h-40 w-40 rounded-full bg-yellow-500/15 blur-2xl" />
-                </div>
-                <div>
-                  <p className="text-sm text-gray-400 mb-1">Rating</p>
-                  <p className="text-2xl font-extrabold text-white tabular-nums">{stats.rating.toFixed(2)}</p>
-                </div>
-                <div className="w-12 h-12 rounded-xl bg-yellow-500/20 flex items-center justify-center text-yellow-400 ring-1 ring-yellow-500/20">
-                  <Star className="h-6 w-6" />
-                </div>
-              </div>
-              <div className="group relative overflow-hidden rounded-2xl border border-white/10 bg-gradient-to-b from-ink-800 to-ink-900 p-5 flex items-center justify-between ring-1 ring-white/5 hover:ring-white/10 transition">
-                <div className="absolute inset-0 pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity">
-                  <div className="absolute -top-16 -left-16 h-40 w-40 rounded-full bg-purple-500/15 blur-2xl" />
-                </div>
-                <div>
-                  <p className="text-sm text-gray-400 mb-1">Completed</p>
-                  <p className="text-2xl font-extrabold text-white tabular-nums">{stats.completed}</p>
-                </div>
-                <div className="w-12 h-12 rounded-xl bg-purple-500/20 flex items-center justify-center text-purple-400 ring-1 ring-purple-500/20">
-                  <CheckCircle className="h-6 w-6" />
-                </div>
-              </div>
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
+              <StatCard label="In process" value={String(inProcess.length)} icon={<Activity className="h-5 w-5 text-brand-200" />} tone="bg-brand-500/15 ring-brand-400/30" />
+              <StatCard label="Total earnings" value={earnedText} icon={<DollarSign className="h-5 w-5 text-emerald-300" />} tone="bg-emerald-500/15 ring-emerald-400/30" />
+              <StatCard label="Rating" value={ratingText} icon={<Star className="h-5 w-5 text-amber-300" />} tone="bg-amber-500/15 ring-amber-400/30" />
+              <StatCard label="Completed" value={String(completedCount)} icon={<CheckCircle className="h-5 w-5 text-accent-300" />} tone="bg-accent-500/15 ring-accent-400/30" />
             </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
-              <section className="bg-gradient-to-b from-ink-800 to-ink-900 border border-white/10 rounded-2xl overflow-hidden ring-1 ring-white/5">
-                <div className="p-6 border-b border-white/10 flex items-center justify-between">
-                  <h3 className="text-lg font-bold text-white">Active Jobs</h3>
-                  <Link href="/booster/jobs" className="flex items-center gap-2 text-sm text-brand-400 hover:text-brand-300" aria-label="View all jobs">
-                    View All <ChevronRight className="h-4 w-4" />
-                  </Link>
+            <div className="grid grid-cols-1 gap-6 xl:grid-cols-2">
+              <section className="surface p-5">
+                <div className="mb-4 flex items-center justify-between">
+                  <h2 className="flex items-center gap-2 text-lg font-bold"><Activity className="h-5 w-5 text-brand-300" /> In process</h2>
+                  <Link href="/booster/orders" className="text-sm text-brand-300 hover:text-white">View all</Link>
                 </div>
-                <div className="p-4 md:p-6 space-y-3">
-                  {activeJobs.length === 0 ? (
-                    <div className="rounded-2xl border border-white/10 bg-ink-900 p-6 text-center text-gray-400">
-                      No active jobs
-                    </div>
-                  ) : (
-                    activeJobs.map((job) => (
-                      <div key={job.id} className="rounded-2xl border border-white/10 bg-ink-900 p-4 ring-1 ring-transparent hover:ring-white/10 transition">
-                        <div className="flex items-start justify-between gap-3 mb-3">
-                          <div className="min-w-0">
-                            <div className="text-sm font-semibold text-white truncate">{job.title}</div>
-                            <div className="text-xs text-gray-500 truncate">{job.id} • {job.game}</div>
-                          </div>
-                          <div className="shrink-0 text-right">
-                            <div className="text-emerald-400 font-semibold text-sm">{job.price}</div>
-                            <div className="text-[11px] text-gray-500 flex items-center justify-end gap-1 mt-0.5">
-                              <Timer className="h-3.5 w-3.5" />
-                              ETA {job.eta}
-                            </div>
-                          </div>
-                        </div>
-                        <div className="space-y-2">
-                          <div className="flex items-center justify-between text-[11px] text-gray-400">
-                            <span>Progress</span>
-                            <span>{job.progress}%</span>
-                          </div>
-                          <div className="h-1 rounded-full bg-white/10 overflow-hidden ring-1 ring-white/10">
-                            <div className="h-full bg-gradient-to-r from-purple-500 to-brand-500" style={{ width: `${job.progress}%` }} />
-                          </div>
-                        </div>
-                        <div className="mt-3 flex items-center justify-between">
-                          <div className="flex items-center gap-2">
-                            <span className="inline-flex items-center px-2 py-0.5 text-[11px] rounded-xl bg-brand-500/20 text-brand-200 ring-1 ring-brand-500/20">
-                              {job.status}
+                {inProcess.length === 0 ? (
+                  <p className="rounded-xl border border-white/10 bg-ink-900/60 p-6 text-center text-sm text-gray-400">No orders in process.</p>
+                ) : (
+                  <ul className="space-y-2">
+                    {inProcess.map((j) => (
+                      <JobLine
+                        key={j.id}
+                        job={j}
+                        right={
+                          <>
+                            <span className="rounded-full bg-white/5 px-2 py-0.5 text-[11px] text-gray-300 ring-1 ring-white/10">
+                              {j.status === "IN_PROGRESS" ? "In progress" : "Accepted"}
                             </span>
-                            <span className={`inline-flex items-center px-2 py-0.5 text-[11px] rounded-xl ring-1 ring-white/10 ${
-                              job.priority === "High" ? "bg-red-500/15 text-red-200" : "bg-white/5 text-gray-300"
-                            }`}>
-                              {job.priority} priority
-                            </span>
-                          </div>
-                          <div className="flex items-center gap-2">
-                            <button type="button" className="btn btn-gaming btn-xs">Update</button>
-                            <button type="button" className="btn btn-ghost btn-xs border border-white/10 text-gray-200 hover:bg-white/5">Details</button>
-                          </div>
-                        </div>
-                      </div>
-                    ))
-                  )}
-                </div>
+                            <span className="font-semibold text-emerald-300 tabular-nums">{j.price}</span>
+                          </>
+                        }
+                      />
+                    ))}
+                  </ul>
+                )}
               </section>
 
-              <section className="bg-gradient-to-b from-ink-800 to-ink-900 border border-white/10 rounded-2xl overflow-hidden ring-1 ring-white/5">
-                <div className="p-6 border-b border-white/10 flex items-center justify-between">
-                  <h3 className="text-lg font-bold text-white">Available Jobs</h3>
-                  <span className="text-[11px] text-emerald-300 bg-emerald-500/15 ring-1 ring-emerald-500/20 px-2 py-0.5 rounded-xl">
-                    {availableJobs.length} new jobs
-                  </span>
+              <section className="surface p-5">
+                <div className="mb-4 flex items-center justify-between">
+                  <h2 className="flex items-center gap-2 text-lg font-bold"><Briefcase className="h-5 w-5 text-lime-glow" /> Available orders</h2>
+                  <Link href="/booster/orders" className="text-sm text-brand-300 hover:text-white">See all</Link>
                 </div>
-                <div className="p-4 md:p-6 space-y-2">
-                  {availableJobs.map((job) => (
-                    <div key={job.id} className="rounded-2xl border border-white/10 bg-ink-900 p-4 ring-1 ring-transparent hover:ring-white/10 transition">
-                      <div className="flex items-start justify-between gap-3">
-                        <div className="min-w-0">
-                          <div className="text-sm font-semibold text-white truncate">{job.title}</div>
-                          <div className="text-xs text-gray-500 truncate">{job.game} • {job.queue}</div>
-                          <div className="mt-2 flex flex-wrap gap-1.5">
-                            {job.tags.map((t) => (
-                              <span key={`${job.id}-${t}`} className="inline-flex items-center px-2 py-0.5 rounded-xl text-[11px] bg-white/5 text-gray-200 ring-1 ring-white/10">
-                                {t}
-                              </span>
-                            ))}
-                          </div>
-                        </div>
-                        <div className="flex items-center gap-2 shrink-0">
-                          <div className="text-emerald-400 font-semibold text-sm">{job.price}</div>
-                          <button type="button" className="btn btn-gaming btn-xs">Accept</button>
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                  <Link href="/booster/jobs" className="block text-center text-sm text-brand-400 hover:text-brand-300 pt-2">
-                    View All Available Jobs →
-                  </Link>
-                </div>
+                {serviceIds.length === 0 ? (
+                  <div className="rounded-xl border border-white/10 bg-ink-900/60 p-6 text-center">
+                    <Gamepad2 className="mx-auto mb-2 h-8 w-8 text-brand-300" />
+                    <p className="text-sm text-gray-400">Pick your services to see orders here.</p>
+                    <Link href="/booster/services" className="btn btn-gaming btn-sm mt-3 rounded-xl">Choose services</Link>
+                  </div>
+                ) : available.length === 0 ? (
+                  <p className="rounded-xl border border-white/10 bg-ink-900/60 p-6 text-center text-sm text-gray-400">No open orders for your services right now.</p>
+                ) : (
+                  <ul className="space-y-2">
+                    {available.map((j) => (
+                      <JobLine
+                        key={j.id}
+                        job={j}
+                        right={
+                          <>
+                            <span className="font-semibold text-emerald-300 tabular-nums">{j.price}</span>
+                            <Link href="/booster/orders" className="btn btn-xs h-8 rounded-lg border-0 bg-lime-glow px-3 font-bold text-ink-900">Get order</Link>
+                          </>
+                        }
+                      />
+                    ))}
+                  </ul>
+                )}
               </section>
             </div>
-
-            <section className="bg-gradient-to-b from-ink-800 to-ink-900 border border-white/10 rounded-2xl overflow-hidden ring-1 ring-white/5">
-              <div className="p-6 border-b border-white/10">
-                <h3 className="text-lg font-bold text-white">Performance Insights</h3>
-              </div>
-              <div className="p-4 md:p-6 grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div className="rounded-2xl border border-white/10 bg-ink-900 p-5 ring-1 ring-transparent hover:ring-white/10 transition">
-                  <div className="flex items-center justify-between mb-3">
-                    <div className="text-xs text-gray-400">Earnings this month</div>
-                    <div className="w-9 h-9 rounded-xl bg-emerald-500/15 ring-1 ring-emerald-500/20 flex items-center justify-center text-emerald-300">
-                      <DollarSign className="h-4.5 w-4.5" />
-                    </div>
-                  </div>
-                  <div className="text-2xl font-black text-white">+23%</div>
-                  <div className="mt-2 h-1 rounded-full bg-white/10 overflow-hidden ring-1 ring-white/10">
-                    <div className="h-full w-2/3 bg-gradient-to-r from-emerald-500 to-accent-500" />
-                  </div>
-                </div>
-                <div className="rounded-2xl border border-white/10 bg-ink-900 p-5 ring-1 ring-transparent hover:ring-white/10 transition">
-                  <div className="flex items-center justify-between mb-3">
-                    <div className="text-xs text-gray-400">Avg response time</div>
-                    <div className="w-9 h-9 rounded-xl bg-brand-500/15 ring-1 ring-brand-500/20 flex items-center justify-center text-brand-300">
-                      <Timer className="h-4.5 w-4.5" />
-                    </div>
-                  </div>
-                  <div className="text-2xl font-black text-white">&lt; 5 min</div>
-                  <div className="mt-2 text-[11px] text-gray-500">Last 7 days</div>
-                </div>
-                <div className="rounded-2xl border border-white/10 bg-ink-900 p-5 ring-1 ring-transparent hover:ring-white/10 transition">
-                  <div className="flex items-center justify-between mb-3">
-                    <div className="text-xs text-gray-400">Completion rate</div>
-                    <div className="w-9 h-9 rounded-xl bg-purple-500/15 ring-1 ring-purple-500/20 flex items-center justify-center text-purple-300">
-                      <CheckCircle className="h-4.5 w-4.5" />
-                    </div>
-                  </div>
-                  <div className="text-2xl font-black text-white">98%</div>
-                  <div className="mt-2 h-1 rounded-full bg-white/10 overflow-hidden ring-1 ring-white/10">
-                    <div className="h-full w-[98%] bg-gradient-to-r from-purple-500 to-brand-500" />
-                  </div>
-                </div>
-              </div>
-            </section>
           </main>
         </div>
       </div>

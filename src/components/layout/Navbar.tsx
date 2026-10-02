@@ -474,7 +474,7 @@ export function Navbar({ siteName = SITE_DEFAULTS.name, logoUrl = null, user = n
                     <li><Link href="/dashboard/orders" onClick={closeDropdown} className="w-full hover:bg-white/10 rounded-xl text-gray-200"><FiShoppingCart className="h-4 w-4 text-brand-400" /> My orders</Link></li>
                   )}
                   {user.role === "BOOSTER" && (
-                    <li><Link href="/booster/jobs" onClick={closeDropdown} className="w-full hover:bg-white/10 rounded-xl text-gray-200"><FiShoppingCart className="h-4 w-4 text-brand-400" /> Jobs</Link></li>
+                    <li><Link href="/booster/orders" onClick={closeDropdown} className="w-full hover:bg-white/10 rounded-xl text-gray-200"><FiShoppingCart className="h-4 w-4 text-brand-400" /> Orders</Link></li>
                   )}
                   <li><button onClick={() => signOut({ callbackUrl: "/" })} className="w-full hover:bg-red-500/20 rounded-xl text-red-400"><FiLogOut className="h-4 w-4" /> Logout</button></li>
                 </ul>
